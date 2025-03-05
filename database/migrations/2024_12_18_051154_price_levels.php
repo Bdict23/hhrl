@@ -11,22 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('price_levels')) {            
+        if (!Schema::hasTable('price_levels')) {
         Schema::create('price_levels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('items_id')->nullable()->constrained('items')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('item_id')->nullable()->constrained('items')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('menu_id')->nullable()->constrained('menus')->onDelete('no action')->onUpdate('no action');
             $table->string('price_type', 255)->nullable();
             $table->integer('markup')->nullable();
             $table->decimal('amount', 19, 2)->nullable();
             $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();            
+            $table->date('end_date')->nullable();
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-            
+
 
         });}
 
@@ -40,7 +40,7 @@ return new class extends Migration
                 $table->foreignId('requisition_info_id')->constrained('requisition_infos')->onDelete('cascade')->onUpdate('cascade'); // Foreign key to requisition_infos
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-                
+
             });
         }
     }
@@ -50,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-    
+
     }
 };

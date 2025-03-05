@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\PriceLevel;
 use App\Models\Statuse;
 use App\Models\Location;
-use App\Models\uom;
+use App\Models\UOM;
 
 class Item extends Model
 {
@@ -28,7 +28,7 @@ class Item extends Model
 
     public function priceLevel()
     {
-        return $this->hasMany(PriceLevel::class);
+        return $this->hasMany(PriceLevel::class, 'item_id');
     }
 
     public function statuses()

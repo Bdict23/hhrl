@@ -14,9 +14,9 @@ use App\Models\PriceLevel;
 use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Signatories;
+use App\Models\Signatory;
 use App\Models\Receiving;
-use App\Models\cardex;
+use App\Models\Cardex;
 use  App\Models\Location;
 
 
@@ -50,9 +50,9 @@ class CardexController extends Controller
         $totalOut = $totalOut ?: 0;
         $totalBalance = $totalIn - $totalOut;
         $location = Location::where('item_id', $item->id)->where('branch_id', Auth::user()->branch_id)->first();
-        $price = PriceLevel::where('items_id', $item->id)->where('branch_id', Auth::user()->branch_id)->where('price_type', 'SRP')->first();
+        $price = PriceLevel::where('item_id', $item->id)->where('branch_id', Auth::user()->branch_id)->where('price_type', 'SRP')->first();
         if (!$price) {
-            $price = PriceLevel::where('items_id', $item->id)->where('price_type', 'SRP')->first();
+            $price = PriceLevel::where('item_id', $item->id)->where('price_type', 'SRP')->first();
         }
         $cardexData = Cardex::where('item_id', $item->id)->where('status', 'final')->where('source_branch_id', Auth::user()->branch_id)->get();
         $response = [

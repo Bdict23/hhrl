@@ -27,7 +27,7 @@ class Cardex extends Model
 
     public function receiving()
     {
-        return $this->belongsTo(receiving::class, 'receiving_id');
+        return $this->belongsTo(Receiving::class, 'receiving_id');
     }
 
 }
