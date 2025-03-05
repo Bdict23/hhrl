@@ -12,21 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('categories')) {
-                 
+
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('category_name', 255)->nullable();
             $table->string('category_description', 255)->nullable();
-            $table->string('status', 255)->default('ACTIVE');    
+            $table->string('status', 255)->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
         }); }
 
-        if (!Schema::hasTable('statuses')) {                    
+        if (!Schema::hasTable('statuses')) {
         Schema::create('statuses', function (Blueprint $table) {
             $table->id();
             $table->string('status_name', 255)->nullable();
@@ -36,8 +36,20 @@ return new class extends Migration
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
-        });}
+
+        });
+              // Insert data into the table
+              DB::table('statuses')->insert([
+                ['status_name' => 'ACTIVE', 'status_description' => 'Active status which means it can be visible and used'],
+                ['status_name' => 'INACTIVE', 'status_description' => 'Inactive status which means it cannot be used'],
+                ['status_name' => 'REJECTED', 'status_description' => 'Rejected status which means it has been rejected and cannot be used'],
+                ['status_name' => 'FOR APPROVAL', 'status_description' => 'For approval status which means it is waiting for approval'],
+                ['status_name' => 'FOR REVIEW', 'status_description' => 'For review status which means it is waiting for review'],
+
+            ]);
+
+
+        }
 
         if (!Schema::hasTable('classifications')) {
         Schema::create('classifications', function (Blueprint $table) {
@@ -50,7 +62,7 @@ return new class extends Migration
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
 
         });}
 
@@ -61,10 +73,10 @@ return new class extends Migration
             $table->string('description', 255)->nullable();
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');    
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
         });}
 
         if (!Schema::hasTable('unit_of_measures')) {
@@ -75,15 +87,15 @@ return new class extends Migration
             $table->string('unit_symbol', 25)->nullable()->comment('ex. kl,m,L');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');               
+            $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
         });}
 
-        
+
         if (!Schema::hasTable('items')) {
-            
+
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->text('item_code')->nullable();
@@ -98,8 +110,8 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by');
             $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
 
-            
-            
+
+
              // Foreign key constraints
             $table->foreign('uom_id')->references('id')->on('unit_of_measures');
             $table->foreign('brand')->references('id')->on('brands');
@@ -107,10 +119,10 @@ return new class extends Migration
             $table->foreign('statuses_id')->references('id')->on('statuses');
             $table->foreign('sub_class_id')->references('id')->on('classifications');
             $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('updated_by')->references('id')->on('employees');            
+            $table->foreign('updated_by')->references('id')->on('employees');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
         });}
 
 if (!Schema::hasTable('menus')) {
@@ -126,13 +138,13 @@ if (!Schema::hasTable('menus')) {
         $table->datetime('reviewed_date')->nullable()->default(null);
         $table->datetime('approved_date')->nullable()->default(null);
         $table->datetime('rejected_date')->nullable()->default(null);
-        $table->enum('status', ['AVAILABLE', 'UNAVAILABLE', 'PENDING', 'INACTIVE', 'REJECTED', 'FOR APPROVAL','FOR REVIEW'])->default('PENDING');        
+        $table->enum('status', ['AVAILABLE', 'UNAVAILABLE', 'PENDING', 'INACTIVE', 'REJECTED', 'FOR APPROVAL','FOR REVIEW'])->default('PENDING');
         $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
         $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
         $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
         $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
         $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
     });
 }
 
@@ -144,6 +156,6 @@ if (!Schema::hasTable('menus')) {
      */
     public function down(): void
     {
-       
+
     }
 };

@@ -20,6 +20,7 @@ use App\Http\Controllers\MenusController;
 use App\Http\Livewire\PendingOrders;
 use App\Http\Livewire\SearchOrderNumber;
 use App\Http\Controllers\InvoicingController;
+use App\Http\Controllers\InventoryAdjustmentController;
 
 Route::get('/', function () {
     $suppliers = supplier::all(); // Fetching all suppliers from the database
@@ -145,9 +146,7 @@ Route::get('/reservations_lists', function(){
 
 Route::get('/order_menu', [MenusController::class, 'menu_list'])->middleware(['auth', 'verified'])->name('menus.list'); // Route to show the menu list
 
-Route::get('/consumables', function(){
-    return view('inventory.consumables');
-});
+Route::get('/raw_materials_requisition', [InventoryAdjustmentController::class, 'NewRMR'])->middleware(['auth', 'verified'])->name('materials.requisition'); // Route to show the raw materials requisition form
 
 // Route for CREATE MENU
 Route::get('/create_menu', [MenusController::class, 'createMenu'])->middleware(['auth', 'verified'])->name('menus.create'); // Route to create a new purchase order

@@ -9,13 +9,13 @@
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h1>CONSUMABLES</h1>
+                            <h1>Raw Materials Requisition</h1>
                             <div class="me-3">
-                                <button class="btn btn-success" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#AddItemModal">+
+                                <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+
                                     Add
-                                    ITEM</button>
-                                <button onclick="history.back()" class="btn btn-primary" type="button"> Back </button>
+                                    ITEM</x-primary-button>
+                                <x-secondary-button onclick="history.back()"> Back
+                                </x-secondary-button>
                             </div>
                         </header>
                         <div class="row me-3">
@@ -126,7 +126,7 @@
 
 
     <!-- Add Item Modal -->
-    {{-- <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true">
+    <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -172,7 +172,7 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
     <!-- Add Account Modal -->
 @endsection

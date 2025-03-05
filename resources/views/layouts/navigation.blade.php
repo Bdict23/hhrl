@@ -82,6 +82,9 @@
                             <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
                                 {{ __('Approval Request') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
+                                {{ __('Receive Stock') }}
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -112,8 +115,8 @@
                             <x-dropdown-link :href="url('/back_orders_summary')" class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
-                                {{ __('Receive Stock') }}
+                            <x-dropdown-link :href="url('/raw_materials_requisition')" class="no-underline">
+                                {{ __('RMR') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
