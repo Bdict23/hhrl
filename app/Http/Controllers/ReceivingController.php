@@ -23,13 +23,17 @@ class ReceivingController extends Controller
 {
     public function getPODetails($request = null) {
         //dd($request);
-       
 
-       
-        
+
+
+
         $checkers = signatories::where('signatory_type', 'checker')->get();
         $allocators = signatories::where('signatory_type', 'allocator')->get();
-        $requestInfos = requisitionInfos::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where('requisition_number', $request)->first();
+        $requestInfos = requisitionInfos::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+            ->where('FROM_BRANCH_ID', Auth::user()->branch_id)
+            ->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])
+            ->where('requisition_number', $request)
+            ->first();
         $cardexSum = cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
         ->where('transaction_type', 'RECEVING')
         ->where('requisition_id', $requestInfos->id ?? 0)
@@ -95,7 +99,7 @@ class ReceivingController extends Controller
                     $this->createBackOrder($request->requisition_id[$index], $request->item_id[$index], $qty);
                 }
                 $cardex = new cardex();
-                $cardex->source_branch_id = Auth::user()->branch_id; 
+                $cardex->source_branch_id = Auth::user()->branch_id;
                 $cardex->qty_in = $qty;
                 $cardex->qty_out = 0;
                 $cardex->item_id = $request->item_id[$index];
@@ -113,7 +117,7 @@ class ReceivingController extends Controller
             \Log::error('Error saving receiving data: ' . $e->getMessage());
 
             // Redirect with error message
-           
+
             return redirect()->route('po.receive_stock')->with('status', 'error')->with('message', $e->getMessage());
         }
     }
@@ -134,18 +138,18 @@ class ReceivingController extends Controller
                 ->where('requisition_id', $requisitionId)
                 ->where('item_id', $itemId)
                 ->first();
-           
+
             if ($existingBackOrder) {
-                
+
                 if ($total_rec + $backOrderQty == $total_req_qty) {
                     DB::table('backorders')
                         ->where('requisition_id', $requisitionId)
                         ->where('item_id', $itemId)
                         ->update(['status' => 'FULLFILLED']);
                 }
-        
+
             } else {
-               
+
                     DB::table('backorders')->insert([
                         'requisition_id' => $requisitionId,
                         'item_id' => $itemId,
@@ -154,7 +158,7 @@ class ReceivingController extends Controller
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-                
-            }      
+
+            }
     }
 }
