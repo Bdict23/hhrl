@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\order_details;
-use App\Models\table;
+use App\Models\Order_detail;
+use App\Models\Table;
 
-class order extends Model
+class Order extends Model
 {
     use HasFactory;
     protected $table = 'orders';
@@ -23,12 +23,12 @@ class order extends Model
     ];
 
     public function order_details(){
-        return $this->hasMany(order_details::class)->with('menu');
+        return $this->hasMany(Order_detail::class)->with('menu');
     }
 
     //has many table
     public function tables(){
-        return $this->belongsTo(table::class, 'table_id');
+        return $this->belongsTo(Table::class, 'table_id');
     }
 
 

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\menu;
+use App\Models\Menu;
 
-class order_details extends Model
+class Order_detail extends Model
 {
     use HasFactory;
 
@@ -18,6 +18,6 @@ class order_details extends Model
 
     public function menu()
     {
-        return $this->belongsTo(menu::class, 'menu_id');
+        return $this->belongsTo(Menu::class, 'menu_id');
     }
 }

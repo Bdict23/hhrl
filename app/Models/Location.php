@@ -4,15 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\items;
 
-
-class statuses extends Model
+class Location extends Model
 {
     use HasFactory;
-    public function items()
-    {
-        return $this->hasMany(items::class);
-    }
+    protected $table = 'locations';
 }
-

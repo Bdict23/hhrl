@@ -186,7 +186,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
-                        status: 'PENDING'
+                        status: 'TO RECEIVE'
                     })
                 })
                 .then(response => {

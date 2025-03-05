@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\supplier;
+use App\Models\Supplier;
 
 class SupplierController extends Controller
 {
     public function store(Request $request)
-    { 
-        
+    {
+
         // Mag Validate sa form data
         $validatedData = $request->validate([
             'supp_name' => 'required|string|max:255',
@@ -27,13 +27,13 @@ class SupplierController extends Controller
         // Mag Create supplier record
         Supplier::create($validatedData);
 
-     
+
         return redirect()->back()->with('success', 'Supplier added successfully!');
     }
 
 
     public function update(Request $request)
-    { 
+    {
         try {
             $supplier = Supplier::find($request->id);
 
@@ -62,7 +62,7 @@ class SupplierController extends Controller
 
     public function index()
     {
-        $suppliers = supplier::where('supp_status', 'active')->get(); // Fetching all suppliers from the database
+        $suppliers = Supplier::where('supp_status', 'active')->get(); // Fetching all suppliers from the database
         return view('supplier_list', compact('suppliers')); // Passing data to the view
     }
 
@@ -70,12 +70,12 @@ class SupplierController extends Controller
     public function deactivate($id)
 
     {
-       $supplier = supplier::find($id);
+       $supplier = Supplier::find($id);
        $supplier->supp_status = 'inactive';
        $supplier->save();
        return redirect()->back()->with('success', 'Supplier deactivated successfully!');
    }
-    
-   
+
+
 
 }

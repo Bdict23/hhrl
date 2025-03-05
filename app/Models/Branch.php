@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\requisitionInfos;
-use App\Models\employees;
+use App\Models\RequisitionInfo;
+use App\Models\Employee;
 use App\Models\Company;
 
-class branch extends Model
+class Branch extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -28,12 +28,12 @@ class branch extends Model
 
     public function employees()
     {
-        return $this->hasMany(employees::class);
+        return $this->hasMany(Employee::class);
     }
 
     public function requisitionInfos()
     {
-        return $this->hasMany(requisitionInfos::class, 'from_branch_id');
+        return $this->hasMany(RequisitionInfo::class, 'from_branch_id');
     }
 
 
@@ -41,10 +41,10 @@ class branch extends Model
     {
         return $this->hasMany(User::class, 'branch_id');
     }
- 
+
     public function signatories()
     {
-        return $this->hasMany(signatories::class, 'branch_id');
+        return $this->hasMany(Signatory::class, 'branch_id');
     }
-    
+
 }

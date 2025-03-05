@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\order;
-use App\Models\customer;
+use App\Models\Order;
+use App\Models\Customer;
 
 class invoice extends Model
 {
@@ -14,12 +14,12 @@ class invoice extends Model
 
     public function order()
     {
-        return $this->belongsTo(order::class, 'order_id');
+        return $this->belongsTo(Order::class, 'order_id');
     }
 
     public function customers()
     {
-        return $this->belongsTo(customer::class, 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
 

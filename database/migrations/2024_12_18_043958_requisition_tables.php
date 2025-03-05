@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('requisition_types')) {
-            
+
         Schema::create('requisition_types', function (Blueprint $table) {
             $table->id();
-            $table->string('type_name', 255)->nullable(); 
+            $table->string('type_name', 255)->nullable();
         });
 
         // Insert data into the table
@@ -23,12 +23,12 @@ return new class extends Migration
         ['type_name' => 'STOCK'],
         ['type_name' => 'URGENT'],
         ['type_name' => 'WARRANTY'],
-       
+
     ]);
 
         }
 
-          
+
 
         // Create requisition_infos table
         if (!Schema::hasTable('requisition_infos')) {
@@ -44,24 +44,24 @@ return new class extends Migration
                 $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                 $table->enum('category', ['PO', 'PR']); // Category
                 $table->foreignId('requisition_types_id')->nullable()->constrained('requisition_types')->onDelete('no action')->onUpdate('no action');
-                $table->enum('requisition_status', ['PENDING','PARTIALLY FULLFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING'); // Status
+                $table->enum('requisition_status', ['TO RECEIVE','PARTIALLY FULLFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING'); // Status
                 $table->text('remarks')->nullable(); // Remarks
                 $table->date('approved_date')->nullable(); // Approved date
                 $table->date('rejected_date')->nullable(); // Rejected date
                 $table->date('reviewed_date')->nullable(); // Cancelled date
                 $table->unsignedBigInteger('supplier_id')->nullable(); // Foreign key to suppliers table
-                
+
                 // Foreign key constraints
                 $table->foreign('from_branch_id')->references('id')->on('branches');
                 $table->foreign('to_branch_id')->references('id')->on('branches');
                 $table->foreign('supplier_id')->references('id')->on('suppliers');
-                
+
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
             });
         }
 
-       
+
     }
 
     /**
@@ -69,6 +69,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       
+
     }
 };

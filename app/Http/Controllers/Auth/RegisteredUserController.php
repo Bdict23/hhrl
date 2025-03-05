@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use App\Models\Employees;
+use App\Models\Employee;
 use App\Models\Branch;
 
 
@@ -24,7 +24,7 @@ class RegisteredUserController extends Controller
     {
         try {
             //code...
-            $employees = Employees::all();
+            $employees = Employee::all();
             $branches = Branch::all();
            return view('auth.register', compact('employees', 'branches'));
 
@@ -32,7 +32,7 @@ class RegisteredUserController extends Controller
             //throw $th;
             return dd($th);
         }
-       
+
     }
 
     /**
@@ -42,14 +42,14 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-       
+
          try {
             //code...
              // dd($request->emp_id);
-             $employee = Employees::where('id', $request->emp_id)->first();
+             $employee = Employee::where('id', $request->emp_id)->first();
              $validatedData =   $request->validate([
                 'emp_id' => ['required', 'integer'],
-                'name' => ['required', 'string', 'max:255'],    
+                'name' => ['required', 'string', 'max:255'],
                  'branch_id' => ['required', 'integer'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -62,16 +62,16 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-    
-           
+
+
             event(new Registered($user));
-    
+
             Auth::login($user);
-    
+
             return redirect(route('dashboard', absolute: false));
         } catch (\Throwable $th) {
            return dd($th);
         }
-       
+
     }
 }

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\requisitionInfos;
+use App\Models\RequisitionInfo;
 
-class employees extends Model
+class Employee extends Model
 {
     use HasFactory;
 
@@ -17,20 +17,20 @@ class employees extends Model
     }
     public function requisitionsPrepared()
 {
-    return $this->hasMany(requisitionInfos::class, 'prepared_by');
+    return $this->hasMany(RequisitionInfo::class, 'prepared_by');
 }
 public function requisitionsReviewed()
 {
-    return $this->hasMany(requisitionInfos::class, 'reviewed_by');
+    return $this->hasMany(RequisitionInfo::class, 'reviewed_by');
 }
 public function requisitionsApproved()
 {
-    return $this->hasMany(requisitionInfos::class, 'approved_by');
+    return $this->hasMany(RequisitionInfo::class, 'approved_by');
 }
 
 public function signatories()
 {
-    return $this->hasMany(signatories::class, 'employee_id');
+    return $this->hasMany(Signatory::class, 'employee_id');
 }
 
 }

@@ -29,30 +29,27 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/supplier_list')">
+                            <x-dropdown-link :href="url('/supplier_list')" class="no-underline">
                                 {{ __('Supplier') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/company_list')">
+                            <x-dropdown-link :href="url('/company_list')" class="no-underline">
                                 {{ __('Company') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/branch_list')">
+                            <x-dropdown-link :href="url('/branch_list')" class="no-underline">
                                 {{ __('Branches') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/create_menu')">
+                            <x-dropdown-link :href="url('/create_menu')" class="no-underline">
                                 {{ __('Create Menu') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_approval_lists')">
+                            <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
                                 {{ __('Menu Approval') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_review_lists')">
+                            <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
                                 {{ __('Menu Review') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_lists')">
+                            <x-dropdown-link :href="url('/menu_lists')" class="no-underline">
                                 {{ __('Menu Lists') }}
                             </x-dropdown-link>
-
-
-
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -76,13 +73,13 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/purchase_order')">
+                            <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
                                 {{ __('PO Summary') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/review_request_list')">
+                            <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
                                 {{ __('Review Request') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/approval_request_list')">
+                            <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
                                 {{ __('Approval Request') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -108,14 +105,14 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/cardex')" data-bs-toggle="modal" data-bs-target="#cardexModal"
-                                onclick="unhideModal()">
+                            <x-dropdown-link :href="url('/cardex')" class="no-underline" data-bs-toggle="modal"
+                                data-bs-target="#cardexModal" onclick="unhideModal()">
                                 {{ __('Cardex') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/back_orders_summary')">
+                            <x-dropdown-link :href="url('/back_orders_summary')" class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/receive_stock')">
+                            <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
                                 {{ __('Receive Stock') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -141,17 +138,14 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/sales_order')">
+                            <x-dropdown-link :href="url('/sales_order')" class="no-underline">
                                 {{ __('Sales Order') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/order_menu')">
+                            <x-dropdown-link :href="url('/order_menu')" class="no-underline">
                                 {{ __('Order Menu') }}
                             </x-dropdown-link>
-
                         </x-slot>
                     </x-dropdown>
-
-
 
                     <x-dropdown>
                         <x-slot name="trigger">
@@ -170,18 +164,17 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/reservations_lists')">
+                            <x-dropdown-link :href="url('/reservations_lists')" class="no-underline">
                                 {{ __('Resevations') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/allocate_order')">
+                            <x-dropdown-link :href="url('/allocate_order')" class="no-underline">
                                 {{ __('Allocate Order') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/orders_lists')">
+                            <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
                                 {{ __('Orders') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
-
 
                     <x-dropdown>
                         <x-slot name="trigger">
@@ -200,10 +193,10 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/invoicing')">
+                            <x-dropdown-link :href="url('/invoicing')" class="no-underline">
                                 {{ __('Sales Invoice') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/daily_sales_report')">
+                            <x-dropdown-link :href="url('/daily_sales_report')" class="no-underline">
                                 {{ __('Daily Sales') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -231,7 +224,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('profile.edit')" class="no-underline">
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
@@ -239,13 +232,13 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')"
+                            <x-dropdown-link :href="route('logout')" class="no-underline"
                                 onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('profile.edit')">
+                            <x-dropdown-link :href="route('profile.edit')" class="no-underline">
                                 {{ __('Employees') }}
                             </x-dropdown-link>
                         </form>
@@ -285,7 +278,7 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <x-responsive-nav-link :href="route('profile.edit')" class="no-underline">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
@@ -293,7 +286,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
+                    <x-responsive-nav-link :href="route('logout')" class="no-underline"
                         onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}

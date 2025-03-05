@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\order;
-use App\Models\orderDetails;
-use App\Models\items;
-use App\Models\table;
-use App\Models\branch;
-use App\Models\company;
-use App\Models\menu;
-use App\Models\category;
-use App\Models\priceLevel;
-use App\Models\invoice;
-use App\Models\payment;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\Item;
+use App\Models\Table;
+use App\Models\Branch;
+use App\Models\Company;
+use App\Models\Menu;
+use App\Models\Category;
+use App\Models\PriceLevel;
+use App\Models\Invoice;
+use App\Models\Payment;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -68,12 +68,12 @@ class InvoicingController extends Controller
     }
 
     public function printInvoice($id){
-        $invoice = invoice::find($id);
+        $invoice = Invoice::find($id);
         return view('transactions.printInvoice', compact('invoice'));
     }
 
     public function daily_sales_report(){
-        $invoices = invoice::where([['branch_id', Auth::user()->branch->id],['invoice_type', 'SALES']])->with('customers', 'order','order.order_details','order.order_details.menu.price_levels','order.tables')->get();
+        $invoices = Invoice::where([['branch_id', Auth::user()->branch->id],['invoice_type', 'SALES']])->with('customers', 'order','order.order_details','order.order_details.menu.price_levels','order.tables')->get();
         return view('transactions.daily_sales_report', compact('invoices'));
     }
 

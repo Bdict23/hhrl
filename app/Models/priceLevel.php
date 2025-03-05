@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class priceLevel extends Model
+class PriceLevel extends Model
 {
     use HasFactory;
     public function items()
     {
-        return $this->belongsTo(items::class, 'items_id');
+        return $this->belongsTo(Item::class, 'items_id');
     }
 
     public function supplier()
     {
-        return $this->belongsTo(supplier::class);
+        return $this->belongsTo(Supplier::class);
     }
 }

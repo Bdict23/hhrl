@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class signatories extends Model
+class Signatory extends Model
 {
     use HasFactory;
 
@@ -31,7 +31,7 @@ class signatories extends Model
 
     public function employees()
     {
-        return $this->belongsTo(employees::class, 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
-    
+
 }

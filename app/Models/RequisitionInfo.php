@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Branch;
-use App\Models\requisitionDetails;
-use App\Models\supplier;
-use App\Models\employees;
+use App\Models\RequisitionDetail;
+use App\Models\Supplier;
+use App\Models\Employee;
 use App\Models\User;
-use App\Models\requisitionTypes;
-use App\Models\items;
+use App\Models\RequisitionType;
+use App\Models\Item;
 
 
-class requisitionInfos extends Model
+class requisitionInfo extends Model
 {
     //protected $primaryKey = 'requisition_number';
     use HasFactory;
@@ -24,29 +24,28 @@ class requisitionInfos extends Model
     }
     public function requisitionDetails()
     {
-        
-        return $this->hasMany(requisitionDetails::class, 'requisition_info_id'); 
+        return $this->hasMany(RequisitionDetail::class, 'requisition_info_id');
     }
 
     public function supplier()
     {
-        return $this->belongsTo(supplier::class, 'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
     public function preparer()
     {
-        return $this->belongsTo(employees::class, 'prepared_by');
+        return $this->belongsTo(Employee::class, 'prepared_by');
     }
     public function reviewer()
     {
-        return $this->belongsTo(employees::class, 'reviewed_by');
+        return $this->belongsTo(Employee::class, 'reviewed_by');
     }
     public function approver()
     {
-        return $this->belongsTo(employees::class, 'approved_by');
+        return $this->belongsTo(Employee::class, 'approved_by');
     }
 
     public function requisitionTypes()
     {
-        return $this->belongsTo(requisitionTypes::class, 'requisition_types_id');
+        return $this->belongsTo(RequisitionType::class, 'requisition_types_id');
     }
 }

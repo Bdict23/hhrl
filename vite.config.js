@@ -19,7 +19,7 @@ export default defineConfig({
         port: 5173,      // Default Vite port
         strictPort: true, // Ensures the port doesn't change
         hmr: {
-            host: '192.168.1.175', // Replace with your local IP
+            host: '192.168.1.159', // Replace with your local IP
         },
     },
 

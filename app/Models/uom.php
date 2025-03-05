@@ -4,20 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\unitConversion;
+use App\Models\UnitConversion;
 
-class uom extends Model
+class UOM extends Model
 {
     use HasFactory;
     protected $table = 'unit_of_measures';
 
     public function fromUnits()
     {
-        return $this->hasMany(unitConversion::class,'from_uom_id');
+        return $this->hasMany(UnitConversion::class,'from_uom_id');
     }
 
     public function toUnits()
     {
-        return $this->hasMany(unitConversion::class,'to_uom_id');
+        return $this->hasMany(UnitConversion::class,'to_uom_id');
     }
 }

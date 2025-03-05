@@ -25,7 +25,7 @@ class Company extends Model
 
     public function signatories()
     {
-        return $this->hasMany(signatories::class, 'company_id');
+        return $this->hasMany(Signatory::class, 'company_id');
     }
 
 }

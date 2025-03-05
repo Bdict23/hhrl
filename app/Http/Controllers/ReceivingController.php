@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\requisitionInfos;
-use App\Models\requisitionDetails;
-use App\Models\supplier;
-use App\Models\employees;
+use App\Models\RequisitionInfo;
+use App\Models\RequisitionDetail;
+use App\Models\Supplier;
+use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\requisitionTypes;
-use App\Models\items;
-use App\Models\priceLevel;
-use App\Models\statuses;
+use App\Models\RequisitionType;
+use App\Models\Item;
+use App\Models\PriceLevel;
+use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\signatories;
-use App\Models\receiving;
-use App\Models\cardex;
+use App\Models\Signatory;
+use App\Models\Receiving;
+use App\Models\Cardex;
 use Exception;
 
 class ReceivingController extends Controller
@@ -27,14 +27,14 @@ class ReceivingController extends Controller
 
 
 
-        $checkers = signatories::where('signatory_type', 'checker')->get();
-        $allocators = signatories::where('signatory_type', 'allocator')->get();
-        $requestInfos = requisitionInfos::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+        $checkers = Signatory::where('signatory_type', 'checker')->get();
+        $allocators = Signatory::where('signatory_type', 'allocator')->get();
+        $requestInfos = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
             ->where('FROM_BRANCH_ID', Auth::user()->branch_id)
             ->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])
             ->where('requisition_number', $request)
             ->first();
-        $cardexSum = cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
+        $cardexSum = Cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
         ->where('transaction_type', 'RECEVING')
         ->where('requisition_id', $requestInfos->id ?? 0)
         ->groupBy('item_id')
@@ -71,7 +71,7 @@ class ReceivingController extends Controller
             ]);
 
             // Save the receiving data
-            $receiving = new receiving();
+            $receiving = new Receiving();
             $receiving->requisition_id = $request->po_id;
             $receiving->packing_number = $request->receiving_packing_no;
             $receiving->receiving_type = 'PO';
@@ -90,7 +90,7 @@ class ReceivingController extends Controller
             // Save the received quantities to the cardex table
             foreach ($request->received_qty as $index => $qty) {
                 // Get the requisition quantity
-                $requisitionDetail = requisitionDetails::where('item_id', $request->item_id[$index])
+                $requisitionDetail = RequisitionDetail::where('item_id', $request->item_id[$index])
                     ->where('requisition_info_id', $request->requisition_id[$index])
                     ->first();
                 if ($requisitionDetail && $qty > $requisitionDetail->qty) {
@@ -98,7 +98,7 @@ class ReceivingController extends Controller
                 } else if ($requisitionDetail && $qty < $requisitionDetail->qty) {
                     $this->createBackOrder($request->requisition_id[$index], $request->item_id[$index], $qty);
                 }
-                $cardex = new cardex();
+                $cardex = new Cardex();
                 $cardex->source_branch_id = Auth::user()->branch_id;
                 $cardex->qty_in = $qty;
                 $cardex->qty_out = 0;
@@ -130,7 +130,7 @@ class ReceivingController extends Controller
             ->where('transaction_type', 'RECEVING')
             ->sum('qty_in') ?? 0;
 
-        $total_req_qty = requisitionDetails::where('requisition_info_id', $requisitionId)
+        $total_req_qty = RequisitionDetail::where('requisition_info_id', $requisitionId)
             ->where('item_id', $itemId)
             ->sum('qty') ?? 0;
 

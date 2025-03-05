@@ -197,8 +197,11 @@
         }
     </style>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-600 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-600 leading-tight text-sm">
             {{ Auth::user()->branch()->first()->branch_name }}
+            @if (Auth::user()->branch()->first()->branch_status == 'inactive')
+                <span style="color: rgb(219, 69, 69);">(INACTIVE)</span>
+            @endif
         </h2>
     </x-slot>
 

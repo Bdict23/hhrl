@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\priceLevel;
-use App\Models\statuses;
-use App\Models\locations;
+use App\Models\PriceLevel;
+use App\Models\Statuse;
+use App\Models\Location;
 use App\Models\uom;
 
-class items extends Model
+class Item extends Model
 {
     use HasFactory;
 
@@ -24,25 +24,25 @@ class items extends Model
         'item_code',          // Added item_code
         'item_description',   // Added item_description
         'uom_id',             // Ensure uom_id is included for relationships
-    ];  
+    ];
 
     public function priceLevel()
     {
-        return $this->hasMany(priceLevel::class);
+        return $this->hasMany(PriceLevel::class);
     }
 
     public function statuses()
     {
-        return $this->belongsTo(statuses::class);
+        return $this->belongsTo(Status::class);
     }
 
     public function locations()
     {
-        return $this->hasMany(locations::class);
+        return $this->hasMany(Location::class);
     }
 
     public function units()
     {
-        return $this->belongsTo(uom::class, 'uom_id');
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 }

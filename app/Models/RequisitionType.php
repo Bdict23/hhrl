@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\requisitionInfos;
+use App\Models\RequisitionInfo;
 
-class requisitionTypes extends Model
+class requisitionType extends Model
 {
     use HasFactory;
 public function requisitionInfos()
 {
     //dd($this->belongsTo(requisitionInfos::class));
-    return $this->hasMany(requisitionInfos::class);
+    return $this->hasMany(RequisitionInfo::class);
 
 }
 

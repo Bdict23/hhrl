@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class locations extends Model
+class Account_type extends Model
 {
     use HasFactory;
-    protected $table = 'locations';
 }
