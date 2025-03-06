@@ -9,7 +9,7 @@
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h1>Raw Materials Requisition</h1>
+                            <h1> Item Withdawal</h1>
                             <div class="me-3">
                                 <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+
                                     Add
@@ -30,13 +30,12 @@
                         <table class="table table-striped table-hover me-3">
                             <thead class="thead-dark me-3">
                                 <tr style="font-size: smaller;">
-                                    <th>AVL.</th>
-                                    <th>CODE</th>
+                                    <th>INV. BAL.</th>
+                                    <th>AVL. QTY</th>
+                                    <th>ITEM CODE</th>
                                     <th>DESCRIPTION</th>
-                                    <th>DISCOUNT</th>
-                                    <th>QTY</th>
-                                    <th>PRICE</th>
-                                    <th>SUB TOTAL</th>
+                                    <th>REQ. QTY</th>
+                                    <th>COST</th>
                                     <th>TOTAL</th>
                                     <th>Action</th>
                                 </tr>
@@ -48,6 +47,23 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="customerName"
+                                            class="form-label
+                                        ">Total Cost</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control" id="customerName" name="customerName">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col-md-4">
                     <div class="card">
@@ -56,10 +72,32 @@
                                 <h5 class="card-title">Information</h5>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="customerName" class="form-label">Consumable Number</label>
+                                        <label for="customerName" class="form-label">Ref. Number</label>
                                     </div>
                                     <div class="col-md-7">
                                         <input type="text" class="form-control" id="customerName" name="customerName">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="supp_name" class="form-label"
+                                            style="width: 100; font-size: 13px">Department</label>
+                                        <select id="customer" class="form-select" aria-label="Default select example"
+                                            style="width: 100; font-size: 13px">
+                                            <option selected>Kitchen Dept.</option>
+                                            <option selected>Cleaning Dept.</option>
+                                            <option selected>Security Dept.</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="postal_address" class="form-label"
+                                            style="width: 100; font-size: 13px">Type</label>
+                                        <select id="customer" class="form-select" aria-label="Default select example"
+                                            style="width: 100; font-size: 13px">
+                                            <option selected>Fixed Asset</option>
+                                            <option selected>Raw Materials</option>
+                                            <option selected>Consumables</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -70,7 +108,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <select id="customer" class="form-select" aria-label="Default select example">
+                                            <select id="customer" class="form-select" aria-label="Default select example"
+                                                style="width: 100; font-size: 13px">
                                                 <option selected>BENEDICT</option>
                                                 <option value="1">PARTSMAN</option>
                                             </select>
@@ -85,7 +124,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <select id="customer" class="form-select" aria-label="Default select example">
+                                            <select id="customer" class="form-select" aria-label="Default select example"
+                                                style="width: 100; font-size: 13px">
                                                 <option selected>LARRY RUBINOS</option>
                                                 <option value="1">PARTSMAN</option>
                                             </select>
@@ -113,17 +153,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </form>
     </div>
 
-
-
     </div>
     </div>
-
-
-
 
     <!-- Add Item Modal -->
     <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true">
@@ -140,6 +174,7 @@
                             <tr>
                                 <th>ITEM CODE</th>
                                 <th>ITEM DESCRIPTION</th>
+                                <th>INVENTORY BALANCE</th>
                                 <th>AVAILABLE QTY.</th>
                                 <th>PRICE</th>
                                 <th>STATUS</th>
@@ -151,16 +186,15 @@
                                 <tr>
                                     <td>{{ $item->item_code }}</td>
                                     <td>{{ $item->item_description }}</td>
-                                    <td>{{ $item->on_hand_qty }}</td>
-                                    </td>
+                                    <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
+                                    <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
                                     <td>{{ $item->priceLevel()->latest()->where('price_type', 'cost')->first()->amount }}
                                     </td>
                                     <td>{{ $item->statuses->status_name }}</td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm" onclick="addToTable({{ $item }})">
-                                            Add
-                                        </button>
-
+                                        <button class="btn btn-primary btn-sm"
+                                            onclick="addToTable({{ json_encode($item) }}, {{ $cardexBalance[$item->id] ?? 0 }}, {{ $cardexAvailable[$item->id] ?? 0 }})">
+                                            Add </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -185,7 +219,7 @@
             document.getElementById('branch_id').value = data.id;
         }
 
-        function addToTable(item) {
+        function addToTable(item, balanceQty, availableQty) {
             console.log(item);
             // Access the table body
             const tableBody = document.getElementById('itemTableBody');
@@ -206,10 +240,12 @@
 
             // Populate the row with item data
             newRow.innerHTML = `
+                <td class="inventory-balance">${balanceQty}</td>
+                <td class="available-qty">${availableQty}</td>
                 <td>${item.item_code}</td>
                 <td>${item.item_description}</td>
                 <td>
-                    <input type="number" name="request_qty[]" class="form-control"  value="1" min="1" onchange="updateTotalPrice(this)">
+                    <input type="number" name="request_qty[]" class="form-control" value="1" min="1" max="${balanceQty}" onchange="updateTotalPrice(this, ${balanceQty})">
                     <input type="hidden" name="item_id[]" value="${item.id}">
                 </td>
                 <td>${price}</td>
@@ -226,13 +262,15 @@
             //$('#AddItemModal').modal('hide');
         }
 
-        function updateTotalPrice(input) {
+        function updateTotalPrice(input, balanceQty) {
             console.log(input);
             const row = input.closest('tr');
-            const price = parseFloat(row.querySelector('td:nth-child(4)').textContent);
+            const price = parseFloat(row.querySelector('td:nth-child(6)').textContent);
             const requestQty = parseInt(input.value);
             const totalPriceCell = row.querySelector('.total-price');
+            const availableQtyCell = row.querySelector('.available-qty');
             totalPriceCell.textContent = (price * requestQty).toFixed(2);
+            availableQtyCell.textContent = balanceQty - requestQty;
             // console.log(totalPriceCell);
         }
 

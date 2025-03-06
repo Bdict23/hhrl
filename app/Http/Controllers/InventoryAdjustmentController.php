@@ -14,6 +14,8 @@ use App\Models\Item;
 use App\Models\PriceLevel;
 use App\Models\Status;
 use App\Models\Signatory;
+use App\Models\Cardex;
+use Illuminate\Support\Facades\DB;
 
 class InventoryAdjustmentController extends Controller
 {
@@ -24,7 +26,20 @@ class InventoryAdjustmentController extends Controller
         $items = Item::with('priceLevel','statuses')->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
         $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
-         return view('inventory.raw_materials_requisition', compact('suppliers','types','items','approver','reviewer'));
-        // return statuses::all();
-     }
+        $cardexBalance = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as inventory_qty'))
+            ->where('status', 'FINAL')
+            ->where('source_branch_id', auth()->user()->branch_id)
+            ->groupBy('item_id')
+            ->pluck('inventory_qty', 'item_id');
+        $cardexAvailable = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as available_qty'))
+            ->where(function($query) {
+                $query->where('status', 'RESERVED')
+                      ->orWhere('status', 'FINAL');
+            })
+            ->where('source_branch_id', auth()->user()->branch_id)
+            ->groupBy('item_id')
+            ->pluck('available_qty', 'item_id');
+
+        return view('inventory.raw_materials_requisition', compact('suppliers','types','items','approver','reviewer', 'cardexBalance', 'cardexAvailable'));
+    }
 }

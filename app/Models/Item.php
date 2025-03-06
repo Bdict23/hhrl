@@ -45,4 +45,10 @@ class Item extends Model
     {
         return $this->belongsTo(UOM::class, 'uom_id');
     }
+
+    public function cardex()
+    {
+        return $this->hasMany(Cardex::class, 'item_id');
+    }
+
 }

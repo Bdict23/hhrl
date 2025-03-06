@@ -24,8 +24,6 @@ return new class extends Migration
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
-
-
             });
         }
 
@@ -38,7 +36,7 @@ return new class extends Migration
                 $table->date('expiration_date')->nullable();
                 $table->date('manufactured_date')->nullable();
                 $table->foreignId('item_id')->constrained('items')->onDelete('no action')->onUpdate('no action');
-                $table->enum('status', ['TEMP', 'FINAL', 'CANCELLED'])->default('TEMP');
+                $table->enum('status', ['TEMP', 'RESERVED', 'FINAL', 'CANCELLED'])->default('TEMP');
                 $table->enum('transaction_type', ['STF', 'RECEVING', 'ADJUSTMENT', 'SALES', 'SALES-RETURN','CONSUMPTION']);
                 $table->foreignId('price_level_id')->nullable()->default(null)->constrained('price_levels')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('invoice_id')->nullable()->default(null)->constrained('invoices')->onDelete('no action')->onUpdate('no action');
