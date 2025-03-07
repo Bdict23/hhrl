@@ -143,7 +143,7 @@
                                         <select name="paymentMethod" id="paymentMethod" class="form-control text-center"
                                             required>
                                             <option value="CASH">Cash</option>
-                                            <option value="CC">Credit Card</option>
+                                            <option value="BANK TRANSFER">Bank Transfer</option>
                                             <option value="ONLINE">Online</option>
                                             <option value="CHEQUE">Cheque</option>
                                         </select>

@@ -26,7 +26,7 @@ class CardexController extends Controller
 
     public function viewItem()
     {
-        dd($request);
+
         $cardex = Cardex::with('item', 'branch', 'receiving')->where('item_id', 1)->get();
         return view('layouts.cardex', compact('cardex'));
     }

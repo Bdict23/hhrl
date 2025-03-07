@@ -40,6 +40,6 @@ class InventoryAdjustmentController extends Controller
             ->groupBy('item_id')
             ->pluck('available_qty', 'item_id');
 
-        return view('inventory.raw_materials_requisition', compact('suppliers','types','items','approver','reviewer', 'cardexBalance', 'cardexAvailable'));
+        return view('inventory.item_withdrawal', compact('suppliers','types','items','approver','reviewer', 'cardexBalance', 'cardexAvailable'));
     }
 }

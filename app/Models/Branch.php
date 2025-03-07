@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\RequisitionInfo;
 use App\Models\Employee;
 use App\Models\Company;
+use App\Models\RequestType;
+use App\Models\Signatory;
+use App\Models\User;
 
 class Branch extends Model
 {
@@ -26,7 +29,7 @@ class Branch extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function employees()
+    public function employee()
     {
         return $this->hasMany(Employee::class);
     }

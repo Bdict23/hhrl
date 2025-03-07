@@ -74,6 +74,7 @@ return new class extends Migration
                 $table->date('birth_date')->nullable(); // DATE
                 $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('no action')->onUpdate('no action');
+                $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
 
                 // Foreign key (optional)

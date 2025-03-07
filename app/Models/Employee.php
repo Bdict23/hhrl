@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\RequisitionInfo;
+use App\Models\Branch;
 
 class Employee extends Model
 {
@@ -13,7 +14,7 @@ class Employee extends Model
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
     public function requisitionsPrepared()
 {
@@ -31,6 +32,11 @@ public function requisitionsApproved()
 public function signatories()
 {
     return $this->hasMany(Signatory::class, 'employee_id');
+}
+
+public function department()
+{
+    return $this->belongsTo(Department::class);
 }
 
 }

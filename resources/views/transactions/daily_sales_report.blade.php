@@ -68,6 +68,7 @@
                                     {{ $invoice->customer->customer_name ?? $invoice->customer_name }}</td>
                                 <td style="font-size: smaller">{{ $invoice->amount }}</td>
                                 <td>
+
                                     @php
                                         $latestSrpPrice = [];
                                         foreach ($invoice->order->order_details as $detail) {

@@ -35,18 +35,16 @@
                             <x-dropdown-link :href="url('/company_list')" class="no-underline">
                                 {{ __('Company') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="url('/branch_department')" class="no-underline">
+                                {{ __('Departments') }}
+                            </x-dropdown-link>
                             <x-dropdown-link :href="url('/branch_list')" class="no-underline">
                                 {{ __('Branches') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/create_menu')" class="no-underline">
                                 {{ __('Create Menu') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
-                                {{ __('Menu Approval') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
-                                {{ __('Menu Review') }}
-                            </x-dropdown-link>
+
                             <x-dropdown-link :href="url('/menu_lists')" class="no-underline">
                                 {{ __('Menu Lists') }}
                             </x-dropdown-link>
@@ -76,12 +74,7 @@
                             <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
                                 {{ __('PO Summary') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
-                                {{ __('Review Request') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                {{ __('Approval Request') }}
-                            </x-dropdown-link>
+
                             <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
                                 {{ __('Receive Stock') }}
                             </x-dropdown-link>
@@ -115,8 +108,8 @@
                             <x-dropdown-link :href="url('/back_orders_summary')" class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/raw_materials_requisition')" class="no-underline">
-                                {{ __('RMR') }}
+                            <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
+                                {{ __('Item Withdrawal') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
@@ -179,6 +172,7 @@
                         </x-slot>
                     </x-dropdown>
 
+
                     <x-dropdown>
                         <x-slot name="trigger">
                             <button
@@ -201,6 +195,39 @@
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/daily_sales_report')" class="no-underline">
                                 {{ __('Daily Sales') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+
+
+                    <x-dropdown>
+                        <x-slot name="trigger">
+                            <button
+                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                <div>{{ __('Validations') }}</div>
+                                <div class="ms-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
+                                {{ __('P.O Review Request') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                                {{ __('P.O Approval Request') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
+                                {{ __('Menu Approval') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
+                                {{ __('Menu Review') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>

@@ -95,7 +95,7 @@ class MenusController extends Controller
 
     public function menu_list(){
         // $tables
-        $menus = Menu::with('category', 'price_level')->where('company_id', Auth::user()->branch->company_id)
+        $menus = Menu::with('categories', 'price_levels')->where('company_id', Auth::user()->branch->company_id)
             ->whereIn('status', ['AVAILABLE'])->get();
             // DD($menus, Auth::user()->branch->company_id);
         return view('sales.order_menu', compact('menus'));
