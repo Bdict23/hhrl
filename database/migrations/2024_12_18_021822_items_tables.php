@@ -26,6 +26,31 @@ return new class extends Migration
 
         }); }
 
+        if(!Schema::hasTable('item_types')) {
+        Schema::create('item_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('type_name', 255);
+            $table->TEXT('type_description', 255)->nullable();
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
+            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+        });
+
+         // Insert data into the table
+         DB::table('item_types')->insert([
+            ['type_name' => 'CONSUMABLE', 'type_description' => 'Consumable items are goods that are intended to be consumed. This category includes goods such as food, beverages, and other items that are used up quickly.', 'status' => 'ACTIVE'],
+            ['type_name' => 'FIXED ASSET', 'type_description' => 'As per company policy, all assets with a useful life of over one year and a cost greater than Php10,000 should be capitalized as fixed assets. Fixed assets are recorded on the balance sheet and then depreciated over the useful life of the asset.', 'status' => 'ACTIVE'],
+            ['type_name' => 'RAW MATERIAL', 'type_description' => 'Raw materials are materials or substances used in the primary production or manufacturing of goods. Raw materials are often referred to as commodities, which are bought and sold on commodities exchanges worldwide.', 'status' => 'ACTIVE'],
+            ['type_name' => 'SERVICE', 'type_description' => 'A type of economic activity that is intangible, is not stored, and does not result in ownership. A service is consumed at the point of sale.', 'status' => 'ACTIVE'],
+            ['type_name' => 'WORK IN PROGRESS', 'type_description' => 'Work in progress (WIP) refers to a component of a company\'s inventory that is partially completed. The value of that partially completed inventory is sometimes also called goods in process on the balance sheet.', 'status' => 'ACTIVE'],
+            ['type_name' => 'FINISHED GOODS', 'type_description' => 'Finished goods are goods that have completed the manufacturing process but have not yet been sold or distributed to the end user.', 'status' => 'ACTIVE'],
+            ['type_name' => 'OTHERS', 'type_description' => 'Other types of items that do not fall under the other categories.', 'status' => 'ACTIVE'],
+        ]);
+        }
+
         if (!Schema::hasTable('statuses')) {
         Schema::create('statuses', function (Blueprint $table) {
             $table->id();
@@ -56,6 +81,7 @@ return new class extends Migration
             $table->id();
             $table->string('classification_name', 255)->nullable();
             $table->string('classification_description', 255)->nullable();
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('class_parent')->nullable()->constrained('classifications')->onDelete('no action')->onUpdate('no action');
@@ -71,6 +97,7 @@ return new class extends Migration
             $table->id();
             $table->string('brand', 255)->nullable();
             $table->string('description', 255)->nullable();
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
@@ -106,6 +133,7 @@ return new class extends Migration
             $table->unsignedBigInteger('statuses_id')->nullable();
             $table->unsignedBigInteger('sub_class_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreignId('item_type_id')->constrained('item_types')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->unsignedBigInteger('updated_by');
             $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');

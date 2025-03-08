@@ -8,6 +8,7 @@ use App\Models\PriceLevel;
 use App\Models\Statuse;
 use App\Models\Location;
 use App\Models\UOM;
+use App\Models\ItemType;
 
 class Item extends Model
 {
@@ -49,6 +50,11 @@ class Item extends Model
     public function cardex()
     {
         return $this->hasMany(Cardex::class, 'item_id');
+    }
+
+    public function item_type()
+    {
+        return $this->belongsTo(ItemType::class, 'item_type_id');
     }
 
 }

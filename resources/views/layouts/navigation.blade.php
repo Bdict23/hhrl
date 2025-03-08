@@ -48,6 +48,9 @@
                             <x-dropdown-link :href="url('/menu_lists')" class="no-underline">
                                 {{ __('Menu Lists') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="url('/settings')" class="no-underline">
+                                {{ __('Settings') }}
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 </div>

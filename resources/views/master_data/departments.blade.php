@@ -98,7 +98,7 @@
                                                     Add Personnel</x-primary-button>
                                             </div>
                                             <div style="max-height: 200px; overflow-y: auto;">
-                                                <table class="table table-bordered table-sm">
+                                                <table class="table table-striped table-sm">
                                                     <thead>
                                                         <tr style="font-size: smaller;">
                                                             <th style="font-size: smaller;">Name</th>

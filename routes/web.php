@@ -198,10 +198,16 @@ Route::post('/store_payment', [InvoicingController::class, 'storePayment'])->mid
 Route::get('/daily_sales_report', [InvoicingController::class, 'daily_sales_report'])->middleware(['auth', 'verified'])->name('daily_sales_report');
 
 
-Route::get('/item_withdrawal', [InventoryAdjustmentController::class, 'NewRMR'])->middleware(['auth', 'verified'])->name('materials.requisition'); // Route to show the raw materials requisition form
+Route::get('/item_withdrawal', [InventoryAdjustmentController::class, 'NewItemwithdrawal'])->middleware(['auth', 'verified'])->name('materials.requisition'); // Route to show the raw materials requisition form
 
 
 Route::get('/branch_department', [DepartmentController::class, 'index'])->middleware(['auth', 'verified'])->name('departments.index'); // Route to show the raw materials requisition form
 
 // Route for departments
 Route::post('/departments/store', [DepartmentController::class, 'store'])->middleware(['auth', 'verified'])->name('departments.store');
+
+
+// Route for settings page
+Route::get('/settings', function(){
+    return view('master_data.settings');
+});

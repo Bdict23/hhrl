@@ -82,54 +82,35 @@
                                     <div class="col-md-6">
                                         <label for="supp_name" class="form-label"
                                             style="width: 100; font-size: 13px">Department</label>
-                                        <select id="customer" class="form-select" aria-label="Default select example"
+                                        <select id="department" class="form-select" aria-label="Default select example"
                                             style="width: 100; font-size: 13px">
                                             <option selected>Kitchen Dept.</option>
-                                            <option selected>Cleaning Dept.</option>
-                                            <option selected>Security Dept.</option>
+                                            <option>Cleaning Dept.</option>
+                                            <option>Security Dept.</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
+                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Usage
+                                            Date</label>
+                                        <input type="date" class="form-control" id="usage_date" name="usage_date">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
                                         <label for="postal_address" class="form-label"
                                             style="width: 100; font-size: 13px">Type</label>
-                                        <select id="customer" class="form-select" aria-label="Default select example"
-                                            style="width: 100; font-size: 13px">
+                                        <select id="type" class="form-select" aria-label="Default select example"
+                                            style="width: 100; font-size: 13px" onchange="toggleLifespanInput()">
                                             <option selected>Fixed Asset</option>
-                                            <option selected>Raw Materials</option>
-                                            <option selected>Consumables</option>
+                                            <option>Raw Materials</option>
+                                            <option>Consumables</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="row">
-                                        <div class="col-md-9">
-                                            <label class="form-label" style="font-size: 13px;">Reviewed By</label>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <select id="customer" class="form-select" aria-label="Default select example"
-                                                style="width: 100; font-size: 13px">
-                                                <option selected>BENEDICT</option>
-                                                <option value="1">PARTSMAN</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="row">
-                                        <div class="col-md-9">
-                                            <label class="form-label" style="font-size : 13px">Approved By</label>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <select id="customer" class="form-select" aria-label="Default select example"
-                                                style="width: 100; font-size: 13px">
-                                                <option selected>LARRY RUBINOS</option>
-                                                <option value="1">PARTSMAN</option>
-                                            </select>
-                                        </div>
+                                    <div class="col-md-6" id="lifespanContainer" style="display: none;">
+                                        <label for="lifespan_date" class="form-label"
+                                            style="width: 100; font-size: 13px">Lifespan Date</label>
+                                        <input type="date" class="form-control" id="lifespan_date" name="lifespan_date"
+                                            onchange="calculateLifespan()">
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -137,7 +118,7 @@
                                         <label for="time" class="form-label" style="font-size: 13px;">Remarks</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <textarea type="text" class="form-control" id="address" name="address"> </textarea>
+                                        <textarea type="text" class="form-control" id="remarks" name="remarks"></textarea>
                                     </div>
                                 </div>
                                 <div class="row mt-2">
@@ -300,5 +281,42 @@
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             errorModal.show();
         @endif
+
+        function toggleLifespanInput() {
+            const typeSelect = document.getElementById('type');
+            const lifespanContainer = document.getElementById('lifespanContainer');
+            if (typeSelect.value === 'Fixed Asset') {
+                lifespanContainer.style.display = 'block';
+            } else {
+                lifespanContainer.style.display = 'none';
+            }
+        }
+
+        function calculateLifespan() {
+            const usageDate = new Date(document.getElementById('usage_date').value);
+            const lifespanDate = new Date(document.getElementById('lifespan_date').value);
+            const remarksField = document.getElementById('remarks');
+
+            if (usageDate && lifespanDate) {
+                let diffYears = lifespanDate.getFullYear() - usageDate.getFullYear();
+                let diffMonths = lifespanDate.getMonth() - usageDate.getMonth();
+                let diffDays = lifespanDate.getDate() - usageDate.getDate();
+
+                if (diffDays < 0) {
+                    diffMonths--;
+                    diffDays += new Date(lifespanDate.getFullYear(), lifespanDate.getMonth(), 0).getDate();
+                }
+
+                if (diffMonths < 0) {
+                    diffYears--;
+                    diffMonths += 12;
+                }
+
+                const totalDiffDays = Math.ceil((lifespanDate - usageDate) / (1000 * 60 * 60 * 24));
+
+                remarksField.value =
+                    `Lifespan:\n${diffYears}  year(s) and ${diffMonths} month(s) or the total of (${totalDiffDays} days)`;
+            }
+        }
     </script>
 @endsection

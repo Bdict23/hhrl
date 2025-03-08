@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\DB;
 class InventoryAdjustmentController extends Controller
 {
     //Raw Material Request
-    public function NewRMR(){
+    public function NewItemWithdrawal(){
         $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
         $types =  RequisitionType::all();
-        $items = Item::with('priceLevel','statuses')->get();
+        $items = Item::with('priceLevel','statuses','item_type')->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
         $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
         $cardexBalance = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as inventory_qty'))

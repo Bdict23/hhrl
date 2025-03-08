@@ -14,16 +14,57 @@
     @livewireStyles
 
     <style>
-        /* Include the same styles from earlier */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .sidebar h6 {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .sidebar .nav-link {
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #f1f1f1;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .store-table {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-add {
+            background-color: #5cb85c;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 15px;
+            border: none;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
         }
 
         .dashboard {
