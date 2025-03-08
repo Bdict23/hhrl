@@ -95,8 +95,8 @@ return new class extends Migration
         if (!Schema::hasTable('brands')) {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->string('brand', 255)->nullable();
-            $table->string('description', 255)->nullable();
+            $table->string('brand_name', 255)->nullable();
+            $table->string('brand_description', 255)->nullable();
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
@@ -112,6 +112,7 @@ return new class extends Migration
             $table->string('unit_name')->nullable()->comment('ex. kilogram,meter,Liter');
             $table->text('unit_description')->nullable();
             $table->string('unit_symbol', 25)->nullable()->comment('ex. kl,m,L');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');

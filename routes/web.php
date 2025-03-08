@@ -22,6 +22,7 @@ use App\Http\Livewire\SearchOrderNumber;
 use App\Http\Controllers\InvoicingController;
 use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\SettingsController;
 
 Route::get('/', function () {
     $suppliers = supplier::all(); // Fetching all suppliers from the database
@@ -208,6 +209,9 @@ Route::post('/departments/store', [DepartmentController::class, 'store'])->middl
 
 
 // Route for settings page
-Route::get('/settings', function(){
-    return view('master_data.settings');
-});
+Route::get('/settings', [SettingsController::class, 'index'])->middleware(['auth', 'verified'])->name('settings.index');
+
+
+// Routes for storing categories and classifications
+Route::post('/settings/category/store', [SettingsController::class, 'storeCategory'])->name('settings.category.store');
+Route::post('/settings/classification/store', [SettingsController::class, 'storeClassification'])->name('settings.classification.store');

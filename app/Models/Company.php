@@ -27,5 +27,13 @@ class Company extends Model
     {
         return $this->hasMany(Signatory::class, 'company_id');
     }
+    public function categories()
+    {
+        return $this->hasMany(Category::class, 'company_id');
+    }
+    public function classifications()
+    {
+        return $this->hasMany(Classification::class, 'company_id');
+    }
 
 }

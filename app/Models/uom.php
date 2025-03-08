@@ -20,4 +20,14 @@ class UOM extends Model
     {
         return $this->hasMany(UnitConversion::class,'to_uom_id');
     }
+
+    public function unitConversions()
+    {
+        return $this->fromUnits()->merge($this->toUnits());
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }
