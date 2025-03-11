@@ -51,8 +51,9 @@ return new class extends Migration
                     $table->id();
                     $table->string('department_name');
                     $table->string('department_description');
+                    $table->enum('department_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
                     $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
-                    $table->string('department_status')->default('active');
+                    $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action')->nullable();
                     $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                     $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 

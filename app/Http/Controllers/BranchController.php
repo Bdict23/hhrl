@@ -30,7 +30,7 @@ class BranchController extends Controller
 public function index()
 {
    // dd($request->id);
-   $branches = Branch::where('branch_status', 'active')->get();
+   $branches = Branch::where([['branch_status', 'active'],['company_id', auth()->user()->branch->company_id]])->get();
    return view('branch.branch_list', compact('branches'));
  }
 

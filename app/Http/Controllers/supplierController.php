@@ -67,7 +67,7 @@ class SupplierController extends Controller
 
     public function index()
     {
-        $suppliers = Supplier::where([['supp_status', 'active'], ['company_id', auth()->user()->emp_id]])->get(); // Fetching all suppliers from the database
+        $suppliers = Supplier::where([['supp_status', 'active'], ['company_id', auth()->user()->branch->company_id]])->get(); // Fetching all suppliers from the database
         return view('supplier_list', compact('suppliers')); // Passing data to the view
     }
 

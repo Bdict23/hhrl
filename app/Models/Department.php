@@ -11,7 +11,8 @@ class Department extends Model
         'department_name',
         'department_description',
         'branch_id',
-        'department_status'
+        'department_status',
+        'company_id',
     ];
 
     public function employees()

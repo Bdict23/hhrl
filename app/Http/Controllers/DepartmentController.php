@@ -7,14 +7,20 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\Branch;
 use App\Models\Employee;
+use App\Models\Audit;
 
 class DepartmentController extends Controller
 {
     public function index()
     {
-        $departments = Department::all();
-        $branches = Branch::all();
-        $employees = Employee::with('branch')->where('status', 'ACTIVE')->get();
+        $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
+        $companyIds = $auditCompanies->pluck('company.id')->toArray();
+        $branches = Branch::where('branch_status', 'ACTIVE')->whereIn('company_id', $companyIds)->get();
+        $branchIds = $branches->pluck('id')->toArray();
+
+        $branches = Branch::where([['branch_status', 'ACTIVE'], ['company_id', auth()->user()->branch->company_id]])->get();
+        $employees = Employee::where('status', 'ACTIVE')->wherein('branch_id', $branchIds)->get();
+        $departments = Department::where('department_status', 'ACTIVE')->whereIn('branch_id', $branchIds)->get();
         return view('master_data.departments', compact('departments', 'branches', 'employees'));
     }
 
@@ -41,7 +47,10 @@ class DepartmentController extends Controller
             'department_name' => $validatedData['department_name'],
             'branch_id' => $validatedData['branch'],
             'department_description' => $validatedData['description'],
+            'company_id' => auth()->user()->branch->company_id,
         ]);
+
+        $department =  new Department($validatedData);
 
         if (!empty($validatedData['employees'])) {
             Employee::whereIn('id', $validatedData['employees'])->update(['department_id' => $department->id]);

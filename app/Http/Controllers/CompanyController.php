@@ -10,21 +10,27 @@ class CompanyController extends Controller
 {
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        try {
+            $validatedData = $request->validate([
             'company_name' => 'required|string|max:255',
             'company_code' => 'required|string|max:255',
             'company_tin' => 'required|string|max:255',
             'company_type' => 'required|string|max:255',
             'company_description' => 'required|string|max:255',
-        ]);
+            ]);
 
-        // $validatedData['created_by'] = auth()->user()->emp_id;
-        // $company = new Company($validatedData);
-        // $company->created_by = auth()->user()->emp_id;
-        // $company->save();
-        Company::create($validatedData);
+            // save company record to the database and create an audit record
+            $company = new Company($validatedData);
+            $company->save();
+            $audit = new Audit();
+            $audit->company_id = $company->id;
+            $audit->created_by = auth()->user()->emp_id;
+            $audit->save();
 
-        return redirect()->back()->with('success', 'Company added successfully!');
+            return redirect()->back()->with('success', 'Company added successfully!');
+        } catch (\Exception $e) {
+           dd($e->getMessage());
+        }
     }
 
     //create company
