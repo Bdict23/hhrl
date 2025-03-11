@@ -22,7 +22,7 @@ return new class extends Migration
                 $table->string('company_tin');
                 $table->string('company_type');
                 $table->string('company_description');
-                $table->string('company_status')->default('active');
+                $table->string('company_status')->default('ACTIVE');
 
             });
         }
@@ -40,7 +40,7 @@ return new class extends Migration
                 $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
                 $table->string('branch_email');
                 $table->string('branch_cell');
-                $table->string('branch_status')->default('active');
+                $table->string('branch_status')->default('ACTIVE');
 
 
             });}
@@ -83,8 +83,12 @@ return new class extends Migration
                 $table->timestamps(); // created_at and updated_at
             });}
 
-            Schema::table('companies', function (Blueprint $table) {
-                $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+            // Step 5: Create an Audit Table for Tracking Created By
+            Schema::create('company_audits', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('company_id')->constrained('companies')->onDelete('cascade')->onUpdate('cascade');
+                $table->foreignId('created_by')->constrained('employees')->onDelete('cascade')->onUpdate('cascade');
+                $table->timestamps();
             });
 
         Schema::create('users', function (Blueprint $table) {

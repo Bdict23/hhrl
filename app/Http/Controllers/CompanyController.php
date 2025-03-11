@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\Branch;
+use App\Models\Audit;
 
 class CompanyController extends Controller
 {
@@ -17,10 +18,11 @@ class CompanyController extends Controller
             'company_description' => 'required|string|max:255',
         ]);
 
-        $validatedData['created_by'] = auth()->user()->emp_id;
-        $company = new Company($validatedData);
-        $company->created_by = auth()->user()->emp_id;
-        $company->save();
+        // $validatedData['created_by'] = auth()->user()->emp_id;
+        // $company = new Company($validatedData);
+        // $company->created_by = auth()->user()->emp_id;
+        // $company->save();
+        Company::create($validatedData);
 
         return redirect()->back()->with('success', 'Company added successfully!');
     }
@@ -28,8 +30,10 @@ class CompanyController extends Controller
     //create company
     public function index()
     {
-        $companies = Company::where([['company_status', 'active'], ['created_by', auth()->user()->emp_id]])->get(); // Fetching all suppliers from the database
-        // $branches = Branch::all();
+        // view only the created companies by the logged in user
+        $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
+        $companyIds = $auditCompanies->pluck('company.id')->toArray();
+        $companies = Company::where('company_status', 'active')->whereIn('id', $companyIds)->get();
 
         return view('company.company_list', compact('companies')); // Passing data to the view
     }
