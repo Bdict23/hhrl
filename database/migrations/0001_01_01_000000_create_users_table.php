@@ -83,6 +83,10 @@ return new class extends Migration
                 $table->timestamps(); // created_at and updated_at
             });}
 
+            Schema::table('companies', function (Blueprint $table) {
+                $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+            });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('emp_id')->constrained('employees')->onDelete('no action')->onUpdate('no action');

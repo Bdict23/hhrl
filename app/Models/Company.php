@@ -35,5 +35,9 @@ class Company extends Model
     {
         return $this->hasMany(Classification::class, 'company_id');
     }
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'company_id');
+    }
 
 }

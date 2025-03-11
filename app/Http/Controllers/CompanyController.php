@@ -5,10 +5,9 @@ use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\Branch;
 
-
-
 class CompanyController extends Controller
-{    public function store(Request $request)
+{
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             'company_name' => 'required|string|max:255',
@@ -17,22 +16,23 @@ class CompanyController extends Controller
             'company_type' => 'required|string|max:255',
             'company_description' => 'required|string|max:255',
         ]);
-    
-        Company::create($validatedData);
-    
+
+        $validatedData['created_by'] = auth()->user()->emp_id;
+        $company = new Company($validatedData);
+        $company->created_by = auth()->user()->emp_id;
+        $company->save();
+
         return redirect()->back()->with('success', 'Company added successfully!');
     }
-
 
     //create company
     public function index()
     {
-        $companies = Company::where('company_status', 'active')->get(); // Fetching all suppliers from the database
+        $companies = Company::where([['company_status', 'active'], ['created_by', auth()->user()->emp_id]])->get(); // Fetching all suppliers from the database
         // $branches = Branch::all();
 
         return view('company.company_list', compact('companies')); // Passing data to the view
     }
-
 
     public function update(Request $request)
     {
@@ -47,7 +47,7 @@ class CompanyController extends Controller
         $company = Company::find($request->myid);
         // dd($company);
         $company->update($request->all());
-        
+
         return redirect()->back()->with('success', 'Company updated successfully!');
     } catch (\Exception $e) {
         return redirect()->back()->withErrors($e->getMessage())->withInput();
@@ -55,16 +55,15 @@ class CompanyController extends Controller
     }
 
     public function show($id)
-    {       
-        $company = Company::with(['branches'=> function($query){ 
-            $query->where('branch_status', 'active'); 
+    {
+        $company = Company::with(['branches'=> function($query){
+            $query->where('branch_status', 'active');
         }])->find($id);
 
         return view('company.company_details', compact('company'));
-    }    
+    }
 
     public function deactivate($id)
-
     {
        $company = Company::find($id);
        $company->company_status = 'inactive';

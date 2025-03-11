@@ -57,4 +57,28 @@ class Item extends Model
         return $this->belongsTo(ItemType::class, 'item_type_id');
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function classification()
+    {
+        return $this->belongsTo(Classification::class, 'classification_id');
+    }
+
+    public function sub_classification()
+    {
+        return $this->belongsTo(Classification::class, 'sub_class_id');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 }

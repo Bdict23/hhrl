@@ -38,7 +38,7 @@ class MenusController extends Controller
         $items = Item::with('priceLevel', 'statuses', 'units') // Added unitOfMeasures here
             ->where('statuses_id', $activeStatus ? $activeStatus->id : null)
             ->get();
-        $categories = Category::where([['status', 'ACTIVE'], ['company_id', Auth::user()->branch->company_id]])->get();
+        $categories = Category::where([['status', 'ACTIVE'], ['company_id', Auth::user()->branch->company_id], ['category_type', 'MENU']])->get();
         $approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE','CREATE_MENU'], ['branch_id', Auth::user()->branch_id]])->get();
         $reviewers = Signatory::where([['signatory_type', 'REVIEWER'], ['status', 'ACTIVE'], ['MODULE','CREATE_MENU'], ['branch_id', Auth::user()->branch_id]])->get();
 

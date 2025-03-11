@@ -25,7 +25,12 @@ class SupplierController extends Controller
         ]);
 
         // Mag Create supplier record
-        Supplier::create($validatedData);
+
+        $validatedData['company_id'] = auth()->user()->emp_id;
+        $supplier = new Supplier($validatedData);
+        $supplier->company_id = auth()->user()->emp_id;
+        $supplier->save();
+
 
 
         return redirect()->back()->with('success', 'Supplier added successfully!');
@@ -62,7 +67,7 @@ class SupplierController extends Controller
 
     public function index()
     {
-        $suppliers = Supplier::where('supp_status', 'active')->get(); // Fetching all suppliers from the database
+        $suppliers = Supplier::where([['supp_status', 'active'], ['company_id', auth()->user()->emp_id]])->get(); // Fetching all suppliers from the database
         return view('supplier_list', compact('suppliers')); // Passing data to the view
     }
 
@@ -71,7 +76,7 @@ class SupplierController extends Controller
 
     {
        $supplier = Supplier::find($id);
-       $supplier->supp_status = 'inactive';
+       $supplier->supp_status = 'INACTIVE';
        $supplier->save();
        return redirect()->back()->with('success', 'Supplier deactivated successfully!');
    }

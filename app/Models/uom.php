@@ -4,12 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\UnitConversion;
 
 class UOM extends Model
 {
     use HasFactory;
+
     protected $table = 'unit_of_measures';
+
+    protected $fillable = [
+        'unit_name',
+        'unit_symbol',
+        'company_id',
+        'status',
+    ];
 
     public function fromUnits()
     {

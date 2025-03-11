@@ -14,6 +14,14 @@
     @livewireStyles
 
     <style>
+        .short-description {
+            display: inline;
+        }
+
+        .full-description {
+            display: none;
+        }
+
         body {
             background-color: #f8f9fa;
         }

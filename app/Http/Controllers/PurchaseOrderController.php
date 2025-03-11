@@ -45,7 +45,7 @@ class PurchaseOrderController extends Controller
         return RequisitionType::all();
      }
  public function newpo(){
-    $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
+    $suppliers = Supplier::where([['supp_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
     $types =  RequisitionType::all();
     $items = Item::with('priceLevel','statuses')->get();
     $approver = Signatory::where('signatory_type', 'APPROVER')->get();

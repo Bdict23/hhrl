@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('suppliers')) {
-            
-        
+
+
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
-            $table->string('supp_name');            
+            $table->string('supp_name');
             $table->string('postal_address')->nullable();;
             $table->string('contact_no_1')->nullable();;
             $table->string('supp_address')->nullable();;
@@ -26,7 +26,8 @@ return new class extends Migration
             $table->string('input_tax')->nullable();
             $table->string('supplier_code')->nullable();;
             $table->string('email')->nullable();
-            $table->string('supp_status')->default('active');
+            $table->string('supp_status')->default('ACTIVE');
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
@@ -37,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-      
+
     }
 };

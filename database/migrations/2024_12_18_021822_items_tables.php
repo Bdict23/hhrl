@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('category_name', 255)->nullable();
             $table->string('category_description', 255)->nullable();
             $table->string('status', 255)->default('ACTIVE');
+            $table->enum('category_type', ['ITEM', 'MENU'])->default('ITEM');
+            $table->index('category_type');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
@@ -129,21 +131,20 @@ return new class extends Migration
             $table->text('item_code')->nullable();
             $table->text('item_description')->nullable();
             $table->unsignedBigInteger('uom_id')->nullable();
-            $table->unsignedBigInteger('brand')->nullable();
+            $table->unsignedBigInteger('brand_id')->nullable();
             $table->unsignedBigInteger('classification_id')->nullable();
             $table->unsignedBigInteger('statuses_id')->nullable();
             $table->unsignedBigInteger('sub_class_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
-            $table->foreignId('item_type_id')->constrained('item_types')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-            $table->unsignedBigInteger('updated_by');
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
 
 
 
              // Foreign key constraints
             $table->foreign('uom_id')->references('id')->on('unit_of_measures');
-            $table->foreign('brand')->references('id')->on('brands');
+            $table->foreign('brand_id')->references('id')->on('brands');
             $table->foreign('classification_id')->references('id')->on('classifications');
             $table->foreign('statuses_id')->references('id')->on('statuses');
             $table->foreign('sub_class_id')->references('id')->on('classifications');
