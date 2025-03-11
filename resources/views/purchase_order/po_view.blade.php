@@ -104,7 +104,8 @@
                     <div class="col-md-6">
                         <label for="supp_name" class="form-label" style="width: 100; font-size: 13px">Supplier Name</label>
                         <input type="text" class="form-control" id="name" name="company_name"
-                            value="{{ $requestInfo->supplier->supp_name }}" readonly style="width: 100; font-size: 13px">
+                            value="{{ $requestInfo->supplier->supp_name ?? 'N/A' }}" readonly
+                            style="width: 100; font-size: 13px">
                     </div>
                     <div class="col-md-6">
                         <label for="postal_address" class="form-label" style="width: 100; font-size: 13px">PO Number</label>

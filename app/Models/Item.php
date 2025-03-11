@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PriceLevel;
-use App\Models\Statuse;
 use App\Models\Location;
 use App\Models\UOM;
 use App\Models\ItemType;
@@ -15,16 +14,15 @@ class Item extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'quantity',
-        'category',
-        'image',
-        'priceLevel',
-        'item_code',          // Added item_code
-        'item_description',   // Added item_description
-        'uom_id',             // Ensure uom_id is included for relationships
+        'item_code',
+        'item_description',
+        'company_id',
+        'classification_id',
+        'sub_class_id',
+        'brand_id',
+        'category_id',
+        'uom_id',
+        'created_by',
     ];
 
     public function priceLevel()
@@ -32,10 +30,7 @@ class Item extends Model
         return $this->hasMany(PriceLevel::class, 'item_id');
     }
 
-    public function statuses()
-    {
-        return $this->belongsTo(Status::class);
-    }
+
 
     public function locations()
     {
@@ -52,10 +47,6 @@ class Item extends Model
         return $this->hasMany(Cardex::class, 'item_id');
     }
 
-    public function item_type()
-    {
-        return $this->belongsTo(ItemType::class, 'item_type_id');
-    }
 
     public function company()
     {

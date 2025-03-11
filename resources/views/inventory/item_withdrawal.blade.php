@@ -169,9 +169,9 @@
                                     <td>{{ $item->item_description }}</td>
                                     <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
                                     <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
-                                    <td>{{ $item->priceLevel()->latest()->where('price_type', 'cost')->first()->amount }}
+                                    <td>{{ $item->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? 0.0 }}
                                     </td>
-                                    <td>{{ $item->statuses->status_name }}</td>
+                                    <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                     <td>
                                         <button class="btn btn-primary btn-sm"
                                             onclick="addToTable({{ json_encode($item) }}, {{ $cardexBalance[$item->id] ?? 0 }}, {{ $cardexAvailable[$item->id] ?? 0 }})">

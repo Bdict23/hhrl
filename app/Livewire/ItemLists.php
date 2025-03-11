@@ -30,6 +30,9 @@ class ItemLists extends Component
     public $sub_class_id;
     public $company_id;
 
+    public $AddItemTab = 0;
+    public $ItemListTab = 0;
+
     protected $rules = [
         'item_code' => 'required|string|max:255',
         'item_description' => 'required|string|max:255',
@@ -37,7 +40,7 @@ class ItemLists extends Component
         'category_id' => 'required|exists:categories,id',
         'brand_id' => 'nullable|exists:brands,id',
         'classification_id' => 'required|exists:classifications,id',
-        'sub_class_id' => 'required|exists:classifications,id',
+        'sub_class_id' =>  'nullable|exists:classifications,id',
         'company_id' => 'required|exists:companies,id',
     ];
     public function mount()
@@ -62,6 +65,10 @@ class ItemLists extends Component
 
     public function store()
     {
+
+        try {
+
+        $this->AddItemTab = 1;
         $this->validate();
         $item = new Item();
         $item->item_code = $this->item_code;
@@ -74,10 +81,14 @@ class ItemLists extends Component
         $item->company_id = $this->company_id;
         $item->created_by = auth()->user()->emp_id;
         $item->save();
+        $this->AddItemTab = 0;
+        $this->ItemListTab = 1;
+        $this->fetchData();
+        return  "Item successfully added.";
 
-        dd('Item successfully added.');
-        // session()->flash('message', 'Item successfully added.');
-
+        } catch (\Exception $e) {
+          return  $e->getMessage();
+        }
     }
 
 
@@ -91,7 +102,8 @@ class ItemLists extends Component
             'categories' => $this->categories,
             'classifications' => $this->classifications,
             'brands' => $this->brands,
-            'sub_classifications' => $this->sub_classifications,
+            'sub_classifications' => $this->sub_classifications
+
         ]);
     }
 }

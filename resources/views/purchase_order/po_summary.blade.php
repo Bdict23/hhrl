@@ -51,7 +51,7 @@
         <tbody>
             @foreach ($requistions as $requisition)
                 <tr>
-                    <td>{{ $requisition->supplier->supp_name }}</td>
+                    <td>{{ $requisition->supplier->supp_name ?? 'N/A' }}</td>
                     <td>{{ $requisition->requisition_number }}</td>
                     <td>{{ $requisition->trans_date }}</td>
                     <td>{{ $requisition->preparer->name }}</td>

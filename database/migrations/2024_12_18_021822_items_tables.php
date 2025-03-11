@@ -136,6 +136,7 @@ return new class extends Migration
             $table->unsignedBigInteger('statuses_id')->nullable();
             $table->unsignedBigInteger('sub_class_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->enum('item_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
@@ -146,7 +147,6 @@ return new class extends Migration
             $table->foreign('uom_id')->references('id')->on('unit_of_measures');
             $table->foreign('brand_id')->references('id')->on('brands');
             $table->foreign('classification_id')->references('id')->on('classifications');
-            $table->foreign('statuses_id')->references('id')->on('statuses');
             $table->foreign('sub_class_id')->references('id')->on('classifications');
             $table->foreign('category_id')->references('id')->on('categories');
             $table->foreign('updated_by')->references('id')->on('employees');

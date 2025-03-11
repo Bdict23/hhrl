@@ -11,7 +11,6 @@ use App\Models\Branch;
 use App\Models\RequisitionType;
 use App\Models\Item;
 use App\Models\PriceLevel;
-use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Signatory;
@@ -47,7 +46,7 @@ class PurchaseOrderController extends Controller
  public function newpo(){
     $suppliers = Supplier::where([['supp_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
     $types =  RequisitionType::all();
-    $items = Item::with('priceLevel','statuses')->get();
+    $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
     $approver = Signatory::where('signatory_type', 'APPROVER')->get();
     $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
      return view('purchase_order.po_create', compact('suppliers','types','items','approver','reviewer'));
@@ -95,7 +94,7 @@ class PurchaseOrderController extends Controller
         $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing']])->find($id);
         $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
         $types =  RequisitionType::all();
-        $items = Item::with('priceLevel','statuses')->get();
+        $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
         $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
         return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'types', 'items', 'approver', 'reviewer'));

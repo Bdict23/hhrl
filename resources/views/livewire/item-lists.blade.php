@@ -1,5 +1,5 @@
 <div>
-    <div id="items-table" class="tab-content card" style="display: none;">
+    <div id="items-table" class="tab-content card" {{ $ItemListTab == 0 ? 'style=display:none' : 'style=display:block' }}>
         <div class="card-header">
             <h5>Item List</h5>
         </div>
@@ -48,14 +48,14 @@
     </div>
 
     <!-- item form -->
-    <div id="item-form" class="tab-content card" style="display: none;">
+    <div id="item-form" class="tab-content card" {{ $AddItemTab == 1 ? 'style=display:block' : 'style=display:none' }}>
         <div class="card-header">
             <h5>Add Item</h5>
         </div>
         <div class="card-body">
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('items-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
-            <form wire:submit.prevent="store">
+            <form wire:submit.prevent="store" class="submit-form">
                 @csrf
                 <div class="row">
                     <div class="mb-3 col-md-6">
@@ -68,6 +68,7 @@
                     <div class="mb-3 col-md-6">
                         <label for="uom_id" class="form-label">Unit Symbol <span style="color: red;">*</span></label>
                         <select class="form-control" id="uom_id" wire:model="uom_id">
+                            <option value="">Select</option>
                             @forelse ($uoms as $uom)
                                 <option value="{{ $uom->id }}">( {{ $uom->unit_symbol }} ) {{ $uom->unit_name }}
                                 </option>
@@ -94,6 +95,7 @@
                     <div class="mb-3 col-md-6">
                         <label for="category_id" class="form-label">Category <span style="color: red;">*</span></label>
                         <select class="form-control" id="category_id" wire:model="category_id">
+                            <option value="">Select</option>
                             @forelse ($categories as $category)
                                 <option value="{{ $category->id }}"> {{ $category->category_name }}
                                 </option>
@@ -109,6 +111,7 @@
                         <label for="brand_id" class="form-label">Brand <span
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <select class="form-control" id="brand_id" wire:model="brand_id">
+                            <option value="">Select</option>
                             @forelse ($brands as $brand)
                                 <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
                                 </option>
@@ -126,6 +129,7 @@
                         <label for="classification_id" class="form-label">Classification<span
                                 style="color: red;">*</span></label>
                         <select class="form-control" id="classification_id" wire:model="classification_id">
+                            <option value="">Select</option>
                             @forelse ($classifications as $classification)
                                 <option value="{{ $classification->id }}">
                                     {{ $classification->classification_name }}
@@ -141,8 +145,8 @@
                     <div class="mb-3 col-md-6">
                         <label for="sub_classification_id" class="form-label">Sub-Class <span
                                 style="color: red;">*</span></label>
-                        <select class="form-control" id="sub_classification_id" wire:model="sub_classification_id"
-                            required>
+                        <select class="form-control" id="sub_classification_id" wire:model="sub_class_id" required>
+                            <option value="">Select</option>
                             @forelse ($sub_classifications as $subClassification)
                                 <option value="{{ $subClassification->id }}">
                                     {{ $subClassification->classification_name }}
@@ -158,9 +162,10 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="company_id" class="form-label">Belongs to company <span
+                    <label for="company_id" class="form-label">Established to<span
                             style="color: red;">*</span></label>
                     <select class="form-control" id="company_id" wire:model="company_id">
+                        <option value="">Select Company</option>
                         @forelse ($companies as $company)
                             <option value="{{ $company->id }}">{{ $company->company_name }}</option>
                         @empty
