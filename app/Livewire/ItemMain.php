@@ -10,9 +10,12 @@ use App\Models\Category;
 use App\Models\Classification;
 use App\Models\Brand;
 use App\Models\Audit;
+use App\Models\PriceLevel;
 
-class ItemLists extends Component
+
+class ItemMain extends Component
 {
+
     public $items;
     public $companies;
     public $uoms;
@@ -27,8 +30,9 @@ class ItemLists extends Component
     public $category_id;
     public $brand_id;
     public $classification_id;
-    public $sub_class_id;
+    public $sub_classification_id; // Corrected property name
     public $company_id;
+    public $cost;
 
     public $AddItemTab = 0;
     public $ItemListTab = 0;
@@ -40,9 +44,11 @@ class ItemLists extends Component
         'category_id' => 'required|exists:categories,id',
         'brand_id' => 'nullable|exists:brands,id',
         'classification_id' => 'required|exists:classifications,id',
-        'sub_class_id' =>  'nullable|exists:classifications,id',
+        'sub_classification_id' => 'nullable|exists:classifications,id', // Corrected validation rule
         'company_id' => 'required|exists:companies,id',
+        'cost' => 'nullable|numeric'
     ];
+
     public function mount()
     {
         $this->fetchData();
@@ -50,9 +56,9 @@ class ItemLists extends Component
 
     public function fetchData()
     {
-                // view only the created companies by the logged in user
-                $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
-                $companyIds = $auditCompanies->pluck('company.id')->toArray();
+        // view only the created companies by the logged in user
+        $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
+        $companyIds = $auditCompanies->pluck('company.id')->toArray();
         $this->companies = Company::where('company_status', 'ACTIVE')->whereIn('id', $companyIds)->get();
 
         $this->items = Item::where('company_id', auth()->user()->branch->company_id)->get();
@@ -65,37 +71,56 @@ class ItemLists extends Component
 
     public function store()
     {
-
         try {
+            $this->AddItemTab = 1;
+            $this->ItemListTab = 0;
+            $this->validate();
+            $item = new Item();
+            $item->item_code = $this->item_code;
+            $item->item_description = $this->item_description;
+            $item->uom_id = $this->uom_id;
+            $item->category_id = $this->category_id;
+            $item->brand_id = $this->brand_id;
+            $item->classification_id = $this->classification_id;
+            $item->sub_classification_id = $this->sub_classification_id; // Corrected property name
+            $item->company_id = $this->company_id;
+            $item->created_by = auth()->user()->emp_id;
+            $item->save();
 
-        $this->AddItemTab = 1;
-        $this->validate();
-        $item = new Item();
-        $item->item_code = $this->item_code;
-        $item->item_description = $this->item_description;
-        $item->uom_id = $this->uom_id;
-        $item->category_id = $this->category_id;
-        $item->brand_id = $this->brand_id;
-        $item->classification_id = $this->classification_id;
-        $item->sub_class_id = $this->sub_class_id;
-        $item->company_id = $this->company_id;
-        $item->created_by = auth()->user()->emp_id;
-        $item->save();
-        $this->AddItemTab = 0;
-        $this->ItemListTab = 1;
-        $this->fetchData();
-        return  "Item successfully added.";
-
+            if ($this->cost != null && $this->cost != 0 && $this->cost != '') {
+                $priceLevel = new PriceLevel();
+                $priceLevel->item_id = $item->id;
+                $priceLevel->price_type = 'COST';
+                $priceLevel->amount = $this->cost;
+                $priceLevel->company_id = $this->company_id;
+                $priceLevel->save();
+            }
+            $this->resetForm();
+            $this->AddItemTab = 0;
+            $this->ItemListTab = 1;
+            $this->fetchData();
+            session()->flash('message', 'Item successfully added.');
         } catch (\Exception $e) {
-          return  $e->getMessage();
+            session()->flash('error', $e->getMessage());
         }
     }
 
-
+    private function resetForm()
+    {
+        $this->item_code = '';
+        $this->item_description = '';
+        $this->uom_id = '';
+        $this->category_id = '';
+        $this->brand_id = '';
+        $this->classification_id = '';
+        $this->sub_classification_id = '';
+        $this->company_id = '';
+        $this->cost = '';
+    }
 
     public function render()
     {
-        return view('livewire.item-lists', [
+        return view('livewire.item-main', [
             'items' => $this->items,
             'companies' => $this->companies,
             'uoms' => $this->uoms,
@@ -103,7 +128,6 @@ class ItemLists extends Component
             'classifications' => $this->classifications,
             'brands' => $this->brands,
             'sub_classifications' => $this->sub_classifications
-
         ]);
     }
 }

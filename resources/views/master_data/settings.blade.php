@@ -23,15 +23,21 @@
                 <li class="nav-item"><a href="#" class="nav-link btn-sm"
                         onclick="showTab('unit-of-measures-table', this)">Unit of
                         measures</a></li>
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
-                        onclick="showTab('price-levels-table', this)">Price
-                        Levels</a></li>
+
                 <li class="nav-item"><a href="#" class="nav-link btn-sm"
                         onclick="showTab('brand-table', this)">Brands</a></li>
                 </li>
                 <hr>
 
             </ul>
+            <h5>Pricing</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                        onclick="showTab('price-levels-tables', this)">Price
+                        Levels</a></li>
+                <li class="nav-item"><a href="#" class="nav-link btn-sm">Menu Pricing</a></li>
+            </ul>
+            <hr>
             <h5 class="text-muted">Menu Management</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menus-table', this)">Menu
@@ -60,7 +66,7 @@
 
             <!-- item Tab Content -->
             <div>
-                @livewire('item-lists')
+                @livewire('item-main')
             </div>
 
             <!-- category Tab Content -->
@@ -79,126 +85,21 @@
             </div>
 
             <!-- Unit of Measures Tab Content -->
-            <div id="unit-of-measures-table" class="tab-content dashboard" style="display: none;">
-                <x-primary-button type="button" class="mb-3 btn-sm">+ ADD UNIT OF MEASURE</x-primary-button>
-                <table class="table table-striped table-sm small">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>DESCRIPTION</th>
-                            <th class="text-end">STATUS</th>
-                            <th class="text-end">REG. COMPANY</th>
-                            <th class="text-end">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" class="text-center">No unit of measure found</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                @livewire('item-unit-measure')
             </div>
 
             <!-- Price Levels Tab Content -->
-            <div id="price-levels-table" class="tab-content dashboard" style="display: none;">
-                <x-primary-button type="button" class="mb-3 btn-sm">+ ADD PRICE LEVEL</x-primary-button>
-                <table class="table table-striped table-sm small">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>DESCRIPTION</th>
-                            <th class="text-end">STATUS</th>
-                            <th class="text-end">REG. COMPANY</th>
-                            <th class="text-end">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" class="text-center">No price level found</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                @livewire('price-level')
             </div>
+
+
+
 
             <!-- Brand Tab Content -->
-            <div id="brand-table" class="tab-content card" style="display: none;">
-                <div class="card-header">
-                    <h5>Brand List</h5>
-                </div>
-                <div class="card-body">
-                    <x-primary-button type="button" class="mb-3 btn-sm"
-                        onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
-                        BRAND</x-primary-button>
-                    <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
-                        style="max-height: 400px; overflow-y: auto;">
-
-                        <table class="table table-striped table-sm small">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>DESCRIPTION</th>
-                                    <th class="text-end">STATUS</th>
-                                    <th class="text-end">REG. COMPANY</th>
-                                    <th class="text-end">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($brands as $brand)
-                                    <tr>
-                                        <td>{{ $brand->brand_name ?? 'Not Registered' }}</td>
-                                        <td> {{ $brand->brand_description }}</td>
-                                        <td class="text-end">{{ $brand->status }}</td>
-                                        <td class="text-end">{{ $brand->company->company_name ?? 'Not Registered' }}</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-primary btn-sm">Edit</a>
-                                            <a href="#" class="btn btn-sm btn-danger btn-sm">Delete</a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center">No brand found</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Brand form -->
-            <div id="brand-form" class="tab-content card" style="display: none;">
-                <div class="card-header">
-                    <h5>Add Brand</h5>
-                </div>
-                <div class="card-body">
-
-                    <x-secondary-button type="button" class="mb-3"
-                        onclick="showTab('brand-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
-                    <form>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Brand Name <span
-                                    style="color: red;">*</span></label>
-                            <input type="text" class="form-control" id="name" name="brand_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description <span
-                                    style="color: red;">*</span></label>
-                            <textarea class="form-control" id="description" name="brand_description" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Belong to Company <span
-                                    style="color: red;">*</span></label>
-                            <select class="form-control" id="status" name="brand_status" required>
-                                @forelse ($companies as $company)
-                                    <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                                @empty
-                                    <option value="no_company">No Company Available</option>
-                                @endforelse
-                            </select>
-                        </div>
-                        <x-primary-button type="submit">Save</x-primary-button>
-                    </form>
-                </div>
+            <div>
+                @livewire('item-brand')
             </div>
 
             <!-- Menu Categories Tab Content -->

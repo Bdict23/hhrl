@@ -51,20 +51,21 @@
         <div class="card-body">
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('category-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
-            <form action="{{ route('settings.category.store') }}" method="POST">
+            <form wire:submit.prevent="storeCategory">
                 @csrf
                 <div class="mb-3">
                     <label for="name" class="form-label">Category Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="name" name="category_name" required>
+                    <input type="text" class="form-control" id="name" wire:model="category_name" required>
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description <span style="color: red;">*</span></label>
-                    <textarea class="form-control" id="description" name="category_description" rows="3" required></textarea>
+                    <textarea class="form-control" id="description" wire:model="category_description" rows="3" required></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label for="reg_company" class="form-label">Established to<span style="color: red;">*</span></label>
-                    <select class="form-control" id="reg_company" name="reg_company" required>
+                    <select class="form-control" id="reg_company" wire:model="company_id" required>
+                        <option value="">Select</option>
                         @forelse ($companies as $company)
                             <option value="{{ $company->id }}">{{ $company->company_name }}</option>
                         @empty

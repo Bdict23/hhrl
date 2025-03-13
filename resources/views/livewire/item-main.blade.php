@@ -65,20 +65,34 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="mb-3 col-md-6">
-                        <label for="uom_id" class="form-label">Unit Symbol <span style="color: red;">*</span></label>
-                        <select class="form-control" id="uom_id" wire:model="uom_id">
-                            <option value="">Select</option>
-                            @forelse ($uoms as $uom)
-                                <option value="{{ $uom->id }}">( {{ $uom->unit_symbol }} ) {{ $uom->unit_name }}
-                                </option>
-                            @empty
-                                <option value="">No Symbol</option>
-                            @endforelse
-                        </select>
-                        @error('uom_id')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    <div class="row mb-3 col-md-6">
+                        <div class="mb-3 col-md-6">
+                            <label for="uom_id" class="form-label">Unit Symbol <span
+                                    style="color: red;">*</span></label>
+                            <select class="form-control" id="uom_id" wire:model="uom_id">
+                                <option value="">Select</option>
+                                @forelse ($uoms as $uom)
+                                    <option value="{{ $uom->id }}">( {{ $uom->unit_symbol }} )
+                                        {{ $uom->unit_name }}
+                                    </option>
+                                @empty
+                                    <option value="">No Symbol</option>
+                                @endforelse
+                            </select>
+                            @error('uom_id')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="cost" class="form-label">Cost Price</label>
+                            <input type="number" class="form-control" id="cost" wire:model="cost" step="0.01"
+                                placeholder="0.00">
+                            @error('cost')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-6">
+                        </div>
                     </div>
                 </div>
 
@@ -145,7 +159,7 @@
                     <div class="mb-3 col-md-6">
                         <label for="sub_classification_id" class="form-label">Sub-Class <span
                                 style="color: red;">*</span></label>
-                        <select class="form-control" id="sub_classification_id" wire:model="sub_class_id" required>
+                        <select class="form-control" id="sub_classification_id" wire:model="sub_classification_id">
                             <option value="">Select</option>
                             @forelse ($sub_classifications as $subClassification)
                                 <option value="{{ $subClassification->id }}">
@@ -160,7 +174,6 @@
                         @enderror
                     </div>
                 </div>
-
                 <div class="mb-3">
                     <label for="company_id" class="form-label">Established to<span
                             style="color: red;">*</span></label>

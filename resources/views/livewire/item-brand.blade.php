@@ -1,37 +1,34 @@
 <div>
-    <div id="classification-table" class="tab-content card"
-        {{ $ClassificationListTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+    {{-- Care about people's approval and you will be their prisoner. --}}
+    <div id="brand-table" class="tab-content card"
+        {{ $BrandListTab == 1 ? 'style=display:block' : 'style=display:none' }}>
         <div class="card-header">
-            <h5>Classification</h5>
+            <h5>Brand List</h5>
         </div>
         <div class="card-body">
-            <x-primary-button type="button" class="mb-3"
-                onclick="showTab('classification-form', document.querySelector('.nav-link.active'))">+ Add
-                Classification</x-primary-button>
+            <x-primary-button type="button" class="mb-3 btn-sm"
+                onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
+                BRAND</x-primary-button>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
+
                 <table class="table table-striped table-sm small">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>DESCRIPTION</th>
                             <th class="text-end">STATUS</th>
-                            <th class="text-end">Sub Classes</th>
                             <th class="text-end">REG. COMPANY</th>
                             <th class="text-end">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($classifications as $classification)
+                        @forelse ($itemBrands as $brand)
                             <tr>
-                                <td>{{ $classification->classification_name }}</td>
-                                <td>{{ $classification->classification_description }}</td>
-                                <td class="text-end">{{ $classification->status }}</td>
-                                <td class="text-end">
-                                    {{ optional($classification->sub_classifications)->count() ?? 0 }}
-                                </td>
-                                <td class="text-end">
-                                    {{ $classification->company->company_name ?? 'Not Registered' }}</td>
+                                <td>{{ $brand->brand_name ?? 'Not Registered' }}</td>
+                                <td> {{ $brand->brand_description }}</td>
+                                <td class="text-end">{{ $brand->status }}</td>
+                                <td class="text-end">{{ $brand->company->company_name ?? 'Not Registered' }}</td>
                                 <td class="text-end">
                                     <a href="#" class="btn btn-sm btn-primary btn-sm">Edit</a>
                                     <a href="#" class="btn btn-sm btn-danger btn-sm">Delete</a>
@@ -39,7 +36,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">No classification found</td>
+                                <td colspan="5" class="text-center">No brand found</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -47,37 +44,36 @@
             </div>
         </div>
     </div>
-    {{-- Classification Form --}}
-    <div id="classification-form" class="tab-content card"
-        {{ $AddClassificationTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+
+    <!-- Brand form -->
+    <div id="brand-form" class="tab-content card"
+        {{ $AddBrandTab == 1 ? 'style=display:block' : 'style=display:none' }}>
         <div class="card-header">
-            <h5>Add Classification</h5>
+            <h5>Add Brand</h5>
         </div>
         <div class="card-body">
-            <x-secondary-button type="button" class="mb-3"
-                onclick="showTab('classification-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
-            <form wire:submit.prevent="store">
-                @csrf
-                <div class="mb-3">
-                    <label for="name" class="form-label">Classification Name <span
-                            style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="name" wire:model="classification_name">
-                    @error('classification_name')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description <span style="color: red;">*</span></label>
-                    <textarea class="form-control" id="description" wire:model="classification_description" rows="3"></textarea>
-                    @error('classification_description')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
 
+            <x-secondary-button type="button" class="mb-3"
+                onclick="showTab('brand-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
+            <form wire:submit.prevent="store">
                 <div class="mb-3">
-                    <label for="reg_company" class="form-label">Established to <span
+                    <label for="brand_name" class="form-label">Brand Name <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="brand_name" wire:model="brand_name">
+                    @error('brand_name')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="brand_description" class="form-label">Description <span
                             style="color: red;">*</span></label>
-                    <select class="form-control" id="reg_company" wire:model="company_id">
+                    <textarea class="form-control" id="brand_description" wire:model="brand_description" rows="3"></textarea>
+                    @error('brand_description')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="company_id" class="form-label">Established to<span style="color: red;">*</span></label>
+                    <select class="form-control" id="company_id" wire:model="company_id">
                         <option value="">Select</option>
                         @forelse ($companies as $company)
                             <option value="{{ $company->id }}">{{ $company->company_name }}</option>

@@ -11,14 +11,21 @@ class ItemClassification extends Component
 {
 
     public $classification;
+    public $classifications;
     public $classification_id;
     public $classification_name;
-    public $classification_status;
-    public $classifications;
+    public $classification_description;
+    public $company_id;
+    public $companies;
+
+    public $AddClassificationTab = 0;
+    public $ClassificationListTab = 0;
 
     protected $rules = [
         'classification_name' => 'required|string|max:255',
-        'classification_status' => 'required|string|max:255',
+        'classification_description' => 'required|string|max:255',
+        'company_id' => 'required|exists:companies,id',
+
     ];
 
     public function mount()
@@ -26,6 +33,26 @@ class ItemClassification extends Component
         $this->fetchData();
     }
 
+    public function store()
+    {
+
+        $this->AddClassificationTab = 1;
+        $this->validate();
+        $classification = new Classification();
+        $classification->classification_name = $this->classification_name;
+        $classification->classification_description = $this->classification_description;
+        $classification->company_id = $this->company_id;
+        $classification->created_by = auth()->user()->emp_id;
+        $classification->save();
+        $this->fetchData();
+        $this->classification_name = '';
+        $this->classification_description = '';
+        $this->company_id = '';
+        $this->AddClassificationTab = 0;
+        $this->ClassificationListTab = 1;
+        session()->flash('success', 'Classification successfully added');
+
+    }
     public function fetchData()
     {
         $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
