@@ -91,7 +91,7 @@
 
             <!-- Price Levels Tab Content -->
             <div>
-                @livewire('price-level')
+                @livewire('price-operation')
             </div>
 
 
@@ -105,8 +105,8 @@
             <!-- Menu Categories Tab Content -->
             <div id="menu-categories-table" class="tab-content dashboard" style="display: none;">
                 <x-primary-button type="button" class="mb-3 btn-sm"
-                    onclick="showTab('menu-categories-form', document.querySelector('.nav-link.active'))">+ ADD MENU
-                    CATEGORY</x-primary-button>
+                    onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
+                    BRAND</x-primary-button>
                 <table class="table table-striped table-sm small">
                     <thead>
                         <tr>
@@ -219,5 +219,100 @@
             var descriptionModal = new bootstrap.Modal(document.getElementById('descriptionModal'));
             descriptionModal.show();
         }
+
+
+        // Batch Costing
+        function clearForm() {
+            document.getElementById('departmentForm').reset();
+            document.getElementById('personnelTableBody').innerHTML = '';
+        }
+
+        function saveDepartment() {
+            document.getElementById('departmentForm').submit();
+        }
+
+        function selectEmployee(id, name, lastName, position, status, department, branch) {
+            if (department !== 'N/A') {
+                alert(`The employee ${name} ${lastName} already belongs to the ${department} department.`);
+                return;
+            }
+
+            const tableBody = document.getElementById('personnelTableBody');
+            const existingRows = tableBody.querySelectorAll('tr');
+            for (let row of existingRows) {
+                if (row.cells[0].textContent === name && row.cells[1].textContent === lastName) {
+                    alert(`The employee ${name} ${lastName} is already selected.`);
+                    return;
+                }
+            }
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+            <td style="font-size: smaller;">${name}</td>
+            <td style="font-size: smaller;">${lastName}</td>
+            <td style="font-size: smaller;">${position}</td>
+            <td style="font-size: smaller;">${status}</td>
+            <td style="font-size: smaller;">${branch}</td>
+            <input type="hidden" name="employees[]" value="${id}">
+            <td style="font-size: smaller;"><button class="btn btn-danger btn-sm" onclick="removePersonnel(this)">Remove</button></td>
+        `;
+            tableBody.appendChild(newRow);
+
+            // Close the modal
+            $('#AddPersonnelModal').modal('hide');
+        }
+
+        function removePersonnel(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        document.getElementById('searchEmployee').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#employeeTableBody tr');
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const position = row.cells[1].textContent.toLowerCase();
+                const department = row.cells[2].textContent.toLowerCase();
+                const branch = row.cells[3].textContent.toLowerCase();
+                if (name.includes(searchValue) || position.includes(searchValue) || department.includes(
+                        searchValue) || branch.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('searchDepartment').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#departmentTableBody tr');
+            rows.forEach(row => {
+                const departmentName = row.cells[0].textContent.toLowerCase();
+                const branchName = row.cells[1].textContent.toLowerCase();
+                const status = row.cells[2].textContent.toLowerCase();
+                if (departmentName.includes(searchValue) || branchName.includes(searchValue) || status
+                    .includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Show success or error modal based on the session status
+        @if (session('status') === 'success')
+            var successAlert = document.querySelector('.alert-success');
+            setTimeout(() => {
+                var alert = new bootstrap.Alert(successAlert);
+                alert.close();
+            }, 2000);
+        @elseif (session('status') === 'error')
+            var errorAlert = document.querySelector('.alert-danger');
+            setTimeout(() => {
+                var alert = new bootstrap.Alert(errorAlert);
+                alert.close();
+            }, 2000);
+        @endif
     </script>
 @endsection

@@ -29,7 +29,14 @@ class Item extends Model
     {
         return $this->hasMany(PriceLevel::class, 'item_id');
     }
-
+    public function costPrice()
+    {
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->latest();
+    }
+    public function sellingPrice()
+    {
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'SRP')->latest();
+    }
 
 
     public function locations()
