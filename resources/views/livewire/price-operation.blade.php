@@ -57,8 +57,9 @@
             @endif
             <form id="departmentForm" wire:submit.prevent="savePricing">
                 @csrf
+                <input type="hidden" name="selectedBranches" wire:model="branchIds">
                 <div class="row">
-                    <div class="col-md-6 card">
+                    <div class="col-md-7 card">
                         <div class="shadow-sm">
                             <div class="card-body">
                                 <header class="d-flex justify-content-between align-items-center mb-3">
@@ -95,17 +96,24 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label for="department_name" class="form-label">Retail Price</label>
-                                                    <input type="number" class="form-control" id="department_name"
-                                                        name="department_name" placeholder="0.00" step="0.01">
+                                                    <label for="retail-Price" class="form-label">Retail Price</label>
+                                                    <input type="number" class="form-control" id="retail-Price"
+                                                        wire:input="updateFromRetail($event.target.value)"
+                                                        value="{{ $retailPrice }}" placeholder="0.00" step="0.01">
+                                                    @error('retailPrice')
+                                                        <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Markup</label>
+                                                    <label class="form-label">Markup Percentage</label>
                                                     <div class="input-group">
-                                                        <input type="number" class="form-control" id="markup"
-                                                            name="markup" placeholder="0.00" step="0.01">
+                                                        <input type="number" class="form-control"
+                                                            id="markup-Percentage" placeholder="0.00" step="0.01"
+                                                            wire:input="updateFromMarkup($event.target.value)"
+                                                            value="{{ $markupPercentage }}">
                                                         <span class="input-group-text">%</span>
                                                     </div>
                                                 </div>
@@ -115,8 +123,9 @@
                                                     <label class="form-label">Gross Profit Margin
                                                     </label>
                                                     <div class="input-group">
-                                                        <input type="number" class="form-control" id="markup"
-                                                            name="markup" placeholder="0.00" step="0.01">
+                                                        <input type="number" class="form-control"
+                                                            id="grossProfitMargin" placeholder="0.00" step="0.01"
+                                                            value="{{ $grossProfitMargin }}">
                                                         <span class="input-group-text">%</span>
                                                     </div>
                                                 </div>
@@ -127,14 +136,15 @@
                                                                 Amount</label>
                                                             <input type="number" class="form-control" id="margin"
                                                                 name="margin" placeholder="0.00" step="0.01"
-                                                                readonly>
+                                                                value="{{ $markupAmount }}">
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <label class="form-label">Tax
                                                     </label>
                                                     <div class="input-group">
@@ -144,7 +154,7 @@
                                                         <span class="input-group-text">%</span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <div class="mb-3">
                                                         <div class="mb-3">
                                                             <label for="margin" class="form-label">Total Tax</label>
@@ -152,21 +162,33 @@
                                                                 <input type="number" class="form-control"
                                                                     id="totalTax" readonly disabled step="0.01"
                                                                     placeholder="0.00">
-                                                                <button class="input-group-text"
-                                                                    type="button">?</button>
+                                                                <button class="input-group-text" type="button"
+                                                                    style="background-color: rgb(190, 243, 217);">?</button>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Cost Price</label>
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control"
+                                                                id="cost_price" name="cost_price" placeholder="0.00"
+                                                                step="0.01" readonly disabled
+                                                                value="{{ $costPrice }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
+                                            <div class="col-md-6">
+                                            </div>
                                             <div class="mb-3">
                                                 <label class="form-label">New Retail Price</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" id="new_retail_price"
                                                         name="new_retail_price" placeholder="0.00" step="0.01"
-                                                        readonly disabled>
+                                                        readonly disabled value="{{ $newRetailPrice }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -179,7 +201,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <div class="card">
                             <div class="card shadow-sm">
                                 <div class="card-body">
@@ -224,8 +246,8 @@
                                 <header class="d-flex justify-content-between align-items-center mb-3">
                                     <h1 class="h4">Apllied Branches</h1>
                                     <div>
-                                        <input type="checkbox" id="selectAllBranches"
-                                            onclick="toggleSelectAllBranches(this)">
+                                        <input type="checkbox" id="selectAllBranches" wire:model="selectAllBranches"
+                                            wire:click="toggleSelectAllBranches">
                                         <label for="selectAllBranches">Select All</label>
                                     </div>
                                 </header>
@@ -242,8 +264,9 @@
                                             <tr>
                                                 <td>{{ $branch->branch_name }}</td>
                                                 <td class="text-center">{{ $branch->company->company_code }}</td>
-                                                <td><input type="checkbox" name="branch_ids[]"
-                                                        value="{{ $branch->id }}"></td>
+                                                <td><input type="checkbox" wire:model="branchIds"
+                                                        value="{{ $branch->id }}">
+                                                </td>
                                             </tr>
                                         @empty
                                             <tr class="text-center">
