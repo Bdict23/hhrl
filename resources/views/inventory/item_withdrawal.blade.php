@@ -1,10 +1,8 @@
 @extends('layouts.master')
 @section('content')
     <div>
-        <form {{-- id="poForm" method="POST" action="{{ route('purchase_order.store') }}" --}}>
+        <form id="withdrawalForm" method="POST" action="{{ route('withdrawal.store') }}">
             @csrf
-
-
             <div class="row me-3 w-100">
                 <div class=" col-md-8 card">
                     <div class=" card-body">
@@ -20,11 +18,10 @@
                         </header>
                         <div class="row me-3">
                             <div class="col-md-6">
-                                <input type="text" class="form-control" id="customerName" name="customerName"
-                                    placeholder="Enter Item Code">
+                                <input type="text" class="form-control" placeholder="Enter Item Code">
                             </div>
                             <div class="col-md-2">
-                                <input type="number" class="form-control" id="address" name="address" placeholder="QTY">
+                                <input type="number" class="form-control" placeholder="QTY">
                             </div>
                         </div>
                         <table class="table table-striped table-hover me-3">
@@ -42,7 +39,7 @@
                             </thead>
                             <tbody id="itemTableBody">
 
-                                {{--           POPULATE TABLE     --}}
+                                {{--           POPULATE TABLE   --}}
 
                             </tbody>
                         </table>
@@ -52,12 +49,10 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="customerName"
-                                            class="form-label
-                                        ">Total Cost</label>
+                                        <label for="total_cost" class="form-label">Total Cost</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input type="text" class="form-control" id="customerName" name="customerName">
+                                        <input type="text" id="total_cost" name="total_cost" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -72,68 +67,115 @@
                                 <h5 class="card-title">Information</h5>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="customerName" class="form-label">Ref. Number</label>
+                                        <label for="reference_number" class="form-label">Ref. Number</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input type="text" class="form-control" id="customerName" name="customerName">
+                                        <input type="text" class="form-control" id="reference_number"
+                                            name="reference_number" required>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="supp_name" class="form-label"
+                                        <label for="deptartment" class="form-label"
                                             style="width: 100; font-size: 13px">Department</label>
-                                        <select id="department" class="form-select" aria-label="Default select example"
-                                            style="width: 100; font-size: 13px">
-                                            <option selected>Kitchen Dept.</option>
-                                            <option>Cleaning Dept.</option>
-                                            <option>Security Dept.</option>
+                                        <select id="department" name="department_id" class="form-select"
+                                            aria-label="Default select example" style="width: 100; font-size: 13px">
+                                            @foreach ($departments as $department)
+                                                <option value="{{ $department->id }}">{{ $department->department_name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Usage
                                             Date</label>
-                                        <input type="date" class="form-control" id="usage_date" name="usage_date">
+                                        <input type="date" class="form-control" id="usage_date" name="usage_date"
+                                            required>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="postal_address" class="form-label"
-                                            style="width: 100; font-size: 13px">Type</label>
-                                        <select id="type" class="form-select" aria-label="Default select example"
-                                            style="width: 100; font-size: 13px" onchange="toggleLifespanInput()">
-                                            <option selected>Fixed Asset</option>
-                                            <option>Raw Materials</option>
-                                            <option>Consumables</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6" id="lifespanContainer" style="display: none;">
-                                        <label for="lifespan_date" class="form-label"
-                                            style="width: 100; font-size: 13px">Lifespan Date</label>
-                                        <input type="date" class="form-control" id="lifespan_date" name="lifespan_date"
-                                            onchange="calculateLifespan()">
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-3">
-                                        <label for="time" class="form-label" style="font-size: 13px;">Remarks</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <textarea type="text" class="form-control" id="remarks" name="remarks"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
+                                        <label for="toggleSwitch" class="flex items-center cursor-pointer">
+                                            <div class="relative">
+                                                <input type="checkbox" id="toggleSwitch" class="sr-only"
+                                                    onchange="toggleLifespanInput()">
+                                                <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
+                                                <div
+                                                    class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform">
+                                                </div>
+                                                <style>
+                                                    #toggleSwitch:checked+.block {
+                                                        background-color: #4caf50;
+                                                    }
 
-                                    <hr class="col-md-6 mt-3">
+                                                    #toggleSwitch:checked+.block+.dot {
+                                                        transform: translateX(1.25rem);
+                                                    }
+                                                </style>
+                                            </div>
+                                            <span class="ml-3 text-gray-700 text-sm">Useful Date</span>
+                                        </label>
+                                    </div>
 
                                     <div class="col-md-6">
-                                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
-                                            data-bs-target="#AddAccountModal">Save</button>
+                                        <div id="lifespanContainer" style="display: none;">
+                                            <label for="lifespan_date" class="form-label"
+                                                style="width: 100; font-size: 13px">Lifespan Date</label>
+                                            <input type="date" class="form-control" id="lifespan_date"
+                                                name="lifespan_date" onchange="calculateLifespan()">
+                                        </div>
                                     </div>
+                                    <div class="row mt-3">
+                                        <label for="remarks" class="form-label" style="font-size: 13px;">Remarks</label>
+                                        <textarea type="text" class="form-control" id="remarks" name="remarks" style="font-size: 13px; height: 100px"></textarea>
+                                    </div>
+
+                                    <div class="row mt-1">
+                                        <div class="col-md-6">
+                                            <label for="reviewed_to" class="form-label" style="font-size: 13px;">Reviewed
+                                                To</label>
+                                            <select name="reviewed_to" id="reviewed_to" class="form-select"
+                                                aria-label="Default select example">
+                                                @if ($reviewers->isEmpty())
+                                                    <option style="font-size: 10px">No Reviewer Found</option>
+                                                @else
+                                                    @foreach ($reviewers as $reviewer)
+                                                        <option value="{{ $reviewer->employees->id }}">
+                                                            {{ $reviewer->employees->name }}
+                                                            {{ $reviewer->employees->last_name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="approved_to" class="form-label" style="font-size: 13px;">Approved
+                                                To</label>
+                                            <select name="approved_to" id="approved_to" class="form-select"
+                                                aria-label="Default select example">
+                                                @if ($reviewers->isEmpty())
+                                                    <option style="font-size: 10px">No Reviewer Found</option>
+                                                @else
+                                                    @foreach ($approvers as $approver)
+                                                        <option value="{{ $approver->employees->id }}">
+                                                            {{ $approver->employees->name }}
+                                                            {{ $approver->employees->last_name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div>
+                                        <x-primary-button type="submit" class=" mt-3" data-bs-toggle="modal"
+                                            data-bs-target="#AddAccountModal">Save</x-primary-button>
+                                        <x-danger-button>Reset</x-danger-button>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
         </form>
     </div>
 
@@ -149,6 +191,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <select id="categoryFilter" class="form-select w-25" onchange="applyFilters()">
+                            <option value="">All Categories</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->category_name }}">{{ $category->category_name }}</option>
+                            @endforeach
+                        </select>
+                        <input type="text" id="searchItemInput" class="form-control w-25"
+                            placeholder="Search items..." onkeyup="applyFilters()">
+                    </div>
                     <!-- Table for Item Selection -->
                     <table class="table table-bordered table-hover">
                         <thead class="thead-dark">
@@ -157,24 +209,30 @@
                                 <th>ITEM DESCRIPTION</th>
                                 <th>INVENTORY BALANCE</th>
                                 <th>AVAILABLE QTY.</th>
-                                <th>PRICE</th>
+                                <th>COST PRICE</th>
+                                <th>CATEGORY</th>
                                 <th>STATUS</th>
                                 <th>ACTION</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="itemTable">
                             @foreach ($items as $item)
+                                @php
+                                    $priceLevel = $item->priceLevel()->latest()->where('price_type', 'cost')->first();
+                                    $priceAmount = $priceLevel ? $priceLevel->amount : 0.0;
+                                    $priceId = $priceLevel ? $priceLevel->id : 0;
+                                @endphp
                                 <tr>
                                     <td>{{ $item->item_code }}</td>
                                     <td>{{ $item->item_description }}</td>
                                     <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
                                     <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
-                                    <td>{{ $item->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? 0.0 }}
-                                    </td>
+                                    <td>{{ $priceAmount }}</td>
+                                    <td>{{ $item->category->category_name }}</td>
                                     <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                     <td>
                                         <button class="btn btn-primary btn-sm"
-                                            onclick="addToTable({{ json_encode($item) }}, {{ $cardexBalance[$item->id] ?? 0 }}, {{ $cardexAvailable[$item->id] ?? 0 }})">
+                                            onclick="addToTable({{ json_encode($item) }}, {{ $cardexBalance[$item->id] ?? 0 }}, {{ $cardexAvailable[$item->id] ?? 0 }} , {{ $priceId }})">
                                             Add </button>
                                     </td>
                                 </tr>
@@ -189,19 +247,62 @@
         </div>
     </div>
 
-    <!-- Add Account Modal -->
+    <!-- Add item Modal -->
 @endsection
 
 
 @section('script')
     <script>
+        document.getElementById('toggleSwitch').addEventListener('change', function() {
+            const lifespanContainer = document.getElementById('lifespanContainer');
+            lifespanContainer.style.display = this.checked ? 'block' : 'none';
+        });
+
+        function applyFilters() {
+            const categoryFilter = document.getElementById('categoryFilter').value.toLowerCase();
+            const searchFilter = document.getElementById('searchItemInput').value.toLowerCase();
+            const table = document.getElementById('itemTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const categoryCell = cells[5]?.textContent.toLowerCase();
+                let matchCategory = categoryFilter === '' || categoryCell === categoryFilter;
+
+                let matchSearch = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchFilter)) {
+                        matchSearch = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = matchCategory && matchSearch ? '' : 'none';
+            }
+        }
+
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('searchItemInput').addEventListener('keyup', applyFilters);
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('add-item-btn')) {
+                const button = event.target;
+                const item = JSON.parse(button.getAttribute('data-item'));
+                const balanceQty = parseInt(button.getAttribute('data-balance'));
+                const availableQty = parseInt(button.getAttribute('data-available'));
+
+                addToTable(item, balanceQty, availableQty);
+            }
+        });
+
+
         function viewBranch(data) {
             console.log(data);
             document.getElementById('branch_id').value = data.id;
         }
 
-        function addToTable(item, balanceQty, availableQty) {
-            console.log(item);
+        function addToTable(item, balanceQty, availableQty, priceId) {
+            //console.log(priceId);
             // Access the table body
             const tableBody = document.getElementById('itemTableBody');
 
@@ -228,6 +329,7 @@
                 <td>
                     <input type="number" name="request_qty[]" class="form-control" value="1" min="1" max="${balanceQty}" onchange="updateTotalPrice(this, ${balanceQty})">
                     <input type="hidden" name="item_id[]" value="${item.id}">
+                    <input type="hidden" name="cost_price[]" value="${priceId}">
                 </td>
                 <td>${price}</td>
                 <td class="total-price">${price}</td>

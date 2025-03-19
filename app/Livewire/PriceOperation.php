@@ -14,10 +14,12 @@ class PriceOperation extends Component
     public $branches;
     public $branchCount = 0;
     public $branchIds = [];
-    public $selectAllBrach = 0;
 
     public $itemView = '';
     public $itemBatches = []; // List sa prices sa usa ka item
+    public $majorPrice;
+
+    // Declare for active page
     public $AddBatchPricing = 0;
     public $pricingSummary = 0;
 
@@ -60,10 +62,11 @@ class PriceOperation extends Component
 
     public function savePricing()
     {
-        try {
+
             $this->AddBatchPricing = 1;
             $this->validate();
-            if ($this->selectAllBrach == 1) {
+
+            if ($this->branchCount == count($this->branchIds)) {
                 $this->priceObject = new PriceLevel();
                 $this->priceObject->amount = $this->newRetailPrice;
                 $this->priceObject->company_id = auth()->user()->branch->company_id;
@@ -72,23 +75,20 @@ class PriceOperation extends Component
                 $this->priceObject->item_id = $this->itemView->id;
                 $this->priceObject->save();
             } else {
-                dd($this->branchIds[0]);
-                foreach ($this->branchIds as $index => $branchId) {
-                    dd($this->branchIds[$index]);
+                foreach ($this->branchIds as $branchId) {
                     $this->priceObject = new PriceLevel();
                     $this->priceObject->amount = $this->newRetailPrice;
                     $this->priceObject->company_id = auth()->user()->branch->company_id;
                     $this->priceObject->price_type = 'SRP';
                     $this->priceObject->markup = $this->markupPercentage;
                     $this->priceObject->item_id = $this->itemView->id;
-                    $this->priceObject->branch_id = $branchId[$index];
+                    $this->priceObject->branch_id = $branchId;
                     $this->priceObject->save();
                 }
             }
+            $this->selectItem($this->itemView->id);
             $this->fetchData();
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
+
     }
 
     public function render()
@@ -96,24 +96,42 @@ class PriceOperation extends Component
         return view('livewire.price-operation');
     }
 
-    public function selectItem($id){
-
+    public function selectItem($id)
+    {
         $this->AddBatchPricing = 1;
-        $this->itemView = Item::where('id', $id)->first(); // Mag fetch sa item nga gi select sa modal
-        $this->costPrice = $this->itemView->costPrice->amount; // Mag fetch sa cost price sa item
-        $this->itemBatches = PriceLevel::with('item')
+        $this->itemView = Item::where('id', $id)->first(); // Fetch the selected item
+        $this->costPrice = $this->itemView->costPrice->amount; // Fetch the cost price of the item
+        $this->itemBatches = PriceLevel::with('item', 'branch')
             ->where([
-            ['company_id', auth()->user()->branch->company_id],
-            ['item_id', $id],
-            ['price_type', 'SRP']
+                ['company_id', auth()->user()->branch->company_id],
+                ['item_id', $id],
+                ['price_type', 'SRP']
             ])
             ->whereNotNull('branch_id')
-            ->get(); // Mag fetch sa mga price sa item
+            ->orderBy('branch_id')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('branch_id'); // Fetch the latest price for each branch
+        $this->majorPrice = PriceLevel::with('item', 'branch')->where('item_id', $id)->where([['price_type', 'SRP'],['branch_id', null]])->orderBy('created_at', 'desc')->first();
+
+        // Check if ang Base price mas updated kaysa sa mga branch price else add e-remove ang branch from the list
+        if($this->itemBatches != null && $this->majorPrice != null)
+        {
+            foreach ($this->itemBatches  as $index => $itemBatch) {
+                if($itemBatch->created_at < $this->majorPrice->created_at){
+                    $this->itemBatches->forget($index);
+                }
+            }
+            if($this->branchCount != $this->itemBatches->count()){
+                $this->itemBatches->push($this->majorPrice);
+        }
+    }
         $this->addBatchPricing = true;
 
     }
 
-    public function newBatch(){
+    public function newBatch()
+    {
         $this->branches = Branch::where('company_id', auth()->user()->branch->company_id)->get();
         $this->branchCount = count($this->branches);
     }
@@ -157,17 +175,6 @@ class PriceOperation extends Component
 
     }
 
-    public function toggleSelectAllBranches(){
-        if($this->selectAllBrach == 1){
-            $this->selectAllBrach = 0;
-        }else{
-            $this->selectAllBrach = 1;
-
-        }
-        $this->AddBatchPricing = 1;
-
-
-    }
 
     public function toggleBranchSelection($branchId)
     {

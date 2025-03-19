@@ -30,8 +30,7 @@
                                 <td>{{ $item->sellingPrice ? $item->sellingPrice->amount : 'N/A' }}</td>
                                 <td>{{ $item->sellingPrice ? $item->sellingPrice->markup . '%' : 'N/A' }}</td>
                                 <td>
-                                    <a href="#" class="btn btn-sm btn-primary btn-sm">Cost</a>
-                                    <a href="#" class="btn btn-sm btn-secondary btn-sm">Retail</a>
+                                    <a href="#" class="btn btn-sm btn-secondary btn-sm">Update Cost</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -206,12 +205,11 @@
                             <div class="card shadow-sm">
                                 <div class="card-body">
                                     <header class="d-flex justify-content-between align-items-center mb-3">
-                                        <h1 class="h4">Batches</h1>
+                                        <h1 class="h4">Active Prices</h1>
                                     </header>
                                     <table class="table table-striped table-hover table-sm">
                                         <thead class="table-dark">
                                             <tr style="font-size: smaller;">
-                                                <th style="font-size: smaller;">Item Code</th>
                                                 <th style="font-size: smaller;">Branch</th>
                                                 <th style="font-size: smaller;">Retail Price</th>
                                                 <th style="font-size: smaller;">Actions</th>
@@ -221,12 +219,11 @@
                                         </tbody class="table table-striped table-hover table-sm">
                                         @forelse ($itemBatches as $itemBatch)
                                             <tr>
-                                                <td style="font-size: smaller;">{{ $itemBatch->item->item_code }}</td>
                                                 <td style="font-size: smaller;">
-                                                    {{ $itemBatch->branch->branch_name ?? 'All' }}
+                                                    {{ $itemBatch->branch->branch_name ?? 'Base Price' }}
                                                 </td>
                                                 <td style="font-size: smaller;">
-                                                    {{ $itemBatch->item->sellingPrice->amount ?? 'N/A' }}</td>
+                                                    {{ $itemBatch->amount ?? 'N/A' }}</td>
                                                 <td style="font-size: smaller;">
                                                     <button class="btn btn-sm btn-primary">View</button>
                                                 </td>
@@ -234,7 +231,7 @@
 
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="text-center">No Batches Found</td>
+                                                <td colspan="5" class="text-center">No Active Prices Found</td>
                                             </tr>
                                         @endforelse
                                     </table>
@@ -246,9 +243,25 @@
                                 <header class="d-flex justify-content-between align-items-center mb-3">
                                     <h1 class="h4">Apllied Branches</h1>
                                     <div>
-                                        <input type="checkbox" id="selectAllBranches" wire:model="selectAllBranches"
-                                            wire:click="toggleSelectAllBranches">
+                                        <input type="checkbox" id="selectAllBranches"
+                                            onclick="toggleSelectAllBranches(this)">
                                         <label for="selectAllBranches">Select All</label>
+                                        <script>
+                                            function toggleSelectAllBranches(source) {
+                                                checkboxes = document.querySelectorAll('input[type="checkbox"][wire\\:model="branchIds"]');
+                                                for (var i = 0; i < checkboxes.length; i++) {
+                                                    checkboxes[i].checked = source.checked;
+                                                }
+                                                if (source.checked) {
+                                                    @this.set('branchIds', Array.from(checkboxes).map(checkbox => checkbox.value));
+                                                    @this.set('AddBatchPricing', 1);
+                                                } else {
+                                                    @this.set('branchIds', []);
+                                                    @this.set('AddBatchPricing', 1);
+
+                                                }
+                                            }
+                                        </script>
                                     </div>
                                 </header>
                                 <table class="table table-striped table-hover table-sm">
@@ -265,7 +278,8 @@
                                                 <td>{{ $branch->branch_name }}</td>
                                                 <td class="text-center">{{ $branch->company->company_code }}</td>
                                                 <td><input type="checkbox" wire:model="branchIds"
-                                                        value="{{ $branch->id }}">
+                                                        value="{{ $branch->id }}"
+                                                        onclick="document.getElementById('selectAllBranches').checked = false;">
                                                 </td>
                                             </tr>
                                         @empty

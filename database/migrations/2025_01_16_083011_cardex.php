@@ -12,15 +12,18 @@ return new class extends Migration
     public function up(): void
     {
 
-        IF (!Schema::hasTable('CONSUMPTIONS')) {
-            Schema::create('CONSUMPTIONS', function (Blueprint $table) {
+        IF (!Schema::hasTable('withdrawals')) {
+            Schema::create('withdrawals', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->string('consumption_number')->nullable()->index();
-                $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->foreignId('checked_by')->constrained('employees')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->foreignId('approved_by')->constrained('employees')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->text('remarks_id')->nullable();
+                $table->string('reference_number')->nullable()->index();
+                $table->date('usage_date')->nullable();
+                $table->date('useful_date')->nullable();
+                $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
+                $table->foreignId('reviewed_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
+                $table->foreignId('approved_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
+                $table->foreignId('department_id')->constrained('departments')->onDelete('no action')->onUpdate('cascade');
+                $table->text('remarks')->nullable();
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
@@ -40,7 +43,7 @@ return new class extends Migration
                 $table->enum('transaction_type', ['STF', 'RECEVING', 'ADJUSTMENT', 'SALES', 'SALES-RETURN','CONSUMPTION']);
                 $table->foreignId('price_level_id')->nullable()->default(null)->constrained('price_levels')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('invoice_id')->nullable()->default(null)->constrained('invoices')->onDelete('no action')->onUpdate('no action');
-                $table->foreignId('cunsumption_id')->nullable()->default(null)->constrained('consumptions')->onDelete('no action')->onUpdate('no action');
+                $table->foreignId('withdrawal_id')->nullable()->default(null)->constrained('withdrawals')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('receiving_id')->nullable()->default(null)->constrained('receivings')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('requisition_id')->nullable()->default(null)->constrained('requisition_infos')->onDelete('no action')->onUpdate('no action');

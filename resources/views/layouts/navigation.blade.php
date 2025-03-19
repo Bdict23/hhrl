@@ -77,7 +77,6 @@
                             <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
                                 {{ __('PO Summary') }}
                             </x-dropdown-link>
-
                             <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
                                 {{ __('Receive Stock') }}
                             </x-dropdown-link>
@@ -110,6 +109,9 @@
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/back_orders_summary')" class="no-underline">
                                 {{ __('Back Orders') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="url('/Allocate_Item')" class="no-underline">
+                                {{ __('Item Allocation') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
                                 {{ __('Item Withdrawal') }}

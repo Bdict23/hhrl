@@ -43,14 +43,21 @@ class DepartmentController extends Controller
             'employees.*' => 'exists:employees,id',
         ]);
 
-        $department = Department::create([
-            'department_name' => $validatedData['department_name'],
-            'branch_id' => $validatedData['branch'],
-            'department_description' => $validatedData['description'],
-            'company_id' => auth()->user()->branch->company_id,
-        ]);
+        // $department = Department::create([
+        //     'department_name' => $validatedData['department_name'],
+        //     'branch_id' => $validatedData['branch'],
+        //     'department_description' => $validatedData['description'],
+        //     'company_id' => auth()->user()->branch->company_id,
+        // ]);
 
         $department =  new Department($validatedData);
+        $department->company_id = auth()->user()->branch->company_id;
+        $department->branch_id = $validatedData['branch'];
+        $department->department_status = 'ACTIVE';
+        $department->department_name = $validatedData['department_name'];
+        $department->department_description = $validatedData['description'];
+
+        $department->save();
 
         if (!empty($validatedData['employees'])) {
             Employee::whereIn('id', $validatedData['employees'])->update(['department_id' => $department->id]);

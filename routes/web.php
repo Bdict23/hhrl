@@ -199,7 +199,7 @@ Route::post('/store_payment', [InvoicingController::class, 'storePayment'])->mid
 Route::get('/daily_sales_report', [InvoicingController::class, 'daily_sales_report'])->middleware(['auth', 'verified'])->name('daily_sales_report');
 
 
-Route::get('/item_withdrawal', [InventoryAdjustmentController::class, 'NewItemwithdrawal'])->middleware(['auth', 'verified'])->name('materials.requisition'); // Route to show the raw materials requisition form
+Route::get('/item_withdrawal', [InventoryAdjustmentController::class, 'NewItemwithdrawal'])->middleware(['auth', 'verified'])->name('withdrawal.index'); // Route to show the raw materials requisition form
 
 
 Route::get('/branch_department', [DepartmentController::class, 'index'])->middleware(['auth', 'verified'])->name('departments.index'); // Route to show the raw materials requisition form
@@ -215,3 +215,8 @@ Route::get('/settings', [SettingsController::class, 'index'])->middleware(['auth
 // Routes for storing categories and classifications
 Route::post('/settings/category/store', [SettingsController::class, 'storeCategory'])->name('settings.category.store');
 Route::post('/settings/classification/store', [SettingsController::class, 'storeClassification'])->name('settings.classification.store');
+
+
+// Route for storing a new withdarawal
+Route::post('/item_withdrawal', [InventoryAdjustmentController::class, 'storeWithdrawal'])->middleware(['auth', 'verified'])->name('withdrawal.store');
+
