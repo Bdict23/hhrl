@@ -11,7 +11,6 @@ use App\Models\Branch;
 use App\Models\RequisitionType;
 use App\Models\Item;
 use App\Models\priceLevel;
-use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SignatorY;
@@ -34,9 +33,10 @@ class MenusController extends Controller
     public function createMenu(){
         $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
         $types =  RequisitionType::all();
-        $activeStatus = Status::where('status_name', 'ACTIVE')->first();
-        $items = Item::with('priceLevel', 'statuses', 'units') // Added unitOfMeasures here
-            ->where('statuses_id', $activeStatus ? $activeStatus->id : null)
+        // $activeStatus = Status::where('status_name', 'ACTIVE')->first();
+        $items = Item::with('priceLevel', 'units') // Added unitOfMeasures here
+            ->where('item_status', 'ACTIVE')
+            ->where('company_id', Auth::user()->branch->company_id)
             ->get();
         $categories = Category::where([['status', 'ACTIVE'], ['company_id', Auth::user()->branch->company_id], ['category_type', 'MENU']])->get();
         $approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE','CREATE_MENU'], ['branch_id', Auth::user()->branch_id]])->get();

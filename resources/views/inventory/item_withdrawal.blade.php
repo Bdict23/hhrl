@@ -12,6 +12,9 @@
                                 <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+
                                     Add
                                     ITEM</x-primary-button>
+                                <x-secondary-button style="color: rgb(135, 235, 168);"
+                                    onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary
+                                </x-secondary-button>
                                 <x-secondary-button onclick="history.back()"> Back
                                 </x-secondary-button>
                             </div>
@@ -87,34 +90,52 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Usage
-                                            Date</label>
+                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">To be
+                                            use on</label>
                                         <input type="date" class="form-control" id="usage_date" name="usage_date"
                                             required>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="toggleSwitch" class="flex items-center cursor-pointer">
-                                            <div class="relative">
-                                                <input type="checkbox" id="toggleSwitch" class="sr-only"
-                                                    onchange="toggleLifespanInput()">
-                                                <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
-                                                <div
-                                                    class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform">
-                                                </div>
-                                                <style>
-                                                    #toggleSwitch:checked+.block {
-                                                        background-color: #4caf50;
-                                                    }
+                                        <div class="col-md-6">
+                                            <label for="toggleSwitch" class="flex items-center cursor-pointer">
+                                                <div class="relative">
+                                                    <input type="checkbox" id="toggleSwitch" class="sr-only"
+                                                        onchange="toggleLifespanInput()">
+                                                    <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
+                                                    <div
+                                                        class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform">
+                                                    </div>
+                                                    <style>
+                                                        #toggleSwitch:checked+.block {
+                                                            background-color: #4caf50;
+                                                        }
 
-                                                    #toggleSwitch:checked+.block+.dot {
-                                                        transform: translateX(1.25rem);
-                                                    }
-                                                </style>
-                                            </div>
-                                            <span class="ml-3 text-gray-700 text-sm">Useful Date</span>
-                                        </label>
+                                                        #toggleSwitch:checked+.block+.dot {
+                                                            transform: translateX(1.25rem);
+                                                        }
+                                                    </style>
+                                                </div>
+                                                <span class="ml-3 text-gray-700 text-sm">Useful Date</span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6 mt-4">
+                                            <label for="toggleSwitch2" class="flex items-center cursor-pointer">
+                                                <div class="relative">
+                                                    <input type="checkbox" id="toggleSwitch2" class="sr-only">
+
+
+                                                    <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
+                                                    <div
+                                                        class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform">
+                                                    </div>
+                                                </div>
+                                                <span class="ml-3 text-gray-700 text-sm">Final</span>
+                                            </label>
+                                            <input type="text" id="finalStatus" name="finalStatus" value="NO" hidden>
+                                        </div>
+
                                     </div>
 
                                     <div class="col-md-6">
@@ -258,6 +279,7 @@
             lifespanContainer.style.display = this.checked ? 'block' : 'none';
         });
 
+
         function applyFilters() {
             const categoryFilter = document.getElementById('categoryFilter').value.toLowerCase();
             const searchFilter = document.getElementById('searchItemInput').value.toLowerCase();
@@ -302,7 +324,6 @@
         }
 
         function addToTable(item, balanceQty, availableQty, priceId) {
-            //console.log(priceId);
             // Access the table body
             const tableBody = document.getElementById('itemTableBody');
 
@@ -310,7 +331,13 @@
             const existingItem = Array.from(tableBody.querySelectorAll('tr')).find(row => row.querySelector('td')
                 .textContent === item.item_code);
             if (existingItem) {
-                alert('The item already exists in the table.');
+                showAlert('The item already exists in the table.');
+                return;
+            }
+
+            // Check if available quantity is zero
+            if (availableQty <= 0) {
+                showAlert('Cannot add this item because there is no available balance.');
                 return;
             }
 
@@ -340,9 +367,16 @@
 
             // Append the row to the table
             tableBody.appendChild(newRow);
+        }
 
-            // Close the modal
-            //$('#AddItemModal').modal('hide');
+        function showAlert(message) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
         }
 
         function updateTotalPrice(input, balanceQty) {
@@ -394,6 +428,8 @@
             }
         }
 
+
+
         function calculateLifespan() {
             const usageDate = new Date(document.getElementById('usage_date').value);
             const lifespanDate = new Date(document.getElementById('lifespan_date').value);
@@ -420,5 +456,51 @@
                     `Lifespan:\n${diffYears}  year(s) and ${diffMonths} month(s) or the total of (${totalDiffDays} days)`;
             }
         }
+
+        // Handle the "Final" toggle switch
+        document.getElementById('toggleSwitch2').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('finalStatus').value = 'YES';
+            } else {
+                document.getElementById('finalStatus').value = 'NO';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure the DOM is fully loaded before attaching the event listener
+            const finalToggle = document.getElementById('toggleSwitch2');
+
+            if (finalToggle) {
+                console.log('Final toggle element found:', finalToggle); // Debugging log
+                finalToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        console.log('Final toggle is ON');
+                        // Add any additional logic here if needed
+                    } else {
+                        console.log('Final toggle is OFF');
+                        // Add any additional logic here if needed
+                    }
+                });
+            } else {
+                console.error('Final toggle (#toggleSwitch2) not found in the DOM.');
+            }
+        });
     </script>
+    <style>
+        /* Ensure the toggle background changes when checked */
+        #toggleSwitch2:checked+.block {
+            background-color: #4caf50;
+        }
+
+        /* Ensure the dot moves when checked */
+        #toggleSwitch2:checked+.block+.dot {
+            transform: translateX(1.25rem);
+        }
+
+        /* Add a smooth transition for the dot */
+        .dot {
+            transition: transform 0.3s ease;
+        }
+    </style>
+    <div id="alertContainer"></div>
 @endsection

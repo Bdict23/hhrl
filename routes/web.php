@@ -219,4 +219,17 @@ Route::post('/settings/classification/store', [SettingsController::class, 'store
 
 // Route for storing a new withdarawal
 Route::post('/item_withdrawal', [InventoryAdjustmentController::class, 'storeWithdrawal'])->middleware(['auth', 'verified'])->name('withdrawal.store');
+// Route for withdrawal summary
+Route::get('/withdrawal_summary', [InventoryAdjustmentController::class, 'withdrawalSummary'])->middleware(['auth', 'verified'])->name('withdrawal.summary');
 
+// Route for withdrawal review
+Route::get('/withdrawal_review', [InventoryAdjustmentController::class, 'withdrawalReview'])->middleware(['auth', 'verified'])->name('withdrawal.review');
+
+// Route for withdrawal approval
+Route::get('/withdrawal_approval', [InventoryAdjustmentController::class, 'withdrawalApproval'])->middleware(['auth', 'verified'])->name('withdrawal.approval');
+
+// Route for withdrawal show
+Route::get('/withdrawal/{id}', [InventoryAdjustmentController::class, 'showWithdrawal'])->name('withdrawal.show');
+
+// Edit withdrawal
+Route::get('/withdrawal/{id}/edit', [InventoryAdjustmentController::class, 'editWithdrawal'])->name('withdrawal.edit');

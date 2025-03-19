@@ -49,4 +49,9 @@ class Cardex extends Model
         return $this->belongsTo(Receiving::class, 'receiving_id');
     }
 
+    public function withdrawal()
+    {
+        return $this->belongsTo(Withdrawal::class, 'withdrawal_id');
+    }
+
 }

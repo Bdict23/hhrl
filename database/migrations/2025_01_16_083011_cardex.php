@@ -24,6 +24,8 @@ return new class extends Migration
                 $table->foreignId('approved_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
                 $table->foreignId('department_id')->constrained('departments')->onDelete('no action')->onUpdate('cascade');
                 $table->text('remarks')->nullable();
+                $table->enum('withdrawal_status', ['FOR APPROVAL', 'REJECTED', 'FOR REVIEW','PREPARING','CANCELLED','APPROVED'])->default('PREPARING')->index('withdrawal_status');
+                $table->date('approved_date')->nullable();
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
@@ -36,11 +38,11 @@ return new class extends Migration
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                 $table->string('qty_in')->nullable()->default('0');
                 $table->string('qty_out')->nullable()->default('0');
-                $table->date('expiration_date')->nullable();
+                $table->date('expiration_date')->nullable()->index('expiration_date');
                 $table->date('manufactured_date')->nullable();
                 $table->foreignId('item_id')->constrained('items')->onDelete('no action')->onUpdate('no action');
                 $table->enum('status', ['TEMP', 'RESERVED', 'FINAL', 'CANCELLED'])->default('TEMP');
-                $table->enum('transaction_type', ['STF', 'RECEVING', 'ADJUSTMENT', 'SALES', 'SALES-RETURN','CONSUMPTION']);
+                $table->enum('transaction_type', ['STF', 'RECEVING', 'ADJUSTMENT', 'SALES', 'SALES-RETURN','WITHDRAWAL'])->index('transaction_type');
                 $table->foreignId('price_level_id')->nullable()->default(null)->constrained('price_levels')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('invoice_id')->nullable()->default(null)->constrained('invoices')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('withdrawal_id')->nullable()->default(null)->constrained('withdrawals')->onDelete('no action')->onUpdate('no action');

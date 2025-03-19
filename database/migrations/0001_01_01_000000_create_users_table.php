@@ -40,7 +40,7 @@ return new class extends Migration
                 $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
                 $table->string('branch_email');
                 $table->string('branch_cell');
-                $table->string('branch_status')->default('ACTIVE');
+                $table->enum('branch_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
 
             });}
