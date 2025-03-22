@@ -233,3 +233,9 @@ Route::get('/withdrawal/{id}', [InventoryAdjustmentController::class, 'showWithd
 
 // Edit withdrawal
 Route::get('/withdrawal/{id}/edit', [InventoryAdjustmentController::class, 'editWithdrawal'])->name('withdrawal.edit');
+
+// view and update withdrawal
+Route::get('/withdrawal/{id}/view', [InventoryAdjustmentController::class, 'viewAndUpdateWithdrawal'])->name('withdrawal.view');
+
+// Route for updating withdrawal
+Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'printWidthrawal'])->name('withdrawal.print');

@@ -17,8 +17,8 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                 $table->string('reference_number')->nullable()->index();
-                $table->date('usage_date')->nullable();
-                $table->date('useful_date')->nullable();
+                $table->date('usage_date')->default(DB::raw('CURRENT_DATE'))->index('usage_date');
+                $table->date('useful_date')->nullable()->index('useful_date');
                 $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
                 $table->foreignId('reviewed_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
                 $table->foreignId('approved_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
@@ -26,6 +26,8 @@ return new class extends Migration
                 $table->text('remarks')->nullable();
                 $table->enum('withdrawal_status', ['FOR APPROVAL', 'REJECTED', 'FOR REVIEW','PREPARING','CANCELLED','APPROVED'])->default('PREPARING')->index('withdrawal_status');
                 $table->date('approved_date')->nullable();
+                $table->date('reviewed_date')->nullable();
+                $table->date('rejected_date')->nullable();
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
@@ -49,6 +51,7 @@ return new class extends Migration
                 $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('receiving_id')->nullable()->default(null)->constrained('receivings')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('requisition_id')->nullable()->default(null)->constrained('requisition_infos')->onDelete('no action')->onUpdate('no action');
+                $table->timestamp('final_date')->nullable();
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
             });

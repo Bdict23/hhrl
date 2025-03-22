@@ -50,7 +50,7 @@ return new class extends Migration
                 Schema::create('departments', function (Blueprint $table) {
                     $table->id();
                     $table->string('department_name');
-                    $table->string('department_description');
+                    $table->string('department_description')->nullable();
                     $table->enum('department_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
                     $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                     $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action')->nullable();

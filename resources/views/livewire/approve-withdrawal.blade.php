@@ -1,7 +1,7 @@
 <div>
     <div class="card" {{ $showWithdrawalSummary ? 'style=display:block' : 'style=display:none' }}>
         <header class="card-header">
-            <h2>For review withdrawals</h2>
+            <h2>For Approval Withdrawals</h2>
         </header>
         <div class="card-body">
             <table class="table table-striped table-hover table-responsive">
@@ -16,18 +16,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($withdrawals as $withdrawal)
+                    @forelse ($withdrawals as $withdrawals)
                         <tr>
 
-                            <td>{{ $withdrawal->reference_number }}</td>
-                            <td>{{ $withdrawal->department->department_name }}</td>
-                            <td>{{ $withdrawal->preparedBy->name }} {{ $withdrawal->preparedBy->last_name }}</td>
-                            <td>{{ \Carbon\Carbon::parse($withdrawal->usage_date)->format('d/m/Y') }}</td>
-                            <td>{{ $withdrawal->created_at->format('d/m/Y') }}</td>
+                            <td>{{ $withdrawals->reference_number }}</td>
+                            <td>{{ $withdrawals->department->department_name }}</td>
+                            <td>{{ $withdrawals->preparedBy->name }} {{ $withdrawals->preparedBy->last_name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($withdrawals->usage_date)->format('d/m/Y') }}</td>
+                            <td>{{ $withdrawals->created_at->format('d/m/Y') }}</td>
 
                             <td>
                                 <a href="#" class="btn btn-sm btn-primary btn-sm"
-                                    wire:click="viewWithdrawal({{ $withdrawal->id }})">View</a>
+                                    wire:click="viewWithdrawalDetails({{ $withdrawals->id }})">View
+                                    {{ $withdrawals->id }}</a>
 
                             </td>
                         </tr>
@@ -51,11 +52,7 @@
                                 <input type="text" class="form-control" wire:model="search"
                                     placeholder="Search for items..." />
                             </div>
-                            <div class="col-md-6">
-                                <x-secondary-button class="btn btn-sm float-end" wire:click="fetchData">
-                                    Back
-                                </x-secondary-button>
-                            </div>
+
                         </div>
                     </div>
                     <div class="card-body">
@@ -103,9 +100,8 @@
                                     <label for="reference_number" class="form-label">Ref. Number</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" class="form-control" id="reference_number"
-                                        name="reference_number" readonly
-                                        value="{{ $withdrawal && $withdrawal->reference_number ? $withdrawal->reference_number : 'N/A' }}">
+                                    <input type="text" class="form-control" id="reference_number" readonly
+                                        value="{{ $reference }}">
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -113,17 +109,15 @@
                                     <label for="deptartment" class="form-label"
                                         style="width: 100; font-size: 13px">Department</label>
                                     <input type="text" class="form-control" id="department" name="department"
-                                        readonly
-                                        value="{{ $withdrawal && $withdrawal->department ? $withdrawal->department->department_name : 'N/A' }}">
+                                        readonly value="{{ $department }}">
                                 </div>
                                 <div class="col-md-6">
 
                                     <label for="prepared_date" class="form-label "
                                         style="width: 100; font-size: 13px">Prepared
                                         Date</label>
-                                    <input type="date" class="form-control" id="prepared_date" name="prepared_date"
-                                        value="{{ $withdrawal ? $withdrawal->created_at->format('Y-m-d') : 'N/A' }}"
-                                        readonly>
+                                    <input type="text" class="form-control" id="prepared_date" name="prepared_date"
+                                        value="{{ $preparedDate }}" readonly>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -133,16 +127,14 @@
                                             style="width: 100; font-size: 13px">To be
                                             use on</label>
                                         <input type="text" class="form-control" id="usage_date"
-                                            value="{{ $withdrawal && $withdrawal->usage_date ? $withdrawal->usage_date : 'N/A' }}"
-                                            readonly>
+                                            value="{{ $useDate }}" readonly>
                                     </div>
                                     <div class="col-md-6">
 
                                         <label for="usage_date" class="form-label"
                                             style="width: 100; font-size: 13px">Validity</label>
-                                        <input type="date" class="form-control" id="usage_date" name="usage_date"
-                                            value="{{ $withdrawal && $withdrawal->useful_date ? $withdrawal->useful_date : 'N/A' }}"
-                                            readonly>
+                                        <input type="text" class="form-control" id="usage_date" name="usage_date"
+                                            value="{{ $validityDate }}" readonly>
 
                                     </div>
                                 </div>
@@ -150,7 +142,7 @@
                                 <div class="row mt-3">
                                     <label for="remarks" class="form-label" style="font-size: 13px;">Remarks</label>
                                     <textarea type="text" class="form-control" id="remarks" name="remarks" style="font-size: 13px; height: 100px"
-                                        readonly> {{ $withdrawal && $withdrawal->remarks ? $withdrawal->remarks : 'N/A' }}</textarea>
+                                        readonly> {{ $withdrawalRemarks }}</textarea>
                                 </div>
 
                                 <div class="row mt-1">
@@ -158,24 +150,23 @@
                                         <label for="reviewed_to" class="form-label" style="font-size: 13px;">Prepared By
                                         </label>
                                         <input type="text" class="form-control" id="prepared_by" name="prepared_by"
-                                            value="{{ $withdrawal && $withdrawal->preparedBy ? $withdrawal->preparedBy->name . ' ' . $withdrawal->preparedBy->last_name : 'N/A' }}">
+                                            value="{{ $preparedBy }}">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="approved_to" class="form-label" style="font-size: 13px;">Approved
                                             To</label>
                                         <input type="text" class="form-control" id="approved_to"
-                                            name="approved_to"
-                                            value="{{ $withdrawal && $withdrawal->approvedBy ? $withdrawal->approvedBy->name . ' ' . $withdrawal->approvedBy->last_name : 'N/A' }}">
+                                            name="approved_to" value="{{ $approvedBy }}">
                                     </div>
-
                                 </div>
                                 <div>
-                                    @if ($withdrawal && $withdrawal->id)
-                                        <x-primary-button class=" mt-3"
-                                            wire:click="approveWithdrawal({{ $withdrawal->id }})">Reviewed</x-primary-button>
-                                        <x-danger-button
-                                            wire:click="rejectWithdrawal({{ $withdrawal->id }})">Reject</x-danger-button>
-                                    @endif
+                                    <x-primary-button class="mt-3"
+                                        wire:click="approveWithdrawal(this.event.target.value)"
+                                        value="{{ $withdrawalId }}">Approve</x-primary-button>
+                                    <x-danger-button wire:click="rejectWithdrawal(this.event.target.value)"
+                                        value="{{ $withdrawalId }}">Reject</x-danger-button>
+                                    <x-secondary-button wire:click="fetchData">Back</x-secondary-button>
+
                                 </div>
 
                             </div>

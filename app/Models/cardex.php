@@ -54,4 +54,9 @@ class Cardex extends Model
         return $this->belongsTo(Withdrawal::class, 'withdrawal_id');
     }
 
+    public function priceLevel()
+    {
+        return $this->belongsTo(PriceLevel::class, 'price_level_id');
+    }
+
 }

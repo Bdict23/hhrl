@@ -82,7 +82,7 @@ class ItemMain extends Component
             $item->category_id = $this->category_id;
             $item->brand_id = $this->brand_id;
             $item->classification_id = $this->classification_id;
-            $item->sub_classification_id = $this->sub_classification_id; // Corrected property name
+            $item->sub_class_id = $this->sub_classification_id; // Corrected property name
             $item->company_id = $this->company_id;
             $item->created_by = auth()->user()->emp_id;
             $item->save();
@@ -101,7 +101,7 @@ class ItemMain extends Component
             $this->fetchData();
             session()->flash('message', 'Item successfully added.');
         } catch (\Exception $e) {
-            session()->flash('error', $e->getMessage());
+           return $e->getMessage();
         }
     }
 

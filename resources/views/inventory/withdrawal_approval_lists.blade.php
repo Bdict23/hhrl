@@ -4,7 +4,7 @@
         <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
-                    role="tab" aria-controls="invoice" aria-selected="true">For Review</button>
+                    role="tab" aria-controls="invoice" aria-selected="true">For Approval</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="job-order-tab" data-bs-toggle="tab" data-bs-target="#job-order" type="button"
@@ -20,7 +20,7 @@
             <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
                 <!--Review Content -->
 
-                @livewire('review-withdrawal')
+                @livewire('approve-withdrawal')
 
             </div>
             <div class="tab-pane fade" id="job-order" role="tabpanel" aria-labelledby="job-order-tab">

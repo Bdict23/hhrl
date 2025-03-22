@@ -78,6 +78,7 @@ class InventoryAdjustmentController extends Controller
         $withdrawal->reviewed_by = $request->reviewed_to;
         $withdrawal->prepared_by = auth()->user()->emp_id;
         $withdrawal->source_branch_id = auth()->user()->branch_id;
+        $withdrawal->remarks = $request->remarks;
         $withdrawal->withdrawal_status = ($request->finalStatus == 'YES' ? 'FOR REVIEW' : 'PREPARING');
         $withdrawal->save();
 
@@ -114,6 +115,35 @@ public function editWithdrawal($id) {
     $items = Item::with('priceLevel', 'units', 'category', 'classification')->where([['item_status', 'ACTIVE'], ['company_id', auth()->user()->branch->company_id]])->get();
 
     return view('inventory.edit_withdrawal', compact('withdrawal', 'departments', 'approvers', 'reviewers', 'items'));
+}
+
+public function withdrawalApproval() {
+    $withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->where('approved_by', auth()->user()->emp_id)->get();
+    return view('inventory.withdrawal_approval_lists', compact('withdrawals'));
+}
+
+public function viewAndUpdateWithdrawal($id) {
+    $withdrawal = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
+
+
+    $departments = Department::where([['company_id', auth()->user()->branch->company_id], ['department_status', 'ACTIVE'], ['branch_id', auth()->user()->branch_id]])->get();
+    $approvers = Signatory::where([['signatory_type', 'APPROVER', 'employees'], ['branch_id', auth()->user()->branch_id], ['status', 'ACTIVE'], ['MODULE', 'ITEM_WITHDRAWAL']])->get();
+    $reviewers = Signatory::where([['signatory_type', 'REVIEWER', 'employees'], ['branch_id', auth()->user()->branch_id], ['status', 'ACTIVE'], ['MODULE', 'ITEM_WITHDRAWAL']])->get();
+    $items = Item::with('priceLevel', 'units', 'category', 'classification')->where([['item_status', 'ACTIVE'], ['company_id', auth()->user()->branch->company_id]])->get();
+    $categories = DB::table('categories')->select('category_name')->where([['status', 'ACTIVE'],['category_type', 'ITEM'],['company_id', auth()->user()->branch->company_id]])->get();
+
+    return view('inventory.withdrawal_view_update', compact('withdrawal', 'departments', 'approvers', 'reviewers', 'items', 'categories'));
+
+}
+
+public function printWidthrawal($id) {
+    try {
+        Cardex::where('withdrawal_id', $id)->update(['status' => 'FINAL']);
+        return redirect()->route('withdrawal.index')->with('success', 'Withdrawal status updated and finalized successfully.');
+
+    } catch (\Exception $e) {
+        return ($e->getMessage());
+    }
 }
 
 }

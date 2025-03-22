@@ -1,8 +1,10 @@
 @extends('layouts.master')
 @section('content')
     <div class="d-flex">
+
+        {{-- Page Title --}}
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" style="overflow-y: auto; max-height: 500px;">
 
             <h5 class="text-muted">Item Management</h5>
             <ul class="nav flex-column">
