@@ -27,8 +27,7 @@
 
                             <td>
                                 <a href="#" class="btn btn-sm btn-primary btn-sm"
-                                    wire:click="viewWithdrawalDetails({{ $withdrawals->id }})">View
-                                    {{ $withdrawals->id }}</a>
+                                    wire:click="viewWithdrawalDetails({{ $withdrawals->id }})">View</a>
 
                             </td>
                         </tr>
@@ -82,7 +81,7 @@
                         </table>
                     </div>
                     <div class="card-footer">
-                        Total:
+                        Total: <span>{{ $overAllCost }}<span>
                     </div>
 
                 </div>

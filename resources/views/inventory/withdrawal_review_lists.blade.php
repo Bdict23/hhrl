@@ -6,14 +6,10 @@
                 <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
                     role="tab" aria-controls="invoice" aria-selected="true">For Review</button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="job-order-tab" data-bs-toggle="tab" data-bs-target="#job-order" type="button"
-                    role="tab" aria-controls="job-order" aria-selected="false">Rejected
-                    Menu</button>
-            </li>
+
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="pcv-tab" data-bs-toggle="tab" data-bs-target="#pcv" type="button"
-                    role="tab" aria-controls="pcv" aria-selected="false">All</button>
+                    role="tab" aria-controls="pcv" aria-selected="false">Summary</button>
             </li>
         </ul>
         <div class="tab-content" id="jobOrderTabContent">
@@ -79,5 +75,18 @@
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+        function updateOverallTotal() {
+            const tableBody = document.getElementById('itemTableBody');
+            const rows = tableBody.querySelectorAll('tr');
+            let totalCost = 0;
+
+            rows.forEach(row => {
+                const totalPriceCell = row.querySelector('.total-price');
+                totalCost += parseFloat(totalPriceCell.textContent);
+            });
+
+            document.getElementById('total_cost').value = totalCost.toFixed(2);
+        }
+    </script>
 @endsection

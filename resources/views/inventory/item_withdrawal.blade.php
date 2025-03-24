@@ -324,30 +324,23 @@
         }
 
         function addToTable(item, balanceQty, availableQty, priceId) {
-            // Access the table body
             const tableBody = document.getElementById('itemTableBody');
-
-            // Check if the item already exists in the table
             const existingItem = Array.from(tableBody.querySelectorAll('tr')).find(row => row.querySelector('td')
                 .textContent === item.item_code);
+
             if (existingItem) {
                 showAlert('The item already exists in the table.');
                 return;
             }
 
-            // Check if available quantity is zero
             if (availableQty <= 0) {
                 showAlert('Cannot add this item because there is no available balance.');
                 return;
             }
 
-            // Extract the price from the price_level array
             const price = item.price_level[0].amount;
-
-            // Create a new row
             const newRow = document.createElement('tr');
 
-            // Populate the row with item data
             newRow.innerHTML = `
                 <td class="inventory-balance">${balanceQty}</td>
                 <td class="available-qty">${availableQty}</td>
@@ -365,8 +358,8 @@
                 </td>
             `;
 
-            // Append the row to the table
             tableBody.appendChild(newRow);
+            updateOverallTotal();
         }
 
         function showAlert(message) {
@@ -388,14 +381,26 @@
             const availableQtyCell = row.querySelector('.available-qty');
             totalPriceCell.textContent = (price * requestQty).toFixed(2);
             availableQtyCell.textContent = balanceQty - requestQty;
-            // console.log(totalPriceCell);
+            updateOverallTotal();
         }
 
         function removeRow(button) {
-            // Find the row to remove
             const row = button.closest('tr');
-            // Remove the row from the table
             row.remove();
+            updateOverallTotal();
+        }
+
+        function updateOverallTotal() {
+            const tableBody = document.getElementById('itemTableBody');
+            const rows = tableBody.querySelectorAll('tr');
+            let totalCost = 0;
+
+            rows.forEach(row => {
+                const totalPriceCell = row.querySelector('.total-price');
+                totalCost += parseFloat(totalPriceCell.textContent);
+            });
+
+            document.getElementById('total_cost').value = totalCost.toFixed(2);
         }
 
         function addCustomer() {

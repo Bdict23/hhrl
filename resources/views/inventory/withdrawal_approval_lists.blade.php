@@ -8,8 +8,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="job-order-tab" data-bs-toggle="tab" data-bs-target="#job-order" type="button"
-                    role="tab" aria-controls="job-order" aria-selected="false">Rejected
-                    Menu</button>
+                    role="tab" aria-controls="job-order" aria-selected="false">Rejected Summary</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="pcv-tab" data-bs-toggle="tab" data-bs-target="#pcv" type="button"

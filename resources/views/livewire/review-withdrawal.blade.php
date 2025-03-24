@@ -85,7 +85,7 @@
                         </table>
                     </div>
                     <div class="card-footer">
-                        Total:
+                        Total: <span>{{ $overAllCost }}<span>
                     </div>
 
                 </div>

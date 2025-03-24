@@ -11,6 +11,7 @@ class ReviewWithdrawal extends Component
     public $withdrawals = [];
     public $withdrawal;
     public $withdrawalDetails = [];
+    public $overAllCost = 0;
 
     //display block
     public $showWithdrawalSummary = true;
@@ -28,6 +29,9 @@ class ReviewWithdrawal extends Component
         $this->withdrawalDetails = Cardex::with('item','priceLevel')->where('withdrawal_id', $id)->get();
         $this->showWithdrawalSummary = false;
         $this->showViewWithdrawal = true;
+        foreach ($this->withdrawalDetails as $withdrawalDetail) {
+            $this->overAllCost += $withdrawalDetail->qty_out * $withdrawalDetail->priceLevel->amount;
+        }
     }
 
     public function fetchData()
@@ -35,6 +39,8 @@ class ReviewWithdrawal extends Component
         // Fetch all withdrawals where reviewed_by is the current user's emp_id
         $this->showWithdrawalSummary = true;
         $this->showViewWithdrawal = false;
+
+
         $this->withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->where([['reviewed_by', auth()->user()->emp_id], ['withdrawal_status', 'FOR REVIEW']])->get();
     }
     public function render()

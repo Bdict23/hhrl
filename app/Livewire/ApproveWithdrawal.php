@@ -23,6 +23,7 @@ class ApproveWithdrawal extends Component
     public $validityDate = '';
     public $withdrawalRemarks = '';
     public $withdrawalId = '';
+    public $overAllCost = 0;
 
     //display block
     public $showWithdrawalSummary = true;
@@ -55,6 +56,9 @@ class ApproveWithdrawal extends Component
         $this->withdrawalDetails = Cardex::with('item', 'priceLevel')
             ->where('withdrawal_id', $id)
             ->get();
+            foreach ($this->withdrawalDetails as $withdrawalDetail) {
+                $this->overAllCost += $withdrawalDetail->qty_out * $withdrawalDetail->priceLevel->amount;
+            }
         $this->showWithdrawalSummary = false;
         $this->showViewWithdrawal = true;
     }
