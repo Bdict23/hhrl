@@ -30,7 +30,7 @@ class InventoryAdjustmentController extends Controller
     }
     //Raw Material Request
     public function NewItemWithdrawal(){
-        $suppliers = Supplier::where([['supp_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
+        $suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
         $types =  RequisitionType::all();
         $items = Item::with('priceLevel', 'units','category','classification')->where([['item_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]] )->get();
         $approvers = Signatory::where([['signatory_type', 'APPROVER','employees'],['branch_id', auth()->user()->branch_id],['status', 'ACTIVE'],['MODULE', 'ITEM_WITHDRAWAL']])->get();

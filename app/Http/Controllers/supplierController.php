@@ -12,16 +12,17 @@ class SupplierController extends Controller
 
         // Mag Validate sa form data
         $validatedData = $request->validate([
-            'supp_name' => 'required|string|max:255',
-            'postal_address' => 'required|string|max:255',
-            'contact_no_1' => 'required|string|max:255',
-            'supp_address' => 'required|string|max:255',
-            'contact_no_2' => 'nullable|string|max:255',
-            'tax_payer_id' => 'required|string|max:255',
-            'contact_person' => 'required|string|max:255',
-            'input_tax' => 'nullable|string|max:255',
-            'supplier_code' => 'required|string|max:255',
-            'email' => 'required|email|unique:suppliers,email',
+            'supp_name' => 'required|string|max:155',
+            'postal_address' => 'nullable|string|max:25',
+            'contact_no_1' => 'nullable|string|max:25',
+            'supp_address' => 'nullable|string|max:155',
+            'contact_no_2' => 'nullable|string|max:55',
+            'tin_number' => 'nullable|string|unique:suppliers,tin_number',
+            'contact_person' => 'nullable|string|max:100',
+            'input_tax' => 'nullable|string|max:55',
+            'supplier_code' => 'nullable|string|max:55',
+            'email' => 'nullable|email|unique:suppliers,email',
+            'description' => 'nullable|string|max:255',
         ]);
 
         // Mag Create supplier record
@@ -44,16 +45,17 @@ class SupplierController extends Controller
 
             // Mag Validate sa form data
             $validatedData = $request->validate([
-                'supp_name' => 'required|string|max:255',
-                'postal_address' => 'required|string|max:255',
-                'contact_no_1' => 'required|string|max:255',
-                'supp_address' => 'required|string|max:255',
-                'contact_no_2' => 'nullable|string|max:255',
-                'tax_payer_id' => 'required|string|max:255',
-                'contact_person' => 'required|string|max:255',
-                'input_tax' => 'nullable|string|max:255',
-                'supplier_code' => 'required|string|max:255',
-                'email' => 'required|email|unique:suppliers,email,' . $supplier->id,
+                'supp_name' => 'required|string|max:155',
+                'postal_address' => 'nullable|string|max:55',
+                'contact_no_1' => 'nullable|string|max:55',
+                'supp_address' => 'nullable|string|max:55',
+                'contact_no_2' => 'nullable|string|max:155',
+                'tin_number' => 'nullable|string|max:55',
+                'contact_person' => 'nullable|string|max:100',
+                'input_tax' => 'required|string|max:55',
+                'supplier_code' => 'nullable|string|max:55|unique:suppliers,supplier_code,' . $supplier->id,
+                'email' => 'nullable|email|unique:suppliers,email,' . $supplier->id,
+                'description' => 'nullable|string|max:255',
             ]);
 
             // Mag update supplier record
@@ -67,7 +69,7 @@ class SupplierController extends Controller
 
     public function index()
     {
-        $suppliers = Supplier::where([['supp_status', 'active'], ['company_id', auth()->user()->branch->company_id]])->get(); // Fetching all suppliers from the database
+        $suppliers = Supplier::where([['supplier_status', 'active'], ['company_id', auth()->user()->branch->company_id]])->get(); // Fetching all suppliers from the database
         return view('supplier_list', compact('suppliers')); // Passing data to the view
     }
 
@@ -76,7 +78,7 @@ class SupplierController extends Controller
 
     {
        $supplier = Supplier::find($id);
-       $supplier->supp_status = 'INACTIVE';
+       $supplier->supplier_status = 'INACTIVE';
        $supplier->save();
        return redirect()->back()->with('success', 'Supplier deactivated successfully!');
    }

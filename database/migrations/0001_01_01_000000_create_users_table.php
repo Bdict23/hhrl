@@ -42,7 +42,6 @@ return new class extends Migration
                 $table->string('branch_cell');
                 $table->enum('branch_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
-
             });}
 
             if (!Schema::hasTable('departments')) {

@@ -34,7 +34,7 @@ Route::post('/update_supplier', [SupplierController::class, 'update'])->middlewa
 
 Route::get('/supplier_list', [SupplierController::class, 'index'])->middleware(['auth', 'verified'])->name('suppliers');
 
-Route::get('/supplier_deactivate/{id}', [BranchController::class, 'deactivate'])->name('supplier.deactivate');
+Route::get('/supplier_deactivate/{id}', [SupplierController::class, 'deactivate'])->name('supplier.deactivate');
 
 
 Route::get('/dashboard', function () {

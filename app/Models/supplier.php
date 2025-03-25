@@ -14,11 +14,12 @@ class Supplier extends Model
         'contact_no_1',
         'supp_address',
         'contact_no_2',
-        'tax_payer_id',
+        'tin_number',
         'contact_person',
         'input_tax',
         'supplier_code',
         'email',
+        'description',
     ];
 
     public function priceLevel()
