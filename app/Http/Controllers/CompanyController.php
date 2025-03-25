@@ -76,7 +76,7 @@ class CompanyController extends Controller
     public function deactivate($id)
     {
        $company = Company::find($id);
-       $company->company_status = 'inactive';
+       $company->company_status = 'INACTIVE';
        $company->save();
        return redirect()->back()->with('success', 'Company deactivated successfully!');
    }

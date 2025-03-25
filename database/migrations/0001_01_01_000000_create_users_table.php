@@ -17,12 +17,12 @@ return new class extends Migration
             Schema::create('companies', function (Blueprint $table) {
                 $table->id();
                 $table->timestamps();
-                $table->string('company_name');
-                $table->string('company_code');
-                $table->string('company_tin');
-                $table->string('company_type');
-                $table->string('company_description');
-                $table->string('company_status')->default('ACTIVE');
+                $table->string('company_name', 100);
+                $table->string('company_code',50)->nullable();
+                $table->string('company_tin',50)->nullable();
+                $table->string('company_type',80)->nullable();
+                $table->string('company_description', 255)->nullable();
+                $table->enum('company_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
             });
         }
@@ -33,13 +33,13 @@ return new class extends Migration
             Schema::create('branches', function (Blueprint $table) {
                 $table->id();
                 $table->timestamps();
-                $table->string('branch_name');
-                $table->string('branch_address');
-                $table->string('branch_code');
-                $table->string('branch_type');
+                $table->string('branch_name',100);
+                $table->string('branch_address',150)->nullable();
+                $table->string('branch_code',50)->nullable();
+                $table->string('branch_type',100)->nullable();
                 $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
-                $table->string('branch_email');
-                $table->string('branch_cell');
+                $table->string('branch_email',80)->nullable();
+                $table->string('branch_cell',25);
                 $table->enum('branch_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
             });}

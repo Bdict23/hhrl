@@ -26,8 +26,8 @@ use App\Http\Controllers\SettingsController;
 
 Route::get('/', function () {
     $suppliers = supplier::all(); // Fetching all suppliers from the database
-    return view('supplier_list', compact('suppliers')); // Passing data to the view
-})->middleware(['auth', 'verified'])->name('suppliers');
+    return view('dashboard');
+});
 Route::post('/create_supplier', [SupplierController::class, 'store'])->middleware(['auth', 'verified'])->name('suppliers.store');
 
 Route::post('/update_supplier', [SupplierController::class, 'update'])->middleware(['auth', 'verified'])->name('suppliers.update');
@@ -60,7 +60,7 @@ Route::post('/company_update', [CompanyController::class, 'update'])->middleware
 
 Route::get('/company_show/{id}', [CompanyController::class, 'show'])->middleware(['auth', 'verified'])->name('company.show');
 
-Route::get('/company_deactivate/{id}', [BranchController::class, 'deactivate'])->middleware(['auth', 'verified'])->name('company.deactivate');
+Route::get('/company_deactivate/{id}', [CompanyController::class, 'deactivate'])->middleware(['auth', 'verified'])->name('company.deactivate');
 
 
 //route for branch
