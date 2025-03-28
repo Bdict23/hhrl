@@ -106,7 +106,8 @@
                                                             <th style="font-size: smaller;">Position</th>
                                                             <th style="font-size: smaller;">Status</th>
                                                             <th style="font-size: smaller;">Registered Branch</th>
-                                                            <th style="font-size: smaller; text-align: center;">Actions</th>
+                                                            <th style="font-size: smaller; text-align: center;">Actions
+                                                            </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody id="personnelTableBody">
@@ -156,7 +157,8 @@
                             <tbody id="employeeTableBody">
                                 @forelse ($employees as $employee)
                                     <tr style="font-size: smaller;">
-                                        <td>{{ $employee->name }} {{ $employee->middle_name }} {{ $employee->last_name }}
+                                        <td>{{ $employee->name }} {{ $employee->middle_name }}
+                                            {{ $employee->last_name }}
                                         </td>
                                         <td>{{ $employee->position }}</td>
                                         <td>{{ $employee->department ? $employee->department->department_name : 'N/A' }}

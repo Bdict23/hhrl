@@ -58,7 +58,8 @@
                 <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Employees</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Departments</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"
+                        onclick="showTab('departments-table', this)">Departments</a></li>
 
             </ul>
         </div>
@@ -102,6 +103,12 @@
             <!-- Brand Tab Content -->
             <div>
                 @livewire('item-brand')
+            </div>
+
+
+            <!-- Departments Tab Content -->
+            <div>
+                @livewire('department')
             </div>
 
             <!-- Menu Categories Tab Content -->
@@ -233,41 +240,11 @@
             document.getElementById('departmentForm').submit();
         }
 
-        function selectEmployee(id, name, lastName, position, status, department, branch) {
-            if (department !== 'N/A') {
-                alert(`The employee ${name} ${lastName} already belongs to the ${department} department.`);
-                return;
-            }
 
-            const tableBody = document.getElementById('personnelTableBody');
-            const existingRows = tableBody.querySelectorAll('tr');
-            for (let row of existingRows) {
-                if (row.cells[0].textContent === name && row.cells[1].textContent === lastName) {
-                    alert(`The employee ${name} ${lastName} is already selected.`);
-                    return;
-                }
-            }
-
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-            <td style="font-size: smaller;">${name}</td>
-            <td style="font-size: smaller;">${lastName}</td>
-            <td style="font-size: smaller;">${position}</td>
-            <td style="font-size: smaller;">${status}</td>
-            <td style="font-size: smaller;">${branch}</td>
-            <input type="hidden" name="employees[]" value="${id}">
-            <td style="font-size: smaller;"><button class="btn btn-danger btn-sm" onclick="removePersonnel(this)">Remove</button></td>
-        `;
-            tableBody.appendChild(newRow);
-
-            // Close the modal
-            $('#AddPersonnelModal').modal('hide');
-        }
-
-        function removePersonnel(button) {
-            const row = button.closest('tr');
-            row.remove();
-        }
+        // function removePersonnel(button) {
+        //     const row = button.closest('tr');
+        //     row.remove();
+        // }
 
         document.getElementById('searchEmployee').addEventListener('input', function() {
             const searchValue = this.value.toLowerCase();
