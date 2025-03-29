@@ -293,7 +293,7 @@
                             <select class="form-control" id="category_id-update" wire:model="category_id">
                                 <option value="">Select</option>
                                 @forelse ($categories as $category)
-                                    <option value="{{ $category->id }}"> {{ $category->category_name }}
+                                    <option value="{{ $category->id }}">
                                     </option>
                                 @empty
                                     <option value="">No Symbol</option>
