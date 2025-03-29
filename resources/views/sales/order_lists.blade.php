@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-    @livewireStyles
+    
     <div class="container mt-5">
         <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-    @livewireScripts
+    
 @endsection
 
 @section('script')
