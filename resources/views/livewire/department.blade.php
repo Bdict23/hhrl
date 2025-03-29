@@ -178,7 +178,6 @@
                                         <td>
                                             <button class="btn btn-primary btn-sm" value="{{ $employee->id }}"
                                                 onclick="selectEmployeeFunction({{ $employee->id }}, '{{ $employee->name }}', '{{ $employee->last_name }}', '{{ $employee->position }}', '{{ $employee->status }}', '{{ $employee->department ? $employee->department->department_name : 'N/A' }}', '{{ $employee->branch->branch_name ?? 'N/A' }}')">Select</button>
-
                                         </td>
                                     </tr>
                                 @empty
@@ -234,7 +233,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="description2" class="form-label">Description</label>
-                                            <textarea class="form-control" id="description2" value="{{ $description }}"> {{ $description }} ??</textarea>
+                                            <textarea class="form-control" id="description2">{{ $description ?? '' }}</textarea>
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-end mb-2">
@@ -298,6 +297,7 @@
 
     <script>
         function sendPersonnelData() {
+
             // Get the table body element
             let tableBody = document.getElementById(tableBodyId);
             let rows = tableBody.getElementsByTagName('tr');
@@ -311,12 +311,14 @@
                     });
                 }
             }
-            console.log(`Department Name: ${document.getElementById('department_name2').value}`);
-            // Send data to Livewire component
-            @this.set('name', document.getElementById('department_name2').value);
-            @this.set('description', document.getElementById('description2').value);
-
             @this.updatePersonnelData(personnelData);
+
+            if (tableBodyId === 'personnelTableBody2') {
+                @this.set('name', document.getElementById('department_name2').value);
+                @this.set('description', document.getElementById('description2').value);
+            }
+
+
 
         }
 
@@ -360,8 +362,7 @@
             `;
             tableBody.appendChild(newRow);
 
-            const modal = bootstrap.Modal.getInstance(document.getElementById('AddPersonnelsModal'));
-            if (modal) modal.hide();
+
         }
 
         function fetchEmployees() {

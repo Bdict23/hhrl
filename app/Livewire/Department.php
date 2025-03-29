@@ -65,6 +65,7 @@ class Department extends Component
         if (!empty($this->personnelData)) {
             Employee::whereIn('id', $this->personnelData)->update(['department_id' => $dept->id]);
         }
+        $this->resetForm();
         $this->fetchDepartments();
 
 }
@@ -84,6 +85,7 @@ class Department extends Component
                 $employee->save();
             }
         }
+        $this->resetForm();
         $this->fetchDepartments();
     } catch (\Exception $e) {
         return $e->getMessage();
@@ -139,10 +141,16 @@ class Department extends Component
             Employee::whereIn('id', $this->personnelData)->update(['department_id' => $this->departmentId]);
         }
         $this->forUpdateEmployees = Employee::where('department_id', $this->departmentId)->get();
-
+        $this->resetForm();
         $this->fetchDepartments();
-        $this->reset(['name', 'description', 'departmentId', 'personnelData']);
 
+    }
+
+    public function resetForm()
+    {
+        $this->reset(['name', 'description', 'departmentId', 'personnelData', 'branch', 'forUpdateEmployees', 'employees', 'department', 'departments']);
+
+        $this->fetchDepartments(); // Fetch departments again to refresh the list
     }
 
     public function updatePersonnelData($data)
