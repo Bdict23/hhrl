@@ -240,7 +240,7 @@
                     </div>
                     <div class="row col-md-6">
                         <div class=" col-md-6">
-                            <label for="uom_id-update" class="form-label">Unit Symbol {{ $item_description }}<span
+                            <label for="uom_id-update" class="form-label">Unit Symbol<span
                                     style="color: red;">*</span></label>
                             <div class="input-group">
                                 <select class="form-control" id="uom_id-update" wire:model="uom_id"
