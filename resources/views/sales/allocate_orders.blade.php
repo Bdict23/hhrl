@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    @livewireStyles
+    
     <div class="row">
         <div class="col-md-8 card mb-3">
             <div class=" card-body">
@@ -110,7 +110,7 @@
             </form>
         </div>
     </div>
-    @livewireScripts
+    
     <script>
         function selectOrder(row) {
             document.getElementById('customerName2').value = row.getAttribute('data-customer-name');
