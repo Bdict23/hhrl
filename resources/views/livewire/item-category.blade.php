@@ -1,5 +1,5 @@
 <div>
-    <div id="category-table" class="tab-content card">
+    <div id="category-table" class="tab-content card" style="display: none">
         <div class="card-header">
             <h5>Item Category List</h5>
         </div>

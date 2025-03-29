@@ -16,6 +16,7 @@ class Item extends Model
     protected $fillable = [
         'item_code',
         'item_description',
+        'item_barcode',
         'company_id',
         'classification_id',
         'sub_class_id',
@@ -78,5 +79,10 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function uom()
+    {
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 }

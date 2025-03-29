@@ -128,12 +128,12 @@ return new class extends Migration
 
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->text('item_code')->nullable();
+            $table->text('item_code',80)->nullable();
             $table->text('item_description')->nullable();
+            $table->string('item_barcode', 100)->nullable();
             $table->unsignedBigInteger('uom_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();
             $table->unsignedBigInteger('classification_id')->nullable();
-            $table->unsignedBigInteger('statuses_id')->nullable();
             $table->unsignedBigInteger('sub_class_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
             $table->enum('item_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');

@@ -199,7 +199,6 @@
     {{-- update department form --}}
     <div class="tab-content card" id="department-update-form" style="display: none" wire:ignore.self>
         <form wire:submit.prevent="updateDepartment">
-            <input type="hidden" id="department_id" wire:model="department_id">
             @csrf
             <div class="row">
                 <div class="col-md-12 card">
