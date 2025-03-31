@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Models\supplier;
+use App\Models\Supplier;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\BranchController;
@@ -11,11 +11,11 @@ use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\CardexController;
 use App\Models\Branch;
 use App\Models\Company;
-use App\Models\requisitionInfos;
-use App\Models\requisitionDetails;
-use App\Models\employees;
-use App\Models\items;
-use App\Models\requisitionTypes;
+use App\Models\RequisitionInfos;
+use App\Models\RequisitionDetails;
+use App\Models\Employees;
+use App\Models\Items;
+use App\Models\RequisitionTypes;
 use App\Http\Controllers\MenusController;
 use App\Http\Livewire\PendingOrders;
 use App\Http\Livewire\SearchOrderNumber;
@@ -25,7 +25,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingsController;
 
 Route::get('/', function () {
-    $suppliers = supplier::all(); // Fetching all suppliers from the database
+    $suppliers = Supplier::all(); // Fetching all suppliers from the database
     return view('dashboard');
 });
 Route::post('/create_supplier', [SupplierController::class, 'store'])->middleware(['auth', 'verified'])->name('suppliers.store');

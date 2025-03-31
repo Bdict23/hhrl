@@ -59,4 +59,13 @@ class ItemCategory extends Component
             'companies' => $this->companies,
         ]);
     }
+
+
+    public function deactivate( $id)
+    {
+        $category = Category::find($id);
+        $category->status = 'INACTIVE';
+        $category->save();
+        $this->fetchData();
+    }
 }
