@@ -1,10 +1,6 @@
 @extends('layouts.master')
 @section('content')
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 391eaa3db24a22da4904edc013014575324741d4git
     <div class="row">
         <div class="col-md-8 card mb-3">
             <div class=" card-body">
@@ -110,11 +106,7 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 391eaa3db24a22da4904edc013014575324741d4
     <script>
         function selectOrder(row) {
             document.getElementById('customerName').value = row.getAttribute('data-customer-name');

@@ -31,7 +31,7 @@ use Livewire\Livewire;
 class MenusController extends Controller
 {
     public function createMenu(){
-        $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
+        $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
         $types =  RequisitionType::all();
         // $activeStatus = Status::where('status_name', 'ACTIVE')->first();
         $items = Item::with('priceLevel', 'units') // Added unitOfMeasures here

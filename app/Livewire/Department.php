@@ -11,7 +11,6 @@ use App\Models\Audit;
 
 class Department extends Component
 {
-    use WithPagination;
 
     // used by tables and forms
     public $departments = [];
