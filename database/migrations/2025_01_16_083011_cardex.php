@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                 $table->string('reference_number')->nullable()->index();
-                $table->date('usage_date')->default(DB::raw('CURRENT_DATE'))->index('usage_date');
+                $table->timestamp('usage_date')->useCurrent()->index('usage_date');
                 $table->date('useful_date')->nullable()->index('useful_date');
                 $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
                 $table->foreignId('reviewed_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();

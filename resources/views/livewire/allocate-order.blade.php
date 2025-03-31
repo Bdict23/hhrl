@@ -3,8 +3,8 @@
 <<<<<<< HEAD
 
 =======
-    
->>>>>>> 391eaa3db24a22da4904edc013014575324741d4
+
+>>>>>>> 391eaa3db24a22da4904edc013014575324741d4git
     <div class="row">
         <div class="col-md-8 card mb-3">
             <div class=" card-body">
@@ -113,7 +113,7 @@
 <<<<<<< HEAD
 
 =======
-    
+
 >>>>>>> 391eaa3db24a22da4904edc013014575324741d4
     <script>
         function selectOrder(row) {
