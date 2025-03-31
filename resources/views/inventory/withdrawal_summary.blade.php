@@ -41,7 +41,7 @@
                         <tr>
                             <td>{{ $withdrawal->reference_number }}</td>
                             <td>{{ $withdrawal->department->department_name ?? 'N/A' }}</td>
-                            <td>{{ $withdrawal->usage_date }}</td>
+                            <td>{{ \Carbon\Carbon::parse($withdrawal->usage_date)->format('M. d, Y') }}</td>
                             <td>{{ $withdrawal->approvedBy->name ?? 'N/A' }}</td>
                             <td>{{ $withdrawal->reviewedBy->name ?? 'N/A' }}</td>
                             <td>{{ $withdrawal->preparedBy->name ?? 'N/A' }}</td>

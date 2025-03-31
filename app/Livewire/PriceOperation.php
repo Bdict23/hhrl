@@ -56,7 +56,7 @@ class PriceOperation extends Component
     }
 
     public function fetchData(){
-       $this->itemList = Item::with('costPrice')->where('company_id', auth()->user()->branch->company_id)->get();
+       $this->itemList = Item::with('costPrice')->where([['company_id', auth()->user()->branch->company_id],['item_status', 'ACTIVE']])->get();
        $this->priceList = PriceLevel::where('company_id', auth()->user()->branch->company_id)->get();
     }
 

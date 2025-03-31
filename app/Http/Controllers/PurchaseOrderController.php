@@ -92,7 +92,7 @@ class PurchaseOrderController extends Controller
     public function po_edit($id=null)
     {
         $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing']])->find($id);
-        $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
+        $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
         $types =  RequisitionType::all();
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
