@@ -1,7 +1,11 @@
 @extends('layouts.master')
 
 @section('content')
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 391eaa3db24a22da4904edc013014575324741d4
     <div class="container mt-5">
         <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -58,7 +62,11 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 391eaa3db24a22da4904edc013014575324741d4
 @endsection
 
 @section('script')
