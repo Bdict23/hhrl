@@ -163,7 +163,7 @@
                 </div>
 
                 <div>
-                    <label for="item_description" class="form-label">Description <span
+                    <label for="item_description" class="form-label">Name <span
                             style="color: red;">*</span></label>
                     <textarea class="form-control" id="item_description" wire:model="item_description" rows="3"></textarea>
                     @error('item_description')
@@ -468,7 +468,7 @@
             <form wire:submit.prevent="update" class="submit-form">
                 @csrf
                 <div class="row">
-                    <div class=" col-md-6">
+                    <div class=" col-md-6 mt-1">
                         <label for="item_code-update" class="form-label">SKU / Item Code<span
                                 style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="item_code-update" wire:model="item_code">
@@ -507,7 +507,7 @@
                 </div>
 
                 <div>
-                    <label for="item_description-update" class="form-label">Description <span
+                    <label for="item_description-update" class="form-label">Name<span
                             style="color: red;">*</span></label>
                     <textarea class="form-control" id="item_description-update" wire:model="item_description" rows="3"></textarea>
                     @error('item_description')
@@ -532,6 +532,7 @@
                                 <option value="">Select</option>
                                 @forelse ($categories as $category)
                                     <option value="{{ $category->id }}">
+                                        {{ $category->category_name }}
                                     </option>
                                 @empty
                                     <option value="">No Symbol</option>
@@ -644,7 +645,7 @@
         });
 
         function updateItem(item) {
-            console.log(item);
+            console.log(item.category_id);
             document.getElementById('item_code-update').value = item.item_code;
             document.getElementById('uom_id-update').value = item.uom_id;
             document.getElementById('item_description-update').value = item.item_description;

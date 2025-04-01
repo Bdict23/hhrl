@@ -41,7 +41,7 @@
     </div>
 
     {{--  --}}
-    <div id="unit-of-measure-form" class="tab-content card" wire:ignore.self>
+    <div id="unit-of-measure-form" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-body">
             <form wire:submit.prevent="store">
                 <div class="row">
