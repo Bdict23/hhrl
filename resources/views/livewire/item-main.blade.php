@@ -1,4 +1,27 @@
 <div>
+
+     {{-- return flash message --}}
+     @if (session()->has('success'))
+     <div class="alert alert-success" id="success-message">
+         {{ session('success') }}
+         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     @endif
+
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+               // Listen for the clearForm event
+               window.addEventListener('saved', function (event) {
+                   setTimeout(function () {
+                       var successMessage = document.getElementById('success-message');
+                       if (successMessage) {
+                           successMessage.style.display = 'none';
+                       }
+                   }, 1500);
+               });
+        });
+    </script>
+
     <div id="items-table" class="tab-content card" style="display: block" wire:ignore.self>
         <div class="card-header">
             <h5>Item List</h5>

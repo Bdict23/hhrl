@@ -97,7 +97,7 @@ class ItemMain extends Component
             $item->item_barcode = $this->item_barcode;
             $item->uom_id = $this->uom_id;
             $item->category_id = $this->category_id;
-            $item->brand_id = $this->brand_id;
+            $item->brand_id = $this->brand_id ? $this->brand_id : null;
             $item->classification_id = $this->classification_id;
             $item->sub_class_id = $this->sub_classification_id; // Corrected property name
             $item->company_id = auth()->user()->branch->company_id;
@@ -113,10 +113,10 @@ class ItemMain extends Component
                 $priceLevel->save();
             }
 
-            $this->dispatch('saved');
             $this->reset();
             $this->fetchData();
-            session()->flash('message', 'Item successfully added.');
+            session()->flash('success', 'Item successfully added.');
+            $this->dispatch('saved');
 
     }
 
