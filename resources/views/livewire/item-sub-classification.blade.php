@@ -54,8 +54,7 @@
     </div>
 
     {{-- sub-classification Form --}}
-    <div id="sub-classification-form" class="tab-content card"
-        {{ $AddSubClassificationTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+    <div id="sub-classification-form" class="tab-content card" style="display: none" wire:ignore.self>
         <div class="card-header">
             <h5>Add Sub Classification</h5>
         </div>

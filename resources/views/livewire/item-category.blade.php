@@ -46,7 +46,7 @@
         </div>
     </div>
     {{-- Category Form --}}
-    <div id="category-form" class="tab-content card" style="display: none;">
+    <div id="category-form" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Add Category</h5>
         </div>

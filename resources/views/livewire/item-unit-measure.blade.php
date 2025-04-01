@@ -41,8 +41,7 @@
     </div>
 
     {{--  --}}
-    <div id="unit-of-measure-form" class="tab-content card"
-        {{ $AddUnitOfMeasureTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+    <div id="unit-of-measure-form" class="tab-content card" wire:ignore.self>
         <div class="card-body">
             <form wire:submit.prevent="store">
                 <div class="row">
