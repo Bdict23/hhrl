@@ -1,6 +1,5 @@
 <div>
-    <div id="sub-classification-table" class="tab-content card"
-        {{ $SubClassificationListTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+    <div id="sub-classification-table" class="tab-content card" style="display: none" wire:ignore.self>
         <div class="card-header">
             <h5>Sub Classification Lists</h5>
         </div>
@@ -37,7 +36,7 @@
                                 </td>
                                 <td class="text-end">
                                     <a href="#" class="btn btn-sm btn-primary btn-sm">Edit</a>
-                                    <a href="#" class="btn btn-sm btn-danger btn-sm">Delete</a>
+                                    <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $sub_classification->id }})">Delete</a>
                                 </td>
                             </tr>
                         @empty

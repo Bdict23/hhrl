@@ -1,8 +1,7 @@
 <div>
     {{-- Close your eyes. Count to one. That is how long forever feels. --}}
 
-    <div id="unit-of-measures-table" class="tab-content card"
-        {{ $UnitOfMeasureListTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+    <div id="unit-of-measures-table" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-body">
 
             <x-primary-button type="button" class="mb-3 btn-sm"
@@ -25,7 +24,7 @@
                             <td class="text-center">{{ $uom->unit_symbol }}</td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-primary">Edit</button>
-                                <button class="btn btn-sm btn-danger">Delete</button>
+                                <button class="btn btn-sm btn-danger" wire:click="deactivate({{ $uom->id }})">Delete</button>
                             </td>
                         </tr>
                     @empty

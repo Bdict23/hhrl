@@ -80,4 +80,15 @@ class ItemBrand extends Component
             'itemBrands' => $this->itemBrands
         ]);
     }
+
+
+    public function deactivate($id)
+    {
+        $brand = Brand::find($id);
+        $brand->status = 'INACTIVE';
+        $brand->save();
+        $this->fetchData();
+        session()->flash('message', 'Brand Deactivated Successfully.');
+    }
+
 }

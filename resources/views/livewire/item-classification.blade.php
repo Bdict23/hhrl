@@ -1,6 +1,5 @@
 <div>
-    <div id="classification-table" class="tab-content card"
-        {{ $ClassificationListTab == 1 ? 'style=display:block' : 'style=display:none' }}>
+    <div id="classification-table" class="tab-content card" style="display: none" wire:ignore.self>
         <div class="card-header">
             <h5>Classification</h5>
         </div>
@@ -34,7 +33,7 @@
                                     {{ $classification->company->company_name ?? 'Not Registered' }}</td>
                                 <td class="text-end">
                                     <a href="#" class="btn btn-sm btn-primary btn-sm">Edit</a>
-                                    <a href="#" class="btn btn-sm btn-danger btn-sm">Delete</a>
+                                    <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $classification->id }})">Delete</a>
                                 </td>
                             </tr>
                         @empty

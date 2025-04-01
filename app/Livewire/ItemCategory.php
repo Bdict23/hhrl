@@ -31,7 +31,7 @@ class ItemCategory extends Component
         $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
         $companyIds = $auditCompanies->pluck('company.id')->toArray();
         $this->companies = Company::where('company_status', 'ACTIVE')->whereIn('id', $companyIds)->get();
-        $this->ItemCategories = Category::where('company_id', auth()->user()->branch->company_id)->get();
+        $this->ItemCategories = Category::where([['company_id', auth()->user()->branch->company_id],['category_type', 'ITEM'], ['status', 'ACTIVE']])->get();
     }
 
     public function storeCategory()

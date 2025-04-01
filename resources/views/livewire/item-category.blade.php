@@ -7,6 +7,8 @@
             <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('category-form', document.querySelector('.nav-link.active'))">+ ADD
                 CATEGORY</x-primary-button>
+                <x-secondary-button type="button" class="mb-3 btn-sm"
+                wire:click="fetchData()">Refresh</x-secondary-button>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">

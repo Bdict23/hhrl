@@ -82,4 +82,13 @@ class ItemUnitMeasure extends Component
             'companies' => $this->companies,
         ]);
     }
+
+    public function deactivate($id)
+    {
+
+            $unit_of_measure = UOM::find($id);
+            $unit_of_measure->status = 'INACTIVE';
+            $unit_of_measure->save();
+            $this->fetchData();
+}
 }

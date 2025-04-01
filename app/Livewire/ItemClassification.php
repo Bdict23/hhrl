@@ -58,7 +58,7 @@ class ItemClassification extends Component
         $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
         $companyIds = $auditCompanies->pluck('company.id')->toArray();
         $this->companies = Company::where('company_status', 'ACTIVE')->whereIn('id', $companyIds)->get();
-        $this->classifications = Classification::where('company_id', auth()->user()->branch->company_id)->wherenull('class_parent')->get();
+        $this->classifications = Classification::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE']])->wherenull('class_parent')->get();
     }
 
     public function render()
@@ -67,5 +67,14 @@ class ItemClassification extends Component
             'classifications' => $this->classifications,
             'companies' => $this->companies,
         ]);
+    }
+
+
+    public function deactivate($id)
+    {
+        $classification = Classification::find($id);
+        $classification->status = 'INACTIVE';
+        $classification->save();
+        $this->fetchData();
     }
 }
