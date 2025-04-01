@@ -7,6 +7,8 @@
             <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('unit-of-measure-form', document.querySelector('.nav-link.active'))">+ ADD UNIT OF
                 MEASURE</x-primary-button>
+            <x-secondary-button type="button" class="mb-3 btn-sm"
+                wire:click="fetchData()">Refresh</x-secondary-button>
             <table class="table table-striped table-sm small">
                 <thead>
                     <tr>

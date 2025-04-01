@@ -7,6 +7,9 @@
             <x-primary-button type="button" class="mb-3"
                 onclick="showTab('classification-form', document.querySelector('.nav-link.active'))">+ Add
                 Classification</x-primary-button>
+            <x-secondary-button type="button" class="mb-3"
+                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class="mb-3">
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
