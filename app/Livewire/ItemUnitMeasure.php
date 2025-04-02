@@ -20,14 +20,11 @@ class ItemUnitMeasure extends Component
 
     public $companies;
 
-    public $AddUnitOfMeasureTab = 0;
-    public $UnitOfMeasureListTab = 0;
 
     protected $rules = [
-        'unit_name' => 'required|string|max:255',
-        'unit_symbol' => 'required|string|max:255',
-        'unit_description' => 'nullable|string|max:255',
-        'company_id' => 'required|integer',
+        'unit_name' => 'required|string|max:55',
+        'unit_symbol' => 'required|string|max:25',
+        'unit_description' => 'nullable|string|max:100',
     ];
 
     public function mount()
@@ -37,34 +34,48 @@ class ItemUnitMeasure extends Component
 
     public function showAddUnitOfMeasure()
     {
-        $this->AddUnitOfMeasureTab = 1;
-        $this->UnitOfMeasureListTab = 0;
         $this->fetchData();
     }
 
     public function store()
     {
 
-        $this->AddUnitOfMeasureTab = 1;
-        $this->UnitOfMeasureListTab = 0;
         $this->validate();
         $unit_of_measure = new UOM();
         $unit_of_measure->unit_name = $this->unit_name;
         $unit_of_measure->unit_description = $this->unit_description;
         $unit_of_measure->unit_symbol = $this->unit_symbol;
-        $unit_of_measure->company_id = $this->company_id;
+        $unit_of_measure->company_id = auth()->user()->branch->company_id;
         $unit_of_measure->status = 'ACTIVE';
         $unit_of_measure->created_by = auth()->user()->emp_id;
         $unit_of_measure->save();
+        $this->reset();
         $this->fetchData();
 
-        $this->unit_name = '';
-        $this->unit_description = '';
-        $this->unit_symbol = '';
-        $this->company_id = '';
+        $this->dispatch('clearForm');
+        session()->flash('success', 'Unit of Measure Created Successfully');
 
-        $this->AddUnitOfMeasureTab = 0;
-        $this->UnitOfMeasureListTab = 1;
+    }
+
+    public function editUOM($id)
+    {
+        $this->unit_of_measure = UOM::find($id);
+        $this->unit_name = $this->unit_of_measure->unit_name;
+        $this->unit_symbol = $this->unit_of_measure->unit_symbol;
+        $this->unit_description = $this->unit_of_measure->unit_description;
+    }
+
+    public function updateUOM()
+    {
+        $unit_of_measure = UOM::find($this->unit_of_measure->id);
+        $unit_of_measure->unit_name = $this->unit_name;
+        $unit_of_measure->unit_symbol = $this->unit_symbol;
+        $unit_of_measure->unit_description = $this->unit_description;
+        $unit_of_measure->save();
+        $this->reset();
+        $this->fetchData();
+        $this->dispatch('clearUOMModalFormUpdate');
+        session()->flash('success', 'Unit of Measure Updated Successfully');
     }
 
     public function fetchData()
@@ -77,15 +88,11 @@ class ItemUnitMeasure extends Component
     }
     public function render()
     {
-        return view('livewire.item-unit-measure', [
-            'unit_of_measures' => $this->unit_of_measures,
-            'companies' => $this->companies,
-        ]);
+        return view('livewire.item-unit-measure');
     }
 
     public function deactivate($id)
     {
-
             $unit_of_measure = UOM::find($id);
             $unit_of_measure->status = 'INACTIVE';
             $unit_of_measure->save();
