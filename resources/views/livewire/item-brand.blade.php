@@ -1,5 +1,12 @@
 <div>
-    {{-- Care about people's approval and you will be their prisoner. --}}
+   {{-- return flash message --}}
+   @if (session()->has('success'))
+   <div class="alert alert-success" id="success-message">
+       {{ session('success') }}
+       <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+   </div>
+   @endif
+
     <div id="brand-table" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Brand List</h5>
@@ -31,7 +38,7 @@
                                 <td class="text-end">{{ $brand->status }}</td>
                                 <td class="text-end">{{ $brand->company->company_name ?? 'Not Registered' }}</td>
                                 <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-primary btn-sm">Edit</a>
+                                    <a href="#" class="btn btn-sm btn-primary btn-sm" onclick="editBrand({{ json_encode($brand) }})" data-bs-toggle="modal" data-bs-target="#updateBrandModal" wire:click="editBrand({{ $brand->id }})">Edit</a>
                                     <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $brand->id }})">Delete</a>
                                 </td>
                             </tr>
@@ -57,31 +64,17 @@
                 onclick="showTab('brand-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
             <form wire:submit.prevent="store">
                 <div class="mb-3">
-                    <label for="brand_name" class="form-label">Brand Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="brand_name" wire:model="brand_name">
+                    <label for="brand_name-input_add" class="form-label">Brand Name <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="brand_name-input_add" wire:model="brand_name">
                     @error('brand_name')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label for="brand_description" class="form-label">Description <span
+                    <label for="brand_description-input" class="form-label">Description <span
                             style="color: red;">*</span></label>
-                    <textarea class="form-control" id="brand_description" wire:model="brand_description" rows="3"></textarea>
+                    <textarea class="form-control" id="brand_description-input" wire:model="brand_description" rows="3"></textarea>
                     @error('brand_description')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label for="company_id" class="form-label">Established to<span style="color: red;">*</span></label>
-                    <select class="form-control" id="company_id" wire:model="company_id">
-                        <option value="">Select</option>
-                        @forelse ($companies as $company)
-                            <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                        @empty
-                            <option value="no_company">No Company Available</option>
-                        @endforelse
-                    </select>
-                    @error('company_id')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
@@ -89,4 +82,80 @@
             </form>
         </div>
     </div>
+
+
+    {{-- Update Brand Modal --}}
+    <div class="modal fade" id="updateBrandModal" tabindex="-1" aria-labelledby="updateBrandModalLabel" wire:ignore.self
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateBrandModalLabel">Update Brand</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label for="brand_name-input_update" class="form-label">Brand Name <span
+                                    style="color: red;">*</span></label>
+                            <input type="text" class="form-control" id="brand_name-input_update"
+                                wire:model="brand_name">
+                            @error('brand_name')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="brand_description-input_update" class="form-label">Description <span
+                                    style="color: red;">*</span></label>
+                            <textarea class="form-control" id="brand_description-input_update"
+                                wire:model="brand_description" rows="3"></textarea>
+                            @error('brand_description')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <x-primary-button type="button" wire:click="updateBrand">Update</x-primary-button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('clearBrandForm', event => {
+                // Clear the form fields
+                document.getElementById('brand_name-input_add').value = '';
+                document.getElementById('brand_description-input').value = '';
+
+                // Hide the success message after 1 second
+                setTimeout(function() {
+                document.getElementById('success-message').style.display = 'none';
+                            }, 1500);
+                            document.getElementById('brand-table').style.display = 'block';
+                            document.getElementById('brand-form').style.display = 'none';
+            });
+
+            window.addEventListener('clearBrandUpdateModal', event => {
+                document.getElementById('brand_name-input_update').value = '';
+                document.getElementById('brand_description-input_update').value = '';
+
+                // Hide the success message after 1 second
+                setTimeout(function() {
+                document.getElementById('success-message').style.display = 'none';
+                            }, 1500);
+                // Hide the modal
+                let myModal = bootstrap.Modal.getInstance(document.getElementById('updateBrandModal'));
+                myModal.hide();
+
+            });
+
+        });
+
+        function editBrand($data){
+            // Set the form fields with the data
+            document.getElementById('brand_name-input_update').value = $data.brand_name;
+            document.getElementById('brand_description-input_update').value = $data.brand_description;
+
+        }
+    </script>
 </div>

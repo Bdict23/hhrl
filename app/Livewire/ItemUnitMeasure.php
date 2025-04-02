@@ -52,7 +52,7 @@ class ItemUnitMeasure extends Component
         $this->reset();
         $this->fetchData();
 
-        $this->dispatch('clearForm');
+        $this->dispatch('clearUOMForm');
         session()->flash('success', 'Unit of Measure Created Successfully');
 
     }

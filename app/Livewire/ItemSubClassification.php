@@ -52,7 +52,7 @@ class ItemSubClassification extends Component
         $this->reset();
         $this->fetchData();
         session()->flash('success', 'Sub Classification successfully added');
-        $this->dispatch('clearForm');
+        $this->dispatch('clearSubclassForm');
 
     }
 

@@ -142,7 +142,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Listen for addUnitOfMeasure event
-            window.addEventListener('clearForm', function() {
+            window.addEventListener('clearUOMForm', function() {
                 document.getElementById('unit_name-input').value = '';
                 document.getElementById('unit_symbol-input').value = '';
                 document.getElementById('unit_description-input').value = '';
@@ -155,7 +155,7 @@
                     if (successMessage) {
                         successMessage.style.display = 'none';
                     }
-                }, 3000);
+                }, 1500);
             });
 
             // Listen for the updateUOM event

@@ -78,7 +78,7 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Parent Classification <span
                                     style="color: red;">*</span></label>
-                            <select class="form-control" id="classification_id" wire:model="classification_id">
+                            <select class="form-control" id="sub-classification_id" wire:model="classification_id">
                                 <option value="">Select Parent Classification</option>
                                 @forelse ($classifications as $classification)
                                     <option value="{{ $classification->id }}">
@@ -94,9 +94,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="classification_name-input" class="form-label">Sub Classification Name <span
+                            <label for="sub-classification_name-input" class="form-label">Sub Classification Name <span
                                     style="color: red;">*</span></label>
-                            <input type="text" class="form-control" id="classification_name-input"
+                            <input type="text" class="form-control" id="sub-classification_name-input"
                                 wire:model="classification_name">
                             @error('classification_name')
                                 <span class="text-danger">{{ $message }}</span>
@@ -106,8 +106,8 @@
 
                 </div>
                 <div class="mb-3">
-                    <label for="classification_description-input" class="form-label">Description <span style="color: red;">*</span></label>
-                    <textarea class="form-control" id="classification_description-input" wire:model="classification_description" rows="3"></textarea>
+                    <label for="sub-classification_description-input" class="form-label">Description <span style="color: red;">*</span></label>
+                    <textarea class="form-control" id="sub-classification_description-input" wire:model="classification_description" rows="3"></textarea>
                 </div>
                 <x-primary-button type="submit">Save</x-primary-button>
             </form>
@@ -167,11 +167,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            window.addEventListener('clearForm', function (event) {
-                console.log('clearForm event triggered');
-                document.getElementById('classification_id').value = '';
-                document.getElementById('classification_name-input').value = '';
-                document.getElementById('classification_description').value = '';
+            window.addEventListener('clearSubclassForm', function (event) {
+                console.log('Form cleared subclassification');
+                document.getElementById('sub-classification_id').value = '';
+                document.getElementById('sub-classification_name-input').value = '';
+                document.getElementById('sub-classification_description-input').value = '';
+                // back to subclass lists tab
+                document.getElementById('sub-classification-table').style.display = 'block';
+                document.getElementById('sub-classification-form').style.display = 'none';
                 setTimeout(function () {
                     var successMessage = document.getElementById('success-message');
                     if (successMessage) {
@@ -203,7 +206,6 @@
                 document.getElementById('classification_id-update').value = $data.class_parent;
                 document.getElementById('subclass_name-update-input').value =$data.classification_name;
                 document.getElementById('subclass_description-update-input').value = $data.classification_description;
-
 
             }
     </script>
