@@ -8,7 +8,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\RequisitionType;
+use App\Models\Term;
 use App\Models\Item;
 use App\Models\PriceLevel;
 use Illuminate\Support\Facades\DB;
@@ -40,12 +40,12 @@ class PurchaseOrderController extends Controller
      }
 
      public function GetRequisitionType(){
-        $requistionType = RequisitionType::all();
-        return RequisitionType::all();
+        $requistionType = Term::all();
+        return Term::all();
      }
  public function newpo(){
     $suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
-    $types =  RequisitionType::all();
+    $types =  Term::all();
     $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
     $approver = Signatory::where([['signatory_type', 'APPROVER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
     $reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
@@ -93,7 +93,7 @@ class PurchaseOrderController extends Controller
     {
         $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing']])->find($id);
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
-        $types =  RequisitionType::all();
+        $types =  Term::all();
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
         $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();

@@ -11,18 +11,49 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('requisition_types')) {
+        if (!Schema::hasTable('terms')) {
 
-        Schema::create('requisition_types', function (Blueprint $table) {
+        Schema::create('terms', function (Blueprint $table) {
             $table->id();
-            $table->string('type_name', 255)->nullable();
+            $table->string('term_name', 55)->nullable();
+            $table->string('term_description', 255)->nullable();
+            $table->integer('payment_days')->nullable();
+            $table->enum('term_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
         });
 
         // Insert data into the table
-    DB::table('requisition_types')->insert([
-        ['type_name' => 'STOCK'],
-        ['type_name' => 'URGENT'],
-        ['type_name' => 'WARRANTY'],
+    DB::table('terms')->insert([
+    
+        [
+            'term_name' => 'Net 30',
+            'term_description' => 'Payment due in 30 days',
+            'payment_days' => 30,
+            'term_status' => 'ACTIVE',
+            'company_id' => null,
+            'created_by' => null,
+        ],
+        [
+            'term_name' => 'Net 60',
+            'term_description' => 'Payment due in 60 days',
+            'payment_days' => 60,
+            'term_status' => 'ACTIVE',
+            'company_id' => null,
+            'created_by' => null,
+        ],
+        [
+            'term_name' => 'Net 90',
+            'term_description' => 'Payment due in 90 days',
+            'payment_days' => 90,
+            'term_status' => 'ACTIVE',
+            'company_id' => null,
+            'created_by' => null,
+        ],
+    
 
     ]);
 
@@ -43,7 +74,7 @@ return new class extends Migration
                 $table->foreignId('reviewed_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                 $table->enum('category', ['PO', 'PR']); // Category
-                $table->foreignId('requisition_types_id')->nullable()->constrained('requisition_types')->onDelete('no action')->onUpdate('no action');
+                $table->foreignId('term_id')->nullable()->constrained('terms')->onDelete('no action')->onUpdate('no action');
                 $table->enum('requisition_status', ['TO RECEIVE','PARTIALLY FULLFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING'); // Status
                 $table->text('remarks')->nullable(); // Remarks
                 $table->date('approved_date')->nullable(); // Approved date

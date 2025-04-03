@@ -53,13 +53,31 @@
         }
 
         function updateTotalPrice(input) {
-            console.log(input);
             const row = input.closest('tr');
-            const price = parseFloat(row.querySelector('td:nth-child(4)').textContent);
-            const requestQty = parseInt(input.value);
+            const priceCell = row.querySelector('td:nth-child(4)');
             const totalPriceCell = row.querySelector('.total-price');
+
+            // Ensure price and quantity are parsed correctly
+            const price = parseFloat(priceCell.textContent) || 0;
+            const requestQty = parseInt(input.value) || 0;
+
+            // Update the total price for the row
             totalPriceCell.textContent = (price * requestQty).toFixed(2);
-            // console.log(totalPriceCell);
+
+            // Update the total amount at the footer
+            updateTotalAmount();
+        }
+
+        function updateTotalAmount() {
+            const tableBody = document.getElementById('itemTableBody');
+            const totalAmountElement = document.getElementById('totalAmount');
+
+            // Calculate the total amount by summing all row totals
+            const totalAmount = Array.from(tableBody.querySelectorAll('.total-price'))
+                .reduce((sum, cell) => sum + parseFloat(cell.textContent || 0), 0);
+
+            // Update the total amount in the footer
+            totalAmountElement.textContent = totalAmount.toFixed(2);
         }
 
         function removeRow(button) {

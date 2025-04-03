@@ -1,10 +1,18 @@
 <div>
+    <div>
+        @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+    </div>
     <div class="container">
         <div class="row"> 
             <div class="card mt-3 col-md-7">
                 <div class="card-header">
                     <div>
-                        <form id="poForm" method="POST" action="{{ route('purchase_order.store') }}">
+                        <form wire:submit.prevent="store" id="poForm">
                             @csrf
                         <strong>Purchase Order Items</strong>
                         <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal" style="float: right">+
@@ -25,14 +33,39 @@
                             </tr>
                         </thead>
                         <tbody id="itemTableBody">
-    
+                            @forelse ($selectedItems as $index => $item)
+                                <tr>
+                                    <td>{{ $item->item_code }}</td>
+                                    <td>{{ $item->item_description }}</td>
+                                    <td>
+                                        <input wire:model="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="1" onchange="updateTotalPrice(this)">
+                                    </td>
+                                    <td>{{ number_format($item->costPrice->amount, 2) }}</td>
+                                    <td class="total-price" id="total-price{{ $index }}">
+                                        {{ number_format($item->costPrice->amount * $item->qty, 2) }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" wire:click="chek">Remove</button>
+                                    </td>
+                                </tr>
+                                
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">No items selected</td>
+                                </tr>
+                                
+                            @endforelse
                             {{--           POPULATE TABLE     --}}
-    
                         </tbody>
                     </table>
                 </div>
                 
                 <div class="card-footer">
+                    <div>
+                        @error('selectedItems')
+                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                        @enderror
+                    </div>
                     <strong style="float: right">Total Amount: <span id="totalAmount">0.00</span></strong>
                 </div>
             </div>
@@ -43,48 +76,52 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
         
-                            <label for="options" class="form-label">Select Supplier</label>
-                            <select id="options" name="supp_id" class="form-control" required onchange="fetchcompany(this.value)" style="font-size: x-small">
+                            <label for="options" class="form-label">Select Supplier <span style="color: red;">*</span></label>
+                            <select wire:model="supplierId" class="form-control" required  style="font-size: x-small">
                                 @foreach ($suppliers as $supp)
                                     <option value="{{ $supp->id }}" style="font-size: x-small">
                                         {{ $supp->supp_name }}
                                     </option>
                                 @endforeach
                             </select>
-        
+                            @error('supplierId')
+                                <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label for="po_number" class="form-label">PO Number</label>
-                            <input type="text" class="form-control" id="po_number" name="po_number" value = "<AUTO>" readonly style="font-size: x-small">
+                            <input wire:model="requisitionNumber" type="text" class="form-control" readonly style="font-size: x-small"placeholder="<AUTO>" disabled>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="contact_no_1" class="form-label">M. PO NUMBER</label>
-                            <input type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number" style="font-size: x-small">
+                            <input wire:model="mPoNumber" type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number" style="font-size: x-small">
                         </div>
                         <div class="col-md-6">
-                            <label for="options" class="form-label">TYPE</label>
-                            <select id="options" name="type_id" class="form-control" required onchange="fetchcompany(this.value)" style="font-size: x-small">
-                                @foreach ($types as $type)
-                                    <option value="{{ $type->id }}" style="font-size: x-small">
-                                        {{ $type->type_name }}
+                            <label for="options" class="form-label">Terms<span style="color: red;"> *</span></label>  
+                            <select wire:model="term_id" id="options"  class="form-control" style="font-size: x-small">
+                                <option value="">Select Terms</option>
+                                @foreach ($terms as $term)
+                                    <option value="{{ $term->id }}" style="font-size: x-small">
+                                        {{ $term->term_name }}
                                     </option>
                                 @endforeach
+                                @error('term_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </select>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="contact_no_2" class="form-label">Remarks</label>
-        
-                            <input type="text" class="form-control" id="contact2" name="remarks" style="font-size: x-small">
+                            <textarea wire:model="remarks" type="text" class="form-control" style="font-size: x-small" placeholder="Remarks"></textarea>
                         </div>
                         <div class="col-md-6">
                             <div class="row mv-20">
                                 <div class="col-md-6">
                                     <label for="contact_no_2" class="form-label">Reviewed To</label>
-                                    <select id="options" name="reviewer_id" class="form-control" required style="font-size: x-small">
+                                    <select wire:model="reviewer_id" name="reviewer_id" class="form-control" required style="font-size: x-small">
                                         @foreach ($reviewer as $reviewers)
                                             <option value="{{ $reviewers->employees->id }}" style="font-size: x-small">
                                                 {{ $reviewers->employees->name }} {{ $reviewers->employees->last_name }}
@@ -95,7 +132,7 @@
         
                                 <div class="col-md-6">
                                     <label for="contact_no_2" class="form-label">Approved To</label>
-                                    <select id="options" name="approver_id" class="form-control" required
+                                    <select wire:model="approver_id" class="form-control" required
                                         onchange="fetchcompany(this.value)" style="font-size: x-small">
                                         @foreach ($approver as $approvers)
                                             <option value="{{ $approvers->employees->id }}" style="font-size: x-small">
@@ -103,22 +140,23 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                </form>
+                                
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <x-primary-button type="button" onclick="document.getElementById('poForm').submit();">
+                        <x-primary-button type="submit">
                             Save
                         </x-primary-button>
                         <x-secondary-button onclick="history.back()" type="button"> Back </x-secondary-button>
                     </div>
+                </form>
             </div>
     </div>
-
+    
     <!-- Add Item Modal -->
-    <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true">
+    <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -143,16 +181,11 @@
                                 <tr>
                                     <td>{{ $item->item_code }}</td>
                                     <td>{{ $item->item_description }}</td>
-                                    <td>{{ $item->on_hand_qty }} 0</td>
-                                    </td>
-                                    <td>{{ $item->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? 0.0 }}
-                                    </td>
+                                    <td>{{ $item->on_hand_qty }}</td>
+                                    <td>{{ $item->costPrice->amount }}</td>
                                     <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm" onclick="addToTable({{ $item }})">
-                                            Add
-                                        </button>
-
+                                        <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -160,9 +193,24 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div>
+                        @error('selectedItems')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.addEventListener('success', function (event) {
+                // Clear fields
+                document.getElementById('poForm').reset();
+            });
+        });
+    </script>
     </div>
