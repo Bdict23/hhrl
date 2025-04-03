@@ -104,8 +104,8 @@
                                 value="{{ $requestInfo->merchandise_po_number }}" readonly style="width: 100; font-size: 13px">
                         </div>
                         <div class="col-md-6">
-                            <label for="supp_address" class="form-label" style="width: 100; font-size: 13px">Type</label>
-                            <input type="text" class="form-control" value="{{ $requestInfo->requisitionTypes->type_name }}"
+                            <label for="supp_address" class="form-label" style="width: 100; font-size: 13px">Term</label>
+                            <input type="text" class="form-control" value="{{ $requestInfo->term->term_name }}"
                                 readonly style="width: 100; font-size: 13px">
                         </div>
                     </div>

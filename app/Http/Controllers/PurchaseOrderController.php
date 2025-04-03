@@ -34,7 +34,7 @@ class PurchaseOrderController extends Controller
 
      public function show($id)
      {
-         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
          //return $requestInfo;
          return view('purchase_order.po_view', compact('requestInfo'));
      }
@@ -55,16 +55,16 @@ class PurchaseOrderController extends Controller
 
      public function printPO($id)
      {
-         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where('id',  $id )->first();
+         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where('id',  $id )->first();
        // return $requestInfo;
          return view('purchase_order.po_print_details', compact('requestInfo'));
      }
 
      public function approval_request_list(){
-        $approval_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where([
+        $approval_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where([
             ['requisition_status', 'FOR APPROVAL'],
             ['category', 'PO'],['approved_by', Auth::user()->emp_id]])->get();
-        $rejected_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+        $rejected_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')
         ->where(function($query) {
             $query->whereNotNull('REJECTED_DATE')
               ->orWhereNotNull('APPROVED_DATE');
@@ -77,11 +77,11 @@ class PurchaseOrderController extends Controller
 
 
      public function review_request_list(){
-        $review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where([
+        $review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where([
             ['requisition_status', 'FOR REVIEW'],
             ['category', 'PO'],
             ['REVIEWED_BY', Auth::user()->emp_id]])->get();
-        $all_review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+        $all_review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')
             ->whereNotNull('REVIEWED_DATE')
             ->where([['REVIEWED_BY', Auth::user()->emp_id],['category', 'PO']])
             ->get();
@@ -326,13 +326,13 @@ class PurchaseOrderController extends Controller
 
     public function show_review_request($id)
     {
-        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
         //return $requestInfo;
         return view('purchase_order.po_show_for_review', compact('requestInfo'));
     }
     public function show_approval_request($id)
     {
-        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
         //return $requestInfo;
         return view('purchase_order.po_show_for_approval', compact('requestInfo'));
     }
@@ -340,7 +340,7 @@ class PurchaseOrderController extends Controller
     public function getPODetailsNOneSense($poNumber)
     {
         try {
-            $requisitionInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'requisitionTypes', 'requisitionDetails.items.priceLevel')
+            $requisitionInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails.items.priceLevel')
                 ->where('requisition_number', $poNumber)
                 ->first();
 

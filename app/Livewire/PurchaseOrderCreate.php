@@ -23,7 +23,7 @@ class PurchaseOrderCreate extends Component
     public $requisitionNumber;
     public $supplierId;
     public $mPoNumber;
-    public $term_id =null;
+    public $term_id;
     public $remarks;
     public $reviewer_id;
     public $approver_id;
@@ -31,13 +31,11 @@ class PurchaseOrderCreate extends Component
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
         'mPoNumber' => 'nullable|string|max:25',
-        'term_id' => 'required|exists:terms,id',
+        'term_id' => 'required',
         'remarks' => 'nullable|string|max:55',
-        'reviewer_id' => 'required|exists:signatories,id',
-        'approver_id' => 'required|exists:signatories,id',
+        'reviewer_id' => 'required|exists:employees,id',
+        'approver_id' => 'required|exists:employees,id',
         'selectedItems' => 'required|array',
-        'selectedItems.*' => 'exists:items,id',
-        'purchaseRequest.*.qty' => 'required|integer|min:1',
     ];
     protected $messages = [
         'selectedItems.required' => 'The item list cannot be empty.',
@@ -56,7 +54,6 @@ class PurchaseOrderCreate extends Component
     public function store()
     {
         $this->validate();
-        
                 // Save to requisitionInfos table
                 $requisitionInfo = new RequisitionInfo();
                 $latestId = RequisitionInfo::max('id') + 1;
@@ -75,6 +72,7 @@ class PurchaseOrderCreate extends Component
                 $requisitionInfo->from_branch_id = auth()->user()->branch_id;
                 $requisitionInfo->save();
 
+
         // Process the selected items and their quantities
         foreach ($this->purchaseRequest as $index => $item) {
            
@@ -83,12 +81,7 @@ class PurchaseOrderCreate extends Component
             $requisitionDetail->item_id = $this->purchaseRequest[$index]['id'];
             $requisitionDetail->qty = $this->purchaseRequest[$index]['qty'];
             $requisitionDetail->save();
-            // Here you can save the item and quantity to the database or perform any other action
-            // For example:
-            // PurchaseOrderItem::create([
-            //     'item_id' => $itemId,
-            //     'quantity' => $quantity,
-            // ]);
+           
         }
         $this->reset();
         $this->fetchdata();

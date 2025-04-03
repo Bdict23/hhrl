@@ -76,8 +76,9 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
         
-                            <label for="options" class="form-label">Select Supplier <span style="color: red;">*</span></label>
-                            <select wire:model="supplierId" class="form-control" required  style="font-size: x-small">
+                            <label for="options" class="form-label">Select Supplier <span style="color: red; font-size: smaller;"> *</span></label>
+                            <select wire:model="supplierId" class="form-control"  style="font-size: x-small">
+                                <option value="" selected>Select Supplier</option>
                                 @foreach ($suppliers as $supp)
                                     <option value="{{ $supp->id }}" style="font-size: x-small">
                                         {{ $supp->supp_name }}
@@ -99,48 +100,57 @@
                             <input wire:model="mPoNumber" type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number" style="font-size: x-small">
                         </div>
                         <div class="col-md-6">
-                            <label for="options" class="form-label">Terms<span style="color: red;"> *</span></label>  
-                            <select wire:model="term_id" id="options"  class="form-control" style="font-size: x-small">
-                                <option value="">Select Terms</option>
+                            <label for="options" class="form-label">Terms<span style="color: red; font-size: smaller;"> *</span></label>  
+                            <select wire:model="term_id" class="form-control" style="font-size: x-small">
+                                <option value=""  selected>Select Terms</option>
                                 @foreach ($terms as $term)
                                     <option value="{{ $term->id }}" style="font-size: x-small">
                                         {{ $term->term_name }}
                                     </option>
                                 @endforeach
-                                @error('term_id')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
                             </select>
+                            @error('term_id')
+                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                        @enderror
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <textarea wire:model="remarks" type="text" class="form-control" style="font-size: x-small" placeholder="Remarks"></textarea>
+                            @error('remarks')
+                                <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col-md-6">
-                            <div class="row mv-20">
+                            <div class="row ">
                                 <div class="col-md-6">
-                                    <label for="contact_no_2" class="form-label">Reviewed To</label>
-                                    <select wire:model="reviewer_id" name="reviewer_id" class="form-control" required style="font-size: x-small">
+                                    <label for="" class="form-label">Reviewed To <span style="color: red; font-size: x-small;"> *</span></label>
+                                    <select wire:model="reviewer_id"  class="form-control" style="font-size: x-small">
+                                        <option value="">Select Reviewer</option>
                                         @foreach ($reviewer as $reviewers)
                                             <option value="{{ $reviewers->employees->id }}" style="font-size: x-small">
                                                 {{ $reviewers->employees->name }} {{ $reviewers->employees->last_name }}
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('reviewer_id')
+                                        <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                    @enderror
                                 </div>
         
                                 <div class="col-md-6">
-                                    <label for="contact_no_2" class="form-label">Approved To</label>
-                                    <select wire:model="approver_id" class="form-control" required
-                                        onchange="fetchcompany(this.value)" style="font-size: x-small">
+                                    <label for="contact_no_2" class="form-label">Approved To <span style="color: red; font-size: x-small;"> *</span></label>
+                                    <select wire:model="approver_id" class="form-control" style="font-size: x-small">
+                                        <option value="" selected>Select Approver</option>
                                         @foreach ($approver as $approvers)
                                             <option value="{{ $approvers->employees->id }}" style="font-size: x-small">
                                                 {{ $approvers->employees->name }} {{ $approvers->employees->last_name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                
+                                    @error('approver_id')
+                                        <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>

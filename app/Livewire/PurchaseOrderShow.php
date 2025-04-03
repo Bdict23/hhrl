@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Livewire\Component;
 use App\Models\RequisitionInfo;
 use App\Models\RequisitionDetail;
+use App\Models\Term;
 
 class PurchaseOrderShow extends Component
 {
@@ -13,8 +14,8 @@ class PurchaseOrderShow extends Component
     public $id; // Add this public property
     public $requisitionInfo = [];
     public $requisitionDetails = [];
-    public $requisitionTypes = [];
-    public $requisitionType = [];
+    public $term = [];
+    public $terms = [];
     public function mount(Request $request)
     {
 
@@ -27,14 +28,15 @@ class PurchaseOrderShow extends Component
 
     public function loadRequestInfo($id)
     {
-        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
+        dd($this->requestInfo);
     }
     public function loadRequisitionInfo($id)
     {
-        $this->requisitionInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+        $this->requisitionInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
         $this->requisitionDetails = RequisitionDetail::where('requisition_info_id', $id)->get();
-        $this->requisitionTypes = RequisitionType::all();
-        $this->requisitionType = RequisitionType::where('id', $this->requestInfo->requisition_type_id)->first();
+        $this->terms = Term::all();
+        $this->term = Term::where('id', $this->requestInfo->term_id)->first();
     }
     public function render()
     {
