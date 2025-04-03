@@ -1,7 +1,7 @@
-<div>
-    <div class="row justify-content-center">
+<div class="container-fluid" style="width: 100%; height: 100%;">
+    <div class="row justify-content-center" style="display: flex;">
         <!-- Left Dashboard -->
-        <div class="card col-md-7" >
+        <div class="card col-md-7 " style="flex:1"> 
 
                 <div class="card-header">
                     <div class="row">

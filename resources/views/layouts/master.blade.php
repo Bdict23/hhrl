@@ -192,7 +192,7 @@
             border-top: none;
         }
 
-        .steps-container {
+        /* .steps-container {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -243,7 +243,9 @@
         .line.completed {
             background-color: #4caf50;
             /* Green for completed lines */
-        }
+        } */
+
+       
     </style>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-600 leading-tight text-sm">
