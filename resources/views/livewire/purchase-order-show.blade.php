@@ -1,7 +1,7 @@
 <div class="container-fluid" style="width: 100%; height: 100%;">
     <div class="row justify-content-center" style="display: flex;">
         <!-- Left Dashboard -->
-        <div class="card col-md-7 " style="flex:1"> 
+        <div class="card col-md-7 " style="flex:1">
 
                 <div class="card-header">
                     <div class="row">
@@ -14,10 +14,10 @@
                     </div>
                 </div>
                     <div class="m-2">
-                        <button class="btn {{ $requestInfo->requisition_status == 'PENDING' ? 'btn-success' : 'btn-secondary' }}"
+                        <button class="btn {{ $requestInfo->requisition_status == 'TO RECEIVE' ? 'btn-success' : 'btn-secondary' }}"
                             type="button"
                             onclick="window.location.href='{{ route('po.po_receive', ['poNumber' => $requestInfo->requisition_number]) }}'"
-                            {{ $requestInfo->requisition_status != 'PENDING' ? 'disabled' : '' }}>
+                            {{ $requestInfo->requisition_status != 'TO RECEIVE' ? 'disabled' : '' }}>
                             Receive
                         </button>
 
@@ -40,26 +40,25 @@
                     <table class="table table-striped table-hover table-sm table-responsive">
                         <thead class="table-dark">
                             <tr style="font-size: x-small">
-                                <th>ITEM CODE</th>
-                                <th>ITEM DESCRIPTION</th>
-                                <th>REQUEST QTY.</th>
-                                <th>RECEIVE QTY.</th>
-                                <th>COST</th>
-                                <th>TOTAL</th>
-                                <th>REFERENCE COST</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Req. Qty.</th>
+                                <th>Rec. Qty.</th>
+                                <th>Cost</th>
+                                <th>Sub-Total</th>
+                                <th>Cost. Ref.</th>
                             </tr>
                         </thead>
                         <tbody style="font-optical-sizing: auto">
                             @forelse ($requestInfo->requisitionDetails as $reqdetail)
                                 <tr data-id="{{ $reqdetail->requisition_number }}">
-                                    <td>{{ $reqdetail->items->item_code }}</td>
-                                    <td>{{ $reqdetail->items->item_description }} </td>
-                                    <td> &nbsp;&nbsp;{{ $reqdetail->qty }}</td>
-                                    <td>0{{ $reqdetail->receive_qty }}</td>
-                                    <td>{{ $reqdetail->items->priceLevel()->latest()->where('price_type', 'cost')->first()->amount }}
-                                    </td>
-                                    <td>{{ $reqdetail->total }}</td>
-                                    <td>{{ $reqdetail->reference_cost }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->items->item_description }} </td>
+                                    <td style="font-size: small"> {{ $reqdetail->qty }}</td>
+                                    <td style="font-size: small">{{ $totalReceived[$reqdetail->item_id] ?? 0 }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->items->costPrice->amount }}</td>
+                                    <td style="font-size: small">{{ ($totalReceived[$reqdetail->item_id] ?? 0) * ($reqdetail->items->costPrice->amount ?? 0) }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->items->costPrice->supplier->supplier_code ?? 'N/A' }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -72,7 +71,7 @@
                 </div>
                 <div class="card-footer">
                     <span class="btn btn-outline-info text-end">{{ $requestInfo->requisition_status }}</span>
-                    <strong style="float: right">Total Amount: {{ $requestInfo->requisitionDetails->sum('total') }}</strong>
+                    <strong style="float: right">Total QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</strong>
                 </div>
 
         </div>
@@ -111,7 +110,7 @@
                     </div>
 
 
-                    <div class="col-md-10 mt-4">
+                    <div class="col-md-10">
                         <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Prepared
                             By</label>
                         <input type="text" class="form-control" id="contact1" name="company_tin"
@@ -139,6 +138,20 @@
                             <label for="contact_no_2" class="form-label" style="font-size: 13px">Remarks</label>
                             <textarea name="" id="" cols="30" rows="10" readonly class="form-control md-12 "
                                 style="height: 100px; font-size: 12px"> {{ $requestInfo->remarks }} </textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="" class="form-label" style="width: 100; font-size: 13px">Total Request Amount</label>
+                            <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"
+                                value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) { return $detail->qty * ($detail->items->costPrice->amount ?? 0); }), 2) }}"
+                                readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="" class="form-label" style="width: 100; font-size: 13px">Total Received Amount</label>
+                            <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"
+                                value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) use ($totalReceived) { return ($totalReceived[$detail->item_id] ?? 0) * ($detail->items->costPrice->amount ?? 0); }), 2) }}"
+                                readonly>
                         </div>
                     </div>
                 </form>

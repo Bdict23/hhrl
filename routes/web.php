@@ -15,7 +15,7 @@ use App\Models\RequisitionInfos;
 use App\Models\RequisitionDetails;
 use App\Models\Employees;
 use App\Models\Items;
-use App\Models\RequisitionTypes;
+use App\Models\Term;
 use App\Http\Controllers\MenusController;
 use App\Http\Livewire\PendingOrders;
 use App\Http\Livewire\SearchOrderNumber;

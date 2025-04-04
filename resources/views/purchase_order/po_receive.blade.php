@@ -31,7 +31,7 @@
                                 <th>REQUEST QTY.</th>
                                 <th>To Rec. QTY.</th>
                                 <th>RECEIVED QTY.</th>
-                                <th>PRICE</th>
+                                <th>COST</th>
                                 <th>TOTAL</th>
                             </tr>
                         </thead>

@@ -8,7 +8,7 @@
         @endif
     </div>
     <div class="container">
-        <div class="row"> 
+        <div class="row">
             <div class="card mt-3 col-md-7">
                 <div class="card-header">
                     <div>
@@ -27,8 +27,8 @@
                                 <th>ITEM CODE</th>
                                 <th>ITEM DESCRIPTION</th>
                                 <th>REQUEST QTY.</th>
-                                <th>PRICE</th>
-                                <th>TOTAL</th>
+                                <th>COST</th>
+                                <th>SUB-TOTAL</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -48,25 +48,25 @@
                                         <button type="button" class="btn btn-danger btn-sm" wire:click="chek">Remove</button>
                                     </td>
                                 </tr>
-                                
+
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center">No items selected</td>
                                 </tr>
-                                
+
                             @endforelse
                             {{--           POPULATE TABLE     --}}
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="card-footer">
                     <div>
                         @error('selectedItems')
                             <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
                         @enderror
                     </div>
-                    <strong style="float: right">Total Amount: <span id="totalAmount">0.00</span></strong>
+                    <strong style="float: right">Total Cost : <span id="totalAmount">0.00</span></strong>
                 </div>
             </div>
             <div class="card mt-3 col-md-5">
@@ -75,7 +75,7 @@
                 </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-        
+
                             <label for="options" class="form-label">Select Supplier <span style="color: red; font-size: smaller;"> *</span></label>
                             <select wire:model="supplierId" class="form-control"  style="font-size: x-small">
                                 <option value="" selected>Select Supplier</option>
@@ -100,7 +100,7 @@
                             <input wire:model="mPoNumber" type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number" style="font-size: x-small">
                         </div>
                         <div class="col-md-6">
-                            <label for="options" class="form-label">Terms<span style="color: red; font-size: smaller;"> *</span></label>  
+                            <label for="options" class="form-label">Terms<span style="color: red; font-size: smaller;"> *</span></label>
                             <select wire:model="term_id" class="form-control" style="font-size: x-small">
                                 <option value=""  selected>Select Terms</option>
                                 @foreach ($terms as $term)
@@ -137,7 +137,7 @@
                                         <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
                                     @enderror
                                 </div>
-        
+
                                 <div class="col-md-6">
                                     <label for="contact_no_2" class="form-label">Approved To <span style="color: red; font-size: x-small;"> *</span></label>
                                     <select wire:model="approver_id" class="form-control" style="font-size: x-small">
@@ -164,7 +164,7 @@
                 </form>
             </div>
     </div>
-    
+
     <!-- Add Item Modal -->
     <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl">
@@ -180,19 +180,21 @@
                             <tr>
                                 <th>ITEM CODE</th>
                                 <th>ITEM DESCRIPTION</th>
-                                <th>AVAILABLE QTY.</th>
-                                <th>PRICE</th>
+                                <th>INV. COUNT</th>
+                                <th>AVAILABLE</th>
+                                <th>COST</th>
                                 <th>STATUS</th>
                                 <th>ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($items as $item)
+                            @foreach ($items as  $item)
                                 <tr>
                                     <td>{{ $item->item_code }}</td>
                                     <td>{{ $item->item_description }}</td>
-                                    <td>{{ $item->on_hand_qty }}</td>
-                                    <td>{{ $item->costPrice->amount }}</td>
+                                    <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
+                                    <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
+                                    <td>{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
                                     <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
@@ -207,6 +209,13 @@
                         @error('selectedItems')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
+                        <div>
+                            @if (session()->has('error'))
+                            <span class="alert text-danger float-left">
+                                {{ session('error') }}
+                            </span>
+                            @endif
+                        </div>
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
                 </div>

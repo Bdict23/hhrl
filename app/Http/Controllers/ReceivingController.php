@@ -8,7 +8,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\RequisitionType;
+use App\Models\Term;
 use App\Models\Item;
 use App\Models\PriceLevel;
 use App\Models\Status;
@@ -29,7 +29,7 @@ class ReceivingController extends Controller
 
         $checkers = Signatory::where('signatory_type', 'checker')->get();
         $allocators = Signatory::where('signatory_type', 'allocator')->get();
-        $requestInfos = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+        $requestInfos = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')
             ->where('FROM_BRANCH_ID', Auth::user()->branch_id)
             ->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])
             ->where('requisition_number', $request)

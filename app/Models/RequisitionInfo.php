@@ -46,6 +46,6 @@ class requisitionInfo extends Model
 
     public function term()
     {
-        return $this->belongsTo(Term::class, 'requisition_types_id');
+        return $this->belongsTo(Term::class, 'term_id');
     }
 }

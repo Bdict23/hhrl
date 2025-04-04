@@ -9,6 +9,9 @@ use App\Models\Item;
 use App\Models\Signatory;
 use App\Models\RequisitionInfo;
 use App\Models\RequisitionDetail;
+use App\Models\Cardex;
+use Illuminate\Support\Facades\DB;
+
 
 
 class PurchaseOrderCreate extends Component
@@ -27,6 +30,8 @@ class PurchaseOrderCreate extends Component
     public $remarks;
     public $reviewer_id;
     public $approver_id;
+    public $cardexAvailable = [];
+    public $cardexBalance = [];
 
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
@@ -75,13 +80,14 @@ class PurchaseOrderCreate extends Component
 
         // Process the selected items and their quantities
         foreach ($this->purchaseRequest as $index => $item) {
-           
+
             $requisitionDetail = new RequisitionDetail();
             $requisitionDetail->requisition_info_id = $requisitionInfo->id;
             $requisitionDetail->item_id = $this->purchaseRequest[$index]['id'];
             $requisitionDetail->qty = $this->purchaseRequest[$index]['qty'];
+            $requisitionDetail->price_level_id = $this->purchaseRequest[$index]['cost'];
             $requisitionDetail->save();
-           
+
         }
         $this->reset();
         $this->fetchdata();
@@ -106,13 +112,19 @@ class PurchaseOrderCreate extends Component
         $item = Item::with('costPrice')->find($itemId);
 
         if (!$item) {
+
+            return;
+        }
+        if ( $item->costPrice == null) {
+            session()->flash('error', 'Item has no cost price.');
             return;
         }
 
         // Check if the item is already in the selected items
         foreach ($this->selectedItems as $selectedItem) {
             if ($selectedItem->id === $item->id) {
-                return; // Item already exists
+                session()->flash('error','Item already selected.');
+                return;
             }
         }
 
@@ -120,10 +132,10 @@ class PurchaseOrderCreate extends Component
         $this->selectedItems[] = $item;
 
         // Initialize the requested quantity for the item
-        $this->purchaseRequest[] = ['id' => $item->id, 'qty' => 1];
+        $this->purchaseRequest[] = ['id' => $item->id, 'qty' => 1, 'cost' => $item->costPrice->id];
     }
 
-   
+
     public function fetchdata()
     {
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
@@ -131,7 +143,22 @@ class PurchaseOrderCreate extends Component
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->get();
     $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
     $this->reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
+    $this->cardexAvailable = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as available_qty'))
+            ->where(function($query) {
+                $query->where([['status', 'RESERVED'],['source_branch_id', auth()->user()->branch_id]])
+                      ->orWhere('status', 'FINAL');
+            })
+            ->where('source_branch_id', auth()->user()->branch_id)
+            ->groupBy('item_id')
+            ->pluck('available_qty', 'item_id');
+    $this->cardexBalance = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as inventory_qty'))
+            ->where('status', 'FINAL')
+            ->where('source_branch_id', auth()->user()->branch_id)
+            ->groupBy('item_id')
+            ->pluck('inventory_qty', 'item_id');
+
     }
+
     public function render()
     {
         return view('livewire.purchase-order-create');
