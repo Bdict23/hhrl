@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    <div class="d-flex " style="position: absolute; right: 1%; left: 1%;">
+    {{-- <div class="d-flex " style="position: absolute; right: 1%; left: 1%;">
         <!-- Left Dashboard -->
         <div class="dashboard col-md-6 me-3" style="width: 950px;">
             <header>
@@ -144,6 +144,11 @@
                 </div>
             </div>
         </div>
+    </div> --}}
+
+
+    <div>
+       @livewire('purchase-order-review-show', ['id' => $requestInfo->id])
     </div>
 @endsection
 

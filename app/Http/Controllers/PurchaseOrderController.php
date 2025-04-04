@@ -326,6 +326,7 @@ class PurchaseOrderController extends Controller
 
     public function show_review_request($id)
     {
+
         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
         //return $requestInfo;
         return view('purchase_order.po_show_for_review', compact('requestInfo'));

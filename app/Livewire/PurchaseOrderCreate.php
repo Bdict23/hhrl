@@ -138,7 +138,7 @@ class PurchaseOrderCreate extends Component
 
     public function fetchdata()
     {
-    $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
+    $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->get();
     $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
