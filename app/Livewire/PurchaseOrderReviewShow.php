@@ -58,8 +58,19 @@ class PurchaseOrderReviewShow extends Component
             $requisitionInfo->save();
         });
         session()->flash('success', 'Requisition Order Revised Successfully');
-        $this->dispatch('refresh');
+        return redirect()->route('review_request_list');
     }
+
+    public function reviewPO($id){
+        DB::transaction(function () use ($id) {
+            $requisitionInfo = RequisitionInfo::find($id);
+            $requisitionInfo->requisition_status = 'FOR APPROVAL';
+            $requisitionInfo->save();
+        });
+        session()->flash('success', 'Requisition updated Successfully');
+        return redirect()->route('review_request_list');
+    }
+
     public function render()
     {
         return view('livewire.purchase-order-review-show');

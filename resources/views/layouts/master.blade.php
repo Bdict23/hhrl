@@ -221,7 +221,7 @@
             background-color: #4caf50;
 
             /* Green for completed steps */
-        }
+        
 
         .step.in-progress .circle {
             background-color: #673ab7;

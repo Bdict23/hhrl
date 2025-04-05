@@ -17,16 +17,16 @@
                             <h5>Purchase Order Information</h5>
                         </div>
                         <div class="col-md-6 text-end">
-                            <span class="btn btn-outline-info">{{ $requestInfo->requisition_number }}</span>
+                            <span class="btn btn-outline-info">{{ $requestInfo->requisition_status  }}</span>
                         </div>
                     </div>
                 </div>
                     <div class="m-2">
-                       <x-primary-button>
-                            Reviewed
+                       <x-primary-button data-bs-toggle="modal" data-bs-target="#reviewModalConfirm">
+                            Reviewed?
                         </x-primary-button>
                         <x-danger-button data-bs-toggle="modal" data-bs-target="#reviewModal"> REVISE</x-danger-button>
-                        <x-secondary-button> Summary </x-secondary-button>
+                        <x-secondary-button ><a href="/review_request_list" class="no-underline">Summary</a> </x-secondary-button>
                     </div>
                 <div class="card-body">
                     <table class="table table-striped table-hover table-sm table-responsive">
@@ -60,7 +60,9 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <span class="btn btn-outline-info text-end">{{ $requestInfo->requisition_status }}</span>
+                    <div wire:loading>
+                        Updating Please Wait...
+                    </div>
                     <strong style="float: right">Total QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</strong>
                 </div>
 
@@ -121,8 +123,6 @@
                             value="{{ $requestInfo->approver->name }} {{ $requestInfo->approver->middle_name }} {{ $requestInfo->approver->last_name }}"
                             readonly style="width: 100; font-size: 12px">
                     </div>
-
-
                     <div class="row mb-2">
                         <div class="col-md-12">
                             <label for="contact_no_2" class="form-label" style="font-size: 13px">Remarks</label>
@@ -152,11 +152,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Proceed for approval?
+                    This request will back to preparing status, Procceed action?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button wire:click="revisePO({{$requestInfo->id}})" type="button" class="btn btn-primary" id="confirmReview"
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button wire:click="revisePO({{$requestInfo->id}})" type="button" class="btn btn-primary" id="confirmRevise"
+                        >Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reviewModalConfirm" tabindex="-1" aria-labelledby="reviewModalLabel2" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel2">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Proccees for Approval?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button wire:click="reviewPO({{$requestInfo->id}})" type="button" class="btn btn-primary" id="confirmReview"
                         >Yes</button>
                 </div>
             </div>

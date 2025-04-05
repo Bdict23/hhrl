@@ -9,7 +9,7 @@
                             <h5>Purchase Order Information</h5>
                         </div>
                         <div class="col-md-6 text-end">
-                            <span class="btn btn-outline-info">{{ $requestInfo->requisition_number }}</span>
+                            <span class="btn btn-outline-info">{{ $requestInfo->requisition_status }}</span>
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <span class="btn btn-outline-info text-end">{{ $requestInfo->requisition_status }}</span>
+                    
                     <strong style="float: right">Total QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</strong>
                 </div>
 

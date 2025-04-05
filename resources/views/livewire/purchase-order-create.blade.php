@@ -66,6 +66,9 @@
                             <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
                         @enderror
                     </div>
+                    <div wire:loading>
+                        Saving Please Wait...
+                    </div>
                     <strong style="float: right">Total Cost : <span id="totalAmount">0.00</span></strong>
                 </div>
             </div>

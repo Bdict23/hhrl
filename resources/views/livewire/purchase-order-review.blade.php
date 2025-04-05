@@ -15,14 +15,16 @@
                     role="tab" aria-controls="pcv" aria-selected="false">Orders Summary</button>
             </li>
         </ul>
+        <div wire:loading>
+             Please Wait...
+        </div>
         <div class="tab-content" id="jobOrderTabContent">
             <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
                 <!-- Purchase Order Content -->
 
                 <div class="dashboard">
                     <header>
-                        <h2>Purchase Order Review Request</h2>
-
+                        <h3>Review Request</h3>
                     </header>
                     <table class="table table-striped table-hover">
                         <thead class="thead-light">

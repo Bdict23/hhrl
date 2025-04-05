@@ -19,14 +19,7 @@
                                 </x-secondary-button>
                             </div>
                         </header>
-                        <div class="row me-3">
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Enter Item Code">
-                            </div>
-                            <div class="col-md-2">
-                                <input type="number" class="form-control" placeholder="QTY">
-                            </div>
-                        </div>
+                       
                         <table class="table table-striped table-hover me-3">
                             <thead class="thead-dark me-3">
                                 <tr style="font-size: smaller;">

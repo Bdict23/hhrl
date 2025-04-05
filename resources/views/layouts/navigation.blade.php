@@ -223,10 +223,10 @@
 
                         <x-slot name="content">
                             <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
-                                {{ __('P.O Review') }}
+                                {{ __('P.O - Review') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                {{ __('P.O Approval') }}
+                                {{ __('P.O - Approval') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
                                 {{ __('Menu Approval') }}
@@ -234,10 +234,10 @@
                             <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
                                 {{ __('Menu Review') }}
                                 <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
-                                    {{ __('Withdrawal Review') }}
+                                    {{ __('Withdrawal - Review') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
-                                    {{ __('Withdrawal Approval') }}
+                                    {{ __('Withdrawal - Approval') }}
                                 </x-dropdown-link>
                             </x-dropdown-link>
                         </x-slot>
