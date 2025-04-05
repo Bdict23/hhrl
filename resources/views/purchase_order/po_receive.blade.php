@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    <div>
+    {{-- <div>
         <header>
             <h1>Receiving Form</h1>
 
@@ -145,7 +145,7 @@
                         <div class="col-md-12">
                             <div class="row mv-20">
 
-                                {{-- CHECKED BY --}}
+
                                 <div class="col-md-6 mt-3">
                                     <label for="options" class="form-label" style="font-size: 13px"
                                         style="width: 100; font-size: 13px">Checked
@@ -164,7 +164,7 @@
                                     </select>
                                 </div>
 
-                                {{-- Allocate By --}}
+
                                 <div class="col-md-6 mt-3">
                                     <label for="options" class="form-label" style="font-size: 13px"
                                         style="width: 100; font-size: 13px">To Allocate
@@ -193,6 +193,10 @@
 
                 </div>
         </form>
+    </div> --}}
+
+    <div>
+        @livewire('purchasing.purchase-order-receive')
     </div>
 
     <!-- Success Modal -->

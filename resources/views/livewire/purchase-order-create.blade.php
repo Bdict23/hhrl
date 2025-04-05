@@ -33,6 +33,7 @@
                             </tr>
                         </thead>
                         <tbody id="itemTableBody">
+                            {{-- POPULATE TABLE FOR SELECTED ITEMS --}}
                             @forelse ($selectedItems as $index => $item)
                                 <tr>
                                     <td>{{ $item->item_code }}</td>
@@ -55,7 +56,6 @@
                                 </tr>
 
                             @endforelse
-                            {{--           POPULATE TABLE     --}}
                         </tbody>
                     </table>
                 </div>
