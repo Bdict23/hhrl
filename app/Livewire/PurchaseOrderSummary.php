@@ -10,6 +10,20 @@ use Illuminate\Support\Facades\Auth;
 class PurchaseOrderSummary extends Component
 {
     public $purchaseOrderSummary = [];
+    public $statuses = [
+        'PREPARING' => 'Preparing',
+        'FOR REVIEW' => 'For Review',
+        'FOR APPROVAL' => 'For Approval',
+        'TO RECEIVE' => 'To Receive',
+        'REJECTED' => 'Rejected',
+        'CANCELLED' => 'Cancelled',
+        'COMPLETED' => 'Completed',
+        'PARTIALLY FULFILLED' => 'Partially Fulfilled',
+    ];
+
+    public $fromDate;
+    public $toDate;
+    public $statusPO = 'All';
 
     public function mount()
     {
@@ -32,6 +46,25 @@ class PurchaseOrderSummary extends Component
         // Redirecting to the purchase order show page
         return redirect()->route('purchase-order-show', ['id' => $id]);
     }
+
+    public function search()
+    {
+        $query = RequisitionInfo::with('supplier', 'preparer', 'approver')
+            ->where('CATEGORY', 'PO')
+            ->where('from_branch_id', Auth::user()->branch_id);
+
+        if ($this->statusPO !== "All") {
+            $query->where('requisition_status', $this->statusPO);
+        }
+
+        if ($this->fromDate && $this->toDate) {
+            $query->whereDate('created_at', '>=', $this->fromDate)
+                  ->whereDate('created_at', '<=', $this->toDate);
+        }
+
+        $this->purchaseOrderSummary = $query->get();
+    }
+
     public function render()
     {
         return view('livewire.purchase-order-summary');
