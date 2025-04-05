@@ -1,5 +1,5 @@
 <div class="content-fluid">
-    
+
     <div class="card mt-3 mb-3">
         <div class="card-header p-2">
             <div class="row">
@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-md-6">
 
-               
+
                 <div class="d-flex">
                     <div class="input-group">
                         <label for="from_date" class="input-group-text">From:</label>
@@ -23,14 +23,14 @@
                             class="form-control form-control-sm">
                             <button class="btn btn-warning input-group-text">search</button>
                     </div>
-                    <div>      
+                    <div>
                     </div>
                 </div>
             </div>
             </div>
         </div>
-            
-            
+
+
         <div class="card-body d-sm-flex">
                 <table class="table table-striped table-hover table-responsive-sm">
                     <thead class="table-dark">
@@ -55,15 +55,14 @@
                                 <td>{{ $requisition->remarks }}</td>
                                 <input id="company_id" name='company_id' type="hidden">
                                 <td>
-                                    <x-primary-button class="button-group">
-                                        <a style="text-decoration: none"
-                                            href="{{ route('po.show', ['id' => $requisition->id]) }}">View<a>
-                                    </x-primary-button>
+                                    <a style="text-decoration: none" href="{{ route('po.show', ['id' => $requisition->id]) }}">
+                                        <x-primary-button class="button-group">View</x-primary-button>
+                                    <a>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
-                </table>    
+                </table>
         </div>
     </div>
 </div>

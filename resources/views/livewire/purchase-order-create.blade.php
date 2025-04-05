@@ -162,7 +162,7 @@
                         <x-primary-button type="submit">
                             Save
                         </x-primary-button>
-                        <x-secondary-button onclick="history.back()" type="button"> Back </x-secondary-button>
+                        <a href="/purchase_order"><x-secondary-button type="button"> Summary </x-secondary-button></a>
                     </div>
                 </form>
             </div>
@@ -171,14 +171,17 @@
     <!-- Add Item Modal -->
     <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content card">
+                <div class="modal-header card-header">
                     <h5 class="modal-title" id="AddItemModalLabel">Select Items</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="card-body">
+
+
+                <div class="modal-body container">
                     <!-- Table for Item Selection -->
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-striped table-hover table-sm table-responsive">
                         <thead class="thead-dark">
                             <tr>
                                 <th>ITEM CODE</th>
@@ -207,6 +210,7 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
                 <div class="modal-footer">
                     <div>
                         @error('selectedItems')

@@ -93,11 +93,11 @@ class PurchaseOrderController extends Controller
     {
         $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing']])->find($id);
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
-        $types =  Term::all();
+        $terms =  Term::all();
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
         $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
-        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'types', 'items', 'approver', 'reviewer'));
+        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'terms', 'items', 'approver', 'reviewer'));
     }
 
     public function po_update(Request $request)
@@ -112,9 +112,8 @@ class PurchaseOrderController extends Controller
                 $requisitionInfo->reviewed_by = $request->reviewer_id;
                 $requisitionInfo->requisition_status = 'PREPARING';
                 $requisitionInfo->trans_date = now();
-                $requisitionInfo->requisition_types_id = $request->type_id;
+                $requisitionInfo->term_id = $request->term_id;
                 $requisitionInfo->remarks = $request->remarks;
-                $requisitionInfo->requisition_types_id = $request->type_id;
                 $requisitionInfo->category = 'PO';
                 $requisitionInfo->merchandise_po_number = $request->merchandise_po_number;
                 $requisitionInfo->save();
