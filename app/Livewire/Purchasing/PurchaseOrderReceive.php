@@ -59,7 +59,7 @@ class PurchaseOrderReceive extends Component
     }
 
     public function loadReceiveRequest(){
-        $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'requisition_status',  'TO RECEIVE')->get();
+        $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])->get();
     }
     public function render()
     {

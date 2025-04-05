@@ -182,6 +182,7 @@
                                         <th>PO Number</th>
                                         <th>Supplier</th>
                                         <th>Created At</th>
+                                        <th>Status</th>
                                         <TH>Action</TH>
                                     </tr>
                                 </thead>
@@ -189,9 +190,10 @@
                                       @if(isset($toReceiveRequests) && $toReceiveRequests->isNotEmpty())
                                           @foreach ($toReceiveRequests as $request)
                                               <tr>
-                                                  <td>{{ $request->requisition_number }}</td>
-                                                  <td>{{ $request->supplier->supp_name }}</td>
-                                                  <td>{{ $request->trans_date }}</td>
+                                                  <td style="font-size: x-small">{{ $request->requisition_number }}</td>
+                                                  <td style="font-size: x-small">{{ $request->supplier->supp_name }}</td>
+                                                  <td style="font-size: x-small">{{ $request->trans_date }}</td>
+                                                  <td style="font-size: x-small">{{ $request->requisition_status }}</td>
                                                     <td>
                                                         <button wire:click="selectPO({{ $request->id }})" type="button" class="btn btn-primary btn-sm" onclick="closeModal()">
                                                             Select

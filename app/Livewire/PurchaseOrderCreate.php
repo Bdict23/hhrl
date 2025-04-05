@@ -62,7 +62,7 @@ class PurchaseOrderCreate extends Component
                 // Save to requisitionInfos table
                 $requisitionInfo = new RequisitionInfo();
                 $latestId = RequisitionInfo::max('id') + 1;
-                $this->requisitionNumber = 'PO:' . now()->format('my') . '-' . str_pad($latestId, 3, '0', STR_PAD_LEFT);
+                $this->requisitionNumber = 'PO-' . now()->format('my') . '-' . str_pad($latestId, 3, '0', STR_PAD_LEFT);
                 $requisitionInfo->supplier_id = $this->supplierId;
                 $requisitionInfo->prepared_by = auth()->user()->emp_id;
                 $requisitionInfo->approved_by = $this->approver_id;
