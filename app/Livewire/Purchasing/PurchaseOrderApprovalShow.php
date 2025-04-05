@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Purchasing;
+
 use Illuminate\Http\Request;
 use Livewire\Component;
 use App\Models\RequisitionInfo;
@@ -9,7 +10,7 @@ use App\Models\Cardex;
 use App\Models\Term;
 use Illuminate\Support\Facades\DB;
 
-class PurchaseOrderReviewShow extends Component
+class PurchaseOrderApprovalShow extends Component
 {
     public $requestInfo = [];
     public $id; // Add this public property
@@ -28,11 +29,6 @@ class PurchaseOrderReviewShow extends Component
 
     }
 
-    public function loadRequestInfo($id)
-    {
-        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-
-    }
     public function loadRequisitionInfo($id)
     {
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
@@ -51,29 +47,29 @@ class PurchaseOrderReviewShow extends Component
 
     }
 
-    public function revisePO($id){
+    public function rejectPO($id){
         DB::transaction(function () use ($id) {
             $requisitionInfo = RequisitionInfo::find($id);
-            $requisitionInfo->requisition_status = 'PREPARING';
+            $requisitionInfo->rejected_date = now();
+            $requisitionInfo->requisition_status = 'REJECTED';
             $requisitionInfo->save();
         });
         session()->flash('success', 'Requisition Order Revised Successfully');
-        return redirect()->route('review_request_list');
+        return redirect()->route('approval_request_list');
     }
 
-    public function reviewPO($id){
+    public function approvePO($id){
         DB::transaction(function () use ($id) {
             $requisitionInfo = RequisitionInfo::find($id);
-            $requisitionInfo->reviewed_date = now();
-            $requisitionInfo->requisition_status = 'FOR APPROVAL';
+            $requisitionInfo->approved_date = now();
+            $requisitionInfo->requisition_status = 'TO RECEIVE';
             $requisitionInfo->save();
         });
         session()->flash('success', 'Requisition updated Successfully');
-        return redirect()->route('review_request_list');
+        return redirect()->route('approval_request_list');
     }
-
     public function render()
     {
-        return view('livewire.purchase-order-review-show');
+        return view('livewire.purchasing.purchase-order-approval-show');
     }
 }
