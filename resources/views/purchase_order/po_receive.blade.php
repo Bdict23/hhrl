@@ -260,15 +260,15 @@
 
 @section('script')
     <script>
-        function updateTotalPrice(input) {
-            // Find the row of the input
-            const row = input.closest('tr');
-            // Correct the column index for price (5th column)
-            const price = parseFloat(row.querySelector('td:nth-child(6)').textContent);
-            const requestQty = parseInt(input.value);
-            const totalPriceCell = row.querySelector('.total-price');
-            totalPriceCell.textContent = (price * requestQty).toFixed(2);
-        }
+        // function updateTotalPrice(input) {
+        //     // Find the row of the input
+        //     const row = input.closest('tr');
+        //     // Correct the column index for price (5th column)
+        //     const price = parseFloat(row.querySelector('td:nth-child(6)').textContent);
+        //     const requestQty = parseInt(input.value);
+        //     const totalPriceCell = row.querySelector('.total-price');
+        //     totalPriceCell.textContent = (price * requestQty).toFixed(2);
+        // }
 
         function removeRow(button) {
             // Find the row to remove

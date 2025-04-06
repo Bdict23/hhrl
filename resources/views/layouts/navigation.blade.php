@@ -78,7 +78,7 @@
                                 {{ __('PO Summary') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
-                                {{ __('Receive Stock') }}
+                                {{ __('Receiving') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>

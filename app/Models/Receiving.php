@@ -10,18 +10,25 @@ class Receiving extends Model
     use HasFactory;
 
     protected $fillable = [
-        'receive_from',
-        'po_number',
-        'merchandise_po_number',
-        'date',
-        'way_bill_no',
-        'delivery_no',
-        'invoice_no',
-        'receiving_packing_no',
-        'receiving_date',
+        'REQUISITION_ID',
+        'PACKING_NUMBER',
+        'RECEIVING_TYPE',
+        'RECEIVING_NUMBER',
+        'WAYBILL_NUMBER',
+        'DELIVERY_NUMBER',
+        'INVOICE_NUMBER',
+        'RECEIVED_DATE',
         'remarks',
-        'checked_by',
-        'allocated_by',
-        'stf_id',
+        'CHECKED_BY',
+        'ALLOCATED_BY',
+        'DELIVERED_BY',
+        'ATTACHMENT',
+        'created_by',
+        'stf_id'
     ];
+
+    public function attachments()
+    {
+        return $this->hasMany(ReceivingAttachment::class);
+    }
 }

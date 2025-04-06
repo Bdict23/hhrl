@@ -1,60 +1,76 @@
-<div class="container-fluid" style="width: 100%; height: 100%;">
-    <div class="row justify-content-center" style="display: flex;">
+<div class="container">
+    <div class="row justify-content-center">
         <!-- Left Dashboard -->
         <div class="card col-md-7 " style="flex:1">
-
+           
+                @csrf
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-6">
                             <h5>RECEIVE PURCHASE ORDER</h5>
                         </div>
-                        {{-- <div class="col-md-6 text-end">
-                            <span class="btn btn-outline-info">{{ $requestInfo->requisition_status ?? 'INVALID' }}</span>
-                        </div> --}}
                     </div>
                 </div>
+                
                     <div class="m-2">
                         <x-primary-button data-bs-toggle="modal" data-bs-target="#getPONumberModal">
                             Get PO
                         </x-primary-button>
-                        <x-primary-button style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
+                        <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
                         <x-secondary-button> Summary </x-secondary-button>
+                            <i class="float-right mr-2" wire:loading>Please wait...</i>
+                            <span wire:loading class="mr-2 spinner-border text-primary float-right" role="status"></span>
                     </div>
 
+
                 <div class="card-body">
-                    <table class="table table-striped table-hover table-sm table-responsive">
+                    <table class="table table-striped table-hover table-sm table-responsive-sm">
                         <thead class="table-dark">
                             <tr style="font-size: x-small">
                                 <th>Code</th>
                                 <th>Name</th>
-                                <th>Request</th>
+                                <th>Unit</th>
+                                <th>Req. Qty</th>
                                 <th>To Receive</th>
                                 <th>Received</th>
-                                <th>Cost</th>
+                                <th>Old Cost</th>
+                                <th>New Cost</th>
                                 <th>Sub-Total</th>
                             </tr>
                         </thead>
                         <tbody style="font-optical-sizing: auto">
-                            @forelse (($requestInfo->requisitionDetails ?? []) as $reqdetail)
+                            @forelse ($requisitionDetails  as $index => $reqdetail)
                                 <tr data-id="{{ $reqdetail['requisition_number'] }}">
-                                    <td>{{ $reqdetail['items']['item_code'] }}</td>
-                                    <td>{{ $reqdetail['items']['item_description'] }} </td>
-                                    <td> &nbsp;&nbsp;{{ $reqdetail['qty'] }}</td>
-                                    <td>0{{ $reqdetail['receive_qty'] }}</td>
-                                    <td>0{{ $reqdetail['receive_qty'] }}</td>
-                                    <td>{{ $reqdetail['items']['costPrice']->amount ?? '0.00' }}
+                                    <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
+                                    <td style="font-size: x-small">{{ $reqdetail->items->item_description }} </td>
+                                    <td style="font-size: x-small">{{ $reqdetail->items->uom->unit_symbol}}</td>
+                                    <td style="font-size: small">{{ $reqdetail->qty }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}</td>
+                                    <td style="font-size: small">
+                                        <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"  
+                                        max="{{  $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}" step="1">
                                     </td>
-                                    <td>{{ $reqdetail['total'] }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->items->costPrice->amount ?? '0.00' }}</td>
+                                    <td style="font-size: small">
+                                        <input wire:model="qtyAndPrice.{{$index}}.newCost" oninput="updateTotalPrice(this)" type="number" class="form-control" value="{{ $reqdetail->items->costPrice->amount ?? '0.00' }}" step="0.01">
+                                    </td>
+                                    <td class="total-price" style="font-size: small">0.00</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">No data available</td>
+                                    <td colspan="9" class="text-center">No data available</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
                 <div class="card-footer">
+                    @error('qtyAndPrice.*.newCost')
+                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                    @enderror
+                    @error('id')
+                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                    @enderror
                     <strong style="float: right">Total QTY: {{ $requestInfo && $requestInfo->requisitionDetails ? $requestInfo->requisitionDetails->sum('qty') : 'N/A' }}</strong>
                 </div>
 
@@ -65,7 +81,7 @@
                 <h1>Purchase Order Information</h1>
             </header>
             <div class="card-body">
-                <form>
+              
                     <div class="row">
                         <div class="col-md-6">
                             <label for="supp_name" class="form-label" style="width: 100; font-size: 13px">Supplier Name</label>
@@ -81,27 +97,42 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-6">
-                            <label for="receive_date" class="form-label" style="width: 100; font-size: 13px">Receive Date</label>
-                            <input wire:model="receive_date" type="date" class="form-control"  id="receive_date">
-                        </div>
+                            <div class="col-md-6">
+                                <label for="delivered_by" class="form-label" style="width: 100; font-size: 13px">Delivered By</label>
+                                <input wire:model="delivered_by" type="delivered_by" class="form-control"style="width: 100; font-size: 13px" >
+                                @error('delivered_by')
+                                    <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                @enderror
+                            </div>
                         <div class="col-md-6">
                             <label for="packiing_list_date" class="form-label" style="width: 100; font-size: 13px">Packing List Print Date</label>
                             <input wire:model="paking_list_date" type="date" class="form-control" style="width: 100; font-size: 13px">
+                            @error('paking_list_date')
+                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <label for="waybill_no" class="form-label" style="width: 100; font-size: 13px">Waybill_no</label>
                             <input wire:model="waybill_no" type="text" class="form-control"  id="waybill_no">
+                            @error('waybill_no')
+                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col-md-4">
                             <label for="delivery_no" class="form-label" style="width: 100; font-size: 13px">Delivery No.</label>
                             <input wire:model="delivery_no" type="text" class="form-control" style="width: 100; font-size: 13px">
+                            @error('delivery_no')
+                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col-md-4">
                             <label for="invoice_no" class="form-label" style="width: 100; font-size: 13px">Invoice No.</label>
                             <input wire:model="invoice_no" type="text" class="form-control" style="width: 100; font-size: 13px">
+                            @error('invoice_no')
+                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
 
@@ -110,24 +141,12 @@
                         <label for="receiving_no" class="form-label" style="width: 100; font-size: 13px">Receiving No.</label>
                         <input wire:model="receiving_no" type="text" class="form-control" id="receiving_no"
                             style="width: 100; font-size: 12px">
+                        @error('receiving_no')
+                            <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                        @enderror
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="delivered_by" class="form-label" style="width: 100; font-size: 13px">Delivered By</label>
-                            <input wire:model="delivered_by" type="delivered_by" class="form-control"style="width: 100; font-size: 13px" >
-                        </div>
-                        <div class="col-md-6">
-                            <label for="user" class="form-label" style="width: 100; font-size: 13px">Checked and Allocated By</label>
-                            <select wire:model="user" id="user"  class="form-select"
-                                style="width: 100; font-size: 13px">
-                                <option value="">Select</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->employees->name }} {{  $user->employees->last_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                   
 
                     <div class="row mb-1">
                         <div class="col-md-12">
@@ -135,12 +154,18 @@
                             <textarea wire:model="remarks"  id="remarks" cols="30" rows="10" readonly class="form-control md-12 "
                                 style="height: 80px; font-size: 12px">
                             </textarea>
+                            @error('remarks')
+                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="row mb-1">
                         <div class="col-md-12">
                             <label for="attachment" class="form-label" style="width: 100; font-size: 13px">Attachment</label>
-                            <input wire:model="attachment" type="file" class="form-control" id="attachment" style="width: 100; font-size: 13px">
+                            <input wire:model="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple>
+                            @error('attachments.*')
+                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="row mb-1">
@@ -157,9 +182,6 @@
                                 readonly>
                         </div>
                     </div>
-
-
-                </form>
             </div>
         </div>
     </div>
@@ -223,5 +245,21 @@
             var modalInstance = bootstrap.Modal.getInstance(modal);
             modalInstance.hide();
         }
+
+        function updateTotalPrice(input) {
+            // Find the row of the input
+            const row = input.closest('tr');
+            // Retrieve the price from the input field in the 7th column
+            const priceInput = row.querySelector('td:nth-child(8) input');
+            const price = parseFloat(priceInput.value || 0); 
+            // Retrieve the quantity from the input field in the 5th column
+            const qtyInput = row.querySelector('td:nth-child(6) input');
+            const requestQty = parseInt(qtyInput.value || 0); // Default to 0 if emptyy
+            // Calculate the total price
+            const totalPriceCell = row.querySelector('.total-price');
+            totalPriceCell.textContent = (price * requestQty).toFixed(2);
+        }       totalPriceCell.textContent = (price * requestQty).toFixed(2);
+    </script>
+</div>  
     </script>
 </div>

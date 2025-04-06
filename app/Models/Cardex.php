@@ -17,21 +17,20 @@ class Cardex extends Model
 
     protected $fillable = [
         'source_branch_id',
+        'qty_in',
+        'qty_out',
         'expiration_date',
         'manufactured_date',
+        'item_id',
+        'status',
         'transaction_type',
         'price_level_id',
         'invoice_id',
-        'withdrawal_id',
         'stf_id',
+        'widthdrawal_id',
         'receiving_id',
         'requisition_id',
-        'item_id',
-        'qty_in',
-        'qty_out',
-        'status',
-        'created_at',
-        'updated_at',
+        'final_date',
     ];
 
     public function item()
