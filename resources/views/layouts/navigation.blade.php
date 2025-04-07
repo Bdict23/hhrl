@@ -103,11 +103,11 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/cardex')" class="no-underline" data-bs-toggle="modal"
-                                data-bs-target="#cardexModal" onclick="unhideModal()">
+                            <x-dropdown-link :href="url('/cardex')"  class="no-underline" data-bs-toggle="modal" onclick="unhideModal()"
+                                data-bs-target="#cardexModal" >
                                 {{ __('Cardex') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/back_orders_summary')" class="no-underline">
+                            <x-dropdown-link class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/Allocate_Item')" class="no-underline">
@@ -251,7 +251,7 @@
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div>{{ auth()->user()->name }}</div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -306,8 +306,29 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('dashboard')" class="no-underline" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('suppliers')" class="no-underline" :active="request()->routeIs('suppliers')">
+                {{ __('Supplier') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('companies')" class="no-underline" :active="request()->routeIs('companies')">
+                {{ __('Company') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('departments.index')" class="no-underline" :active="request()->routeIs('departments.index')">
+                {{ __('Departments') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('branch.index')" class="no-underline" :active="request()->routeIs('branch.index')">
+                {{ __('Branches') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
+                {{ __('Create Menu') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="url('/menu_lists')" class="no-underline">
+                {{ __('Menu Lists') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('settings.index')" class="no-underline" :active="request()->routeIs('settings.index')">
+                {{ __('Settings') }}
             </x-responsive-nav-link>
         </div>
 
@@ -338,71 +359,9 @@
     </div>
 </nav>
 
-<!-- Cardex Modal -->
-<div class="modal fade" id="cardexModal" tabindex="-1" aria-labelledby="cardexModalLabel" aria-hidden="true"
-    hidden>
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cardexModalLabel">Cardex Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="cardexForm">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="itemCode" class="form-label">Item Code</label>
-                            <input type="text" class="form-control" id="itemCode" name="item_code"
-                                onkeypress="fetchCardexData(event)">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <input type="text" class="form-control" id="description" name="description"
-                                    readonly>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-7">
-                            <label for="location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location" name="location" readonly>
-                        </div>
 
-                        <div class="col-md-2">
-                            <label for="price" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="price" name="price" readonly>
-                        </div>
 
-                        <div class="col-md-3">
-                            <label for="totalBalance" class="form-label">Total Balance</label>
-                            <input type="text" class="form-control" id="totalBalance" name="total_balance"
-                                readonly>
-                        </div>
-                    </div>
-                </form>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>In</th>
-                            <th>Out</th>
-                            <th>Balance</th>
-                            <th>Transaction</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cardexTableBody">
-                        <!-- Table rows will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> --}}
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     function fetchCardexData(event) {
@@ -458,7 +417,17 @@
         modal.show();
     }
 
-    document.getElementById('cardexModal').addEventListener('hidden.bs.modal', function() {
-        document.getElementById('cardexModal').setAttribute('hidden', true);
-    });
+    function unhideModal2() {
+        // Show the modal after data is fetched
+        const cardexModal = document.getElementById('cardexModalv2');
+        cardexModal.removeAttribute('hidden');
+        const modal = new bootstrap.Modal(cardexModal);
+        modal.show();
+    }
+
+    function closeModal() {
+            var modal = document.getElementById('getPONumberModal');
+            var modalInstance = bootstrap.Modal.getInstance(modal);
+            modalInstance.hide();
+        }
 </script>

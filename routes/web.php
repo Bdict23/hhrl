@@ -25,9 +25,9 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingsController;
 
 Route::get('/', function () {
-    $suppliers = Supplier::all(); // Fetching all suppliers from the database
     return view('dashboard');
-});
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::post('/create_supplier', [SupplierController::class, 'store'])->middleware(['auth', 'verified'])->name('suppliers.store');
 
 Route::post('/update_supplier', [SupplierController::class, 'update'])->middleware(['auth', 'verified'])->name('suppliers.update');

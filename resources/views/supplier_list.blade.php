@@ -15,13 +15,13 @@
                 Supplier</button>
         </header>
         <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-            <table>
-                <thead>
+            <table class="table table-striped table-responsive-lg">
+                <thead class="table-dark  table-sm">
                     <tr>
                         <th style="position: sticky; top: 0;">Supplier Name</th>
                         <th style="position: sticky; top: 0;">Supplier Address</th>
                         <th style="position: sticky; top: 0;">Supplier Code</th>
-                        <th>Input Tax</th>
+                        <th style="position: sticky; top: 0;">Input Tax</th>
                         <th style="position: sticky; top: 0;">Actions</th>
                     </tr>
                 </thead>
