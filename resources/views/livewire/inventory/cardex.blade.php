@@ -3,8 +3,10 @@
         <div class="col-md-4">
             <label for="itemCode" class="form-label">Item Code</label>
             <div class="input-group ">
-                <input wire:model="itemCode" type="text" class="form-control" id="itemCode" name="item_code">
-                <button class="btn btn-primary" wire:click="getData()">Search</button>
+                <input wire:model="itemCode" type="text" wire:loading.class.remove="bg-blue" class="form-control bg-blue" id="itemCode" name="item_code">
+                <button class="btn btn-primary" wire:click="getData()">
+                   Search
+                </button>
             </div>
             @error('itemCode')
                 <div class="alert alert-danger mt-1">
@@ -15,7 +17,7 @@
         <div class="col-md-8">
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <input type="text" class="form-control" id="description" name="description"
+                <input type="text" class="form-control" id="description" 
                     readonly value="{{ $itemDescription }}">
             </div>
         </div>
@@ -35,7 +37,7 @@
         <div class="col-md-3">
             <label for="totalBalance" class="form-label">Total Balance</label>
             <input type="text" class="form-control" id="totalBalance" name="total_balance"
-                readonly wire:model="totalBalance">
+                readonly value="{{ $totalBalance }}">
         </div>
     </div>
     <table class="table table-striped card-body">
@@ -50,13 +52,14 @@
             </tr>
         </thead>
         <tbody id="cardexTableBody">
-            @foreach ($cardex as $index => $cardexItem)
+            @foreach ($cardexData as $index => $cardexItem)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($cardexItem['date'])->format('Y-m-d') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($cardexItem['created_at'])->format('Y-m-d') }}</td>
                     <td>{{ $cardexItem['in'] }}</td>
                     <td>{{ $cardexItem['out'] }}</td>
                     <td>{{ $cardexItem['balance'] }}</td>
-                    <td>{{ $cardexItem['transaction'] }}</td>
+                    <td>{{ $cardexItem['transaction_type'] }}</td>
+                    <td>{{ $cardexItem['reference']}}</td>
                 </tr>
             @endforeach
         </tbody>

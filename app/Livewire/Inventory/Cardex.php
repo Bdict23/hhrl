@@ -8,6 +8,8 @@ use App\Models\Location;
 use App\Models\PriceLevel;
 use App\Models\Cardex as CardexModel;
 use App\Models\Item;
+use App\Models\StockTransferInfo;
+
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,10 +19,9 @@ class Cardex extends Component
     public $cardex = [];
     public $itemCode = null;
     public $itemDescription = null;
+    public $locations = [];
     public $location = null;
     public $price = null;
-    public $totalIn = 0;
-    public $totalOut = 0;
     public $totalBalance = 0;
     public $cardexData = [];
     public $itemId = null;
@@ -49,59 +50,48 @@ class Cardex extends Component
 
     public function getCardexData($itemCode)
     {
-        $item = Item::where('item_code', $itemCode)->first();
-        if (!$item) {
-            $this->reset(['itemDescription', 'location', 'price', 'totalBalance', 'cardex']);
+        $this->validate();
+        $this->itemId = Item::where('item_code', $itemCode)->value('id');
+        $this->locations = Location::where('branch_id', auth()->user()->branch_id)->where('item_id',$this->itemId)->first();
+        $this->location = $this->locations ? $this->locations->location_name : null;
+        $cardexData = CardexModel::with('item')->where('item_id', $this->itemId)->where('source_branch_id', auth()->user()->branch_id)->first();
+        
+        if (!$cardexData) {
+            $this->reset();
             return;
         }
+        // dd($cardexData);
+        $this->itemDescription = $cardexData->item->item_description;
+        $this->cardex = CardexModel::with('receiving', 'withdrawal')->where('item_id', $this->itemId)->get();
+        $this->price = $cardexData->item->costPrice->amount;
+        $this->totalBalance = intval($cardexData->totalBalance());
 
-        $this->itemDescription = $item->item_description;
-        $this->location = Location::where('item_id', $item->id)
-            ->where('branch_id', auth()->user()->branch_id)
-            ->value('location_name') ?? 'N/A';
-
-        $this->price = PriceLevel::where('item_id', $item->id)
-            ->where('branch_id', auth()->user()->branch_id)
-            ->where('price_type', 'SRP')
-            ->value('amount') ?? '0.00';
-
-        $this->totalIn = CardexModel::where('item_id', $item->id)
-            ->where('status', 'final')
+        // Fetch and calculate running balance
+        $runningBalance = 0;
+        $this->cardexData = CardexModel::where('item_id', $this->itemId)
+            ->with(['item', 'invoice', 'receiving', 'stockTransfer', 'withdrawal'])
             ->where('source_branch_id', auth()->user()->branch_id)
-            ->sum('qty_in');
-
-        $this->totalOut = CardexModel::where('item_id', $item->id)
-            ->where('status', 'final')
-            ->where('source_branch_id', auth()->user()->branch_id)
-            ->sum('qty_out');
-
-        $this->totalBalance = $this->totalIn - $this->totalOut;
-
-        $this->cardex = CardexModel::where('item_id', $item->id)
-            ->where('status', 'final')
-            ->where('source_branch_id', auth()->user()->branch_id)
+            ->orderBy('created_at', 'asc') // Ensure chronological order for running balance
             ->get()
-            ->map(function ($record) {
+            ->map(function ($item) use (&$runningBalance) {
+                $runningBalance += $item->qty_in - $item->qty_out;
                 return [
-                    'date' => $record->created_at->toDateString(),
-                    'in' => $record->qty_in,
-                    'out' => $record->qty_out,
-                    'balance' => $record->qty_in - $record->qty_out,
-                    'transaction' => $record->transaction_type,
+                    'transaction_type' => $item->transaction_type,
+                    'in' => $item->qty_in,
+                    'out' => $item->qty_out,
+                    'balance' => $runningBalance, // Running balance
+                    'created_at' => $item->created_at,
+                    'reference' => $item->invoice->invoice_number ?? $item->receiving->receiving_number ?? $item->stockTransfer->stf_number ?? $item->withdrawal->reference_number ?? $item->receiving->RECEIVING_NUMBER ?? 'Beginning Inventory',
                 ];
             });
 
-
+        $this->cardexData = $this->cardexData->toArray();
     }
 
 
     public function getData(){
         $this->validate();
         $this->getCardexData($this->itemCode);
-    }
-    public function updatedItemId($propertyName)
-    {
-        $this->getCardexData($value);
     }
 
     public function render()

@@ -9,6 +9,7 @@ class Receiving extends Model
 {
     use HasFactory;
 
+    protected $table = 'receivings'; // Keep the table name as it is in the database
     protected $fillable = [
         'REQUISITION_ID',
         'PACKING_NUMBER',
