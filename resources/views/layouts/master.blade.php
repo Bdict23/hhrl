@@ -258,11 +258,6 @@
 
     <div class = 'container'>
         @yield('content')
-
-
     </div>
     @yield('script')
-
-
-
 </x-app-layout>
