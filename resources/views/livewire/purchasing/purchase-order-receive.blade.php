@@ -1,8 +1,16 @@
 <div class="container">
+    <div>
+        @if(session()->has('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
     <div class="row justify-content-center">
         <!-- Left Dashboard -->
         <div class="card col-md-7 " style="flex:1">
-           
+
                 @csrf
                 <div class="card-header">
                     <div class="row">
@@ -11,7 +19,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                     <div class="m-2">
                         <x-primary-button data-bs-toggle="modal" data-bs-target="#getPONumberModal">
                             Get PO
@@ -23,7 +31,7 @@
                     </div>
 
 
-                <div class="card-body">
+                <div class="card-body" wire:ignore.self>
                     <table class="table table-striped table-hover table-sm table-responsive-sm">
                         <thead class="table-dark">
                             <tr style="font-size: x-small">
@@ -33,7 +41,7 @@
                                 <th>Req. Qty</th>
                                 <th>To Receive</th>
                                 <th>Received</th>
-                                <th>Old Cost</th>
+                                <th>Reg. Cost</th>
                                 <th>New Cost</th>
                                 <th>Sub-Total</th>
                             </tr>
@@ -47,10 +55,10 @@
                                     <td style="font-size: small">{{ $reqdetail->qty }}</td>
                                     <td style="font-size: small">{{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}</td>
                                     <td style="font-size: small">
-                                        <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"  
+                                        <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"
                                         max="{{  $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}" step="1">
                                     </td>
-                                    <td style="font-size: small">{{ $reqdetail->items->costPrice->amount ?? '0.00' }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->cost->amount ?? '0.00' }}</td>
                                     <td style="font-size: small">
                                         <input wire:model="qtyAndPrice.{{$index}}.newCost" oninput="updateTotalPrice(this)" type="number" class="form-control" value="{{ $reqdetail->items->costPrice->amount ?? '0.00' }}" step="0.01">
                                     </td>
@@ -81,7 +89,7 @@
                 <h1>Purchase Order Information</h1>
             </header>
             <div class="card-body">
-              
+
                     <div class="row">
                         <div class="col-md-6">
                             <label for="supp_name" class="form-label" style="width: 100; font-size: 13px">Supplier Name</label>
@@ -97,24 +105,17 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label for="delivered_by" class="form-label" style="width: 100; font-size: 13px">Delivered By</label>
                                 <input wire:model="delivered_by" type="delivered_by" class="form-control"style="width: 100; font-size: 13px" >
                                 @error('delivered_by')
                                     <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                 @enderror
                             </div>
-                        <div class="col-md-6">
-                            <label for="packiing_list_date" class="form-label" style="width: 100; font-size: 13px">Packing List Print Date</label>
-                            <input wire:model="paking_list_date" type="date" class="form-control" style="width: 100; font-size: 13px">
-                            @error('paking_list_date')
-                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                            @enderror
-                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-4">
-                            <label for="waybill_no" class="form-label" style="width: 100; font-size: 13px">Waybill_no</label>
+                            <label for="waybill_no" class="form-label" style="width: 100; font-size: 13px">Waybill No</label>
                             <input wire:model="waybill_no" type="text" class="form-control"  id="waybill_no">
                             @error('waybill_no')
                                 <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
@@ -146,12 +147,12 @@
                         @enderror
                     </div>
 
-                   
+
 
                     <div class="row mb-1">
                         <div class="col-md-12">
                             <label for="remarks" class="form-label" style="font-size: 13px">Remarks</label>
-                            <textarea wire:model="remarks"  id="remarks" cols="30" rows="10" readonly class="form-control md-12 "
+                            <textarea wire:model="remarks"  id="remarks" cols="30" rows="10" class="form-control md-12 "
                                 style="height: 80px; font-size: 12px">
                             </textarea>
                             @error('remarks')
@@ -251,7 +252,7 @@
             const row = input.closest('tr');
             // Retrieve the price from the input field in the 7th column
             const priceInput = row.querySelector('td:nth-child(8) input');
-            const price = parseFloat(priceInput.value || 0); 
+            const price = parseFloat(priceInput.value || 0);
             // Retrieve the quantity from the input field in the 5th column
             const qtyInput = row.querySelector('td:nth-child(6) input');
             const requestQty = parseInt(qtyInput.value || 0); // Default to 0 if emptyy
@@ -260,6 +261,6 @@
             totalPriceCell.textContent = (price * requestQty).toFixed(2);
         }       totalPriceCell.textContent = (price * requestQty).toFixed(2);
     </script>
-</div>  
+</div>
     </script>
 </div>

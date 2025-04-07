@@ -20,7 +20,7 @@ class PurchaseOrderReceive extends Component
 
     use WithFileUploads;
     public $requestInfo = [];
-    public $id; 
+    public $id;
     public $requisitionInfo = [];
     public $requisitionDetails = [];
     public $qtyAndPrice = [];
@@ -41,7 +41,6 @@ class PurchaseOrderReceive extends Component
     ];
     protected $rules = [
         'id' => 'required|exists:requisition_infos,id',
-        'paking_list_date' => 'date',
         'waybill_no' => 'required_without_all:delivery_no,invoice_no|nullable|max:55',
         'delivery_no' => 'required_without_all:waybill_no,invoice_no|nullable|max:55',
         'invoice_no' => 'required_without_all:waybill_no,delivery_no|nullable|max:55',
@@ -49,18 +48,16 @@ class PurchaseOrderReceive extends Component
         'delivered_by' => 'nullable|string|max:55',
         'remarks' => 'nullable|string|max:150',
         'qtyAndPrice.*.newCost' => 'required|numeric|min:1',
-        'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048', 
+        'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
     ];
     protected $messages = [
         'id.required' => 'Please choose purchase order, before saving.',
         'user.required' => 'The user field is required.',
         'user.exists' => 'The selected user does not exist.',
-        'paking_list_date.date' => 'The packing list date is invalid.',
         'waybill_no.required_without_all' => 'Either waybill number, delivery number, or invoice number must be provided.',
         'delivery_no.required_without_all' => 'Either waybill number, delivery number, or invoice number must be provided.',
         'invoice_no.required_without_all' => 'Either waybill number, delivery number, or invoice number must be provided.',
         'receiving_no.required' => 'The receiving number field is required.',
-        'delivered_by.required' => 'The delivered by field is invalid.',
         'attachments.*.file' => 'The attachment must be a file.',
         'attachments.*.mimes' => 'The attachment must be a file of type: jpg, jpeg, png, pdf.',
         'attachments.*.max' => 'The attachment may not be greater than 2MB.',
@@ -80,7 +77,7 @@ class PurchaseOrderReceive extends Component
     public function selectPO($id)
     {   $this->id = $id;
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-        $this->requisitionDetails = RequisitionDetail::with('items')->where('requisition_info_id', $id)->get();
+        $this->requisitionDetails = RequisitionDetail::with('items','cost')->where('requisition_info_id', $id)->get();
 
         $this->cardexSum = Cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
                     ->where('transaction_type', 'RECEVING')
@@ -115,13 +112,14 @@ class PurchaseOrderReceive extends Component
         $newRecieving->WAYBILL_NUMBER = $this->waybill_no;
         $newRecieving->DELIVERY_NUMBER = $this->delivery_no;
         $newRecieving->INVOICE_NUMBER = $this->invoice_no;
-        $newRecieving->PREPARED_BY = auth()->user()->emp_id; // Use emp_id instead of the entire object
+        $newRecieving->PREPARED_BY = auth()->user()->emp_id;
         $newRecieving->DELIVERED_BY = $this->delivered_by;
+        $newRecieving->remarks = $this->remarks;
         $newRecieving->save();
 
         // Save attachments
         if ($this->attachments) {
-            
+
             foreach ($this->attachments as $attachment) {
                 $path = $attachment->store('receiving_attachments', 'public');
                 $newRecieving->attachments()->create([
@@ -144,7 +142,7 @@ class PurchaseOrderReceive extends Component
                     $newCostPrice->supplier_id = $this->requestInfo->supplier_id;
                     $newCostPrice->branch_id = auth()->user()->branch_id;
                     $newCostPrice->save();
-                    
+
                         $cardex = new Cardex();
                         $cardex->source_branch_id = auth()->user()->branch_id;
                         $cardex->qty_in = $value['qty'];
@@ -153,7 +151,7 @@ class PurchaseOrderReceive extends Component
                         $cardex->transaction_type = 'RECEVING';
                         $cardex->price_level_id = $newCostPrice->id;
                         $cardex->receiving_id = $newRecieving->id;
-                        $cardex->requisition_id = $this->requestInfo->id;   
+                        $cardex->requisition_id = $this->requestInfo->id;
                         $cardex->final_date = now();
                         $cardex->save();
                 }else{
@@ -170,7 +168,7 @@ class PurchaseOrderReceive extends Component
                     $cardex->save();
                 }
             }
-            session()->flash('message', 'Purchase Order Successfully Received');
+
 
         }
 
@@ -183,7 +181,9 @@ class PurchaseOrderReceive extends Component
         //     }
         // }
 
-        session()->flash('message', 'Purchase Order Successfully Received');
+        session()->flash('success', 'Purchase Order Successfully Received');
+        $this->reset();
+        $this->loadReceiveRequest();
     }
 
     public function loadReceiveRequest(){

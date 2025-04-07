@@ -21,6 +21,7 @@
                         <th style="position: sticky; top: 0;">Supplier Name</th>
                         <th style="position: sticky; top: 0;">Supplier Address</th>
                         <th style="position: sticky; top: 0;">Supplier Code</th>
+                        <th>Input Tax</th>
                         <th style="position: sticky; top: 0;">Actions</th>
                     </tr>
                 </thead>
@@ -30,6 +31,7 @@
                             <td>{{ $supplier->supp_name }}</td>
                             <td>{{ $supplier->supp_address }}</td>
                             <td>{{ $supplier->supplier_code }}</td>
+                            <td>{{ $supplier->input_tax }}</td>
                             <td>
                                 <div class="button-group">
                                     <button onclick='getSupplier({{ json_encode($supplier) }})' class="action-btn btn-sm"
