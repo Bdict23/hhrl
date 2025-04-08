@@ -29,7 +29,7 @@ class SupplierController extends Controller
 
         $validatedData['company_id'] = auth()->user()->emp_id;
         $supplier = new Supplier($validatedData);
-        $supplier->company_id = auth()->user()->emp_id;
+        $supplier->company_id = auth()->user()->branch->company_id;
         $supplier->save();
 
 

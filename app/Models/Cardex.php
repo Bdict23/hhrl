@@ -74,7 +74,7 @@ class Cardex extends Model
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');
     }
-   
+
     public function totalIn()
     {
         if (!isset($this->item_id)) {
@@ -89,7 +89,7 @@ class Cardex extends Model
         }
         return $this->where('status', 'final')->where('item_id', $this->item_id)->sum('qty_out');
     }
-    public function totalBalance()
+    public function totalBalanceByItem()
     {
         if (!isset($this->item_id)) {
             throw new \Exception("Item ID is not set for this Cardex instance.");
@@ -99,9 +99,16 @@ class Cardex extends Model
         $totalOut = $this->where('status', 'final')->where('item_id', $this->item_id)->sum('qty_out');
         return $totalIn - $totalOut;
     }
-    
 
-  
+    public static function totalBalance()
+    {
+        $totalIn = self::where('status', 'final')->sum('qty_in');
+        $totalOut = self::where('status', 'final')->sum('qty_out');
+        return (int) ($totalIn - $totalOut);
+    }
+
+
+
 
 
 }

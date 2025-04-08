@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    <div>
+    {{-- <div>
         <form id="withdrawalForm" method="POST" action="{{ route('withdrawal.store') }}">
             @csrf
             <div class="row me-3 w-100">
@@ -19,7 +19,7 @@
                                 </x-secondary-button>
                             </div>
                         </header>
-                       
+
                         <table class="table table-striped table-hover me-3">
                             <thead class="thead-dark me-3">
                                 <tr style="font-size: smaller;">
@@ -35,7 +35,7 @@
                             </thead>
                             <tbody id="itemTableBody">
 
-                                {{--           POPULATE TABLE   --}}
+
 
                             </tbody>
                         </table>
@@ -193,9 +193,6 @@
         </form>
     </div>
 
-    </div>
-    </div>
-
     <!-- Add Item Modal -->
     <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -259,8 +256,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
+    <div>
+        @livewire('inventory.withdrawal')
+    </div>
     <!-- Add item Modal -->
 @endsection
 

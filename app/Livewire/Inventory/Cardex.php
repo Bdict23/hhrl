@@ -55,16 +55,16 @@ class Cardex extends Component
         $this->locations = Location::where('branch_id', auth()->user()->branch_id)->where('item_id',$this->itemId)->first();
         $this->location = $this->locations ? $this->locations->location_name : null;
         $cardexData = CardexModel::with('item')->where('item_id', $this->itemId)->where('source_branch_id', auth()->user()->branch_id)->first();
-        
+
         if (!$cardexData) {
             $this->reset();
             return;
         }
         // dd($cardexData);
         $this->itemDescription = $cardexData->item->item_description;
-        $this->cardex = CardexModel::with('receiving', 'withdrawal')->where('item_id', $this->itemId)->get();
+        $this->cardex = CardexModel::with('receiving', 'withdrawal')->where('item_id', $this->itemId)->where('source_branch_id', auth()->user()->branch_id)->orderBy('created_at', 'desc')->get();
         $this->price = $cardexData->item->costPrice->amount;
-        $this->totalBalance = intval($cardexData->totalBalance());
+        $this->totalBalance = intval($cardexData->totalBalanceByItem());
 
         // Fetch and calculate running balance
         $runningBalance = 0;
