@@ -4,8 +4,6 @@ namespace App\Livewire\Inventory;
 
 use Livewire\Component;
 use App\Models\Department;
-use App\Models\selectedItems;
-use App\Models\Employee;
 use App\Models\Withdrawal as WithdrawalModel;
 use App\Models\WithdrawalItem;
 use App\Models\Signatory;
@@ -30,6 +28,7 @@ class Withdrawal extends Component
     public $barcode = false;
 
 
+    public $reference;
     public $departments = []; // display dept on ui
     public $selectedDepartment = null; // selected dept from user
     public $myCardexItems = []; // display items on ui particularly on modal
@@ -43,10 +42,39 @@ class Withdrawal extends Component
     public $haveSpan = false; // selected span status from user
     public $spanDate = null; // selected span date from user
     public $useDate = null; // selected use date from user
+    public $remarks = null; // remarks from user
+    public $overallTotal = 0; // overall total of selected items
+    protected $rules = [
+        'reference' => 'required|string|max:25',
+        'selectedDepartment' => 'required',
+        'useDate' => 'required',
+        'spanDate' => 'nullable|date|after_or_equal:useDate',
+        'remarks' => 'nullable|string|max:150',
+        'selectedItems' => 'required|array|min:1',
+        'reviewer' => 'required',
+        'approver' => 'required',
+    ];
+    protected $messages = [
+        'reference.required' => 'The reference number is required.',
+        'selectedDepartment.required' => 'The department is required.',
+        'selectedItems.required' => 'The item list cannot be empty.',
+        'reviewer.required' => 'The reviewer is required.',
+        'approver.required' => 'The approver is required.',
+    ];
+    protected $listeners = [
+        'addItem' => 'addItem',
+        'removeItem' => 'removeItem',
+        'updatedHaveSpan' => 'updatedHaveSpan',
+    ];
 
 
     public function mount()
     {
+        $this->fetchData();
+    }
+
+    public function fetchData(){
+
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();
 
@@ -66,38 +94,46 @@ class Withdrawal extends Component
         $this->categories = Category::where([['company_id', auth()->user()->branch->company_id],['status','ACTIVE'],['category_type','ITEM']])->get();
     }
 
-
     public function addItem($itemId, $balance, $available)
     {
-        $item = Item::with('uom','category','location','brand','classification','costPrice')->find($itemId);
-        if (!$item) {
+        $selected = Item::with('uom','category','location','brand','classification','costPrice')->where('id',$itemId)->first();
+        if (!$selected) {
             session()->flash('error', 'Item not found.');
             return;
         }
-        if ($item->costPrice == null) {
+        if ($selected->costPrice == null) {
             session()->flash('error', 'Item has no cost price.');
             return;
         }
-        if ($item) {
+       
+        // Check if the item is already in the selected items
+        foreach ($this->selectedItems as $selectedItem) {
+            if ($selectedItem['id'] === $selected->id) {
+                session()->flash('error', 'Item already selected.');
+                return;
+            }
+            }
+
             $this->selectedItems[] = [
-                'id' => $item->id,
+                'id' => $selected->id,
                 'total_balance' => $balance,
                 'total_available' => $available,
-                'code' => $item->item_code ?? 'N/A',
-                'name' => $item->item_description,
-                'unit' => $item->uom->unit_symbol,
-                'category' => $item->category->category_name,
-                'classification' => $item->classification->classification_name ?? 'N/A',
-                'barcode' => $item->item_barcode ?? 'N/A',
+                'code' => $selected->item_code ?? 'N/A',
+                'name' => $selected->item_description,
+                'unit' => $selected->uom->unit_symbol,
+                'category' => $selected->category->category_name,
+                'classification' => $selected->classification->classification_name ?? 'N/A',
+                'barcode' => $selected->item_barcode ?? 'N/A',
                 'requested_qty' => 0,
-                'location' => $item->location->location_name ?? 'N/A',
-                'uom' => $item->uom->unit_name ?? 'N/A',
-                'brand' => $item->brand->brand_name ?? 'N/A',
-                'status' => $item->item_status,
-                'cost' => $item->costPrice->amount,
+                'location' => $selected->location->location_name ?? 'N/A',
+                'uom' => $selected->uom->unit_name ?? 'N/A',
+                'brand' => $selected->brand->brand_name ?? 'N/A',
+                'status' => $selected->item_status,
+                'cost' => $selected->costPrice->amount,
+                'costId' => $selected->costPrice->id,
                 'total' => 0,
             ];
-        }
+        
     }
     public function removeItem($index)
     {
@@ -106,33 +142,62 @@ class Withdrawal extends Component
     }
     public function store()
     {
-        $this->validate([
-            'selectedDepartment' => 'required',
-            'itemsOnCardex' => 'required|array|min:1',
-            'reviewer' => 'required',
-            'approver' => 'required',
-        ]);
+        $this->validate();
 
-        $withdrawal = WithdrawalModel::create([
-            'department_id' => $this->selectedDepartment,
-            'reviewer_id' => $this->reviewer,
-            'approver_id' => $this->approver,
-            'final_status' => $this->finalStatus,
-            'have_span' => $this->haveSpan,
-            'span_date' => $this->spanDate,
-            'use_date' => $this->useDate,
-        ]);
+        $withdrawal = new WithdrawalModel();
+        $withdrawal->reference_number = $this->reference;
+        $withdrawal->department_id = $this->selectedDepartment;
+        $withdrawal->prepared_by = auth()->user()->emp_id;
+        $withdrawal->reviewed_by = $this->reviewer;
+        $withdrawal->approved_by = $this->approver;
+        $withdrawal->remarks = $this->remarks;
+        $withdrawal->withdrawal_status = 'PREPARING';
+        $withdrawal->source_branch_id = auth()->user()->branch_id;
+        $withdrawal->usage_date = $this->useDate;
+        $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
+        $withdrawal->save();
 
         foreach ($this->selectedItems as $item) {
-            WithdrawalItem::create([
-                'withdrawal_id' => $withdrawal->id,
-                'item_id' => $item['id'],
-                // Add other necessary fields here
-            ]);
+            if ($item['requested_qty'] > 0) {
+                $cardex = new Cardex();
+                $cardex->source_branch_id = auth()->user()->branch_id;
+                $cardex->qty_out = $item['requested_qty'];
+                $cardex->item_id = $item['id'];
+                $cardex->status = 'RESERVED';
+                $cardex->transaction_type = 'WITHDRAWAL';
+                $cardex->price_level_id = $item['costId'];
+                $cardex->withdrawal_id = $withdrawal->id;
+                $cardex->save();
+
+            }
         }
 
-        session()->flash('message', 'Withdrawal request created successfully.');
-        return redirect()->route('withdrawals.index');
+        session()->flash('success', 'Withdrawal request created successfully.');
+        $this->reset();
+        $this->fetchData();
+    }
+
+    public function updatedSelectedItems($value, $key)
+    {
+       // Mag Check if ang requested quantity mag exceed sa available balance
+        if (str_contains($key, 'requested_qty')) {
+            foreach ($this->selectedItems as $index => $item) {
+                if (isset($item['requested_qty']) && $item['requested_qty'] > $item['total_available']) {
+                    $this->selectedItems[$index]['requested_qty'] = $item['total_available'];
+                    session()->flash('error', 'Requested quantity cannot exceed available balance.');
+                }
+            }
+        }
+
+        //mag update sa overall total para naay ma display
+        if (str_contains($key, 'requested_qty')) {
+            foreach ($this->selectedItems as $index => $item) {
+                if (isset($item['requested_qty'])) {
+                    $this->selectedItems[$index]['total'] = (float) $item['requested_qty'] * (float) $item['cost'];
+                    $this->overallTotal = array_sum(array_column($this->selectedItems, 'total'));
+                }
+            }
+        }
     }
     public function updatedHaveSpan($value)
     {

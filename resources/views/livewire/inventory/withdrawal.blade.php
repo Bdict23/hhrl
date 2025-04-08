@@ -1,28 +1,31 @@
 <div>
     <div>
-        <form wire:submit.prevent="store" id="withdrawalForm">
-            @csrf
+       <div>
+            @if (session()->has('success'))
+                <div class="alert alert-success mt-1">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>  
+            @endif
+       </div>
             <div class="row me-3 w-100">
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h1> Item Withdawal</h1>
+                            <h1> Item Withdrawal</h1>
                             <div class="me-3">
-                                <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+
-                                    Add
-                                    ITEM</x-primary-button>
-                                <x-secondary-button style="color: rgb(135, 235, 168);"
-                                    onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary
-                                </x-secondary-button>
-                                <x-secondary-button onclick="history.back()"> Back
-                                </x-secondary-button>
-                                <x-secondary-button type="button" data-bs-toggle="modal"
-                                    data-bs-target="#customCol">Columns</x-secondary-button>
+                                <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
+                                <x-secondary-button style="color: rgb(135, 235, 168);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary </x-secondary-button>
+                                <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                             </div>
                         </header>
-
+                        <button  style="background-color: rgb(100, 101, 102)"  type="button" class=" btn btn-sm text-light border-0" data-bs-toggle="modal" data-bs-target="#customCol" title="Add/Remove Column"> + </button>
+                       <label for="" style="font-size: small">Add/Remove Column</label>
+                       
                         <table class="table table-striped table-hover me-3">
-                            <thead class="thead-dark me-3">
+                           
+                           
+                            <thead class="table-light me-3">
                                 <tr style="font-size: x-small;">
                                     @if ($avlBal)
                                         <th>BAL.</th>
@@ -58,8 +61,13 @@
                                     <th>REQ. QTY</th>
                                     <th>COST</th>
                                     <th>TOTAL</th>
-                                    <th>Action</th>
+                                    <th>
+                                        ACTION  
+                                    </th>
+                                    
                                 </tr>
+                               
+                           
                             </thead>
                             <tbody id="itemTableBody">
                                 @forelse ($selectedItems as $index => $item)
@@ -96,11 +104,11 @@
                                             <td>{{ $item['barcode'] }}</td>
                                         @endif
                                         <td><input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
-                                                min="1"></td>
+                                                min="1" max="{{ $item['total_available'] }}"></td>
                                         <td>{{ $item['cost'] }}</td>
                                         <td>{{ $item['total'] }}</td>
                                         <td><button type="button" class="btn btn-danger btn-sm"
-                                                wire:click="removeItem({{ $item['id'] }})">Remove</button></td>
+                                                wire:click="removeItem({{ $index }})">Remove</button></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -119,10 +127,26 @@
                                         <label for="total_cost" class="form-label">Total Cost</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input type="text" id="total_cost" name="total_cost" class="form-control">
+                                        <strong class="form-control">{{ $overallTotal }}</strong>
                                     </div>
 
                                 </div>
+                            </div>
+                            <div class="col-md-6">
+                                <span wire:loading class="mr-2 spinner-border text-primary float-right" role="status"></span>
+                                @if(session()->has('error'))
+                                <div class="alert alert-danger mt-1">
+                                        {{ session('error') }}
+                                        <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @error('selectedItems')
+                                    <div class="alert alert-danger mt-1">
+                                        {{ $message }}
+                                        <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>  
+                                    </div> 
+                                                                  
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -135,34 +159,38 @@
                                 <h5 class="card-title">Information</h5>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="reference_number" class="form-label">Ref. Number</label>
+                                        <label for="reference" class="form-label">REFERENCE<span style="color: red;">&nbsp;*</span></label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input type="text" class="form-control" id="reference_number"
-                                            name="reference_number" >
+                                        <input wire:model="reference" type="text" class="form-control" id="reference_number" >
+                                        @error('reference')
+                                            <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label for="deptartment" class="form-label"
-                                            style="width: 100; font-size: 13px">Department</label>
-                                        <select id="department" name="department_id" class="form-select"
+                                            style="width: 100; font-size: 13px">Department</label><span
+                                            style="color: red;">*</span>
+                                        <select wire:model="selectedDepartment" id="department"  class="form-select"
                                             aria-label="Default select example" style="width: 100; font-size: 13px">
+                                            <option value="">Select Department</option>
                                             @foreach ($departments as $department)
                                                 <option value="{{ $department->id }}">{{ $department->department_name }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('selectedDepartment')
+                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">To be
-                                            use on</label>
-                                        <input wire:model='useDate' type="date" class="form-control" id="usage_date" name="usage_date"
+                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Will use on</label> <span style="color: red;">*</span>
+                                        <input wire:model='useDate' type="date" class="form-control" id="usage_date"
                                             >
                                         @error('useDate')
-                                            <div class="alert alert-danger mt-1">
-                                                {{ $message }}
-                                            </div>
+                                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
@@ -190,7 +218,10 @@
                                         </div>
                                     <div class="row mt-3">
                                         <label for="remarks" class="form-label" style="font-size: 13px;">Remarks</label>
-                                        <textarea type="text" class="form-control" id="remarks" style="font-size: 13px; height: 100px"></textarea>
+                                        <textarea wire:model="remarks" type="text" class="form-control" id="remarks" style="font-size: 13px; height: 100px"></textarea>
+                                        @error('remarks')
+                                            <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                     <div class="row mt-1">
                                         <div class="col-md-6">
@@ -198,6 +229,8 @@
                                                 To</label>
                                             <select wire:model="reviewer" id="reviewed_to" class="form-select"
                                                 aria-label="Default select example">
+                                                <option value="">Select</option>
+
                                                 @if ($reviewers->isEmpty())
                                                     <option style="font-size: 10px">No Reviewer Found</option>
                                                 @else
@@ -209,11 +242,15 @@
                                                     @endforeach
                                                 @endif
                                             </select>
+                                            @error('reviewer')
+                                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                         <div class="col-md-6">
                                             <label for="approved_to" class="form-label" style="font-size: 13px;">Approved To</label>
                                             <select wire:model="approver" id="approved_to" class="form-select"
                                                 aria-label="Default select example">
+                                                <option value="">Select</option>
                                                 @if ($reviewers->isEmpty())
                                                     <option style="font-size: 10px">No Reviewer Found</option>
                                                 @else
@@ -224,17 +261,19 @@
                                                     @endforeach
                                                 @endif
                                             </select>
+                                            @error('approver')
+                                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div>
-                                        <x-primary-button type="button" class=" mt-3" data-bs-toggle="modal"
-                                            data-bs-target="#AddAccountModal">Save</x-primary-button>
+                                        <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-        </form>
+        
     </div>
     <!-- Custom  Columns Modal -->
     <div class="modal fade" id="customCol" tabindex="-1" aria-lablledby="CustomModalLabel" aria-hidden="true"  wire:ignore.self>
@@ -311,7 +350,7 @@
     </div>
 
     <!-- Add Item Modal -->
-    <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true"  wire:ignore.self>
+    <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true"  wire:ignore>
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -362,6 +401,8 @@
                     </table>
                 </div>
                 <div class="modal-footer">
+                    <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>
+
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
