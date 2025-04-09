@@ -38,5 +38,9 @@ public function department()
 {
     return $this->belongsTo(Department::class);
 }
+public function user()
+{
+    return $this->hasOne(User::class, 'emp_id');
+}
 
 }

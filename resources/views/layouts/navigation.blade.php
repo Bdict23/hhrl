@@ -41,12 +41,15 @@
                             <x-dropdown-link :href="url('/branch_list')" class="no-underline">
                                 {{ __('Branches') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/create_menu')" class="no-underline">
+                            {{-- <x-dropdown-link :href="url('/create_menu')" class="no-underline">
                                 {{ __('Create Menu') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="url('/menu_lists')" class="no-underline">
                                 {{ __('Menu Lists') }}
+                            </x-dropdown-link> --}}
+                            <x-dropdown-link :href="url('/user-access')" class="no-underline">
+                                {{ __('User Access') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/settings')" class="no-underline">
                                 {{ __('Settings') }}
@@ -92,12 +95,6 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Inventory') }}</div>
                                 <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
                                 </div>
                             </button>
                         </x-slot>
@@ -122,18 +119,13 @@
 
                 <!-- Dropdown Menu for Sales Order -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
-                    <x-dropdown>
+                    {{-- <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Sales') }}</div>
                                 <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
+                                   
                                 </div>
                             </button>
                         </x-slot>
@@ -146,20 +138,15 @@
                                 {{ __('Order Menu') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
 
-                    <x-dropdown>
+                    {{-- <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Service') }}</div>
                                 <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
+                                  
                                 </div>
                             </button>
                         </x-slot>
@@ -175,21 +162,16 @@
                                 {{ __('Orders') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
 
 
-                    <x-dropdown>
+                    {{-- <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Transaction') }}</div>
                                 <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
+                                    
                                 </div>
                             </button>
                         </x-slot>
@@ -202,7 +184,7 @@
                                 {{ __('Daily Sales') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
 
 
                     <x-dropdown>
@@ -228,18 +210,19 @@
                             <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
                                 {{ __('P.O - Approval') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
+                            {{-- <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
                                 {{ __('Menu Approval') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
                                 {{ __('Menu Review') }}
+                            </x-dropdown-link> --}}
                                 <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
                                     {{ __('Withdrawal - Review') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
                                     {{ __('Withdrawal - Approval') }}
                                 </x-dropdown-link>
-                            </x-dropdown-link>
+                          
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -321,12 +304,17 @@
             <x-responsive-nav-link :href="route('branch.index')" class="no-underline" :active="request()->routeIs('branch.index')">
                 {{ __('Branches') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
+            {{-- <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
                 {{ __('Create Menu') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="url('/menu_lists')" class="no-underline">
+            </x-responsive-nav-link> --}}
+            {{-- <x-responsive-nav-link :href="url('/menu_lists')" class="no-underline">
                 {{ __('Menu Lists') }}
+            </x-responsive-nav-link> --}}
+
+            <x-responsive-nav-link :href="url('/user-access')" class="no-underline">
+                {{ __('User Access') }}
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('settings.index')" class="no-underline" :active="request()->routeIs('settings.index')">
                 {{ __('Settings') }}
             </x-responsive-nav-link>

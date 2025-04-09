@@ -133,7 +133,7 @@
                                             style="width: 100; font-size: 13px">To be
                                             use on</label>
                                         <input type="text" class="form-control" id="usage_date"
-                                            value="{{ $withdrawal->usage_date ? \Carbon\Carbon::parse($withdrawal->usage_date)->format('M. d, Y') : 'N/A' }}"
+                                            value="{{ $withdrawal && $withdrawal->usage_date ? \Carbon\Carbon::parse($withdrawal->usage_date)->format('M. d, Y') : 'N/A' }}"
                                             readonly>
                                     </div>
                                     <div class="col-md-6">

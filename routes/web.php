@@ -239,3 +239,9 @@ Route::get('/withdrawal/{id}/view', [InventoryAdjustmentController::class, 'view
 
 // Route for updating withdrawal
 Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'printWidthrawal'])->name('withdrawal.print');
+
+
+//Route for user access blade
+Route::get('/user-access', function () {
+    return view('master_data.user_access');
+})->middleware(['auth', 'verified'])->name('user_access');
