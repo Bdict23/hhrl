@@ -45,7 +45,7 @@ class Withdrawal extends Component
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
     protected $rules = [
-        'reference' => 'required|string|max:25',
+        'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
         'useDate' => 'required',
         'spanDate' => 'nullable|date|after_or_equal:useDate',
@@ -60,6 +60,7 @@ class Withdrawal extends Component
         'selectedItems.required' => 'The item list cannot be empty.',
         'reviewer.required' => 'The reviewer is required.',
         'approver.required' => 'The approver is required.',
+       
     ];
     protected $listeners = [
         'addItem' => 'addItem',
@@ -151,7 +152,7 @@ class Withdrawal extends Component
         $withdrawal->reviewed_by = $this->reviewer;
         $withdrawal->approved_by = $this->approver;
         $withdrawal->remarks = $this->remarks;
-        $withdrawal->withdrawal_status = 'PREPARING';
+        $withdrawal->withdrawal_status = $this->finalStatus ? 'PREPARING' : 'FOR REVIEW';
         $withdrawal->source_branch_id = auth()->user()->branch_id;
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
@@ -201,12 +202,14 @@ class Withdrawal extends Component
     }
     public function updatedHaveSpan($value)
     {
+
         $this->spanDate = null;
         $this->useDate = null;
         if ($value) {
-            $this->useDate = now()->format('Y-m-d');
+            $this->useDate = now();
         }
     }
+
 
 
     public function render()

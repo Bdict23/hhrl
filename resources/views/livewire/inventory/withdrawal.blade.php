@@ -211,9 +211,7 @@
                                                 style="width: 100; font-size: 13px">Lifespan Date</label>
                                             <input wire:model='spanDate' type="date" class="form-control" id="lifespan_date">
                                             @error('spanDate')
-                                                <div class="alert alert-danger mt-1">
-                                                    {{ $message }}
-                                                </div>
+                                                <i class="text-danger" style="font-size: 12px">{{ $message }}</i>
                                             @enderror
                                         </div>
                                     <div class="row mt-3">
