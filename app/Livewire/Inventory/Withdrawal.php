@@ -152,11 +152,12 @@ class Withdrawal extends Component
         $withdrawal->reviewed_by = $this->reviewer;
         $withdrawal->approved_by = $this->approver;
         $withdrawal->remarks = $this->remarks;
-        $withdrawal->withdrawal_status = $this->finalStatus ? 'PREPARING' : 'FOR REVIEW';
+        $withdrawal->withdrawal_status = $this->finalStatus ? 'FOR REVIEW' : 'PREPARING';
         $withdrawal->source_branch_id = auth()->user()->branch_id;
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
         $withdrawal->save();
+        $withdrawalId = $withdrawal->id; // Ensure the ID is retrieved after saving
 
         foreach ($this->selectedItems as $item) {
             if ($item['requested_qty'] > 0) {
@@ -167,7 +168,7 @@ class Withdrawal extends Component
                 $cardex->status = 'RESERVED';
                 $cardex->transaction_type = 'WITHDRAWAL';
                 $cardex->price_level_id = $item['costId'];
-                $cardex->withdrawal_id = $withdrawal->id;
+                $cardex->withdrawal_id = $withdrawalId; // Use the retrieved ID
                 $cardex->save();
 
             }

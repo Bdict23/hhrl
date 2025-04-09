@@ -19,9 +19,8 @@
                                 <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                             </div>
                         </header>
-                        <button  style="background-color: rgb(100, 101, 102)"  type="button" class=" btn btn-sm text-light border-0" data-bs-toggle="modal" data-bs-target="#customCol" title="Add/Remove Column"> + </button>
-                       <label for="" style="font-size: small">Add/Remove Column</label>
                        
+                      
                         <table class="table table-striped table-hover me-3">
                            
                            
@@ -62,7 +61,15 @@
                                     <th>COST</th>
                                     <th>TOTAL</th>
                                     <th>
-                                        ACTION  
+                                        ACTION
+                                        <button type="button"
+                                        class="btn btn-sm float-end"
+                                        style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#customCol"
+                                        title="Add or remove column">
+                                        +
+                                    </button>
                                     </th>
                                     
                                 </tr>
@@ -198,11 +205,11 @@
 
                                         <div class="col-md-6">
                                             <label for="status" class="form-label">Have Span</label>
-                                            <input wire:model.live='haveSpan' type="checkbox" class="" id="span-date">
+                                            <input wire:model.live='haveSpan' type="checkbox" class="form-check-input" id="span-date">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="finalStatus" class="form-label">Set as Final</label>
-                                            <input wire:model.live ="finalStatus" type="checkbox" id="finalStatus">
+                                            <input wire:model.live ="finalStatus" type="checkbox" class="form-check-input" id="finalStatus">
                                         </div>
                                     </div>
                                     <div>
