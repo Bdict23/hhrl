@@ -245,3 +245,8 @@ Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'pri
 Route::get('/user-access', function () {
     return view('master_data.user_access');
 })->middleware(['auth', 'verified'])->name('user_access');
+
+// Route to backorder blade
+Route::get('/back-orders', function () {
+    return view('inventory.back-order');
+})->middleware(['auth', 'verified'])->name('backorder');

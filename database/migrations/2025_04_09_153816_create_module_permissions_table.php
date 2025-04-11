@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('module_id')->constrained('modules')->onDelete('cascade');
             $table->boolean('read_only')->default(false);
             $table->boolean('full_access')->default(false);
-            $table->boolean('restrict')->default(true);
+            $table->boolean('restrict')->default(false);
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
         });

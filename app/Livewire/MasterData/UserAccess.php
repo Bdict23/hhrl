@@ -47,7 +47,7 @@ class UserAccess extends Component
         $this->positions = Position::where('position_status', 'ACTIVE')->get();
         $this->modules = Module::all();
 
-        
+
 
     }
 
@@ -75,26 +75,28 @@ class UserAccess extends Component
 
     public function setPermission($moduleId, $type ,$action)
     {
-        if($action){
-            $currentPermission = ModulePermission::where([
-                ['module_id', $moduleId],
-                [$type, $action ? 1 : 0],
-                ['employee_id',$this->employeeId]
-            ])->first();
-            
-            if (!$currentPermission && $action) {
-                $currentPermission = new ModulePermission();
-                $currentPermission->module_id = $moduleId;
-                $currentPermission->employee_id = $this->employeeId ?? null;
-                $currentPermission->$type = 1;
-                $currentPermission->save();
-            }
-            $this->resetExcept('employeeId');
-            $this->fetchData();
-            $this->selectedUser($this->employeeId);
+        if($this->employeeId){
+            if($action){
+                $currentPermission = ModulePermission::where([
+                    ['module_id', $moduleId],
+                    [$type, '!=', null],
+                    ['employee_id',$this->employeeId]
+                ])->first();
 
-        }
-        
+                if (!$currentPermission && $action) {
+                    $currentPermission = new ModulePermission();
+                    $currentPermission->module_id = $moduleId;
+                    $currentPermission->employee_id = $this->employeeId ?? null;
+                    $currentPermission->$type = 1;
+                    $currentPermission->save();
+                }
+                $this->resetExcept('employeeId');
+                $this->fetchData();
+                $this->selectedUser($this->employeeId);
+
+            }
+    }
+
     }
 
 

@@ -104,7 +104,7 @@
                                 data-bs-target="#cardexModal" >
                                 {{ __('Cardex') }}
                             </x-dropdown-link>
-                            <x-dropdown-link class="no-underline">
+                            <x-dropdown-link :href="url('/back-orders')" class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/Allocate_Item')" class="no-underline">
@@ -125,7 +125,7 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Sales') }}</div>
                                 <div class="ms-1">
-                                   
+
                                 </div>
                             </button>
                         </x-slot>
@@ -146,7 +146,7 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Service') }}</div>
                                 <div class="ms-1">
-                                  
+
                                 </div>
                             </button>
                         </x-slot>
@@ -171,7 +171,7 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Transaction') }}</div>
                                 <div class="ms-1">
-                                    
+
                                 </div>
                             </button>
                         </x-slot>
@@ -222,7 +222,7 @@
                                 <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
                                     {{ __('Withdrawal - Approval') }}
                                 </x-dropdown-link>
-                          
+
                         </x-slot>
                     </x-dropdown>
                 </div>
