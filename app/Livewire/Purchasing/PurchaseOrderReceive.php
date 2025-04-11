@@ -82,7 +82,7 @@ class PurchaseOrderReceive extends Component
 
         $this->cardexSum = Cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
                     ->where('transaction_type', 'RECEVING')
-                    ->where('requisition_id', $requestInfos->id ?? 0)
+                    ->where('requisition_id', $id ?? 0)
                     ->groupBy('item_id')
                     ->get() ?? [];
         $this->cardexSum = collect($this->cardexSum)->keyBy('item_id')->all();
@@ -114,6 +114,8 @@ class PurchaseOrderReceive extends Component
         $newRecieving->DELIVERY_NUMBER = $this->delivery_no;
         $newRecieving->INVOICE_NUMBER = $this->invoice_no;
         $newRecieving->RECEIVING_STATUS = $this->finalStatus ? 'FINAL' : 'TEMP';
+        $newRecieving->branch_id = auth()->user()->branch_id;
+        $newRecieving->company_id = auth()->user()->branch->company_id;
         $newRecieving->PREPARED_BY = auth()->user()->emp_id;
         $newRecieving->DELIVERED_BY = $this->delivered_by;
         $newRecieving->remarks = $this->remarks;
