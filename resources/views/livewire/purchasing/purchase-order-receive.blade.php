@@ -25,7 +25,8 @@
                             Get PO
                         </x-primary-button>
                         <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
-                        <x-secondary-button> Summary </x-secondary-button>
+                        <a href="/purchase_order">  <x-secondary-button> Summary </x-secondary-button> </a>
+                       
                             <i class="float-right mr-2" wire:loading>Please wait...</i>
                             <span wire:loading class="mr-2 spinner-border text-primary float-right" role="status"></span>
                     </div>
@@ -225,7 +226,7 @@
                                               </tr>
                                           @endforeach
                                       @else
-                                          <tr><td colspan="3" class="text-center">No data available</td></tr>
+                                          <tr><td colspan="5" class="text-center">No data available</td></tr>
                                       @endif
                                     </tr>
                                 </tbody>

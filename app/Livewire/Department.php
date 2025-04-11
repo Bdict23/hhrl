@@ -110,7 +110,7 @@ class Department extends Component
 
     public function fetchEmployees($branch)
     {   $this->branch = $branch;
-        $this->employees = Employee::where('status', 'ACTIVE')->where('branch_id', $this->branch)->get();
+        $this->employees = Employee::with('position')->where('status', 'ACTIVE')->where('branch_id', $this->branch)->get();
     }
 
 

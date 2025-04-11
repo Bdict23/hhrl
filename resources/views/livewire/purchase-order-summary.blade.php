@@ -58,7 +58,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($purchaseOrderSummary as $requisition)
+                        @forelse ($purchaseOrderSummary as $requisition)
                             <tr>
                                 <td>{{ $requisition->supplier->supp_name ?? 'N/A' }}</td>
                                 <td>{{ $requisition->requisition_number }}</td>
@@ -73,7 +73,12 @@
                                     <a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center">No purchase order found</td>
+                            </tr>
+                        @endforelse
+
                     </tbody>
                 </table>
         </div>

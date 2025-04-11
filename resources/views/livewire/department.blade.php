@@ -170,13 +170,13 @@
                                         <td>{{ $employee->name }} {{ $employee->middle_name }}
                                             {{ $employee->last_name }}
                                         </td>
-                                        <td>{{ $employee->position }}</td>
+                                        <td>{{ $employee->position->position_name }}</td>
                                         <td>{{ $employee->department ? $employee->department->department_name : 'N/A' }}
                                         </td>
                                         <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
                                         <td>
                                             <button class="btn btn-primary btn-sm" value="{{ $employee->id }}"
-                                                onclick="selectEmployeeFunction({{ $employee->id }}, '{{ $employee->name }}', '{{ $employee->last_name }}', '{{ $employee->position }}', '{{ $employee->status }}', '{{ $employee->department ? $employee->department->department_name : 'N/A' }}', '{{ $employee->branch->branch_name ?? 'N/A' }}')">Select</button>
+                                                onclick="selectEmployeeFunction({{ $employee->id }}, '{{ $employee->name }}', '{{ $employee->last_name }}', '{{ $employee->position->position_name }}', '{{ $employee->status }}', '{{ $employee->department ? $employee->department->department_name : 'N/A' }}', '{{ $employee->branch->branch_name ?? 'N/A' }}')">Select</button>
                                         </td>
                                     </tr>
                                 @empty
@@ -263,7 +263,7 @@
                                                             <td hidden>{{ $personnel->id }}</td>
                                                             <td>{{ $personnel->name }}</td>
                                                             <td>{{ $personnel->last_name }}</td>
-                                                            <td>{{ $personnel->position }}</td>
+                                                            <td>{{ $personnel->position->position_name }}</td>
                                                             <td>{{ $personnel->status }}</td>
                                                             <td>{{ $personnel->branch->branch_name ?? 'N/A' }}
                                                             </td>

@@ -6,9 +6,8 @@
                 <div class="card-header">
                   <div class="d-flex justify-content-end">
                     <x-primary-button type="button" data-bs-toggle="modal"
-                    data-bs-target="#AddPersonnelsModal"
-                    onclick="changeModule('CREATE-MODULE')">Find User</x-primary-button>
-                    <button type="button" class="btn btn-sm btn-success ms-2">Save Changes</button>
+                    data-bs-target="#AddPersonnelsModal">Find User</x-primary-button>
+                    <button type="button" class="btn btn-sm btn-success ms-2" disabled>Save Changes</button>
                 </div>
                 </div>
                 <div class="card-body">
@@ -24,21 +23,20 @@
                     </div>
                     <div class="mb-3">
                         <label for="userEmail" class="form-label">User Email</label>
-                        <input type="email" class="form-control" id="userEmail" value="{{ $userDetails ? $userDetails->user->email : '' }}">
+                        <input type="email" class="form-control" id="userEmail" value="{{ $userDetails && $userDetails->user ? $userDetails->user->email : '' }}">
                     </div>
                     <div class="mb-3">
                         <label for="userRole" class="form-label">Position</label>
-                        <select class="form-select" id="userRole" wire:model="userRole">
+                        <select class="form-select" id="userRole" wire:model="position">
                             <option value="">Select</option>
-                            
-                            {{-- @foreach($roles as $role)
-                                <option value="{{ $role }}">{{ $role }}</option>
-                            @endforeach --}}
+                            @foreach($positions as $position)
+                                <option value="{{ $position->id }}"  {{ $userDetails && $userDetails->position_id == $position->id ? 'SELECTED' : '' }}>{{ $position->position_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="userStatus" class="form-label">User Status</label>
-                        <select class="form-select" id="userStatus" wire:model="userStatus">
+                        <select class="form-select" id="userStatus" wire:model="employeeStatus">
                             <option value="">Select Status</option>
                             <option value="ACTIVE" {{ $userDetails && $userDetails->status == 'ACTIVE' ? 'SELECTED' : '' }}>Active</option>
                             <option value="INACTIVE" {{ $userDetails && $userDetails->status == 'INACTIVE' ? 'SELECTED' : '' }}>Inactive</option>
@@ -55,23 +53,81 @@
                     <h5 class="card-title">User Access</h5>
                 </div>
                 <div class="card-body">
-                    <table>
-                        <thead>
+                    <table class="table table-striped table-hover table-sm table-responsive-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th colspan="1" class="text-center">User Access</th>
+                                <th colspan="1" class="text-center">Read Only : 0</th>
+                                <th colspan="1" class="text-center">Full Access : 0</th>
+                                <th colspan="1" class="text-center">Restrict : 0</th>
+
+                            </tr>
                             <tr>
                                 <th>Module</th>
-                                <th>Read Only</th>
-                                <th>Full Access</th>
-                                <th>Restrict</th>
+                                <th class="text-center">Read Only</th>
+                                <th class="text-center">Full Access</th>
+                                <th class="text-center">Restrict</th>   
                             </tr>
                         </thead>
                         <tbody>
                           
-                                <tr>
-                                    <td>(module name)</td>
-                                    <td><input type="checkbox"></td>
-                                    <td><input type="checkbox"></td>
-                                    <td><input type="checkbox" checked></td>
-                                </tr>
+                            @foreach ($modules as $module)
+                            <tr>
+                                <td>{{ $module->module_name }}</td>
+                
+                                @foreach (['read_only', 'full_access', 'restrict'] as $type)
+                                    <td>
+                                        <input 
+                                         wire:click="setPermission( '{{$module->id}}','{{ $type }}',$event.target.checked)" 
+                                        type="checkbox" class="form-check-input" id="flexCheckDefault" 
+                                        {{-- value=""> --}} value="1"
+                                        {{ $permissions[$module->id][$type] ?? false ? 'checked' : '' }} >
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card" style="display: none">
+                <div class="card-header">
+                    <h5 class="card-title">User Access</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover table-sm table-responsive-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th colspan="1" class="text-center">User Access</th>
+                                <th colspan="1" class="text-center">Read Only : 0</th>
+                                <th colspan="1" class="text-center">Full Access : 0</th>
+                                <th colspan="1" class="text-center">Restrict : 0</th>
+
+                            </tr>
+                            <tr>
+                                <th>Module</th>
+                                <th class="text-center">Read Only</th>
+                                <th class="text-center">Full Access</th>
+                                <th class="text-center">Restrict</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          
+                            @foreach ($modules as $module)
+                            <tr>
+                                <td>{{ $module->module_name }}</td>
+                
+                                @foreach (['read_only', 'full_access', 'restrict'] as $type)
+                                    <td>
+                                        <input 
+                                         {{-- wire:model.live="permissions.{{ $module->id }}.{{ $type }}"  --}}
+                                        type="checkbox" class="form-check-input" id="flexCheckDefault" 
+                                        {{ $permissions[$module->id][$type] ?? false ? 'checked' : '' }} disabled>
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
                            
                         </tbody>
                     </table>
@@ -122,7 +178,7 @@
                                     <td>{{ $employee->name }} {{ $employee->middle_name }}
                                         {{ $employee->last_name }}
                                     </td>
-                                    <td>{{ $employee->position }}</td>
+                                    <td>{{ $employee->position->position_name }}</td>
                                     <td>{{ $employee->department ? $employee->department->department_name : 'N/A' }}
                                     </td>
                                     <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
