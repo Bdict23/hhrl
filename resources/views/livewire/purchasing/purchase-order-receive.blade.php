@@ -25,6 +25,15 @@
                             Get PO
                         </x-primary-button>
                         <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
+
+                        <div class="form-check float-right">
+                            <strong class="form-check-label" for="flexCheckDefault" title="Marks receiving as final; edits disabled after save.">
+                                Final
+                              </strong>
+                            <input wire:model="finalStatus" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+                            {{ $finalStatus ? 'checked' : '' }} title="Marks receiving as final; edits disabled after save.">
+                          </div>
+
                         <a href="/purchase_order">  <x-secondary-button> Summary </x-secondary-button> </a>
                        
                             <i class="float-right mr-2" wire:loading>Please wait...</i>

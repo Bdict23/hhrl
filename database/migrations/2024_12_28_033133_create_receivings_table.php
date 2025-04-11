@@ -50,6 +50,10 @@ return new class extends Migration
                 $table->enum('STF_STATUS', ['PREPARED','NEW', 'VIEWED', 'PICKING', 'PACKING','REVIEW','APPROVAL', 'INTRANSIT', 'RECEIVED', 'CANCELLED'])->notNullable()->default('PREPARED');
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+                $table->index('transaction_date');
+
+                
             });
         } 
 
@@ -63,12 +67,20 @@ return new class extends Migration
             $table->string('WAYBILL_NUMBER', 30)->nullable();
             $table->string('DELIVERY_NUMBER', 30)->nullable();
             $table->string('INVOICE_NUMBER', 30)->nullable();
+            $table->enum('RECEIVING_STATUS', ['FINAL', 'DRAFT'])->default('DRAFT');
             $table->text('remarks')->nullable();
             $table->foreignId('PREPARED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');           
             $table->string('DELIVERED_BY', 100)->nullable();
             $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+            $table->index('RECEIVING_STATUS');
+            $table->index('RECEIVING_NUMBER');
+            $table->index('RECEIVING_TYPE');
+            $table->index('created_at');
         
         });
         }

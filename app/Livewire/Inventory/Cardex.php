@@ -66,12 +66,13 @@ class Cardex extends Component
         $this->price = $cardexData->item->costPrice->amount;
         $this->totalBalance = intval($cardexData->totalBalanceByItem());
 
-        // Fetch and calculate running balance
+        //  running balance !
         $runningBalance = 0;
         $this->cardexData = CardexModel::where('item_id', $this->itemId)
             ->with(['item', 'invoice', 'receiving', 'stockTransfer', 'withdrawal'])
             ->where('source_branch_id', auth()->user()->branch_id)
-            ->orderBy('created_at', 'asc') // Ensure chronological order for running balance
+            ->where('status', 'final')
+            ->orderBy('created_at', 'asc') // sort order para mag effect ang running balance
             ->get()
             ->map(function ($item) use (&$runningBalance) {
                 $runningBalance += $item->qty_in - $item->qty_out;

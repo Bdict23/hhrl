@@ -19,9 +19,14 @@ return new class extends Migration
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade')->onUpdate('cascade');
             $table->enum('status', ['ACTIVE', 'FULLFILLED', 'FOR PO', 'CANCELLED'])->default('ACTIVE');
             $table->enum('bo_type', ['REQ', 'PO'])->default('REQ');
+            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->text('remarks')->nullable();
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+            $table->index('bo_type');
+            $table->index('status');
             });
         }
     }

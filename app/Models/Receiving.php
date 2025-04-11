@@ -25,6 +25,9 @@ class Receiving extends Model
         'DELIVERED_BY',
         'ATTACHMENT',
         'created_by',
+        'branch_id',
+        'company_id',
+        'receiving_status',
         'stf_id'
     ];
 
