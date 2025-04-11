@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ReceivingAttachment;
+use App\Models\Requisition;
 
 class Receiving extends Model
 {
@@ -31,5 +33,29 @@ class Receiving extends Model
     public function attachments()
     {
         return $this->hasMany(ReceivingAttachment::class);
+    }
+
+    public function requisition()
+    {
+        return $this->belongsTo(RequisitionInfo::class, 'REQUISITION_ID');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'BRANCH_ID');
+    }
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'COMPANY_ID');
+    }
+
+    public function preparedBy()
+    {
+        return $this->belongsTo(Employee::class, 'PREPARED_BY');
+    }
+
+    public function cardex()
+    {
+        return $this->hasMany(Cardex::class, 'RECEIVING_ID');
     }
 }

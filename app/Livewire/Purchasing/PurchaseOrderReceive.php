@@ -34,6 +34,7 @@ class PurchaseOrderReceive extends Component
     public $remarks;
     public $attachment;
     public $attachments = [];
+    public $finalStatus = false;
 
     protected $listeners = [
         'selectPO' => 'selectPO',
@@ -112,6 +113,7 @@ class PurchaseOrderReceive extends Component
         $newRecieving->WAYBILL_NUMBER = $this->waybill_no;
         $newRecieving->DELIVERY_NUMBER = $this->delivery_no;
         $newRecieving->INVOICE_NUMBER = $this->invoice_no;
+        $newRecieving->RECEIVING_STATUS = $this->finalStatus ? 'FINAL' : 'TEMP';
         $newRecieving->PREPARED_BY = auth()->user()->emp_id;
         $newRecieving->DELIVERED_BY = $this->delivered_by;
         $newRecieving->remarks = $this->remarks;
@@ -147,7 +149,7 @@ class PurchaseOrderReceive extends Component
                         $cardex->source_branch_id = auth()->user()->branch_id;
                         $cardex->qty_in = $value['qty'];
                         $cardex->item_id = $value['id'];
-                        $cardex->status = 'FINAL';
+                        $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
                         $cardex->transaction_type = 'RECEVING';
                         $cardex->price_level_id = $newCostPrice->id;
                         $cardex->receiving_id = $newRecieving->id;
@@ -159,7 +161,7 @@ class PurchaseOrderReceive extends Component
                     $cardex->source_branch_id = auth()->user()->branch_id;
                     $cardex->qty_in = $value['qty'];
                     $cardex->item_id = $value['id'];
-                    $cardex->status = 'FINAL';
+                    $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
                     $cardex->transaction_type = 'RECEVING';
                     $cardex->price_level_id = $value['costId'];
                     $cardex->receiving_id = $newRecieving->id;

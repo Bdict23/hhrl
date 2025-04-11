@@ -250,3 +250,8 @@ Route::get('/user-access', function () {
 Route::get('/back-orders', function () {
     return view('inventory.back-order');
 })->middleware(['auth', 'verified'])->name('backorder');
+
+//Route for receiving summary
+Route::get('/receiving-summary', function () {
+    return view('purchase_order.purchase-order-receiving-summary');
+})->middleware(['auth', 'verified'])->name('backorder');

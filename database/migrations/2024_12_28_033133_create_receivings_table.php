@@ -21,8 +21,8 @@ return new class extends Migration
                     $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                     $table->timestamps();
                 });
-        
-                
+
+
                 // Insert data into the table
                 DB::table('stf_types')->insert([
                     ['type_name' => 'REQUEST', 'type_description' => 'Requisition items'],
@@ -51,10 +51,10 @@ return new class extends Migration
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
             });
-        } 
+        }
 
         // RECEIVING TABLE
-        if (!Schema::hasTable('receivings')) { 
+        if (!Schema::hasTable('receivings')) {
         Schema::create('receivings', function (Blueprint $table) {
             $table->id('id');
             $table->foreignId('REQUISITION_ID')->nullable()->constrained('requisition_infos')->onDelete('no action')->onUpdate('no action');
@@ -64,12 +64,15 @@ return new class extends Migration
             $table->string('DELIVERY_NUMBER', 30)->nullable();
             $table->string('INVOICE_NUMBER', 30)->nullable();
             $table->text('remarks')->nullable();
-            $table->foreignId('PREPARED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');           
+            $table->enum('RECEIVING_STATUS', ['FINAL', 'CANCELLED', 'TEMP'])->default('TEMP');
+            $table->foreignId('PREPARED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->string('DELIVERED_BY', 100)->nullable();
             $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
         });
         }
     }
@@ -79,6 +82,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       
+
     }
 };

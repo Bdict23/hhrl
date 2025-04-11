@@ -26,7 +26,15 @@
                         </x-primary-button>
                         <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
                         <a href="/purchase_order">  <x-secondary-button> Summary </x-secondary-button> </a>
-                       
+
+                        <div class="float-right form-check form-check-reverse">
+                            <input wire:model.live='finalStatus' class="form-check-input" type="checkbox"  id="reverseCheck1"  {{ $finalStatus ? 'checked' : '' }}
+                            title="Marks receiving as final; edits disabled after save.">
+                            <label class="form-check-label" for="reverseCheck1">
+                                Mark as Final
+                            </label>
+                          </div>
+                            {{-- <i class="float-right mr-2" wire:loading wire:target="saveReceiveRequest">Saving...</i> --}}
                             <i class="float-right mr-2" wire:loading>Please wait...</i>
                             <span wire:loading class="mr-2 spinner-border text-primary float-right" role="status"></span>
                     </div>
@@ -260,7 +268,7 @@
             // Calculate the total price
             const totalPriceCell = row.querySelector('.total-price');
             totalPriceCell.textContent = (price * requestQty).toFixed(2);
-        }       totalPriceCell.textContent = (price * requestQty).toFixed(2);
+        }
     </script>
 </div>
     </script>

@@ -5,7 +5,7 @@
             <div class="row">
                 <div class=" row col-md-6">
                     <div class="col-md-6">
-                        <H5>BACK-ORDER LISTS</H5>
+                        <h5>RECEVING SUMMARY</h5>
                     </div>
                     <div class="col-md-6">
                         <span wire:loading class="spinner-border text-primary" role="status"></span>
@@ -14,16 +14,7 @@
 
                 <div class="col-md-6">
                 <div class="d-flex">
-                    <div class="input-group">
-                        <label for="PO-status" class="input-group-text">Status</label>
-                        <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
-                            <option value="all">All</option>
-                            <option value="ACTIVE">ACTIVE</option>
-                            <option value="FULLFILLED">FULLFILLED</option>
-                            <option value="FOR PO">FOR PO</option>
-                            <option value="CANCELLED">CANCELLED</option>
-                        </select>
-                    </div>
+
                     <div class="input-group">
                         <label for="from_date" class="input-group-text">From:</label>
                         <input wire:model="fromDate" type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
@@ -47,34 +38,33 @@
                 <table class="table table-striped table-hover table-responsive-sm">
                     <thead class="table-dark">
                         <tr>
-                            <th>Reference</th>
-                            <th>SKU</th>
-                            <th>Type</th>
-                            <th>Date</th>
+                            <th>Order To</th>
+                            <th>Order Number</th>
+                            <th>Receiving No.</th>
+                            <th>Order Date</th>
+                            <th>Prepared By</th>
                             <th>PO Status</th>
                             <th>Remarks</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-
-                        @forelse ($backorderList as $backOrder)
-                            <tr>
-                                <td>{{ $backOrder->reference }}</td>
-                                <td>{{ $backOrder->sku }}</td>
-                                <td>{{ $backOrder->type }}</td>
-                                <td>{{ $backOrder->created_at }}</td>
-                                <td>{{ $backOrder->status }}</td>
-                                <td>{{ $backOrder->remarks }}</td>
-                                <td>
-                                    <a href="{{ route('po.show', ['id' => $backOrder->id]) }}" class="btn btn-primary btn-sm">View</a>
-                                    <a href="{{ route('po.edit', ['id' => $backOrder->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                                    <button wire:click="delete({{ $backOrder->id }})" class="btn btn-danger btn-sm">Delete</button>
-                                </td>
-                            </tr>
+                       @forelse ( $receivingSummaryList as $receivingSummary )
+                        <tr>
+                            <td>{{ $receivingSummary->requisition->supplier->supp_name }}</td>
+                            <td>{{ $receivingSummary->requisition->requisition_number }}</td>
+                            <td>{{ $receivingSummary->RECEIVING_NUMBER }}</td>
+                            <td>{{ $receivingSummary->created_at }}</td>
+                            <td>{{ $receivingSummary->preparedBy->name }}</td>
+                            <td>{{ $receivingSummary->RECEIVING_STATUS }}</td>
+                            <td>{{ $receivingSummary->remarks }}</td>
+                            <td>
+                                <button wire:click="viewReceiving({{ $receivingSummary->id }})" class="btn btn-primary btn-sm">View</button>
+                            </td>
+                        </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">No back orders found.</td>
+                                <td colspan="8" class="text-center">No data available</td>
                             </tr>
                         @endforelse
 

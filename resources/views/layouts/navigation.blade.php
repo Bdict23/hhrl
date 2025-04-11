@@ -107,9 +107,7 @@
                             <x-dropdown-link :href="url('/back-orders')" class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/Allocate_Item')" class="no-underline">
-                                {{ __('Item Allocation') }}
-                            </x-dropdown-link>
+
                             <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
                                 {{ __('Item Withdrawal') }}
                             </x-dropdown-link>
