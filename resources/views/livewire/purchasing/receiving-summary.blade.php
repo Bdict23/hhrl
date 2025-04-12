@@ -34,9 +34,9 @@
         </div>
 
 
-        <div class="card-body d-sm-flex">
-                <table class="table  table-responsive-sm">
-                    <thead class="table-dark">
+        <div class="card-body ">
+                <table class="table table-striped table-hover table-sm table-responsive-sm">
+                    <thead class="table-dark table-sm table-responsive-sm">
                         <tr>
                             <th>Order To</th>
                             <th>Order Number</th>
@@ -56,7 +56,7 @@
                             <td>{{ $receivingSummary->RECEIVING_NUMBER }}</td>
                             <td>{{ $receivingSummary->created_at }}</td>
                             <td>{{ $receivingSummary->preparedBy->name }}</td>
-                            <td>{{ $receivingSummary->RECEIVING_STATUS }}</td>
+                            <td> <span class="@if($receivingSummary->RECEIVING_STATUS == 'FINAL') badge bg-success @else badge bg-secondary @endif">{{ $receivingSummary->RECEIVING_STATUS }}</span></td>
                             <td>{{ $receivingSummary->remarks }}</td>
                             <td>
                                 <button wire:click="openReceivingNumber('{{ $receivingSummary->RECEIVING_NUMBER }}',{{ $receivingSummary->requisition->id }})" class="btn btn-primary btn-sm">View</button>

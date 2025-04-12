@@ -21,17 +21,19 @@
                 </div>
 
                     <div class="m-2">
-                        <x-primary-button data-bs-toggle="modal" data-bs-target="#getPONumberModal">
-                            Get PO
-                        </x-primary-button>
-                        <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
+                        @if ($isExists == false)
+                            <x-primary-button data-bs-toggle="modal" data-bs-target="#getPONumberModal">
+                                Get PO
+                            </x-primary-button>
+                        @endif
+                        <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> {{ $isExists ? 'Update' : 'Save' }}</x-primary-button>
 
                         <div class="form-check float-right">
                             <strong class="form-check-label text-danger" for="flexCheckDefault" title="Marks receiving as final; edits disabled after save.">
                                 Final
                               </strong>
                             <input wire:model="finalStatus" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
-                            {{ $finalStatus ? 'checked' : '' }} title="Marks receiving as final; edits disabled after save.">
+                            {{ $finalStatus ? 'checked' : '' }} title="Marks receiving as final; edits disabled after save." {{ $isExists && $finalStatus ? 'disabled' : '' }}>
                           </div>
 
                         <a href="/receiving-summary">  <x-secondary-button> Summary </x-secondary-button> </a>

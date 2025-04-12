@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\RequisitionInfo;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,7 @@ class Backorder extends Model
 
     public function requisition()
     {
-        return $this->belongsTo(Requisition::class);
+        return $this->belongsTo(RequisitionInfo::class);
     }
     public function item()
     {

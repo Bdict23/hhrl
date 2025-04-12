@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ReceivingAttachment;
 use Livewire\WithFileUploads;
 use Illuminate\Http\Request;
+use App\Models\Backorder;
 
 class PurchaseOrderReceive extends Component
 {
@@ -37,6 +38,7 @@ class PurchaseOrderReceive extends Component
     public $attachments = [];
     public $finalStatus = false;
     public $isExists = false;
+    private $backorderCount = 0;
 
     protected $listeners = [
         'selectPO' => 'selectPO',
@@ -47,7 +49,7 @@ class PurchaseOrderReceive extends Component
         'waybill_no' => 'required_without_all:delivery_no,invoice_no|nullable|max:55',
         'delivery_no' => 'required_without_all:waybill_no,invoice_no|nullable|max:55',
         'invoice_no' => 'required_without_all:waybill_no,delivery_no|nullable|max:55',
-        'receiving_no' => 'required|string|max:55',
+        'receiving_no' => 'required|string|max:55|unique:receivings,RECEIVING_NUMBER',
         'delivered_by' => 'nullable|string|max:55',
         'remarks' => 'nullable|string|max:150',
         'qtyAndPrice.*.newCost' => 'required|numeric|min:1',
@@ -102,8 +104,10 @@ class PurchaseOrderReceive extends Component
             $itemId = $item->items->id;
             $costPrice = $item->items->costPrice->amount;
             $costID = $item->items->costPrice->id;
+            $req_qty = $item->qty;
             $this->qtyAndPrice[] = [
                 'id' => $itemId,
+                'req_qty' => $req_qty,
                 'qty' => 0,
                 'oldCost' => $costPrice,
                 'newCost' => $costPrice,
@@ -115,6 +119,8 @@ class PurchaseOrderReceive extends Component
 
     public function saveReceiveRequest()
     {
+        
+       
         $this->validate();
         $this->validate([
             'qtyAndPrice.*.qty' => 'required|integer|min:1',
@@ -151,7 +157,7 @@ class PurchaseOrderReceive extends Component
         }
         // Save cardex records
 
-        foreach ($this->qtyAndPrice as $key => $value) {
+        foreach ($this->qtyAndPrice as $index => $value) {
             if ($value['qty'] > 0) {
                 if ($value['oldCost'] != $value['newCost']) {
 
@@ -190,9 +196,26 @@ class PurchaseOrderReceive extends Component
                     $cardex->save();
                 }
             }
+            // dd('the value is', $value['qty'], 'the cardex sum is', $this->cardexSum[$value['id']] ?? 0, 'the item id is', $this->requisitionDetails[$key]->items->id);
+            // create back order if the quantity is less than the ordered quantity
+            //  dd(' sum ', (($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) ,' with request qty of ', $value['req_qty'] , 'index is ', $index , 'data on requisitiondtls was' , $this->requisitionDetails);
+            if((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) !== $value['req_qty']){
+                
+                $backOrder = new Backorder();
+                $backOrder->requisition_id = $this->requestInfo->id;
+                $backOrder->item_id = $value['id'];
+                $backOrder->status = 'ACTIVE';
+                $backOrder->cancelled_date = null;
+                $backOrder->bo_type = 'PO';
+                $backOrder->remarks = $this->requestInfo->supplier_id;
+                $backOrder->branch_id = auth()->user()->branch_id;
+                $backOrder->company_id = auth()->user()->branch->company_id;
+                $backOrder->save();
+                $this->backorderCount++;
+            }
         }
 
-        session()->flash('success', 'Purchase Order Successfully Received');
+        session()->flash('success', 'Purchase Order Successfully Received' . ($this->backorderCount > 0 ? " with $this->backorderCount back order(s)." : ""));
         $this->reset();
         $this->loadReceiveRequest();
     }
