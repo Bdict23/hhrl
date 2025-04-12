@@ -10,8 +10,22 @@ use App\Models\Branch;
 class Employee extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'corporate_id',
+        'name',
+        'middle_name',
+        'last_name',
+        'contact_number',
+        'position',
+        'religion',
+        'birth_date',
+        'status'
+    ];
 
-
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+    
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');
@@ -37,6 +51,17 @@ public function signatories()
 public function department()
 {
     return $this->belongsTo(Department::class);
+}
+public function companies()
+{
+    return $this->belongsToMany(Company::class, 'company_employees', 'emp_id', 'company_id')
+                ->withPivot('department_id')
+                ->withTimestamps();
+}
+public function branches()
+{
+    return $this->belongsToMany(Branch::class, 'branch_employees', 'emp_id', 'branch_id')
+                ->withTimestamps();
 }
 
 }

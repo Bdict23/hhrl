@@ -8,6 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class PriceLevel extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'item_id',
+        'branch_id',
+        'menu_id',
+        'price_type',
+        'amount',
+        'markup',
+        'supplier_id',
+        'company_id',
+        'created_at'
+    ];
     public function item()
     {
         return $this->belongsTo(Item::class, 'item_id');

@@ -18,7 +18,7 @@ class CompanyController extends Controller
             'company_type' => 'required|string|max:255',
             'company_description' => 'required|string|max:255',
             ]);
-
+                
             // save company record to the database and create an audit record
             $company = new Company($validatedData);
             $company->save();
@@ -38,6 +38,7 @@ class CompanyController extends Controller
     {
         // view only the created companies by the logged in user
         $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
+        dd($auditCompanies);
         $companyIds = $auditCompanies->pluck('company.id')->toArray();
         $companies = Company::where('company_status', 'active')->whereIn('id', $companyIds)->get();
 

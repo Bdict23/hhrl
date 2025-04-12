@@ -25,10 +25,15 @@ class Item extends Model
         'created_by',
     ];
 
+    public function priceLevels()
+    {
+        return $this->hasMany(PriceLevel::class, 'item_id');
+    }    
     public function priceLevel()
     {
         return $this->hasMany(PriceLevel::class, 'item_id');
     }
+  
     public function costPrice()
     {
         return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->latest();

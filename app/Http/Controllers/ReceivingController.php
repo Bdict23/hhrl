@@ -18,32 +18,59 @@ use App\Models\Signatory;
 use App\Models\Receiving;
 use App\Models\Cardex;
 use Exception;
-
+use App\Traits\HasCostCalculation;
 class ReceivingController extends Controller
 {
+    use HasCostCalculation;
     public function getPODetails($request = null) {
-        //dd($request);
-
-
-
-
+        // dd($request);
         $checkers = Signatory::where('signatory_type', 'checker')->get();
         $allocators = Signatory::where('signatory_type', 'allocator')->get();
-        $requestInfos = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
-            ->where('FROM_BRANCH_ID', Auth::user()->branch_id)
-            ->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])
-            ->where('requisition_number', $request)
-            ->first();
+        $requestInfos = RequisitionInfo::with([
+            'supplier',
+            'preparer',
+            'reviewer',
+            'approver',
+            'requisitionTypes',
+            'requisitionDetails.item.priceLevels' // Eager load price levels with items
+        ])
+        ->where('FROM_BRANCH_ID', Auth::user()->branch_id)
+        ->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])
+        ->where('requisition_number', $request)
+        ->first();
+
+        
+
         $cardexSum = Cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
         ->where('transaction_type', 'RECEVING')
         ->where('requisition_id', $requestInfos->id ?? 0)
         ->groupBy('item_id')
         ->get() ?? [];
         $cardexSum = collect($cardexSum)->keyBy('item_id')->all();
+            
+        try {
+            if (!$requestInfos) {
+                throw new \Exception("RequestInfo not found or null.");
+            }
+        
+            if (!$requestInfos->requisitionDetails) {
+                throw new \Exception("Requisition details are missing.");
+            }
+        
+            $requestInfos->requisitionDetails->each(function ($detail) {
+                if ($detail->item) { // ✅ Check if item exists
+                    $detail->item->current_cost = $this->calculateItemCost($detail->item); // ✅ Calculate the current cost
+                } else {
+                    $detail->item = (object) ['current_cost' => 0]; // ✅ Prevent null errors
+                }
+            });
+        } catch (\Exception $e) {
+            \Log::error("Error processing requisition details: " . $e->getMessage());
+        }
          return view('purchase_order.po_receive', compact('requestInfos', 'checkers', 'allocators','cardexSum'));
-        // return statuses::all();
-     }
 
+     }
+     
     public function po_store(Request $request)
     {
         try {

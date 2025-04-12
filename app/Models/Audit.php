@@ -25,4 +25,5 @@ class Audit extends Model
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
+    
 }

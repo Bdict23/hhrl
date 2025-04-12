@@ -35,7 +35,7 @@ class PriceOperation extends Component
 
     public $priceObject;
 
-
+  
 
 
     protected $rules = [

@@ -69,8 +69,13 @@ class SupplierController extends Controller
 
     public function index()
     {
-        $suppliers = Supplier::where([['supplier_status', 'active'], ['company_id', auth()->user()->branch->company_id]])->get(); // Fetching all suppliers from the database
-        return view('supplier_list', compact('suppliers')); // Passing data to the view
+        $suppliers = Supplier::where('company_id', auth()->user()->branch->company_id)->get();
+
+        if ($suppliers->isEmpty()) {
+            return view('supplier_list', compact('suppliers'))->with('error', 'No supplier found!');
+        }
+
+        return view('supplier_list', compact('suppliers'));
     }
 
 

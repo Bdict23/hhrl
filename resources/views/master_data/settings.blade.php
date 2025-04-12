@@ -10,6 +10,10 @@
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('items-table', this)">Item
                         List</a></li>
+            </ul>            
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Item
+                        Cost</a></li>
             </ul>
             <hr>
             <h5 class="text-muted">Item Properties</h5>
@@ -57,7 +61,8 @@
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Employees</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" onclick="showTab('employee-table', this)">Employee</a>
+                </li>
                 <li class="nav-item"><a href="#" class="nav-link"
                         onclick="showTab('departments-table', this)">Departments</a></li>
 
@@ -71,6 +76,14 @@
             <div>
                 @livewire('item-main')
             </div>
+            <div>
+                @livewire('settings.manage-employees')
+            </div>
+            <!-- item Tab Content -->
+            <div>
+                @livewire('item-cost')
+            </div>
+
 
             <!-- category Tab Content -->
             <div>

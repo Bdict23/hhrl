@@ -39,5 +39,8 @@ class Company extends Model
     {
         return $this->hasMany(Item::class, 'company_id');
     }
-
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

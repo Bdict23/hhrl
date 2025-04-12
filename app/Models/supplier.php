@@ -20,9 +20,10 @@ class Supplier extends Model
         'supplier_code',
         'email',
         'description',
+        'supplier_status'
     ];
 
-    public function priceLevel()
+    public function priceLevels()
     {
         return $this->hasMany(PriceLevel::class);
     }

@@ -23,6 +23,7 @@ use App\Http\Controllers\InvoicingController;
 use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingsController;
+use App\Livewire\Settings\ManageEmployees;
 
 Route::get('/', function () {
     $suppliers = supplier::all(); // Fetching all suppliers from the database
@@ -216,7 +217,10 @@ Route::get('/settings', [SettingsController::class, 'index'])->middleware(['auth
 Route::post('/settings/category/store', [SettingsController::class, 'storeCategory'])->name('settings.category.store');
 Route::post('/settings/classification/store', [SettingsController::class, 'storeClassification'])->name('settings.classification.store');
 
-
+// Settings Routes --created by raldz
+Route::prefix('settings')->group(function () {
+    Route::get('/employees', ManageEmployees::class)->name('manage.employees');
+});  //-- end of settings routes 
 // Route for storing a new withdarawal
 Route::post('/item_withdrawal', [InventoryAdjustmentController::class, 'storeWithdrawal'])->middleware(['auth', 'verified'])->name('withdrawal.store');
 // Route for withdrawal summary
