@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('amount', 19, 2)->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('no action')->onUpdate('no action');

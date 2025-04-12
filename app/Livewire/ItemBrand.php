@@ -19,14 +19,10 @@ class ItemBrand extends Component
     public $companies;
     public $company_id;
 
-    public $AddBrandTab = 0;
-    public $EditBrandTab = 0;
-    public $BrandListTab = 0;
 
     protected $rules = [
         'brand_name' => 'required|string|max:255',
         'brand_description' => 'nullable|string|max:255',
-        'company_id' => 'required|integer',
     ];
 
     public function mount()
@@ -45,33 +41,48 @@ class ItemBrand extends Component
 
     public function showAddBrand()
     {
-        $this->AddBrandTab = 1;
-        $this->BrandListTab = 0;
         $this->fetchData();
     }
 
     public function store()
     {
-        $this->AddBrandTab = 1;
-        $this->BrandListTab = 0;
         $this->validate();
         $brand = new Brand();
         $brand->brand_name = $this->brand_name;
         $brand->brand_description = $this->brand_description;
         $brand->status = 'ACTIVE';
-        $brand->company_id = $this->company_id;
+        $brand->company_id = auth()->user()->branch->company_id;
         $brand->created_by = auth()->user()->emp_id;
         $brand->save();
+
+        $this->reset();
         $this->fetchData();
 
-        $this->brand_name = '';
-        $this->brand_description = '';
-        $this->company_id = '';
+        session()->flash('success', 'Brand Created Successfully.');
+        $this->dispatch('clearBrandForm');
 
-        session()->flash('message', 'Brand Created Successfully.');
+    }
 
-        $this->AddBrandTab = 0;
-        $this->BrandListTab = 1;
+    public function editBrand($id)
+    {
+        $this->itemBrand = Brand::find($id);
+        $this->brand_name = $this->itemBrand->brand_name;
+        $this->brand_description = $this->itemBrand->brand_description;
+    }
+
+    public function updateBrand()
+    {
+        $this->validate();
+        $brand = Brand::find($this->itemBrand->id);
+        $brand->brand_name = $this->brand_name;
+        $brand->brand_description = $this->brand_description;
+        $brand->save();
+
+        $this->reset();
+        $this->fetchData();
+
+        session()->flash('success', 'Brand Updated Successfully.');
+        $this->dispatch('clearBrandUpdateModal');
     }
 
     public function render()
@@ -80,4 +91,15 @@ class ItemBrand extends Component
             'itemBrands' => $this->itemBrands
         ]);
     }
+
+
+    public function deactivate($id)
+    {
+        $brand = Brand::find($id);
+        $brand->status = 'INACTIVE';
+        $brand->save();
+        $this->fetchData();
+        session()->flash('message', 'Brand Deactivated Successfully.');
+    }
+
 }

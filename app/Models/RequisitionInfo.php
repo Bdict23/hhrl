@@ -9,7 +9,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\User;
-use App\Models\RequisitionType;
+use App\Models\Term;
 use App\Models\Item;
 
 
@@ -44,8 +44,8 @@ class requisitionInfo extends Model
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
-    public function requisitionTypes()
+    public function term()
     {
-        return $this->belongsTo(RequisitionType::class, 'requisition_types_id');
+        return $this->belongsTo(Term::class, 'term_id');
     }
 }

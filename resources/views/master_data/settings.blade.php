@@ -8,7 +8,8 @@
 
             <h5 class="text-muted">Item Management</h5>
             <ul class="nav flex-column">
-                <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('items-table', this)">Item
+                <li class="nav-item"><a href="#" class="nav-link active btn-sm" onclick="showTab('items-table', this)"
+                        style="background-color: #dddddd">Item
                         List</a></li>
             </ul>            
             <ul class="nav flex-column">
@@ -18,8 +19,8 @@
             <hr>
             <h5 class="text-muted">Item Properties</h5>
             <ul class="nav flex-column">
-                <li class="nav-item"><a href="#" class="nav-link active btn-sm"
-                        onclick="showTab('category-table', this)" style="background-color: #dddddd">Item Categories</a></li>
+                <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                        onclick="showTab('category-table', this)">Item Categories</a></li>
                 <li class="nav-item"><a href="#" class="nav-link btn-sm"
                         onclick="showTab('classification-table', this)">Classification</a></li>
                 <li class="nav-item"><a href="#" class="nav-link btn-sm"
@@ -254,10 +255,7 @@
         }
 
 
-        // function removePersonnel(button) {
-        //     const row = button.closest('tr');
-        //     row.remove();
-        // }
+
 
         document.getElementById('searchEmployee').addEventListener('input', function() {
             const searchValue = this.value.toLowerCase();

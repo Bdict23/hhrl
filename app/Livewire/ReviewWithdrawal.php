@@ -29,9 +29,12 @@ class ReviewWithdrawal extends Component
         $this->withdrawalDetails = Cardex::with('item','priceLevel')->where('withdrawal_id', $id)->get();
         $this->showWithdrawalSummary = false;
         $this->showViewWithdrawal = true;
-        foreach ($this->withdrawalDetails as $withdrawalDetail) {
-            $this->overAllCost += $withdrawalDetail->qty_out * $withdrawalDetail->priceLevel->amount;
-        }
+       
+        $this->withdrawalDetails = Cardex::with('item','priceLevel')->where('withdrawal_id', $id)->get();
+       
+        // foreach ($this->withdrawalDetails as $withdrawalDetail) {
+        //     $this->overAllCost += $withdrawalDetail->qty_out * $withdrawalDetail->priceLevel->amount;
+        // }
     }
 
     public function fetchData()

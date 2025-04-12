@@ -21,8 +21,8 @@ return new class extends Migration
                     $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                     $table->timestamps();
                 });
-        
-                
+
+
                 // Insert data into the table
                 DB::table('stf_types')->insert([
                     ['type_name' => 'REQUEST', 'type_description' => 'Requisition items'],
@@ -50,30 +50,33 @@ return new class extends Migration
                 $table->enum('STF_STATUS', ['PREPARED','NEW', 'VIEWED', 'PICKING', 'PACKING','REVIEW','APPROVAL', 'INTRANSIT', 'RECEIVED', 'CANCELLED'])->notNullable()->default('PREPARED');
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+                $table->index('transaction_date');
+
+
             });
-        } 
+        }
 
         // RECEIVING TABLE
-        if (!Schema::hasTable('receivings')) { 
+        if (!Schema::hasTable('receivings')) {
         Schema::create('receivings', function (Blueprint $table) {
             $table->id('id');
             $table->foreignId('REQUISITION_ID')->nullable()->constrained('requisition_infos')->onDelete('no action')->onUpdate('no action');
-            $table->string('PACKING_NUMBER', 100)->nullable()->unique(); //receiving packing number sa PO
             $table->enum('RECEIVING_TYPE', ['STF', 'PO'])->nullable();
             $table->string('RECEIVING_NUMBER', 100)->nullable();
             $table->string('WAYBILL_NUMBER', 30)->nullable();
             $table->string('DELIVERY_NUMBER', 30)->nullable();
             $table->string('INVOICE_NUMBER', 30)->nullable();
-            $table->date('RECEIVED_DATE')->nullable();
+            $table->enum('RECEIVING_STATUS', ['FINAL', 'DRAFT'])->default('DRAFT');
             $table->text('remarks')->nullable();
-            $table->foreignId('CHECKED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('ALLOCATED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');            
-            $table->date('TRANSACTION_DATE')->nullable();
+            $table->foreignId('PREPARED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->string('DELIVERED_BY', 100)->nullable();
             $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
-        
+
         });
         }
     }
@@ -83,6 +86,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       
+
     }
 };

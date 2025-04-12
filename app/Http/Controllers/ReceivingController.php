@@ -8,7 +8,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\RequisitionType;
+use App\Models\Term;
 use App\Models\Item;
 use App\Models\PriceLevel;
 use App\Models\Status;

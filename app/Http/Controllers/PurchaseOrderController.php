@@ -8,7 +8,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\RequisitionType;
+use App\Models\Term;
 use App\Models\Item;
 use App\Models\PriceLevel;
 use Illuminate\Support\Facades\DB;
@@ -34,18 +34,18 @@ class PurchaseOrderController extends Controller
 
      public function show($id)
      {
-         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
          //return $requestInfo;
          return view('purchase_order.po_view', compact('requestInfo'));
      }
 
      public function GetRequisitionType(){
-        $requistionType = RequisitionType::all();
-        return RequisitionType::all();
+        $requistionType = Term::all();
+        return Term::all();
      }
  public function newpo(){
     $suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
-    $types =  RequisitionType::all();
+    $types =  Term::all();
     $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
     $approver = Signatory::where([['signatory_type', 'APPROVER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
     $reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
@@ -55,16 +55,16 @@ class PurchaseOrderController extends Controller
 
      public function printPO($id)
      {
-         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where('id',  $id )->first();
+         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where('id',  $id )->first();
        // return $requestInfo;
          return view('purchase_order.po_print_details', compact('requestInfo'));
      }
 
      public function approval_request_list(){
-        $approval_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where([
+        $approval_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where([
             ['requisition_status', 'FOR APPROVAL'],
             ['category', 'PO'],['approved_by', Auth::user()->emp_id]])->get();
-        $rejected_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+        $rejected_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')
         ->where(function($query) {
             $query->whereNotNull('REJECTED_DATE')
               ->orWhereNotNull('APPROVED_DATE');
@@ -77,11 +77,11 @@ class PurchaseOrderController extends Controller
 
 
      public function review_request_list(){
-        $review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')->where([
+        $review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where([
             ['requisition_status', 'FOR REVIEW'],
             ['category', 'PO'],
             ['REVIEWED_BY', Auth::user()->emp_id]])->get();
-        $all_review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','requisitionTypes')
+        $all_review_requests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')
             ->whereNotNull('REVIEWED_DATE')
             ->where([['REVIEWED_BY', Auth::user()->emp_id],['category', 'PO']])
             ->get();
@@ -92,12 +92,12 @@ class PurchaseOrderController extends Controller
     public function po_edit($id=null)
     {
         $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing']])->find($id);
-        $suppliers = Supplier::where('supp_status', 'ACTIVE')->get();
-        $types =  RequisitionType::all();
+        $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
+        $terms =  Term::all();
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
         $approver = Signatory::where('signatory_type', 'APPROVER')->get();
         $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
-        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'types', 'items', 'approver', 'reviewer'));
+        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'terms', 'items', 'approver', 'reviewer'));
     }
 
     public function po_update(Request $request)
@@ -112,9 +112,8 @@ class PurchaseOrderController extends Controller
                 $requisitionInfo->reviewed_by = $request->reviewer_id;
                 $requisitionInfo->requisition_status = 'PREPARING';
                 $requisitionInfo->trans_date = now();
-                $requisitionInfo->requisition_types_id = $request->type_id;
+                $requisitionInfo->term_id = $request->term_id;
                 $requisitionInfo->remarks = $request->remarks;
-                $requisitionInfo->requisition_types_id = $request->type_id;
                 $requisitionInfo->category = 'PO';
                 $requisitionInfo->merchandise_po_number = $request->merchandise_po_number;
                 $requisitionInfo->save();
@@ -326,13 +325,14 @@ class PurchaseOrderController extends Controller
 
     public function show_review_request($id)
     {
-        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+
+        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
         //return $requestInfo;
         return view('purchase_order.po_show_for_review', compact('requestInfo'));
     }
     public function show_approval_request($id)
     {
-        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','requisitionTypes','requisitionDetails')->where( 'id',  $id)->first();
+        $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
         //return $requestInfo;
         return view('purchase_order.po_show_for_approval', compact('requestInfo'));
     }
@@ -340,7 +340,7 @@ class PurchaseOrderController extends Controller
     public function getPODetailsNOneSense($poNumber)
     {
         try {
-            $requisitionInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'requisitionTypes', 'requisitionDetails.items.priceLevel')
+            $requisitionInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails.items.priceLevel')
                 ->where('requisition_number', $poNumber)
                 ->first();
 

@@ -4,11 +4,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Laravel</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        @livewireStyles
+
     </head>
 
 
@@ -192,7 +192,7 @@
             border-top: none;
         }
 
-        .steps-container {
+        /* .steps-container {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -221,7 +221,7 @@
             background-color: #4caf50;
 
             /* Green for completed steps */
-        }
+
 
         .step.in-progress .circle {
             background-color: #673ab7;
@@ -243,7 +243,9 @@
         .line.completed {
             background-color: #4caf50;
             /* Green for completed lines */
-        }
+        } */
+
+
     </style>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-600 leading-tight text-sm">
@@ -256,11 +258,6 @@
 
     <div class = 'container'>
         @yield('content')
-
-        @livewireScripts
     </div>
     @yield('script')
-
-
-
 </x-app-layout>

@@ -17,7 +17,7 @@ class ItemMain extends Component
 {
 
     public $items;
-    public $companies;
+    public $item;
     public $uoms;
     public $categories;
     public $classifications;
@@ -31,21 +31,44 @@ class ItemMain extends Component
     public $brand_id;
     public $classification_id;
     public $sub_classification_id; // Corrected property name
-    public $company_id;
     public $cost;
+    public $item_barcode;
+    public $parent_classification_id; // New property for sub-classification modal
 
-    public $AddItemTab = 0;
-    public $ItemListTab = 0;
+
+    // MODAL VARIABLES
+
+    // UOM variables
+    public $unit_symbol;
+    public $unit_description;
+    public $unit_name;
+
+    // Category variables
+    public $category_name;
+    public $category_description;
+
+    // Brand variables
+    public $brand_name;
+    public $brand_description;
+
+    // Classification variables
+    public $classification_name;
+    public $classification_description;
+
+    // Sub Classification variables
+    public $sub_classification_name;
+    public $sub_classification_description;
+
 
     protected $rules = [
-        'item_code' => 'required|string|max:255',
+        'item_code' => 'required|string|max:80',
         'item_description' => 'required|string|max:255',
+        'item_barcode' => 'nullable|string|max:100',
         'uom_id' => 'required|exists:unit_of_measures,id',
         'category_id' => 'required|exists:categories,id',
         'brand_id' => 'nullable|exists:brands,id',
         'classification_id' => 'required|exists:classifications,id',
         'sub_classification_id' => 'nullable|exists:classifications,id', // Corrected validation rule
-        'company_id' => 'required|exists:companies,id',
         'cost' => 'nullable|numeric'
     ];
 
@@ -56,11 +79,15 @@ class ItemMain extends Component
 
     public function fetchData()
     {
+<<<<<<< HEAD
         // view only the created companies by the logged in user
         $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
         $companyIds = $auditCompanies->pluck('company.id')->toArray();
         $this->companies = Company::where('company_status', 'ACTIVE')->whereIn('id', $companyIds)->get();
         $this->items = Item::where('company_id', auth()->user()->branch->company_id)->get();
+=======
+        $this->items = Item::where([['company_id', auth()->user()->branch->company_id],['item_status', 'ACTIVE']])->get();
+>>>>>>> 21e0930d73201dc604e6f582bb099db141df5abf
         $this->uoms = UOM::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE']])->get();
         $this->categories = Category::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE'],['category_type', 'ITEM']])->get();
         $this->classifications = Classification::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE'],['class_parent', null]])->get();
@@ -70,19 +97,18 @@ class ItemMain extends Component
 
     public function store()
     {
-        try {
-            $this->AddItemTab = 1;
-            $this->ItemListTab = 0;
+
             $this->validate();
             $item = new Item();
             $item->item_code = $this->item_code;
             $item->item_description = $this->item_description;
+            $item->item_barcode = $this->item_barcode;
             $item->uom_id = $this->uom_id;
             $item->category_id = $this->category_id;
-            $item->brand_id = $this->brand_id;
+            $item->brand_id = $this->brand_id ? $this->brand_id : null;
             $item->classification_id = $this->classification_id;
             $item->sub_class_id = $this->sub_classification_id; // Corrected property name
-            $item->company_id = $this->company_id;
+            $item->company_id = auth()->user()->branch->company_id;
             $item->created_by = auth()->user()->emp_id;
             $item->save();
 
@@ -91,37 +117,72 @@ class ItemMain extends Component
                 $priceLevel->item_id = $item->id;
                 $priceLevel->price_type = 'COST';
                 $priceLevel->amount = $this->cost;
-                $priceLevel->company_id = $this->company_id;
+                $priceLevel->company_id = auth()->user()->branch->company_id;
                 $priceLevel->save();
             }
-            $this->resetForm();
-            $this->AddItemTab = 0;
-            $this->ItemListTab = 1;
+
+            $this->reset();
             $this->fetchData();
-            session()->flash('message', 'Item successfully added.');
-        } catch (\Exception $e) {
-           return $e->getMessage();
-        }
+            session()->flash('success', 'Item successfully added.');
+            $this->dispatch('saved');
+
     }
 
-    private function resetForm()
+    public function updated($propertyName)
     {
-        $this->item_code = '';
-        $this->item_description = '';
-        $this->uom_id = '';
-        $this->category_id = '';
-        $this->brand_id = '';
-        $this->classification_id = '';
-        $this->sub_classification_id = '';
-        $this->company_id = '';
-        $this->cost = '';
+        $this->validateOnly($propertyName);
+    }
+
+    public function edit($id)
+    {
+        $this->item = Item::with(['uom', 'category', 'brand', 'classification', 'sub_classification', 'costPrice'])
+            ->findOrFail($id);
+        $this->item_code = $this->item->item_code;
+        $this->item_description = $this->item->item_description;
+        $this->uom_id = $this->item->uom_id;
+        $this->category_id = $this->item->category_id;
+        $this->brand_id = $this->item->brand_id;
+        $this->classification_id = $this->item->classification_id;
+        $this->sub_classification_id = $this->item->sub_class_id;
+    }
+
+    public function update(){
+
+        $this->validate();
+        $this->item->item_code = $this->item_code;
+        $this->item->item_description = $this->item_description;
+        $this->item->item_barcode = $this->item_barcode;
+        $this->item->uom_id = $this->uom_id;
+        $this->item->category_id = $this->category_id;
+        $this->item->brand_id = $this->brand_id;
+        $this->item->classification_id = $this->classification_id;
+        $this->item->sub_class_id = $this->sub_classification_id;
+        $this->item->company_id = auth()->user()->branch->company_id;
+        $this->item->updated_by = auth()->user()->emp_id;
+        $this->item->save();
+
+        $this->dispatch('updated');
+        $this->reset();
+        $this->fetchData();
+        session()->flash('message', 'Item successfully updated.');
+    }
+
+
+    public function deactivate($id){
+        $item = Item::findOrFail($id);
+        $item->item_status = 'INACTIVE';
+        $item->save();
+
+        $this->dispatch('deleted');
+        $this->reset();
+        $this->fetchData();
+        session()->flash('message', 'Item successfully deactivated.');
     }
 
     public function render()
     {
         return view('livewire.item-main', [
             'items' => $this->items,
-            'companies' => $this->companies,
             'uoms' => $this->uoms,
             'categories' => $this->categories,
             'classifications' => $this->classifications,
@@ -129,4 +190,102 @@ class ItemMain extends Component
             'sub_classifications' => $this->sub_classifications
         ]);
     }
+
+
+    // MODALS
+
+    public function addUom()
+    {
+        $this->validate([
+            'unit_symbol' => 'required|string|max:10',
+            'unit_description' => 'required|string|max:255',
+            'unit_name' => 'required|string|max:80',
+        ]);
+        $uom = new UOM();
+        $uom->unit_symbol = $this->unit_symbol;
+        $uom->unit_description = $this->unit_description;
+        $uom->unit_name = $this->unit_name;
+        $uom->company_id = auth()->user()->branch->company_id;
+        $uom->created_by = auth()->user()->emp_id;
+        $uom->save();
+
+        $this->dispatch('uomAdded');
+        $this->reset('unit_symbol', 'unit_description', 'unit_name', 'uoms','uom_id');
+        $this->fetchData();
+
+    }
+
+    public function addCategory()
+    {
+       $this->validate([
+           'category_name' => 'required|string|max:50',
+            'category_description' => 'required|string|max:155',
+       ]);
+         $category = new Category();
+         $category->category_name = $this->category_name;
+         $category->category_type = 'ITEM';
+         $category->category_description = $this->category_description;
+         $category->company_id = auth()->user()->branch->company_id;
+         $category->created_by = auth()->user()->emp_id;
+         $category->save();
+         $this->category_id = $category->id;
+         $this->dispatch('categoryAdded');
+         $this->reset('category_name', 'category_description', 'categories');
+         $this->fetchData();
+    }
+
+    public function addBrand()
+    {
+        $this->validate([
+            'brand_name' => 'required|string|max:50',
+        ]);
+        $brand = new Brand();
+        $brand->brand_name = $this->brand_name;
+        $brand->company_id = auth()->user()->branch->company_id;
+        $brand->created_by = auth()->user()->emp_id;
+        $brand->save();
+        $this->brand_id = $brand->id;
+        $this->dispatch('brandAdded');
+        $this->reset('brand_name', 'brands');
+        $this->fetchData();
+    }
+
+
+    public function addClassification()
+    {
+        $this->validate([
+            'classification_name' => 'required|string|max:50',
+        ]);
+        $classification = new Classification();
+        $classification->classification_name = $this->classification_name;
+        $classification->company_id = auth()->user()->branch->company_id;
+        $classification->created_by = auth()->user()->emp_id;
+        $classification->save();
+        $this->classification_id = $classification->id;
+        $this->dispatch('classificationAdded');
+        $this->reset('classification_name', 'classifications');
+        $this->fetchData();
+    }
+
+    public function addSubClassification(){
+        $this->validate([
+            'sub_classification_name' => 'required|string|max:50',
+            'parent_classification_id' => 'required|exists:classifications,id', // Updated to use new property
+            'sub_classification_description' => 'nullable|string|max:155',
+        ]);
+    //  dd("parent: {$this->parent_classification_id}, sub name: {$this->sub_classification_name}, test: {$this->sub_classification_description}");
+        $classification = new Classification();
+        $classification->classification_name = $this->sub_classification_name;
+        $classification->classification_description = $this->sub_classification_description;
+        $classification->class_parent = $this->parent_classification_id; // Updated to use new property
+        $classification->company_id = auth()->user()->branch->company_id;
+        $classification->created_by = auth()->user()->emp_id;
+        $classification->save();
+        // dd('classification saved');
+        $this->sub_classification_id = $classification->id;
+        $this->dispatch('subClassificationAdded');
+        $this->reset('sub_classification_name', 'sub_classification_description', 'parent_classification_id'); // Reset new property
+        $this->fetchData();
+    }
+
 }

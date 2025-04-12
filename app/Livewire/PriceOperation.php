@@ -56,7 +56,7 @@ class PriceOperation extends Component
     }
 
     public function fetchData(){
-       $this->itemList = Item::with('costPrice')->where('company_id', auth()->user()->branch->company_id)->get();
+       $this->itemList = Item::with('costPrice')->where([['company_id', auth()->user()->branch->company_id],['item_status', 'ACTIVE']])->get();
        $this->priceList = PriceLevel::where('company_id', auth()->user()->branch->company_id)->get();
     }
 
@@ -100,7 +100,7 @@ class PriceOperation extends Component
     {
         $this->AddBatchPricing = 1;
         $this->itemView = Item::where('id', $id)->first(); // Fetch the selected item
-        $this->costPrice = $this->itemView->costPrice->amount; // Fetch the cost price of the item
+        $this->costPrice = $this->itemView->costPrice ? $this->itemView->costPrice->amount : 0; // Fetch the cost price of the item or set to 0 if null
         $this->itemBatches = PriceLevel::with('item', 'branch')
             ->where([
                 ['company_id', auth()->user()->branch->company_id],

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Models\supplier;
+use App\Models\Supplier;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\BranchController;
@@ -11,11 +11,11 @@ use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\CardexController;
 use App\Models\Branch;
 use App\Models\Company;
-use App\Models\requisitionInfos;
-use App\Models\requisitionDetails;
-use App\Models\employees;
-use App\Models\items;
-use App\Models\requisitionTypes;
+use App\Models\RequisitionInfos;
+use App\Models\RequisitionDetails;
+use App\Models\Employees;
+use App\Models\Items;
+use App\Models\Term;
 use App\Http\Controllers\MenusController;
 use App\Http\Livewire\PendingOrders;
 use App\Http\Livewire\SearchOrderNumber;
@@ -26,9 +26,9 @@ use App\Http\Controllers\SettingsController;
 use App\Livewire\Settings\ManageEmployees;
 
 Route::get('/', function () {
-    $suppliers = supplier::all(); // Fetching all suppliers from the database
     return view('dashboard');
-});
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::post('/create_supplier', [SupplierController::class, 'store'])->middleware(['auth', 'verified'])->name('suppliers.store');
 
 Route::post('/update_supplier', [SupplierController::class, 'update'])->middleware(['auth', 'verified'])->name('suppliers.update');
@@ -243,3 +243,19 @@ Route::get('/withdrawal/{id}/view', [InventoryAdjustmentController::class, 'view
 
 // Route for updating withdrawal
 Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'printWidthrawal'])->name('withdrawal.print');
+
+
+//Route for user access blade
+Route::get('/user-access', function () {
+    return view('master_data.user_access');
+})->middleware(['auth', 'verified'])->name('user_access');
+
+// Route to backorder blade
+Route::get('/back-orders', function () {
+    return view('inventory.back-order');
+})->middleware(['auth', 'verified'])->name('backorder');
+
+//Route for receiving summary
+Route::get('/receiving-summary', function () {
+    return view('purchase_order.purchase-order-receiving-summary');
+})->middleware(['auth', 'verified'])->name('backorder');

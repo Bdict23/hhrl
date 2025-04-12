@@ -20,6 +20,8 @@ export default defineConfig({
         strictPort: true, // Ensures the port doesn't change
         hmr: {
             host: '192.168.1.250', // Replace with your local IP
+            //  host: '127.0.0.1', // Replace with your local IP
+
         },
     },
 

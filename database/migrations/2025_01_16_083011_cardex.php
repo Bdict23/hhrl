@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -17,7 +18,11 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                 $table->string('reference_number')->nullable()->index();
+<<<<<<< HEAD
                 $table->date('usage_date')->nullable(); // Remove default CURRENT_DATE
+=======
+                $table->timestamp('usage_date')->useCurrent()->index('usage_date');
+>>>>>>> 21e0930d73201dc604e6f582bb099db141df5abf
                 $table->date('useful_date')->nullable()->index('useful_date');
                 $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
                 $table->foreignId('reviewed_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
@@ -31,6 +36,7 @@ return new class extends Migration
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
+                
             });
         }
 
@@ -38,8 +44,8 @@ return new class extends Migration
             Schema::create('cardex', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->string('qty_in')->nullable()->default('0');
-                $table->string('qty_out')->nullable()->default('0');
+                $table->decimal('qty_in', 10, 2)->nullable()->default(0);
+                $table->decimal('qty_out', 10, 2)->nullable()->default(0);
                 $table->date('expiration_date')->nullable()->index('expiration_date');
                 $table->date('manufactured_date')->nullable();
                 $table->foreignId('item_id')->constrained('items')->onDelete('no action')->onUpdate('no action');
@@ -54,6 +60,11 @@ return new class extends Migration
                 $table->timestamp('final_date')->nullable();
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+                $table->index('expiration_date');
+                $table->index('manufactured_date');
+                $table->index('status');
+                $table->index('transaction_type');
             });
         }
     }

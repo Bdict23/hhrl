@@ -75,7 +75,7 @@
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+    <script>
         function updateOverallTotal() {
             const tableBody = document.getElementById('itemTableBody');
             const rows = tableBody.querySelectorAll('tr');

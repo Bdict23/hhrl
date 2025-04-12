@@ -9,7 +9,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\RequisitionType;
+use App\Models\Term;
 use App\Models\Item;
 use App\Models\PriceLevel;
 use App\Models\Signatory;
@@ -31,7 +31,7 @@ class InventoryAdjustmentController extends Controller
     //Raw Material Request
     public function NewItemWithdrawal(){
         $suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
-        $types =  RequisitionType::all();
+        $types =  Term::all();
         $items = Item::with('priceLevel', 'units','category','classification')->where([['item_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]] )->get();
         $approvers = Signatory::where([['signatory_type', 'APPROVER','employees'],['branch_id', auth()->user()->branch_id],['status', 'ACTIVE'],['MODULE', 'ITEM_WITHDRAWAL']])->get();
         $reviewers = Signatory::where([['signatory_type', 'REVIEWER','employees'],['branch_id', auth()->user()->branch_id],['status', 'ACTIVE'],['MODULE', 'ITEM_WITHDRAWAL']])->get();

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    <div class="container mt-4">
+    {{-- <div class="container mt-4">
         <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
@@ -121,8 +121,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <div>
+        @livewire('purchasing.purchase-order-approval-summary')
+    </div>
 @endsection

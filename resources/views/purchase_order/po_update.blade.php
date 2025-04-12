@@ -32,12 +32,12 @@
                         value="{{ $requisitionInfo->merchandise_po_number ?? '' }}">
                 </div>
                 <div class="col-md-6">
-                    <label for="options" class="form-label">TYPE</label>
-                    <select id="options" name="type_id" class="form-control" required>
-                        @foreach ($types ?? [] as $type)
-                            <option value="{{ $type->id }}"
-                                {{ $type->id ?? '' == $requisitionInfo->requisition_types_id ? 'selected' : '' }}>
-                                {{ $type->type_name ?? '' }}
+                    <label for="options" class="form-label">Term</label>
+                    <select id="options" name="term_id" class="form-control" required>
+                        @foreach ($terms ?? [] as $term)
+                            <option value="{{ $term->id }}"
+                                {{ $term->id ?? '' == $requisitionInfo->term_id ? 'selected' : '' }}>
+                                {{ $term->term_name ?? '' }}
                             </option>
                         @endforeach
                     </select>

@@ -1,33 +1,7 @@
 @extends('layouts.master')
 @section('content')
-    {{-- <div class="steps-container">
-        <div class="step completed">
-            <span class="circle">1</span>
-            <span class="label">Order</span>
-        </div>
-        <div class="line completed"></div>
-        <div class="step completed">
-            <span class="circle">2</span>
-            <span class="label">Review</span>
-        </div>
-        <div class="line completed"></div>
-        <div class="step in-progress">
-            <span class="circle">3</span>
-            <span class="label">Approval</span>
-        </div>
-        <div class="line"></div>
-        <div class="step">
-            <span class="circle">4</span>
-            <span class="label">To Received</span>
-        </div>
-        <div class="line"></div>
-        <div class="step">
-            <span class="circle">5</span>
-            <span class="label">Delivered</span>
-        </div>
 
-    </div> --}}
-    <div class="d-flex " style="position: absolute; right: 1%; left: 1%;">
+    {{-- <div class="d-flex " style="position: absolute; right: 1%; left: 1%;">
         <!-- Left Dashboard -->
         <div class="dashboard col-md-6 me-3" style="width: 950px;">
             <header>
@@ -165,6 +139,12 @@
 
             </form>
         </div>
+    </div> --}}
+
+    <div>
+
+        @livewire('purchase-order-show', ['id' => $requestInfo->id])
+
     </div>
 @endsection
 

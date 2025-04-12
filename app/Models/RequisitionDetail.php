@@ -24,4 +24,9 @@ class RequisitionDetail extends Model
     {
         return $this->belongsTo(RequisitionInfo::class, 'requisition_info_id');
     }
+    public function cost()
+    {
+        return $this->belongsTo(PriceLevel::class, 'price_level_id');
+    }
+
 }

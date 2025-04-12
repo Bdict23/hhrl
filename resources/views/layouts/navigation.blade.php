@@ -18,12 +18,12 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Master Data') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
                                             clip-rule="evenodd" />
-                                    </svg>
+                                    </svg> --}}
                                 </div>
                             </button>
                         </x-slot>
@@ -41,12 +41,15 @@
                             <x-dropdown-link :href="url('/branch_list')" class="no-underline">
                                 {{ __('Branches') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/create_menu')" class="no-underline">
+                            {{-- <x-dropdown-link :href="url('/create_menu')" class="no-underline">
                                 {{ __('Create Menu') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="url('/menu_lists')" class="no-underline">
                                 {{ __('Menu Lists') }}
+                            </x-dropdown-link> --}}
+                            <x-dropdown-link :href="url('/user-access')" class="no-underline">
+                                {{ __('User Access') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/settings')" class="no-underline">
                                 {{ __('Settings') }}
@@ -63,12 +66,12 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Purchase Order') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
                                             clip-rule="evenodd" />
-                                    </svg>
+                                    </svg> --}}
                                 </div>
                             </button>
                         </x-slot>
@@ -78,7 +81,7 @@
                                 {{ __('PO Summary') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
-                                {{ __('Receive Stock') }}
+                                {{ __('Receiving') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
@@ -92,27 +95,19 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Inventory') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
                                 </div>
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/cardex')" class="no-underline" data-bs-toggle="modal"
-                                data-bs-target="#cardexModal" onclick="unhideModal()">
+                            <x-dropdown-link :href="url('/cardex')"  class="no-underline" data-bs-toggle="modal" onclick="unhideModal()"
+                                data-bs-target="#cardexModal" >
                                 {{ __('Cardex') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/back_orders_summary')" class="no-underline">
+                            <x-dropdown-link :href="url('/back-orders')" class="no-underline">
                                 {{ __('Back Orders') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/Allocate_Item')" class="no-underline">
-                                {{ __('Item Allocation') }}
-                            </x-dropdown-link>
+
                             <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
                                 {{ __('Item Withdrawal') }}
                             </x-dropdown-link>
@@ -122,18 +117,13 @@
 
                 <!-- Dropdown Menu for Sales Order -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
-                    <x-dropdown>
+                    {{-- <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Sales') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+
                                 </div>
                             </button>
                         </x-slot>
@@ -146,20 +136,15 @@
                                 {{ __('Order Menu') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
 
-                    <x-dropdown>
+                    {{-- <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Service') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+
                                 </div>
                             </button>
                         </x-slot>
@@ -175,21 +160,16 @@
                                 {{ __('Orders') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
 
 
-                    <x-dropdown>
+                    {{-- <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Transaction') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+
                                 </div>
                             </button>
                         </x-slot>
@@ -202,7 +182,7 @@
                                 {{ __('Daily Sales') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
 
 
                     <x-dropdown>
@@ -211,35 +191,36 @@
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Validations') }}</div>
                                 <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
                                             clip-rule="evenodd" />
-                                    </svg>
+                                    </svg> --}}
                                 </div>
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
                             <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
-                                {{ __('P.O Review') }}
+                                {{ __('P.O - Review') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                {{ __('P.O Approval') }}
+                                {{ __('P.O - Approval') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
+                            {{-- <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
                                 {{ __('Menu Approval') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
                                 {{ __('Menu Review') }}
+                            </x-dropdown-link> --}}
                                 <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
-                                    {{ __('Withdrawal Review') }}
+                                    {{ __('Withdrawal - Review') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
-                                    {{ __('Withdrawal Approval') }}
+                                    {{ __('Withdrawal - Approval') }}
                                 </x-dropdown-link>
-                            </x-dropdown-link>
+
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -251,15 +232,19 @@
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+<<<<<<< HEAD
                             <div>{{ Auth::user()->name ?? 'Guest' }}</div>
+=======
+                            <div>{{ auth()->user()->name }}</div>
+>>>>>>> 21e0930d73201dc604e6f582bb099db141df5abf
 
                             <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
                                         clip-rule="evenodd" />
-                                </svg>
+                                </svg> --}}
                             </div>
                         </button>
                     </x-slot>
@@ -306,8 +291,34 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('dashboard')" class="no-underline" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('suppliers')" class="no-underline" :active="request()->routeIs('suppliers')">
+                {{ __('Supplier') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('companies')" class="no-underline" :active="request()->routeIs('companies')">
+                {{ __('Company') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('departments.index')" class="no-underline" :active="request()->routeIs('departments.index')">
+                {{ __('Departments') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('branch.index')" class="no-underline" :active="request()->routeIs('branch.index')">
+                {{ __('Branches') }}
+            </x-responsive-nav-link>
+            {{-- <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
+                {{ __('Create Menu') }}
+            </x-responsive-nav-link> --}}
+            {{-- <x-responsive-nav-link :href="url('/menu_lists')" class="no-underline">
+                {{ __('Menu Lists') }}
+            </x-responsive-nav-link> --}}
+
+            <x-responsive-nav-link :href="url('/user-access')" class="no-underline">
+                {{ __('User Access') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('settings.index')" class="no-underline" :active="request()->routeIs('settings.index')">
+                {{ __('Settings') }}
             </x-responsive-nav-link>
         </div>
 
@@ -338,71 +349,9 @@
     </div>
 </nav>
 
-<!-- Cardex Modal -->
-<div class="modal fade" id="cardexModal" tabindex="-1" aria-labelledby="cardexModalLabel" aria-hidden="true"
-    hidden>
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cardexModalLabel">Cardex Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="cardexForm">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="itemCode" class="form-label">Item Code</label>
-                            <input type="text" class="form-control" id="itemCode" name="item_code"
-                                onkeypress="fetchCardexData(event)">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <input type="text" class="form-control" id="description" name="description"
-                                    readonly>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-7">
-                            <label for="location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location" name="location" readonly>
-                        </div>
 
-                        <div class="col-md-2">
-                            <label for="price" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="price" name="price" readonly>
-                        </div>
 
-                        <div class="col-md-3">
-                            <label for="totalBalance" class="form-label">Total Balance</label>
-                            <input type="text" class="form-control" id="totalBalance" name="total_balance"
-                                readonly>
-                        </div>
-                    </div>
-                </form>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>In</th>
-                            <th>Out</th>
-                            <th>Balance</th>
-                            <th>Transaction</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cardexTableBody">
-                        <!-- Table rows will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> --}}
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     function fetchCardexData(event) {
@@ -458,7 +407,17 @@
         modal.show();
     }
 
-    document.getElementById('cardexModal').addEventListener('hidden.bs.modal', function() {
-        document.getElementById('cardexModal').setAttribute('hidden', true);
-    });
+    function unhideModal2() {
+        // Show the modal after data is fetched
+        const cardexModal = document.getElementById('cardexModalv2');
+        cardexModal.removeAttribute('hidden');
+        const modal = new bootstrap.Modal(cardexModal);
+        modal.show();
+    }
+
+    function closeModal() {
+            var modal = document.getElementById('getPONumberModal');
+            var modalInstance = bootstrap.Modal.getInstance(modal);
+            modalInstance.hide();
+        }
 </script>

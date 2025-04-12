@@ -16,6 +16,7 @@ class Item extends Model
     protected $fillable = [
         'item_code',
         'item_description',
+        'item_barcode',
         'company_id',
         'classification_id',
         'sub_class_id',
@@ -36,7 +37,7 @@ class Item extends Model
   
     public function costPrice()
     {
-        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->latest();
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->latest()->with('supplier');
     }
     public function sellingPrice()
     {
@@ -44,9 +45,9 @@ class Item extends Model
     }
 
 
-    public function locations()
+    public function location()
     {
-        return $this->hasMany(Location::class);
+        return $this->hasOne(Location::class, 'id', 'location_id')->latest();
     }
 
     public function units()
@@ -83,5 +84,10 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function uom()
+    {
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 }

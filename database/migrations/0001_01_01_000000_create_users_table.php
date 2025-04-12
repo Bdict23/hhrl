@@ -59,6 +59,26 @@ return new class extends Migration
 
                 });
             }
+            if (!Schema::hasTable('employee_positions')) {
+
+                Schema::create('employee_positions', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('position_name', 100);
+                    $table->string('position_description', 255)->nullable();
+                    $table->enum('position_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+                    $table->timestamps();
+                });
+
+                DB::table('employee_positions')->insert([
+                    [
+                        'position_name' => 'Developer',
+                        'position_description' => 'Responsible for developing and maintaining software applications.',
+                        'position_status' => 'ACTIVE',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                ]);
+            }
 
         if (!Schema::hasTable('employees')) {
 
@@ -69,7 +89,7 @@ return new class extends Migration
                 $table->string('middle_name', 255)->nullable(); // VARCHAR(255)
                 $table->string('last_name', 255); // VARCHAR(255)
                 $table->string('contact_number', 255)->nullable(); // VARCHAR(255)
-                $table->string('position', 255); // VARCHAR(255)
+                $table->foreignId('position_id')->nullable()->constrained('employee_positions')->onDelete('no action')->onUpdate('no action');
                 $table->string('religion', 255)->nullable(); // VARCHAR(255)
                 $table->date('birth_date')->nullable(); // DATE
                 $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('no action')->onUpdate('no action');

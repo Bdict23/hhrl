@@ -11,7 +11,6 @@ use App\Models\Audit;
 
 class Department extends Component
 {
-    use WithPagination;
 
     // used by tables and forms
     public $departments = [];
@@ -65,6 +64,8 @@ class Department extends Component
         if (!empty($this->personnelData)) {
             Employee::whereIn('id', $this->personnelData)->update(['department_id' => $dept->id]);
         }
+        $this->reset();
+        $this->dispatch('saved');
         $this->fetchDepartments();
 
 }
@@ -84,6 +85,7 @@ class Department extends Component
                 $employee->save();
             }
         }
+        $this->resetForm();
         $this->fetchDepartments();
     } catch (\Exception $e) {
         return $e->getMessage();
@@ -108,7 +110,7 @@ class Department extends Component
 
     public function fetchEmployees($branch)
     {   $this->branch = $branch;
-        $this->employees = Employee::where('status', 'ACTIVE')->where('branch_id', $this->branch)->get();
+        $this->employees = Employee::with('position')->where('status', 'ACTIVE')->where('branch_id', $this->branch)->get();
     }
 
 
@@ -121,6 +123,7 @@ class Department extends Component
         $this->name = $this->department->department_name;
         $this->description = $this->department->department_description;
         $this->forUpdateEmployees = Employee::where('department_id', $id)->get();
+
     }
 
 
@@ -139,10 +142,17 @@ class Department extends Component
             Employee::whereIn('id', $this->personnelData)->update(['department_id' => $this->departmentId]);
         }
         $this->forUpdateEmployees = Employee::where('department_id', $this->departmentId)->get();
-
+        $this->resetForm();
+        $this->dispatch('saved');
         $this->fetchDepartments();
-        $this->reset(['name', 'description', 'departmentId', 'personnelData']);
 
+    }
+
+    public function resetForm()
+    {
+       // $this->reset(['name', 'description', 'departmentId', 'personnelData', 'branch', 'forUpdateEmployees', 'employees', 'department', 'departments']);
+        $this->reset();
+        $this->fetchDepartments(); // Fetch departments again to refresh the list
     }
 
     public function updatePersonnelData($data)
