@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Purchasing;
 
-
 use App\Models\PriceLevel;
 use App\Models\Receiving;
 use Livewire\Component;
@@ -13,6 +12,7 @@ use App\Models\Signatory;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReceivingAttachment;
 use Livewire\WithFileUploads;
+use Illuminate\Http\Request;
 
 class PurchaseOrderReceive extends Component
 {
@@ -25,6 +25,7 @@ class PurchaseOrderReceive extends Component
     public $requisitionDetails = [];
     public $qtyAndPrice = [];
     public $cardexSum = [];
+
     public $paking_list_date;
     public $waybill_no;
     public $delivery_no;
@@ -35,6 +36,7 @@ class PurchaseOrderReceive extends Component
     public $attachment;
     public $attachments = [];
     public $finalStatus = false;
+    public $isExists = false;
 
     protected $listeners = [
         'selectPO' => 'selectPO',
@@ -63,38 +65,53 @@ class PurchaseOrderReceive extends Component
         'attachments.*.mimes' => 'The attachment must be a file of type: jpg, jpeg, png, pdf.',
         'attachments.*.max' => 'The attachment may not be greater than 2MB.',
     ];
-    public function mount()
+    public function mount(Request $request = null)
     {
+
+        if ($request->has('receiving-number')) {
+            //  dd($request->query('requisition-id'));
+            $this->editReceiveRequest($request->query('receiving-number'), $request->query('requisition-id'));
+        }
         $this->loadReceiveRequest();
     }
 
     public function loadRequestInfo($id)
     {
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-
-
     }
 
     public function selectPO($id)
-    {   $this->id = $id;
-        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-        $this->requisitionDetails = RequisitionDetail::with('items','cost')->where('requisition_info_id', $id)->get();
+    {
+        $this->id = $id;
+        $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
+            ->where('id', $id)
+            ->first();
+        $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
+            ->where('requisition_info_id', $id)
+            ->get();
 
-        $this->cardexSum = Cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
-                    ->where('transaction_type', 'RECEVING')
-                    ->where('requisition_id', $id ?? 0)
-                    ->groupBy('item_id')
-                    ->get() ?? [];
-        $this->cardexSum = collect($this->cardexSum)->keyBy('item_id')->all();
+        // Use the totalInByRequisition method to calculate total received quantities per item
+        $this->cardexSum = [];
+        foreach ($this->requisitionDetails as $item) {
+            $itemId = $item->items->id;
+            $cardex = new Cardex();
+            $this->cardexSum[$itemId] = $cardex->totalInByRequisition($this->id, $itemId);
+        }
+
         foreach ($this->requisitionDetails as $item) {
             $itemId = $item->items->id;
             $costPrice = $item->items->costPrice->amount;
             $costID = $item->items->costPrice->id;
-            $this->qtyAndPrice[] = ['id' => $itemId, 'qty' => 0, 'oldCost' => $costPrice,'newCost' => $costPrice,'costId' => $costID];
+            $this->qtyAndPrice[] = [
+                'id' => $itemId,
+                'qty' => 0,
+                'oldCost' => $costPrice,
+                'newCost' => $costPrice,
+                'costId' => $costID
+            ];
         }
 
     }
-
 
     public function saveReceiveRequest()
     {
@@ -103,8 +120,10 @@ class PurchaseOrderReceive extends Component
             'qtyAndPrice.*.qty' => 'required|integer|min:1',
         ]);
 
+        if ($this->isExists) {
+            return $this->updateReceiveRequest();
+        }
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $this->id)->first();
-
 
         $newRecieving = new Receiving();
         $newRecieving->REQUISITION_ID = $this->requestInfo->id;
@@ -113,9 +132,6 @@ class PurchaseOrderReceive extends Component
         $newRecieving->WAYBILL_NUMBER = $this->waybill_no;
         $newRecieving->DELIVERY_NUMBER = $this->delivery_no;
         $newRecieving->INVOICE_NUMBER = $this->invoice_no;
-        $newRecieving->RECEIVING_STATUS = $this->finalStatus ? 'FINAL' : 'TEMP';
-        $newRecieving->branch_id = auth()->user()->branch_id;
-        $newRecieving->company_id = auth()->user()->branch->company_id;
         $newRecieving->PREPARED_BY = auth()->user()->emp_id;
         $newRecieving->DELIVERED_BY = $this->delivered_by;
         $newRecieving->RECEIVING_STATUS = $this->finalStatus ? 'FINAL' : 'DRAFT';
@@ -126,7 +142,6 @@ class PurchaseOrderReceive extends Component
 
         // Save attachments
         if ($this->attachments) {
-
             foreach ($this->attachments as $attachment) {
                 $path = $attachment->store('receiving_attachments', 'public');
                 $newRecieving->attachments()->create([
@@ -166,7 +181,7 @@ class PurchaseOrderReceive extends Component
                     $cardex->source_branch_id = auth()->user()->branch_id;
                     $cardex->qty_in = $value['qty'];
                     $cardex->item_id = $value['id'];
-                    $cardex->status = 'FINAL';
+                    $cardex->status = $this->finalStatus ? 'FINAL' : 'TEMP';
                     $cardex->transaction_type = 'RECEVING';
                     $cardex->price_level_id = $value['costId'];
                     $cardex->receiving_id = $newRecieving->id;
@@ -175,14 +190,123 @@ class PurchaseOrderReceive extends Component
                     $cardex->save();
                 }
             }
-
-
         }
-
 
         session()->flash('success', 'Purchase Order Successfully Received');
         $this->reset();
         $this->loadReceiveRequest();
+    }
+
+    public function updateReceiveRequest()
+    {
+        $this->validate();
+        $this->validate([
+            'qtyAndPrice.*.qty' => 'required|integer|min:1',
+        ]);
+        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $this->id)->first();
+
+        $newRecieving = Receiving::find($this->receiving_no);
+        $newRecieving->REQUISITION_ID = $this->requestInfo->id;
+        $newRecieving->RECEIVING_TYPE = 'PO';
+        $newRecieving->RECEIVING_NUMBER = $this->receiving_no;
+        $newRecieving->WAYBILL_NUMBER = $this->waybill_no;
+        $newRecieving->DELIVERY_NUMBER = $this->delivery_no;
+        $newRecieving->INVOICE_NUMBER = $this->invoice_no;
+        $newRecieving->PREPARED_BY = auth()->user()->emp_id;
+        $newRecieving->DELIVERED_BY = $this->delivered_by;
+        $newRecieving->RECEIVING_STATUS = $this->finalStatus ? 'FINAL' : 'DRAFT';
+        $newRecieving->branch_id = auth()->user()->branch_id;
+        $newRecieving->company_id = auth()->user()->branch_id;
+        $newRecieving->remarks = $this->remarks;
+        // Save attachments
+        if ($this->attachments) {
+            foreach ($this->attachments as $attachment) {
+                if ($attachment) {
+                    // Store the attachment and save the path
+                    $path = $attachment->store('receiving_attachments', 'public');
+                    ReceivingAttachment::create([
+                        'file_path' => $path,
+                        'receiving_id' => 1, // Replace with the actual receiving ID
+                    ]);
+                }
+            }
+        }
+        // Save cardex records
+
+        foreach ($this->qtyAndPrice as $key => $value) {
+            if ($value['qty'] > 0) {
+                if ($value['oldCost'] != $value['newCost']) {
+
+                    // Create a new cost price record
+                    $newCostPrice = new PriceLevel();
+                    $newCostPrice->price_type = 'COST';
+                    $newCostPrice->amount = $value['newCost'];
+                    $newCostPrice->item_id = $value['id'];
+                    $newCostPrice->created_by = auth()->user()->emp_id;
+                    $newCostPrice->company_id = auth()->user()->branch->company_id;
+                    $newCostPrice->supplier_id = $this->requestInfo->supplier_id;
+                    $newCostPrice->branch_id = auth()->user()->branch_id;
+                    $newCostPrice->save();
+
+                        $cardex = new Cardex();
+                        $cardex->source_branch_id = auth()->user()->branch_id;
+                        $cardex->qty_in = $value['qty'];
+                        $cardex->item_id = $value['id'];
+                        $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
+                        $cardex->transaction_type = 'RECEVING';
+                        $cardex->price_level_id = $newCostPrice->id;
+                        $cardex->receiving_id = $newRecieving->id;
+                        $cardex->requisition_id = $this->requestInfo->id;
+                        $cardex->final_date = now();
+                        $cardex->save();
+                }else{
+                    // Create a new cardex record
+                    $cardex = new Cardex();
+                    $cardex->source_branch_id = auth()->user()->branch_id;
+                    $cardex->qty_in = $value['qty'];
+                    $cardex->item_id = $value['id'];
+                    $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
+                    $cardex->transaction_type = 'RECEVING';
+                    // Use the existing cost price ID
+                    $cardex->price_level_id = $value['costId'];
+                    // Set the receiving ID
+                    $cardex->receiving_id = 1; // Replace with the actual receiving ID
+                    // Set the requisition ID
+                    $cardex->requisition_id = 1; // Replace with the actual requisition ID
+                    // Set the final date
+                    $cardex->final_date = now();
+                    // Save the cardex record
+                    $cardex->save();
+                }
+            }
+        }
+
+        session()->flash('success', 'Purchase Order Successfully Updated');
+        return redirect('/receive_stock');
+    }
+
+    public function editReceiveRequest($recNo, $reqId)
+    {
+        // $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $reqId)->first();
+        $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
+            ->where('requisition_info_id', $reqId)
+            ->get();
+        $this->loadRequestInfo($reqId);
+        $this->receiving_no = $recNo;
+        $this->requestInfo = Receiving::with('requisition', 'branch', 'company', 'preparedBy', 'attachments')
+            ->where('RECEIVING_NUMBER', $recNo)
+            ->first();
+        $this->isExists = true;
+        $this->waybill_no = $this->requestInfo->WAYBILL_NUMBER;
+        $this->delivery_no = $this->requestInfo->DELIVERY_NUMBER;
+        $this->invoice_no = $this->requestInfo->INVOICE_NUMBER;
+        $this->delivered_by = $this->requestInfo->DELIVERED_BY;
+        $this->remarks = $this->requestInfo->remarks;
+        $this->attachments = $this->requestInfo->attachments;
+        $this->finalStatus = $this->requestInfo->RECEIVING_STATUS == 'FINAL' ? true : false;
+        $this->receiving_no = $this->requestInfo->RECEIVING_NUMBER;
+        $this->id = $this->requestInfo->REQUISITION_ID;
+
     }
 
     public function loadReceiveRequest(){

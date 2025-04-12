@@ -23,8 +23,6 @@ return new class extends Migration
             $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->text('remarks')->nullable();
-            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 

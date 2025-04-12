@@ -35,7 +35,7 @@
 
 
         <div class="card-body d-sm-flex">
-                <table class="table table-striped table-hover table-responsive-sm">
+                <table class="table  table-responsive-sm">
                     <thead class="table-dark">
                         <tr>
                             <th>Order To</th>
@@ -59,7 +59,7 @@
                             <td>{{ $receivingSummary->RECEIVING_STATUS }}</td>
                             <td>{{ $receivingSummary->remarks }}</td>
                             <td>
-                                <button wire:click="viewReceiving({{ $receivingSummary->id }})" class="btn btn-primary btn-sm">View</button>
+                                <button wire:click="openReceivingNumber('{{ $receivingSummary->RECEIVING_NUMBER }}',{{ $receivingSummary->requisition->id }})" class="btn btn-primary btn-sm">View</button>
                             </td>
                         </tr>
                         @empty

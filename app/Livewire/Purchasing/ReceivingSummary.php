@@ -19,10 +19,16 @@ class ReceivingSummary extends Component
         $this->fetchData();
     }
 
+    public function openReceivingNumber($receivingNo,$requisitionId)
+    {
+      //redirect to receiving page with the selected receing id request
+      return redirect()->to('/receive_stock?receiving-number=' . $receivingNo . '&requisition-id=' . $requisitionId);
+    }
+
     public function fetchData()
     {
         // Fetch data from the database
         $this->receivingSummaryList = ReceivingModel::with(['requisition',  'branch', 'company','preparedBy'])->where('branch_id', auth()->user()->branch_id)->get();
-        // dd($this->receivingSummaryList);
+
     }
 }

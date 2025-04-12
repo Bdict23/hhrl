@@ -299,7 +299,7 @@
                                 <label for="InputTax3" class="form-label">Input Tax</label>
                                 <select name="input_tax" id="InputTax3" class="form-select" disabled>
                                     <option value="NON-VAT">NON-VAT</option>
-                                    <option value="VATABLE">VATABLE</option>
+                                    <option value="VATABLE">VAT</option>
                                     <option value="UNDECLARED">UNDECLARED</option>
                                 </select>
                             </div>

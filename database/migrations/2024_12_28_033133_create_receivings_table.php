@@ -69,10 +69,11 @@ return new class extends Migration
             $table->string('INVOICE_NUMBER', 30)->nullable();
             $table->enum('RECEIVING_STATUS', ['FINAL', 'DRAFT'])->default('DRAFT');
             $table->text('remarks')->nullable();
-            $table->enum('RECEIVING_STATUS', ['FINAL', 'CANCELLED', 'TEMP'])->default('TEMP');
             $table->foreignId('PREPARED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->string('DELIVERED_BY', 100)->nullable();
             $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 

@@ -25,7 +25,16 @@
                             Get PO
                         </x-primary-button>
                         <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
-                        <a href="/purchase_order">  <x-secondary-button> Summary </x-secondary-button> </a>
+
+                        <div class="form-check float-right">
+                            <strong class="form-check-label text-danger" for="flexCheckDefault" title="Marks receiving as final; edits disabled after save.">
+                                Final
+                              </strong>
+                            <input wire:model="finalStatus" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+                            {{ $finalStatus ? 'checked' : '' }} title="Marks receiving as final; edits disabled after save.">
+                          </div>
+
+                        <a href="/receiving-summary">  <x-secondary-button> Summary </x-secondary-button> </a>
 
                             <i class="float-right mr-2" wire:loading>Please wait...</i>
                             <span wire:loading class="mr-2 spinner-border text-primary float-right" role="status"></span>
@@ -54,10 +63,12 @@
                                     <td style="font-size: x-small">{{ $reqdetail->items->item_description }} </td>
                                     <td style="font-size: x-small">{{ $reqdetail->items->uom->unit_symbol}}</td>
                                     <td style="font-size: small">{{ $reqdetail->qty }}</td>
-                                    <td style="font-size: small">{{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}</td>
+                                    <td style="font-size: small">
+                                        {{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id] ?? 0) }}
+                                    </td>
                                     <td style="font-size: small">
                                         <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"
-                                        max="{{  $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}" step="1">
+                                        max="{{  $reqdetail->qty - ($cardexSum[$reqdetail->items->id] ?? 0) }}" step="1">
                                     </td>
                                     <td style="font-size: small">{{ $reqdetail->cost->amount ?? '0.00' }}</td>
                                     <td style="font-size: small">
@@ -108,7 +119,7 @@
                     <div class="row mb-2">
                             <div class="col-md-12">
                                 <label for="delivered_by" class="form-label" style="width: 100; font-size: 13px">Delivered By</label>
-                                <input wire:model="delivered_by" type="delivered_by" class="form-control"style="width: 100; font-size: 13px" >
+                                <input wire:model="delivered_by" type="delivered_by" class="form-control"style="width: 100; font-size: 13px" value="{{ $delivered_by}}">
                                 @error('delivered_by')
                                     <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                 @enderror
@@ -117,21 +128,23 @@
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <label for="waybill_no" class="form-label" style="width: 100; font-size: 13px">Waybill No</label>
-                            <input wire:model="waybill_no" type="text" class="form-control"  id="waybill_no">
+                            <input wire:model="waybill_no" type="text" class="form-control"  id="waybill_no" value="{{ $waybill_no}}"
+                                style="width: 100; font-size: 13px">
                             @error('waybill_no')
                                 <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="col-md-4">
                             <label for="delivery_no" class="form-label" style="width: 100; font-size: 13px">Delivery No.</label>
-                            <input wire:model="delivery_no" type="text" class="form-control" style="width: 100; font-size: 13px">
+                            <input wire:model="delivery_no" type="text" class="form-control" style="width: 100; font-size: 13px" value="'{{ $delivery_no}}'">
                             @error('delivery_no')
                                 <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="col-md-4">
                             <label for="invoice_no" class="form-label" style="width: 100; font-size: 13px">Invoice No.</label>
-                            <input wire:model="invoice_no" type="text" class="form-control" style="width: 100; font-size: 13px">
+                            <input wire:model="invoice_no" type="text" class="form-control" style="width: 100; font-size: 13px" value="'{{ $invoice_no}}'">
+
                             @error('invoice_no')
                                 <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                             @enderror
