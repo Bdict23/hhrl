@@ -43,9 +43,9 @@
         </div>
 
 
-        <div class="card-body d-sm-flex">
-                <table class="table table-striped table-hover table-responsive-sm">
-                    <thead class="table-dark">
+        <div class="card-body table-responsive-sm">
+                <table class="table table-striped table-hover table-sm">
+                    <thead class="table-dark table-sm table-sm">
                         <tr>
                             <th>Reference</th>
                             <th>SKU</th>
@@ -63,7 +63,7 @@
                                 <td>{{ $backOrder->requisition->requisition_number }}</td>
                                 <td>{{ $backOrder->item->item_code }}</td>
                                 <td>{{ $backOrder->bo_type }}</td>
-                                <td>{{ $backOrder->created_at }}</td>
+                                <td>{{ $backOrder->created_at->format('M. d, Y') }}</td>
                                 <td>
                                     <span class="
                                         @if($backOrder->status == 'ACTIVE') badge bg-danger

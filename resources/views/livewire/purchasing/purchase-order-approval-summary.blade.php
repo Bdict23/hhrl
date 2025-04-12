@@ -22,7 +22,7 @@
             <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
                 <!-- Purchase Order Content -->
 
-                <div class="dashboard">
+                <div class="table-responsive-sm">
                     <header>
                         <h3>Approval Request</h3>
                     </header>

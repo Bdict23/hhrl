@@ -22,9 +22,9 @@
 
 
         {{-- Withdrawal Summary Table --}}
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead>
+        <div class="table-responsive-sm">
+            <table class="table table-hover table-bordered table-striped table-sm">
+                <thead class="table-dark table-hover ">
                     <tr>
                         <th>Reference Number</th>
                         <th>Department</th>

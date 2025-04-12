@@ -196,9 +196,8 @@ class PurchaseOrderReceive extends Component
                     $cardex->save();
                 }
             }
-            // dd('the value is', $value['qty'], 'the cardex sum is', $this->cardexSum[$value['id']] ?? 0, 'the item id is', $this->requisitionDetails[$key]->items->id);
-            // create back order if the quantity is less than the ordered quantity
-            //  dd(' sum ', (($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) ,' with request qty of ', $value['req_qty'] , 'index is ', $index , 'data on requisitiondtls was' , $this->requisitionDetails);
+           
+            //create Back-order if the sum of cardex is not equal to the requested quantity
             if((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) !== $value['req_qty']){
                 
                 $backOrder = new Backorder();
