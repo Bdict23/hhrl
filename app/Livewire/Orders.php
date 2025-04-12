@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\order;
-use App\Models\order_details;
+use App\Models\order_detail;
 
 class Orders extends Component
 {
@@ -26,7 +26,7 @@ class Orders extends Component
             $this->markedAsCompleted = '0';
         }
 
-        $order_details = order_details::find($orderId);
+        $order_details = order_detail::find($orderId);
 
         if ($order_details) {
             $order_details->marked = $this->markedAsCompleted;

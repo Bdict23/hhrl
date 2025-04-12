@@ -118,6 +118,9 @@ class PurchaseOrderReceive extends Component
         $newRecieving->company_id = auth()->user()->branch->company_id;
         $newRecieving->PREPARED_BY = auth()->user()->emp_id;
         $newRecieving->DELIVERED_BY = $this->delivered_by;
+        $newRecieving->RECEIVING_STATUS = $this->finalStatus ? 'FINAL' : 'DRAFT';
+        $newRecieving->branch_id = auth()->user()->branch_id;
+        $newRecieving->company_id = auth()->user()->branch->company_id;
         $newRecieving->remarks = $this->remarks;
         $newRecieving->save();
 
@@ -163,7 +166,7 @@ class PurchaseOrderReceive extends Component
                     $cardex->source_branch_id = auth()->user()->branch_id;
                     $cardex->qty_in = $value['qty'];
                     $cardex->item_id = $value['id'];
-                    $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
+                    $cardex->status = 'FINAL';
                     $cardex->transaction_type = 'RECEVING';
                     $cardex->price_level_id = $value['costId'];
                     $cardex->receiving_id = $newRecieving->id;
@@ -176,14 +179,6 @@ class PurchaseOrderReceive extends Component
 
         }
 
-        // // Update the requisition status
-        // if ($this->requestInfo) {
-        //     if ($this->requestInfo->requisition_status == "TO RECEIVE") {
-        //         $this->requestInfo->update(['requisition_status' => "RECEIVED"]);
-        //     } else {
-        //         $this->requestInfo->update(['requisition_status' => "PARTIALLY FULLFILLED"]);
-        //     }
-        // }
 
         session()->flash('success', 'Purchase Order Successfully Received');
         $this->reset();

@@ -15,9 +15,9 @@ return new class extends Migration
 
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('category_name', 255)->nullable();
-            $table->string('category_description', 255)->nullable();
-            $table->string('status', 255)->default('ACTIVE');
+            $table->string('category_name', 55)->nullable();
+            $table->string('category_description', 155)->nullable();
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->enum('category_type', ['ITEM', 'MENU'])->default('ITEM');
             $table->index('category_type');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
@@ -31,8 +31,8 @@ return new class extends Migration
         if(!Schema::hasTable('item_types')) {
         Schema::create('item_types', function (Blueprint $table) {
             $table->id();
-            $table->string('type_name', 255);
-            $table->TEXT('type_description', 255)->nullable();
+            $table->string('type_name', 55);
+            $table->string('type_description', 255)->nullable();
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
@@ -128,7 +128,7 @@ return new class extends Migration
 
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->text('item_code',80)->nullable();
+            $table->string('item_code', 20)->nullable();
             $table->text('item_description')->nullable();
             $table->string('item_barcode', 100)->nullable();
             $table->unsignedBigInteger('uom_id')->nullable();

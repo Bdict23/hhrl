@@ -32,6 +32,7 @@ return new class extends Migration
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
+                
             });
         }
 
@@ -39,8 +40,8 @@ return new class extends Migration
             Schema::create('cardex', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->string('qty_in')->nullable()->default('0');
-                $table->string('qty_out')->nullable()->default('0');
+                $table->decimal('qty_in', 10, 2)->nullable()->default(0);
+                $table->decimal('qty_out', 10, 2)->nullable()->default(0);
                 $table->date('expiration_date')->nullable()->index('expiration_date');
                 $table->date('manufactured_date')->nullable();
                 $table->foreignId('item_id')->constrained('items')->onDelete('no action')->onUpdate('no action');
@@ -55,6 +56,11 @@ return new class extends Migration
                 $table->timestamp('final_date')->nullable();
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+                $table->index('expiration_date');
+                $table->index('manufactured_date');
+                $table->index('status');
+                $table->index('transaction_type');
             });
         }
     }
