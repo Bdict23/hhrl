@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Purchasing;
 
-
 use App\Models\PriceLevel;
 use App\Models\Receiving;
 use Livewire\Component;
@@ -71,30 +70,39 @@ class PurchaseOrderReceive extends Component
     public function loadRequestInfo($id)
     {
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-
-
     }
 
     public function selectPO($id)
-    {   $this->id = $id;
-        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-        $this->requisitionDetails = RequisitionDetail::with('items','cost')->where('requisition_info_id', $id)->get();
+    {
+        $this->id = $id;
+        $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
+            ->where('id', $id)
+            ->first();
+        $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
+            ->where('requisition_info_id', $id)
+            ->get();
 
-        $this->cardexSum = Cardex::select('item_id', DB::raw('SUM(qty_in) as total_received'))
-                    ->where('transaction_type', 'RECEVING')
-                    ->where('requisition_id', $requestInfos->id ?? 0)
-                    ->groupBy('item_id')
-                    ->get() ?? [];
-        $this->cardexSum = collect($this->cardexSum)->keyBy('item_id')->all();
+        // Use the totalInByRequisition method to calculate total received quantities per item
+        $this->cardexSum = [];
+        foreach ($this->requisitionDetails as $item) {
+            $itemId = $item->items->id;
+            $cardex = new Cardex();
+            $this->cardexSum[$itemId] = $cardex->totalInByRequisition($this->id, $itemId);
+        }
+       
         foreach ($this->requisitionDetails as $item) {
             $itemId = $item->items->id;
             $costPrice = $item->items->costPrice->amount;
             $costID = $item->items->costPrice->id;
-            $this->qtyAndPrice[] = ['id' => $itemId, 'qty' => 0, 'oldCost' => $costPrice,'newCost' => $costPrice,'costId' => $costID];
+            $this->qtyAndPrice[] = [
+                'id' => $itemId,
+                'qty' => 0,
+                'oldCost' => $costPrice,
+                'newCost' => $costPrice,
+                'costId' => $costID
+            ];
         }
-
     }
-
 
     public function saveReceiveRequest()
     {
@@ -104,7 +112,6 @@ class PurchaseOrderReceive extends Component
         ]);
 
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $this->id)->first();
-
 
         $newRecieving = new Receiving();
         $newRecieving->REQUISITION_ID = $this->requestInfo->id;
@@ -123,7 +130,6 @@ class PurchaseOrderReceive extends Component
 
         // Save attachments
         if ($this->attachments) {
-
             foreach ($this->attachments as $attachment) {
                 $path = $attachment->store('receiving_attachments', 'public');
                 $newRecieving->attachments()->create([
@@ -172,10 +178,7 @@ class PurchaseOrderReceive extends Component
                     $cardex->save();
                 }
             }
-
-
         }
-
 
         session()->flash('success', 'Purchase Order Successfully Received');
         $this->reset();

@@ -27,7 +27,7 @@
                         <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> Save </x-primary-button>
 
                         <div class="form-check float-right">
-                            <strong class="form-check-label" for="flexCheckDefault" title="Marks receiving as final; edits disabled after save.">
+                            <strong class="form-check-label text-primary" for="flexCheckDefault" title="Marks receiving as final; edits disabled after save.">
                                 Final
                               </strong>
                             <input wire:model="finalStatus" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
@@ -63,7 +63,9 @@
                                     <td style="font-size: x-small">{{ $reqdetail->items->item_description }} </td>
                                     <td style="font-size: x-small">{{ $reqdetail->items->uom->unit_symbol}}</td>
                                     <td style="font-size: small">{{ $reqdetail->qty }}</td>
-                                    <td style="font-size: small">{{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}</td>
+                                    <td style="font-size: small">
+                                        {{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id] ?? 0) }}
+                                    </td>
                                     <td style="font-size: small">
                                         <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"
                                         max="{{  $reqdetail->qty - ($cardexSum[$reqdetail->items->id]->total_received ?? 0) }}" step="1">

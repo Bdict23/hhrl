@@ -107,8 +107,19 @@ class Cardex extends Model
         return (int) ($totalIn - $totalOut);
     }
 
+    //total quantity in based on requisition id
+    public function totalInByRequisition($requisitionId, $itemId = null)
+    {
+        $query = $this->whereIn('status', ['final','temp'])
+            ->where('transaction_type', 'RECEVING')
+            ->where('qty_in', '>', 0)
+            ->where('source_branch_id', auth()->user()->branch_id)
+                      ->where('requisition_id', $requisitionId);
 
+        if ($itemId) {
+            $query->where('item_id', $itemId);
+        }
 
-
-
+        return $query->sum('qty_in');
+    }
 }
