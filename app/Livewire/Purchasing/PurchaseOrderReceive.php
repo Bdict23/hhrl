@@ -120,17 +120,14 @@ class PurchaseOrderReceive extends Component
     public function saveReceiveRequest()
     {
         
-       
         $this->validate();
-        $this->validate([
-            'qtyAndPrice.*.qty' => 'required|integer|min:1',
-        ]);
 
         if ($this->isExists) {
             return $this->updateReceiveRequest();
         }
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $this->id)->first();
 
+        //create receiving
         $newRecieving = new Receiving();
         $newRecieving->REQUISITION_ID = $this->requestInfo->id;
         $newRecieving->RECEIVING_TYPE = 'PO';
@@ -155,66 +152,106 @@ class PurchaseOrderReceive extends Component
                 ]);
             }
         }
-        // Save cardex records
+        // Save cardex records logic
 
         foreach ($this->qtyAndPrice as $index => $value) {
-            if ($value['qty'] > 0) {
-                if ($value['oldCost'] != $value['newCost']) {
+            $maxIndex = count($this->qtyAndPrice) - 1; // Get the maximum index
 
-                    $newCostPrice = new PriceLevel();
-                    $newCostPrice->price_type = 'COST';
-                    $newCostPrice->amount = $value['newCost'];
-                    $newCostPrice->item_id = $value['id'];
-                    $newCostPrice->created_by = auth()->user()->emp_id;
-                    $newCostPrice->company_id = auth()->user()->branch->company_id;
-                    $newCostPrice->supplier_id = $this->requestInfo->supplier_id;
-                    $newCostPrice->branch_id = auth()->user()->branch_id;
-                    $newCostPrice->save();
+            
 
-                        $cardex = new Cardex();
-                        $cardex->source_branch_id = auth()->user()->branch_id;
-                        $cardex->qty_in = $value['qty'];
-                        $cardex->item_id = $value['id'];
-                        $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
-                        $cardex->transaction_type = 'RECEVING';
-                        $cardex->price_level_id = $newCostPrice->id;
-                        $cardex->receiving_id = $newRecieving->id;
-                        $cardex->requisition_id = $this->requestInfo->id;
-                        $cardex->final_date = now();
-                        $cardex->save();
-                }else{
+            if ((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) != $value['req_qty']) {
+
+                //check if has existing backorder for a specific item
+                $hasBackorder = Backorder::where('requisition_id', $this->requestInfo->id)
+                    ->where('item_id', $value['id'])
+                    ->where('bo_type', 'PO')
+                    ->first();
+
+                if ($hasBackorder) {
+                    $hasBackorder->update([
+                        'remarks' => $hasBackorder->remarks .' , '. $this->receiving_no,
+                        'receiving_attempt' => $hasBackorder->receiving_attempt + 1,
+                    ]);
+                    
+                    $this->backorderCount++;
+                    dd('cardersum is '.($this->cardexSum[$value['id']] ?? 0 ).' + qty is '.$value['qty'].' = req_qty is '.$value['req_qty']);
+
+                } else {
+
+                    // create new backorder and update receiving status to 'PARTIALLY FULLFILLED'
+
+                    $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULLFILLED']);
+                    $this->createBackorder($value['id']);
+
+                    $this->backorderCount++;
+
+
+                }
+            }else if((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) == $value['req_qty']){
+
+                $hasBackorder = Backorder::where('requisition_id', $this->requestInfo->id)
+                    ->where('item_id', $value['id'])
+                    ->where('bo_type', 'PO')
+                    ->first();
+
+                if ($hasBackorder) {
+                    $hasBackorder->update([
+                        'status' => 'FULLFILLED',
+                    ]);
+                    $hasBackorder->save();
+                   
+                }
+                
+            }
+
+            // create cardex record
+            if ($value['oldCost'] != $value['newCost']) {
+
+                $newCostPrice = new PriceLevel();
+                $newCostPrice->price_type = 'COST';
+                $newCostPrice->amount = $value['newCost'];
+                $newCostPrice->item_id = $value['id'];
+                $newCostPrice->created_by = auth()->user()->emp_id;
+                $newCostPrice->company_id = auth()->user()->branch->company_id;
+                $newCostPrice->supplier_id = $this->requestInfo->supplier_id;
+                $newCostPrice->branch_id = auth()->user()->branch_id;
+                $newCostPrice->save();
+
                     $cardex = new Cardex();
                     $cardex->source_branch_id = auth()->user()->branch_id;
                     $cardex->qty_in = $value['qty'];
                     $cardex->item_id = $value['id'];
-                    $cardex->status = $this->finalStatus ? 'FINAL' : 'TEMP';
+                    $cardex->status =  $this->finalStatus ? 'FINAL' : 'TEMP';
                     $cardex->transaction_type = 'RECEVING';
-                    $cardex->price_level_id = $value['costId'];
+                    $cardex->price_level_id = $newCostPrice->id;
                     $cardex->receiving_id = $newRecieving->id;
                     $cardex->requisition_id = $this->requestInfo->id;
                     $cardex->final_date = now();
                     $cardex->save();
+            }else{
+                $cardex = new Cardex();
+                $cardex->source_branch_id = auth()->user()->branch_id;
+                $cardex->qty_in = $value['qty'];
+                $cardex->item_id = $value['id'];
+                $cardex->status = $this->finalStatus ? 'FINAL' : 'TEMP';
+                $cardex->transaction_type = 'RECEVING';
+                $cardex->price_level_id = $value['costId'];
+                $cardex->receiving_id = $newRecieving->id;
+                $cardex->requisition_id = $this->requestInfo->id;
+                $cardex->final_date = now();
+                $cardex->save();
+            }
+            if ($index === $maxIndex) {
+                if($this->backorderCount > 0){
+                    $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULLFILLED']);
+                }else{
+                    $this->requestInfo->update(['requisition_status' => 'COMPLETED']);
                 }
             }
-           
-            //create Back-order if the sum of cardex is not equal to the requested quantity
-            if((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) !== $value['req_qty']){
-                
-                $backOrder = new Backorder();
-                $backOrder->requisition_id = $this->requestInfo->id;
-                $backOrder->item_id = $value['id'];
-                $backOrder->status = 'ACTIVE';
-                $backOrder->cancelled_date = null;
-                $backOrder->bo_type = 'PO';
-                $backOrder->remarks = $this->requestInfo->supplier_id;
-                $backOrder->branch_id = auth()->user()->branch_id;
-                $backOrder->company_id = auth()->user()->branch->company_id;
-                $backOrder->save();
-                $this->backorderCount++;
-            }
+            
         }
 
-        session()->flash('success', 'Purchase Order Successfully Received' . ($this->backorderCount > 0 ? " with $this->backorderCount back order(s)." : ""));
+        session()->flash('success', 'Purchase Order Successfully Received' . ($this->backorderCount > 0 ? " with $this->backorderCount active back order(s)." : ""));
         $this->reset();
         $this->loadReceiveRequest();
     }
@@ -337,5 +374,19 @@ class PurchaseOrderReceive extends Component
     public function render()
     {
         return view('livewire.purchasing.purchase-order-receive');
+    }
+
+
+    private function createBackorder($itemId){
+        $backOrder = new Backorder();
+        $backOrder->requisition_id = $this->requestInfo->id;
+        $backOrder->item_id = $itemId; //value['id']
+        $backOrder->status = 'ACTIVE';
+        $backOrder->cancelled_date = null;
+        $backOrder->bo_type = 'PO';
+        $backOrder->remarks = $this->receiving_no;
+        $backOrder->branch_id = auth()->user()->branch_id;
+        $backOrder->company_id = auth()->user()->branch->company_id;
+        $backOrder->save();
     }
 }

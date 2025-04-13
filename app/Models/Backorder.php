@@ -20,6 +20,7 @@ class Backorder extends Model
         'remarks',
         'branch_id',
         'company_id',
+        'receiving_attempt',
 
     ];
 
