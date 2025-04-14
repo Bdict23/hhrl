@@ -18,6 +18,21 @@ class requisitionInfo extends Model
     //protected $primaryKey = 'requisition_number';
     use HasFactory;
 
+    protected $table = 'requisition_infos';
+    protected $fillable = [
+        'requisition_number',
+        'requisition_date',
+        'from_branch_id',
+        'to_branch_id',
+        'supplier_id',
+        'prepared_by',
+        'reviewed_by',
+        'approved_by',
+        'term_id',
+        'requisition_status',
+        'remarks',
+    ];
+
     public function branches()
     {
         return $this->belongsTo(Branch::class, 'from_branch_id');

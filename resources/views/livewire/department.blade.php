@@ -1,4 +1,12 @@
 <div>
+    
+    @if (session()->has('success'))
+     <div class="alert alert-success" id="success-message">
+         {{ session('success') }}
+         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+     </div>
+     @endif
+
     <div class="tab-content card" id="department-form" style="display: none" wire:ignore.self>
         <form id="departmentForm" wire:submit.prevent="saveDepartment">
             @csrf

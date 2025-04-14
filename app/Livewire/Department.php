@@ -65,6 +65,7 @@ class Department extends Component
             Employee::whereIn('id', $this->personnelData)->update(['department_id' => $dept->id]);
         }
         $this->reset();
+        session()->flash('success', 'Department created successfully!');
         $this->dispatch('saved');
         $this->fetchDepartments();
 

@@ -89,6 +89,10 @@ class ApproveWithdrawal extends Component
             $withdrawal->withdrawal_status = 'APPROVED';
             $withdrawal->approved_date = now();
             $withdrawal->save();
+
+            // Update the cardex status to 'FINAL'
+            Cardex::where('withdrawal_id', $id)->update(['status' => 'FINAL']);
+            
             // Refresh the data
             $this->fetchData();
             return redirect()->route('withdrawal.approval');

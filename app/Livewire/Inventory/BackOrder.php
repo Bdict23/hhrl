@@ -8,9 +8,11 @@ use App\Models\Requisition;
 use App\Models\Item;
 use App\Models\Branch;
 use App\Models\Company;
+use App\Models\RequisitionInfo;
 
 class BackOrder extends Component
 {
+    // public $backordersGroup = [];
     public $backorderList = [];
     public $requisitionList = [];
 
@@ -28,7 +30,9 @@ class BackOrder extends Component
     public function fetchData()
     {
         // Fetch data from the database
-        $this->backorderList = BackorderModel::with(['requisition', 'item', 'branch', 'company'])->get();
+        $this->backorderList = RequisitionInfo::with('item', 'branch', 'company')
+            ->whereIn('REQUISITION_status',  ['PARTIALLY FULFILLED', 'FOR PO'])
+            ->get();
 
     }
 

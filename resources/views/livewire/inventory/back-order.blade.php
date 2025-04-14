@@ -33,7 +33,7 @@
                         <label for="to_date" class="input-group-text">To:</label>
                         <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
                             class="form-control form-control-sm">
-                            <button wire:click="search" class="btn btn-warning input-group-text">search</button>
+                            <button wire:click="search" class="btn btn-primary input-group-text">search</button>
                     </div>
                     <div>
                     </div>
@@ -43,9 +43,9 @@
         </div>
 
 
-        <div class="card-body d-sm-flex">
-                <table class="table table-striped table-hover table-responsive-sm">
-                    <thead class="table-dark">
+        <div class="card-body table-responsive-sm">
+                <table class="table table-striped table-hover table-sm">
+                    <thead class="table-dark table-sm table-sm">
                         <tr>
                             <th>Reference</th>
                             <th>SKU</th>
@@ -60,16 +60,23 @@
 
                         @forelse ($backorderList as $backOrder)
                             <tr>
-                                <td>{{ $backOrder->reference }}</td>
-                                <td>{{ $backOrder->sku }}</td>
-                                <td>{{ $backOrder->type }}</td>
-                                <td>{{ $backOrder->created_at }}</td>
-                                <td>{{ $backOrder->status }}</td>
+                                <td>{{ $backOrder->requisition->requisition_number }}</td>
+                                <td>{{ $backOrder->item->item_code }}</td>
+                                <td>{{ $backOrder->bo_type }}</td>
+                                <td>{{ $backOrder->created_at->format('M. d, Y') }}</td>
+                                <td>
+                                    <span class="
+                                        @if($backOrder->status == 'ACTIVE') badge bg-danger
+                                        @elseif($backOrder->status == 'FULLFILLED') badge bg-success
+                                        @elseif($backOrder->status == 'FOR PO') badge bg-warning
+                                        @elseif($backOrder->status == 'CANCELLED') badge bg-secondary 
+                                        @else badge bg-secondary 
+                                        @endif">{{ $backOrder->status }} 
+                                    </span>
+                                </td>
                                 <td>{{ $backOrder->remarks }}</td>
                                 <td>
                                     <a href="{{ route('po.show', ['id' => $backOrder->id]) }}" class="btn btn-primary btn-sm">View</a>
-                                    <a href="{{ route('po.edit', ['id' => $backOrder->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                                    <button wire:click="delete({{ $backOrder->id }})" class="btn btn-danger btn-sm">Delete</button>
                                 </td>
                             </tr>
                         @empty
