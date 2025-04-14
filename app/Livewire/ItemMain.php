@@ -79,15 +79,11 @@ class ItemMain extends Component
 
     public function fetchData()
     {
-<<<<<<< HEAD
         // view only the created companies by the logged in user
         $auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
         $companyIds = $auditCompanies->pluck('company.id')->toArray();
         $this->companies = Company::where('company_status', 'ACTIVE')->whereIn('id', $companyIds)->get();
         $this->items = Item::where('company_id', auth()->user()->branch->company_id)->get();
-=======
-        $this->items = Item::where([['company_id', auth()->user()->branch->company_id],['item_status', 'ACTIVE']])->get();
->>>>>>> 21e0930d73201dc604e6f582bb099db141df5abf
         $this->uoms = UOM::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE']])->get();
         $this->categories = Category::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE'],['category_type', 'ITEM']])->get();
         $this->classifications = Classification::where([['company_id', auth()->user()->branch->company_id],['status', 'ACTIVE'],['class_parent', null]])->get();

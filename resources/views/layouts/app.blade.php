@@ -16,7 +16,6 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-<<<<<<< HEAD
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -26,13 +25,11 @@
 
 <body class="font-sans antialiased">
     
-=======
 
 </head>
 
 <body class="font-sans antialiased">
 
->>>>>>> 21e0930d73201dc604e6f582bb099db141df5abf
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
 

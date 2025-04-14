@@ -23,7 +23,6 @@ class ItemCost extends Component
     public $newCost;
     public $supplierId; // Renamed from newSupplier
     public $costDate;
-
     public $showForm = false;
 
     public function mount()
