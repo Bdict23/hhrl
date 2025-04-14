@@ -110,11 +110,27 @@ class Cardex extends Model
     //total quantity in based on requisition id
     public function totalInByRequisition($requisitionId, $itemId = null)
     {
-        $query = $this->whereIn('status', ['final','temp'])
+        $query = $this->whereIn('status', ['final'])
             ->where('transaction_type', 'RECEVING')
             ->where('qty_in', '>', 0)
             ->where('source_branch_id', auth()->user()->branch_id)
                       ->where('requisition_id', $requisitionId);
+
+        if ($itemId) {
+            $query->where('item_id', $itemId);
+        }
+
+        return $query->sum('qty_in');
+    }
+
+    //total wuantity based on receiving id
+    public function totalInByReceiving($receivingId, $itemId = null)
+    {
+        $query = $this->where('transaction_type', 'RECEVING')
+            ->whereIn('status', ['FINAL', 'TEMP'])
+            ->where('qty_in', '>', 0)
+            ->where('source_branch_id', auth()->user()->branch_id)
+                      ->where('receiving_id', $receivingId);
 
         if ($itemId) {
             $query->where('item_id', $itemId);

@@ -7,6 +7,14 @@
             </div>
         @endif
     </div>
+    <div>
+        @if(session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
     <div class="row justify-content-center">
         <!-- Left Dashboard -->
         <div class="card col-md-7 " style="flex:1">
@@ -26,8 +34,11 @@
                                 Get PO
                             </x-primary-button>
                         @endif
-                        <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> {{ $isExists ? 'Update' : 'Save' }}</x-primary-button>
-
+                        @if($isExists && $finalStatus)
+                        <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(202, 200, 200)" disabled> UPDATE</x-primary-button>
+                        @else
+                            <x-primary-button wire:click="saveReceiveRequest" type="button" style="background-color: rgb(84, 161, 248)"> {{ $isExists ? 'Update' : 'Save' }}</x-primary-button>
+                        @endif
                         <div class="form-check float-right">
                             <strong class="form-check-label text-danger" for="flexCheckDefault" title="Marks receiving as final; edits disabled after save.">
                                 Final
@@ -35,7 +46,6 @@
                             <input wire:model="finalStatus" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
                             {{ $finalStatus ? 'checked' : '' }} title="Marks receiving as final; edits disabled after save." {{ $isExists && $finalStatus ? 'disabled' : '' }}>
                           </div>
-
                         <a href="/receiving-summary">  <x-secondary-button> Summary </x-secondary-button> </a>
 
                             <i class="float-right mr-2" wire:loading>Please wait...</i>
@@ -43,7 +53,7 @@
                     </div>
 
 
-                <div class="card-body" wire:ignore.self>
+                <div class="card-body table-responsive-sm" wire:ignore.self>
                     <table class="table table-striped table-hover table-sm table-responsive-sm">
                         <thead class="table-dark">
                             <tr style="font-size: x-small">
@@ -66,17 +76,17 @@
                                     <td style="font-size: x-small">{{ $reqdetail->items->uom->unit_symbol}}</td>
                                     <td style="font-size: small">{{ $reqdetail->qty }}</td>
                                     <td style="font-size: small">
-                                        {{ $reqdetail->qty - ($cardexSum[$reqdetail->items->id] ?? 0) }}
+                                        {{ $reqdetail->qty - ( $isExists ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0)) }} 
                                     </td>
                                     <td style="font-size: small">
                                         <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"
-                                        max="{{  $reqdetail->qty - ($cardexSum[$reqdetail->items->id] ?? 0) }}" step="1">
+                                        max="{{ $reqdetail->qty - ( $finalStatus  ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0)) }}" step="1" {{ $finalStatus  ? 'disabled' : ''}}>
                                     </td>
                                     <td style="font-size: small">{{ $reqdetail->cost->amount ?? '0.00' }}</td>
                                     <td style="font-size: small">
-                                        <input wire:model="qtyAndPrice.{{$index}}.newCost" oninput="updateTotalPrice(this)" type="number" class="form-control" value="{{ $reqdetail->items->costPrice->amount ?? '0.00' }}" step="0.01">
+                                        <input wire:model="qtyAndPrice.{{$index}}.newCost" oninput="updateTotalPrice(this)" type="number" class="form-control" value="{{ $reqdetail->items->costPrice->amount ?? '0.00' }}" step="0.01" {{ $finalStatus  ? 'disabled' : ''}}>
                                     </td>
-                                    <td class="total-price" style="font-size: small">0.00</td>
+                                    <td class="total-price" style="font-size: small" >{{ $isExists ? ($qtyAndPrice[$index]['oldCost'] * $qtyAndPrice[$index]['qty']) : "0.00" }}</td>
                                 </tr>
                             @empty
                                 <tr>

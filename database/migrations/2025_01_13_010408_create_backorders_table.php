@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('requisition_id')->constrained('requisition_infos')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade')->onUpdate('cascade');
-            $table->enum('status', ['ACTIVE', 'FULLFILLED', 'FOR PO', 'CANCELLED'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'FULFILLED', 'FOR PO', 'CANCELLED'])->default('ACTIVE');
             $table->timestamp('cancelled_date')->nullable();
             $table->enum('bo_type', ['REQ', 'PO'])->default('REQ');
             $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade');
