@@ -9,17 +9,27 @@
                             <h5>Purchase Order Information</h5>
                         </div>
                         <div class="col-md-6 text-end">
-                            <span class="btn btn-outline-info">{{ $requestInfo->requisition_status }}</span>
+                            <span  class="
+                            @if($requestInfo->requisition_status == 'PREPARING') badge bg-secondary
+                            @elseif($requestInfo->requisition_status == 'FOR REVIEW') badge bg-dark
+                            @elseif($requestInfo->requisition_status == 'FOR APPROVAL') badge bg-dark
+                            @elseif($requestInfo->requisition_status == 'TO RECIEVE') badge bg-primary 
+                            @elseif($requestInfo->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
+                            @elseif($requestInfo->requisition_status == 'COMPLETED') badge bg-success 
+                            @elseif($requestInfo->requisition_status == 'REJECTED') badge bg-danger
+                            @elseif($requestInfo->requisition_status == 'CANCELLED') badge bg-danger 
+                            @else badge bg-secondary 
+                            @endif">{{ $requestInfo->requisition_status }}</span>
                         </div>
                     </div>
                 </div>
                     <div class="m-2">
-                        <button class="btn {{ $requestInfo->requisition_status == 'TO RECEIVE' ? 'btn-success' : 'btn-secondary' }}"
+                        {{-- <button class="btn {{ $requestInfo->requisition_status == 'TO RECEIVE' ? 'btn-success' : 'btn-secondary' }}"
                             type="button"
                             onclick="window.location.href='{{ route('po.po_receive', ['poNumber' => $requestInfo->requisition_number]) }}'"
                             {{ $requestInfo->requisition_status != 'TO RECEIVE' ? 'disabled' : '' }}>
                             Receive
-                        </button>
+                        </button> --}}
 
                         <button onclick="window.location.href='{{ route('po.edit', ['id' => $requestInfo->id]) }}'"
                             class="btn {{ $requestInfo->requisition_status == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"

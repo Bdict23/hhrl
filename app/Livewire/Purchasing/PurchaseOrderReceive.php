@@ -27,6 +27,8 @@ class PurchaseOrderReceive extends Component
     public $qtyAndPrice = [];
     public $cardexSum = [];
 
+public $receivingInfo = [];
+
     public $paking_list_date;
     public $waybill_no;
     public $delivery_no;
@@ -180,7 +182,7 @@ class PurchaseOrderReceive extends Component
 
                     // create new backorder and update receiving status to 'PARTIALLY FULLFILLED'
 
-                    $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULLFILLED']);
+                    $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULFILLED']);
                     $this->createBackorder($value['id']);
 
                     $this->backorderCount++;
@@ -196,7 +198,7 @@ class PurchaseOrderReceive extends Component
 
                 if ($hasBackorder) {
                     $hasBackorder->update([
-                        'status' => 'FULLFILLED',
+                        'status' => 'FULFILLED',
                     ]);
                     $hasBackorder->save();
                    
@@ -243,7 +245,7 @@ class PurchaseOrderReceive extends Component
             }
             if ($index === $maxIndex) {
                 if($this->backorderCount > 0){
-                    $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULLFILLED']);
+                    $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULFILLED']);
                 }else{
                     $this->requestInfo->update(['requisition_status' => 'COMPLETED']);
                 }
@@ -346,30 +348,56 @@ class PurchaseOrderReceive extends Component
 
     public function editReceiveRequest($recNo, $reqId)
     {
-        // $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $reqId)->first();
+        $this->receiving_no = $recNo;
+        
+        
         $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
             ->where('requisition_info_id', $reqId)
             ->get();
-        $this->loadRequestInfo($reqId);
-        $this->receiving_no = $recNo;
-        $this->requestInfo = Receiving::with('requisition', 'branch', 'company', 'preparedBy', 'attachments')
+        $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
+            ->where('id', $reqId)
+            ->first();
+        $this->receivingInfo = Receiving::with('attachments')
             ->where('RECEIVING_NUMBER', $recNo)
             ->first();
-        $this->isExists = true;
-        $this->waybill_no = $this->requestInfo->WAYBILL_NUMBER;
-        $this->delivery_no = $this->requestInfo->DELIVERY_NUMBER;
-        $this->invoice_no = $this->requestInfo->INVOICE_NUMBER;
-        $this->delivered_by = $this->requestInfo->DELIVERED_BY;
-        $this->remarks = $this->requestInfo->remarks;
-        $this->attachments = $this->requestInfo->attachments;
-        $this->finalStatus = $this->requestInfo->RECEIVING_STATUS == 'FINAL' ? true : false;
-        $this->receiving_no = $this->requestInfo->RECEIVING_NUMBER;
-        $this->id = $this->requestInfo->REQUISITION_ID;
 
+        
+        $this->isExists = true;
+        $this->waybill_no = $this->receivingInfo->WAYBILL_NUMBER ?? '';
+        $this->delivery_no = $this->receivingInfo->DELIVERY_NUMBER ?? '';
+        $this->invoice_no = $this->receivingInfo->INVOICE_NUMBER ?? '';
+        $this->delivered_by = $this->receivingInfo->DELIVERED_BY  ?? '';
+        $this->remarks = $this->receivingInfo->remarks ?? '';
+        $this->attachments = $this->receivingInfo->attachments ?? [];
+        $this->finalStatus = $this->receivingInfo->RECEIVING_STATUS == 'FINAL' ? true : false;
+        $this->receiving_no = $this->receivingInfo->RECEIVING_NUMBER;
+        $this->id = $this->receivingInfo->REQUISITION_ID;
+
+        $this->cardexSum = [];
+        foreach ($this->requisitionDetails as $item) {
+            $itemId = $item->items->id;
+            $cardex = new Cardex();
+            $this->cardexSum[$itemId] = $cardex->totalInByRequisition($this->id, $itemId);
+        }
+
+        foreach ($this->requisitionDetails as $item) {
+            $itemId = $item->items->id;
+            $costPrice = $item->items->costPrice->amount;
+            $costID = $item->items->costPrice->id;
+            $req_qty = $item->qty;
+            $this->qtyAndPrice[] = [
+                'id' => $itemId,
+                'req_qty' => $req_qty,
+                'qty' => 0,
+                'oldCost' => $costPrice,
+                'newCost' => $costPrice,
+                'costId' => $costID
+            ];
+        }
     }
 
     public function loadReceiveRequest(){
-        $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULLFILLED'])->get();
+        $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULFILLED'])->get();
     }
     public function render()
     {

@@ -75,7 +75,7 @@ return new class extends Migration
                 $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                 $table->enum('category', ['PO', 'PR']); // Category
                 $table->foreignId('term_id')->nullable()->constrained('terms')->onDelete('no action')->onUpdate('no action');
-                $table->enum('requisition_status', ['TO RECEIVE','PARTIALLY FULLFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING'); // Status
+                $table->enum('requisition_status', ['TO RECEIVE','PARTIALLY FULFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING'); // Status
                 $table->text('remarks')->nullable(); // Remarks
                 $table->date('approved_date')->nullable(); // Approved date
                 $table->date('rejected_date')->nullable(); // Rejected date

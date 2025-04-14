@@ -19,7 +19,7 @@
                     <div class="input-group">
                         <label for="PO-status" class="input-group-text">Status</label>
                         <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
-                            <option value="all">All</option>
+                            <option value="All">All</option>
                             @foreach ($statuses as $status)
                                 <option value="{{ $status }}">{{ $status }}</option>
                             @endforeach
@@ -64,7 +64,20 @@
                                 <td>{{ $requisition->requisition_number }}</td>
                                 <td>{{ $requisition->trans_date }}</td>
                                 <td>{{ $requisition->preparer->name }}</td>
-                                <td>{{ $requisition->requisition_status }}</td>
+                                <td>
+                                    <span class="
+                                    @if($requisition->requisition_status == 'PREPARING') badge bg-secondary
+                                    @elseif($requisition->requisition_status == 'FOR REVIEW') badge bg-dark
+                                    @elseif($requisition->requisition_status == 'FOR APPROVAL') badge bg-dark
+                                    @elseif($requisition->requisition_status == 'TO RECIEVE') badge bg-primary 
+                                    @elseif($requisition->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
+                                    @elseif($requisition->requisition_status == 'COMPLETED') badge bg-success 
+                                    @elseif($requisition->requisition_status == 'REJECTED') badge bg-danger
+                                    @elseif($requisition->requisition_status == 'CANCELLED') badge bg-danger 
+                                    @else badge bg-secondary 
+                                    @endif"> {{ $requisition->requisition_status }}
+                                </span>
+                                   </td>
                                 <td>{{ $requisition->remarks }}</td>
                                 <input id="company_id" name='company_id' type="hidden">
                                 <td>
