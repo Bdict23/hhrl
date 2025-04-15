@@ -74,11 +74,13 @@
                                     <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
                                     <td style="font-size: x-small">{{ $reqdetail->items->item_description }} </td>
                                     <td style="font-size: x-small">{{ $reqdetail->items->uom->unit_symbol}}</td>
-                                    <td style="font-size: small">{{ $reqdetail->qty }}</td>
+                                    <td style="font-size: small">{{ $reqdetail->qty }} / {{($cardexSum[$reqdetail->items->id] ?? 0)}} </td>
                                     <td style="font-size: small">
-                                        {{ $reqdetail->qty - ( $isExists ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0)) }} 
+                                        {{-- TO RECEIVE --}}
+                                        {{ ($reqdetail->qty) - ($finalStatus && $isExists ? 0 : (!$finalStatus && $isExists ? ($cardexSum[$reqdetail->items->id] ?? 0) : ($cardexSum[$reqdetail->items->id] ?? 3))) }} 
                                     </td>
                                     <td style="font-size: small">
+                                        {{-- RECEIVED --}}
                                         <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"
                                         max="{{ $reqdetail->qty - ( $finalStatus  ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0)) }}" step="1" {{ $finalStatus  ? 'disabled' : ''}}>
                                     </td>

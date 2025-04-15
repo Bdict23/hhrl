@@ -25,7 +25,12 @@ class PurchaseOrderReceive extends Component
     public $requisitionInfo = [];
     public $requisitionDetails = [];
     public $qtyAndPrice = [];
+    public $receivingId;
+
+    public $cardexSumFinal = [];
+    public $cardexSumTemp = [];
     public $cardexSum = [];
+
     private $receivingOnCardex = [];
 
 public $receivingInfo = [];
@@ -88,7 +93,7 @@ public $receivingInfo = [];
     public function selectPO($id)
     {
         // CHECK RECEIVING IF THERE IS EXISTING RECEIVING WITH DRAFT RECEIVING STATUS WITH THE SAME REQUISITION ID
-        if($this->isExists == false){ 
+        if(!$this->isExists){ 
             $this->receivingInfo = Receiving::where('REQUISITION_ID', $id)->where('RECEIVING_STATUS', 'DRAFT')->first();
             if ($this->receivingInfo) {
                session()->flash('error', 'This Purchase Order has an existing draft receiving. Please update the existing receiving.');
@@ -105,7 +110,10 @@ public $receivingInfo = [];
        
 
          // Use the totalInByRequisition method to calculate total received quantities per item
-         $this->cardexSum = [];
+        $this->cardexSum = [];
+        $this->cardexSumFinal = [];
+        $this->cardexSumTemp = [];
+
         if($this->isExists){
             $this->receivingOnCardex = Cardex::where('receiving_id', $this->receivingInfo->id)->get();
                
@@ -113,20 +121,22 @@ public $receivingInfo = [];
                     $itemId = $item->item_id;
                     $receivingId = $item->receiving_id;
                     $cardex = new Cardex();
-                    $this->cardexSum[$itemId] = $cardex->totalInByReceiving($receivingId, $itemId) != null ? $cardex->totalInByReceiving($receivingId, $itemId) : 0;
-                   
-                    //   dd(" totalInByRequisition is ".$cardex->totalInByRequisition($this->id, $itemId)." - totalInByReceiving is ".$cardex->totalInByReceiving($receivingId, $itemId). " receiving id is ".$receivingId ." item id is ".$itemId);
+                    dd($cardex->totalInByRequisition($this->id, 2));
+                    $this->cardexSum[$itemId] =  $cardex->totalInByRequisition($this->id, $itemId);
+                    $this->cardexSumFinal[$itemId] =   ($this->finalStatus  ? $cardex->totalInByReceivingAsFinal($receivingId, $itemId) : $cardex->totalInByRequisition($this->id, $itemId));
+                    $this->cardexSumTemp[$itemId] =  ($cardex->totalInByReceivingAsTemp($receivingId, $itemId) != null ? $cardex->totalInByReceivingAsTemp($receivingId, $itemId) : 0);
+            
                 }
-                
                 foreach ($this->requisitionDetails as $item) {
                     $itemId = $item->items->id;
                     $costPrice = $item->items->costPrice->amount;
                     $costID = $item->items->costPrice->id;
                     $req_qty = $item->qty;
+                    $cardex = new Cardex();
                     $this->qtyAndPrice[] = [
                         'id' => $itemId,
                         'req_qty' => $req_qty,
-                        'qty' => (int) ($this->cardexSum[$itemId] ?? 0),
+                        'qty' => (int) ($this->finalStatus ? ($cardex->totalInByReceivingAsFinal($this->receivingId, $itemId) ) : ($this->cardexSumTemp[$itemId] ?? 0)),
                         'oldCost' => $costPrice,
                         'newCost' => $costPrice,
                         'costId' => $costID
@@ -295,8 +305,12 @@ public $receivingInfo = [];
             
                 if($this->backorderCount > 0 && $this->finalStatus){
                     $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULFILLED']); 
-                }else{
+                }else if($this->finalStatus){
+                    // update requisition status to COMPLETED
                     $this->requestInfo->update(['requisition_status' => 'COMPLETED']);
+                }else{
+                    // update requisition status to DRAFT
+                    $this->requestInfo->update(['requisition_status' => 'TO RECEIVE']);
                 }
             }
             
@@ -325,11 +339,12 @@ public $receivingInfo = [];
             ->where('requisition_status', '!=', 'COMPLETED')
             ->first();
         if(!$this->requestInfo){
+            
             session()->flash('error', 'This Purchase Order has been completed. You cannot update it.');
             return;
         }
          //update receiving
-        $updateRecieving = Receiving::where('REQUISITION_ID', $this->requestInfo->id)->first();
+        $updateRecieving = Receiving::where('REQUISITION_ID', $this->requestInfo->id)->where('RECEIVING_NUMBER', $this->receiving_no)->first();
         if ($updateRecieving) {
             $updateRecieving->WAYBILL_NUMBER = $this->waybill_no;
             $updateRecieving->DELIVERY_NUMBER = $this->delivery_no;
@@ -456,7 +471,8 @@ public $receivingInfo = [];
             
                 if($this->backorderCount > 0 && $this->finalStatus){
                     $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULFILLED']); 
-                }else{
+                }else if($this->finalStatus){
+                    // update requisition status to COMPLETED
                     $this->requestInfo->update(['requisition_status' => 'COMPLETED']);
                 }
             }
@@ -479,7 +495,7 @@ public $receivingInfo = [];
             ->first();
         $this->receivingInfo = Receiving::where('RECEIVING_NUMBER', $recNo)->first();
 
-        
+        $this->receivingId = $this->receivingInfo->id;
         $this->waybill_no = $this->receivingInfo->WAYBILL_NUMBER ?? '';
         $this->delivery_no = $this->receivingInfo->DELIVERY_NUMBER ?? '';
         $this->invoice_no = $this->receivingInfo->INVOICE_NUMBER ?? '';
@@ -490,7 +506,6 @@ public $receivingInfo = [];
         $this->receiving_no = $this->receivingInfo->RECEIVING_NUMBER;
         $this->id = $this->receivingInfo->REQUISITION_ID;
 
-        $this->cardexSum = [];
         $this->selectPO($reqId);
     }
 
