@@ -10,7 +10,17 @@ use App\Models\Branch;
 class Employee extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'corporate_id',
+        'name',
+        'middle_name',
+        'last_name',
+        'position_id',
+        'branch_id',
+        'department_id',
+        'contact_number',
+        'status',
+    ];
     public function position()
     {
         return $this->belongsTo(Position::class, 'position_id');

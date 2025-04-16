@@ -39,6 +39,9 @@
                         onclick="showTab('price-levels-tables', this)">Price
                         Levels</a></li>
                 <li class="nav-item"><a href="#" class="nav-link btn-sm">Menu Pricing</a></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Item Cost</a>
+                </li>
             </ul>
             <hr>
             <h5 class="text-muted">Menu Management</h5>
@@ -58,7 +61,9 @@
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Employees</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Department</a></li>
+                
+            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
                 <li class="nav-item"><a href="#" class="nav-link"
                         onclick="showTab('departments-table', this)">Departments</a></li>
 
@@ -67,7 +72,7 @@
 
         <!-- Main Content -->
         <div class="content">
-
+        
             <!-- item Tab Content -->
             <div>
                 @livewire('item-main')
@@ -98,7 +103,10 @@
                 @livewire('price-operation')
             </div>
 
-
+            <!-- Item Cost Tab Content --raldz-->
+            <div>
+                @livewire('item-cost')
+            </div>
 
 
             <!-- Brand Tab Content -->
@@ -111,7 +119,10 @@
             <div>
                 @livewire('department')
             </div>
-
+            <!-- Employees Tab Content -->
+            <div>
+                @livewire('settings.manage-employees')
+            </div>
             <!-- Menu Categories Tab Content -->
             <div id="menu-categories-table" class="tab-content dashboard" style="display: none;">
                 <x-primary-button type="button" class="mb-3 btn-sm"

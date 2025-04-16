@@ -75,13 +75,15 @@ Route::get('/branch_show/{id}', [BranchController::class, 'show'])->middleware([
 Route::get('/branch_deactivate/{id}', [BranchController::class, 'deactivate'])->middleware(['auth', 'verified'])->name('branch.deactivate');
 
 
-
 // Static Home Page Route
 Route::get('/branch/branch_create', function () {
     $companies = Company::all();
     return view('branch.branch_create', compact('companies'));
 })->middleware(['auth', 'verified']);
 
+// Route for creating a new supplier --raldz
+Route::post('/suppliers', [SupplierController::class, 'store'])->middleware(['auth', 'verified'])->name('suppliers.store');
+// --end raldz
 
 //route for purchase order
 
