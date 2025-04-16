@@ -116,14 +116,14 @@ public $receivingInfo = [];
 
         if($this->isExists){
             $this->receivingOnCardex = Cardex::where('receiving_id', $this->receivingInfo->id)->get();
+            $firstReceiving = Cardex::where('requisition_id', $this->id)->orderBy('created_at', 'asc')->first();
                
                 foreach($this->receivingOnCardex as $item){
                     $itemId = $item->item_id;
                     $receivingId = $item->receiving_id;
                     $cardex = new Cardex();
-                    dd($cardex->totalInByRequisition($this->id, 2));
                     $this->cardexSum[$itemId] =  $cardex->totalInByRequisition($this->id, $itemId);
-                    $this->cardexSumFinal[$itemId] =   ($this->finalStatus  ? $cardex->totalInByReceivingAsFinal($receivingId, $itemId) : $cardex->totalInByRequisition($this->id, $itemId));
+                    $this->cardexSumFinal[$itemId] = ($receivingId == $firstReceiving->receiving_id ? 0 : ($this->finalStatus  ? $cardex->totalInByReceivingAsFinal($receivingId, $itemId) : $cardex->totalInByRequisition($this->id, $itemId)));
                     $this->cardexSumTemp[$itemId] =  ($cardex->totalInByReceivingAsTemp($receivingId, $itemId) != null ? $cardex->totalInByReceivingAsTemp($receivingId, $itemId) : 0);
             
                 }
@@ -261,7 +261,7 @@ public $receivingInfo = [];
 
             
             // Check if the quantity is greater than 0 to create a cardex record
-            if ($value['qty'] > 0) {
+            if ($value['qty'] > 0 || !$this->finalStatus) {
                 
                 // Create a new cost price record if the cost has changed
                 if ($value['oldCost'] != $value['newCost']) {
@@ -286,7 +286,7 @@ public $receivingInfo = [];
                         $cardex->requisition_id = $this->requestInfo->id;
                         $cardex->final_date = now();
                         $cardex->save();
-                }else{
+                } else {
                     $cardex = new Cardex();
                     $cardex->source_branch_id = auth()->user()->branch_id;
                     $cardex->qty_in = $value['qty'];
@@ -308,9 +308,6 @@ public $receivingInfo = [];
                 }else if($this->finalStatus){
                     // update requisition status to COMPLETED
                     $this->requestInfo->update(['requisition_status' => 'COMPLETED']);
-                }else{
-                    // update requisition status to DRAFT
-                    $this->requestInfo->update(['requisition_status' => 'TO RECEIVE']);
                 }
             }
             

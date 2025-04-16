@@ -74,10 +74,10 @@
                                     <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
                                     <td style="font-size: x-small">{{ $reqdetail->items->item_description }} </td>
                                     <td style="font-size: x-small">{{ $reqdetail->items->uom->unit_symbol}}</td>
-                                    <td style="font-size: small">{{ $reqdetail->qty }} / {{($cardexSum[$reqdetail->items->id] ?? 0)}} </td>
+                                    <td style="font-size: small">{{ $reqdetail->qty }} </td>
                                     <td style="font-size: small">
                                         {{-- TO RECEIVE --}}
-                                        {{ ($reqdetail->qty) - ($finalStatus && $isExists ? 0 : (!$finalStatus && $isExists ? ($cardexSum[$reqdetail->items->id] ?? 0) : ($cardexSum[$reqdetail->items->id] ?? 3))) }} 
+                                        {{ ($reqdetail->qty) - ($finalStatus && $isExists ? (($cardexSumFinal[$reqdetail->items->id] ?? 0) == 0 ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0) - ($cardexSumFinal[$reqdetail->items->id] ?? 0 )) : (!$finalStatus && $isExists ? ($cardexSum[$reqdetail->items->id] ?? 0) : ($cardexSum[$reqdetail->items->id] ?? 0))) }} 
                                     </td>
                                     <td style="font-size: small">
                                         {{-- RECEIVED --}}
