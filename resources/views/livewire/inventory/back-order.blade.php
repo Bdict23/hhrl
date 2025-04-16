@@ -47,36 +47,34 @@
                 <table class="table table-striped table-hover table-sm">
                     <thead class="table-dark table-sm table-sm">
                         <tr>
-                            <th>Reference</th>
-                            <th>SKU</th>
+                            <th>PO NO.</th>
+                            <th>M.PO NO.</th>
                             <th>Type</th>
                             <th>Date</th>
                             <th>PO Status</th>
-                            <th>Remarks</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
 
-                        @forelse ($backorderList as $backOrder)
+                        @forelse ($requisitionList as $backOrder)
                             <tr>
-                                <td>{{ $backOrder->requisition->requisition_number }}</td>
-                                <td>{{ $backOrder->item->item_code }}</td>
-                                <td>{{ $backOrder->bo_type }}</td>
-                                <td>{{ $backOrder->created_at->format('M. d, Y') }}</td>
+                                <td>{{ $backOrder->requisition_number }}</td>
+                                <td>{{ $backOrder->merchandise_po_number }}</td>
+                                <td>{{ \Carbon\Carbon::parse($backOrder->created_at)->format('d, M, Y') }}</td>
+                                <td>{{ $backOrder->category}}</td>
                                 <td>
                                     <span class="
-                                        @if($backOrder->status == 'ACTIVE') badge bg-danger
-                                        @elseif($backOrder->status == 'FULLFILLED') badge bg-success
-                                        @elseif($backOrder->status == 'FOR PO') badge bg-warning
-                                        @elseif($backOrder->status == 'CANCELLED') badge bg-secondary 
+                                        @if($backOrder->requisition_status == 'PARTIALLY FULFILLED') badge bg-warning text-dark
+                                        @elseif($backOrder->requisition_status == 'COMPLETED') badge bg-success
+                                        @elseif($backOrder->requisition_status == 'FOR PO') badge bg-info
+                                        @elseif($backOrder->requisition_status == 'CANCELLED') badge bg-secondary 
                                         @else badge bg-secondary 
-                                        @endif">{{ $backOrder->status }} 
+                                        @endif">{{ $backOrder->requisition_status }} 
                                     </span>
                                 </td>
-                                <td>{{ $backOrder->remarks }}</td>
                                 <td>
-                                    <a href="{{ route('po.show', ['id' => $backOrder->id]) }}" class="btn btn-primary btn-sm">View</a>
+                                    <a class="btn btn-primary btn-sm">View</a>
                                 </td>
                             </tr>
                         @empty
