@@ -47,6 +47,7 @@ public $receivingInfo = [];
     public $finalStatus = false;
     public $isExists = false;
     private $backorderCount = 0;
+    private $fulfilled = 0;
 
     protected $listeners = [
         'selectPO' => 'selectPO',
@@ -90,8 +91,12 @@ public $receivingInfo = [];
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
     }
 
+    // this function will check if all item reqquest are filled and no lacking and will update to complete
+    
+
     public function selectPO($id)
     {
+       
         // CHECK RECEIVING IF THERE IS EXISTING RECEIVING WITH DRAFT RECEIVING STATUS WITH THE SAME REQUISITION ID
         if(!$this->isExists){ 
             $this->receivingInfo = Receiving::where('REQUISITION_ID', $id)->where('RECEIVING_STATUS', 'DRAFT')->first();
@@ -107,6 +112,7 @@ public $receivingInfo = [];
         $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
             ->where('requisition_info_id', $id)
             ->get();
+            
        
 
          // Use the totalInByRequisition method to calculate total received quantities per item
@@ -214,7 +220,7 @@ public $receivingInfo = [];
         foreach ($this->qtyAndPrice as $index => $value) {
             $maxIndex = count($this->qtyAndPrice) - 1; // Get the maximum index
 
-            if ((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) != $value['req_qty'] && $this->finalStatus) {
+            if ((($this->cardexSum[$value['id']] ) + $value['qty']) != $value['req_qty'] && $this->finalStatus) {
 
                 //check if has existing backorder for a specific item
                 $hasBackorder = Backorder::where('requisition_id', $this->requestInfo->id)
@@ -409,6 +415,7 @@ public $receivingInfo = [];
                     $this->backorderCount++;
                 }
             }else if((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) == $value['req_qty'] && $this->finalStatus){
+                $this->fulfilled++;
                 $hasBackorder = Backorder::where('requisition_id', $this->requestInfo->id)
                     ->where('item_id', $value['id'])
                     ->where('bo_type', 'PO')
@@ -463,12 +470,14 @@ public $receivingInfo = [];
                     $cardex->save();
                 }
             }
+
             
-            if ($index === $maxIndex) {
+            
+            if ($index == $maxIndex) {
             
                 if($this->backorderCount > 0 && $this->finalStatus){
                     $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULFILLED']); 
-                }else if($this->finalStatus){
+                }else if($this->finalStatus && $this->requisitionDetails->count()== $this->fulfilled){
                     // update requisition status to COMPLETED
                     $this->requestInfo->update(['requisition_status' => 'COMPLETED']);
                 }
@@ -484,12 +493,12 @@ public $receivingInfo = [];
     {
         $this->isExists = true; 
         $this->receiving_no = $recNo;
-        $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
-            ->where('requisition_info_id', $reqId)
-            ->get();
-        $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
-            ->where('id', $reqId)
-            ->first();
+        // $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
+        //     ->where('requisition_info_id', $reqId)
+        //     ->get();
+        // $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
+        //     ->where('id', $reqId)
+        //     ->first();
         $this->receivingInfo = Receiving::where('RECEIVING_NUMBER', $recNo)->first();
 
         $this->receivingId = $this->receivingInfo->id;
