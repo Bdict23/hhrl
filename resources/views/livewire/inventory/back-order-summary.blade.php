@@ -49,8 +49,8 @@
                         <tr>
                             <th>PO NO.</th>
                             <th>M.PO NO.</th>
-                            <th>Type</th>
                             <th>Date</th>
+                            <th>Type</th>
                             <th>PO Status</th>
                             <th>Action</th>
                         </tr>
@@ -74,7 +74,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary btn-sm">View</a>
+                                    <a wire:click="showBackorder('{{ $backOrder->requisition_number}}')" class="btn btn-primary btn-sm" >View</a>
                                 </td>
                             </tr>
                         @empty

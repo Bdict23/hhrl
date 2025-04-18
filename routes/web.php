@@ -248,10 +248,15 @@ Route::get('/user-access', function () {
 
 // Route to backorder blade
 Route::get('/back-orders', function () {
-    return view('inventory.back-order');
+    return view('inventory.back-order-summary');
 })->middleware(['auth', 'verified'])->name('backorder');
+
+//Route to show Bakorder
+Route::get('/show-backorder', function () {
+    return view('inventory.show-backorder');
+})->middleware(['auth', 'verified'])->name('show-backorder');
 
 //Route for receiving summary
 Route::get('/receiving-summary', function () {
     return view('purchase_order.purchase-order-receiving-summary');
-})->middleware(['auth', 'verified'])->name('backorder');
+})->middleware(['auth', 'verified'])->name('receiving-summary');

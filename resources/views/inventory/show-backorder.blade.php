@@ -1,3 +1,6 @@
-<div>
-    <!-- Do what you can, with what you have, where you are. - Theodore Roosevelt -->
-</div>
+@extends('layouts.master')
+@section('content')
+
+    @livewire('inventory.back-order-show')
+
+@endsection

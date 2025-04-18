@@ -59,36 +59,42 @@ class PurchaseOrderCreate extends Component
     public function store()
     {
         $this->validate();
-                // Save to requisitionInfos table
-                $requisitionInfo = new RequisitionInfo();
-                $latestId = RequisitionInfo::max('id') + 1;
-                $this->requisitionNumber = 'PO-' . now()->format('my') . '-' . str_pad($latestId, 3, '0', STR_PAD_LEFT);
-                $requisitionInfo->supplier_id = $this->supplierId;
-                $requisitionInfo->prepared_by = auth()->user()->emp_id;
-                $requisitionInfo->approved_by = $this->approver_id;
-                $requisitionInfo->reviewed_by = $this->reviewer_id;
-                $requisitionInfo->requisition_status = 'PREPARING';
-                $requisitionInfo->trans_date = now();
-                $requisitionInfo->term_id = $this->term_id;
-                $requisitionInfo->remarks = $this->remarks;
-                $requisitionInfo->category = 'PO';
-                $requisitionInfo->merchandise_po_number = $this->mPoNumber;
-                $requisitionInfo->requisition_number = $this->requisitionNumber;
-                $requisitionInfo->from_branch_id = auth()->user()->branch_id;
-                $requisitionInfo->save();
+        // Save to requisitionInfos table
+        $requisitionInfo = new RequisitionInfo();
 
+        // Calculate the requisition number based on the total count for the year and branch_id
+        $currentYear = now()->year;
+        $branchId = auth()->user()->branch_id;
+        $yearlyCount = RequisitionInfo::where('from_branch_id', $branchId)
+            ->whereYear('trans_date', $currentYear)
+            ->count() + 1;
+
+        $this->requisitionNumber = 'PO-' . now()->format('my') . '-' . str_pad($yearlyCount, 3, '0', STR_PAD_LEFT);
+
+        $requisitionInfo->supplier_id = $this->supplierId;
+        $requisitionInfo->prepared_by = auth()->user()->emp_id;
+        $requisitionInfo->approved_by = $this->approver_id;
+        $requisitionInfo->reviewed_by = $this->reviewer_id;
+        $requisitionInfo->requisition_status = 'PREPARING';
+        $requisitionInfo->trans_date = now();
+        $requisitionInfo->term_id = $this->term_id;
+        $requisitionInfo->remarks = $this->remarks;
+        $requisitionInfo->category = 'PO';
+        $requisitionInfo->merchandise_po_number = $this->mPoNumber;
+        $requisitionInfo->requisition_number = $this->requisitionNumber;
+        $requisitionInfo->from_branch_id = $branchId;
+        $requisitionInfo->save();
 
         // Process the selected items and their quantities
         foreach ($this->purchaseRequest as $index => $item) {
-
             $requisitionDetail = new RequisitionDetail();
             $requisitionDetail->requisition_info_id = $requisitionInfo->id;
             $requisitionDetail->item_id = $this->purchaseRequest[$index]['id'];
             $requisitionDetail->qty = $this->purchaseRequest[$index]['qty'];
             $requisitionDetail->price_level_id = $this->purchaseRequest[$index]['cost'];
             $requisitionDetail->save();
-
         }
+
         $this->reset();
         $this->fetchdata();
         session()->flash('success', 'Purchase Order created successfully.');

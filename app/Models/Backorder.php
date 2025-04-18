@@ -24,9 +24,9 @@ class Backorder extends Model
 
     ];
 
-    public function requisition()
+    public function requisitionInfo()
     {
-        return $this->belongsTo(RequisitionInfo::class);
+        return $this->belongsTo(RequisitionInfo::class,'requisition_id');
     }
     public function item()
     {
@@ -40,5 +40,8 @@ class Backorder extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+    public function cardex(){
+        return $this->hasMany(Cardex::class, 'requisition_id');
     }
 }

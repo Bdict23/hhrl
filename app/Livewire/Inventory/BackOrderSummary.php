@@ -1,32 +1,23 @@
 <?php
 
 namespace App\Livewire\Inventory;
+use Illuminate\Support\Facades\DB;
 
 use Livewire\Component;
-use Illuminate\Support\Facades\DB;
-use App\Models\Backorder as BackorderModel;
-use App\Models\Requisition;
-use App\Models\Item;
-use App\Models\Branch;
-use App\Models\Company;
-use App\Models\RequisitionInfo;
-use App\Models\BackorderItemInfoDetail;
 
-class BackOrder extends Component
+class BackOrderSummary extends Component
 {
-    // public $backordersGroup = [];
     public $backorderList = [];
     public $requisitionList = [];
     public $requisitionIds = [];
 
     public function render()
     {
-        return view('livewire.inventory.back-order');
+        return view('livewire.inventory.back-order-summary');
     }
 
 
-    public function mount()
-    {
+    public function mount(){
         $this->fetchData();
     }
 
@@ -36,8 +27,11 @@ class BackOrder extends Component
         ->join('requisition_infos as r', 'b.requisition_id', '=', 'r.id')
         ->select('b.requisition_id', 'r.requisition_number', 'r.merchandise_po_number', 'r.requisition_status', 'r.category','r.created_at')
         ->groupBy('b.requisition_id', 'r.requisition_number', 'r.merchandise_po_number', 'r.requisition_status','r.category','r.created_at')
-        ->get();
+        ->where('b.branch_id',auth()->user()->branch_id)->get();
 
     }
 
+    public function showBackorder($requisitionNo){
+      return redirect()->to('/show-backorder?requisition-number=' . $requisitionNo );
+    }
 }

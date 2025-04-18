@@ -2,6 +2,6 @@
 @section('content')
 
 
- @livewire('inventory.back-order')
+ @livewire('inventory.back-order-summary')
 
 @endsection

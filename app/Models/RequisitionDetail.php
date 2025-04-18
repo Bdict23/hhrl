@@ -25,4 +25,8 @@ class RequisitionDetail extends Model
         return $this->belongsTo(PriceLevel::class, 'price_level_id');
     }
 
+    public function backOrder(){
+        return $this->hasMany(Backorder::class,'item_id','item_id');
+    }
+
 }
