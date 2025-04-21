@@ -518,6 +518,8 @@ public $receivingInfo = [];
     public function loadReceiveRequest(){
         $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULFILLED'])->get();
     }
+ 
+
     public function render()
     {
         return view('livewire.purchasing.purchase-order-receive');

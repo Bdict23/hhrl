@@ -221,7 +221,7 @@
     </div>
 
     {{-- MODAL --}}
-    <div class="modal fade" id="getPONumberModal" tabindex="-1" aria-labelledby="getPONumberModalLabel"
+    <div class="modal fade modal-lg" id="getPONumberModal" tabindex="-1" aria-labelledby="getPONumberModalLabel"
         aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog">
             <div class="modal-content">
@@ -230,8 +230,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" id="poNumberInput" class="form-control" placeholder="Enter PO Number">
-
+                   
+                   
                             <table class=" table-striped table-hover table-responsive-lg">
                                 <thead class="table-dark table-sm">
                                     <tr style="font-size: x-small">
@@ -243,10 +243,10 @@
                                     </tr>
                                 </thead>
                                 <tbody id="poNumberTableBody">
-                                      @if(isset($toReceiveRequests) && $toReceiveRequests->isNotEmpty())
-                                          @foreach ($toReceiveRequests as $request)
+                                     
+                                          @forelse ($toReceiveRequests as $request)
                                               <tr>
-                                                  <td style="font-size: x-small">{{ $request->requisition_number }}</td>
+                                                  <td style="font-size: small"><strong>{{ $request->requisition_number }}</strong></td>
                                                   <td style="font-size: x-small">{{ $request->supplier->supp_name }}</td>
                                                   <td style="font-size: x-small">{{ $request->trans_date }}</td>
                                                   <td style="font-size: x-small">{{ $request->requisition_status }}</td>
@@ -256,10 +256,9 @@
                                                         </button>
                                                     </td>
                                               </tr>
-                                          @endforeach
-                                      @else
-                                          <tr><td colspan="5" class="text-center">No data available</td></tr>
-                                      @endif
+                                          @empty
+                                          <tr><td colspan="5" class="text-center">No PO Found</td></tr>
+                                      @endforelse
                                     </tr>
                                 </tbody>
                             </table>

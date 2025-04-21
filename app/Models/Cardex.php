@@ -155,5 +155,14 @@ class Cardex extends Model
         return $query->sum('qty_in');
     }
 
+    public function reqisteredPriceByReceiving($requisitionId, $itemId = null){
+        
+
+        $item =  self::where('requisition_id',$requisitionId)
+        ->where('item_id',$itemId)
+        ->where('status','FINAL')
+        ->first();
+        return $item->priceLevel->amount;
+    }
   
 }

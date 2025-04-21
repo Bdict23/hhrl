@@ -24,7 +24,7 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-6">
-                            <h5>BACKORDER SUMMARY</h5>
+                            <h5>BACKORDER ITEMS</h5>
                         </div>
                     </div>
                 </div>
@@ -48,6 +48,7 @@
                                 <th>Req. Qty</th>
                                 <th>Received</th>
                                 <th>Lacking</th>
+                                <th>Cost</th>
                                 <th>Rec. Attempt</th>
                                 <th>Status</th>
                             </tr>
@@ -61,16 +62,19 @@
                                 <td style="font-size: x-small">{{$backorderItems[$item->item_id]['req_qty']}}</td>
                                 <td style="font-size: x-small">{{$backorderItems[$item->item_id]['received']}}</td>
                                 <td style="font-size: x-small">{{$backorderItems[$item->item_id]['lacking']}}</td>
+                                <td style="font-size: x-small">{{$backorderItems[$item->item_id]['req_cost']}}</td>
                                 <td style="font-size: x-small">{{$item->receiving_attempt}}</td>
                                 <td style="font-size: x-small">
                                     <span class="
-                                    @if($item->status == 'ACTIVE') badge bg-warning
-                                    @elseif($item->status == 'FULFILLED') badge bg-success
-                                    @elseif($itemitem->status == 'FOR PO') badge bg-info
-                                    @elseif($item->status == 'CANCELLED') badge bg-danger 
-                                    @else badge bg-secondary 
-                                    @endif"> {{ $item->status }}
-                                </span>     
+                                        @if($item->status == 'ACTIVE') badge bg-warning
+                                        @elseif($item->status == 'FULFILLED') badge bg-success
+                                        @elseif($itemitem->status == 'FOR PO') badge bg-info
+                                        @elseif($item->status == 'CANCELLED') badge bg-danger 
+                                        @else badge bg-secondary 
+                                        @endif"> {{ $item->status }}
+                                    </span>
+                                </td> 
+
                             </tr>
                                
                            @endforeach
@@ -113,83 +117,59 @@
                             </div>
                         </div>
                         <div class="row mb-2">
-                                <div class="col-md-12">
-                                    <label for="delivered_by" class="form-label" style="width: 100; font-size: 13px">Delivered By</label>
-                                    <input wire:model="delivered_by" type="delivered_by" class="form-control"style="width: 100; font-size: 13px" value="{{ $delivered_by ?? 'N/A'}}">
-                                    @error('delivered_by')
-                                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                    @enderror
+                                <div class="col-md-6">
+                                    <label for="mpo-no" class="form-label" style="width: 100; font-size: 13px">Merchandise PO No.</label>
+                                    <input id="mpo-no" class="form-control text-center"style="width: 100; font-size: 13px" value="{{ $requestInfo->merchandise_po_number ?? 'N/A'}}" disabled>
+                                </div>
+                                <div class="col-md-6 display-end">
+                                    <label for="receiving_no" class="form-label" style="width: 100; font-size: 13px">Total Receiving</label>
+                                    <div class="input-group">
+                                        <input  type="text" class="form-control text-center" id="receiving_no"
+                                        style="width: 100; font-size: 12px" value={{ $receivingCount }} disabled>
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#showReceivingList">View</button>
+                                    </div>       
                                 </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-md-4">
-                                <label for="waybill_no" class="form-label" style="width: 100; font-size: 13px">Waybill No</label>
-                                <input wire:model="waybill_no" type="text" class="form-control"  id="waybill_no" value="{{ $waybill_no ?? 'N/A'}}"
-                                    style="width: 100; font-size: 13px">
-                                @error('waybill_no')
-                                    <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                @enderror
+                                <label for="po-created" class="form-label" style="width: 100; font-size: 13px">P.O Created</label>
+                                <input  type="text" class="form-control"  id="po-created" value="{{ $requestInfo->created_at->format('d-M-Y') ?? 'N/A'}}"
+                                    style="width: 100; font-size: 13px" disabled>
+                               
                             </div>
                             <div class="col-md-4">
-                                <label for="delivery_no" class="form-label" style="width: 100; font-size: 13px">Delivery No.</label>
-                                <input wire:model="delivery_no" type="text" class="form-control" style="width: 100; font-size: 13px" value="'{{ $delivery_no ?? 'N/A'}}'">
-                                @error('delivery_no')
-                                    <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                @enderror
+                                <label for="delivery_no" class="form-label" style="width: 100; font-size: 13px">BO Category</label>
+                                <input type="text" class="form-control" style="width: 100; font-size: 13px" value="{{ $requestInfo->category ?? 'N/A'}}" disabled>
+                              
                             </div>
                             <div class="col-md-4">
-                                <label for="invoice_no" class="form-label" style="width: 100; font-size: 13px">Invoice No.</label>
-                                <input wire:model="invoice_no" type="text" class="form-control" style="width: 100; font-size: 13px" value="'{{ $invoice_no ?? 'N/A'}}'">
+                                <label for="invoice_no" class="form-label" style="width: 100; font-size: 13px">TERMS</label>
+                                <input wire:model="invoice_no" type="text" class="form-control" style="width: 100; font-size: 13px" value="{{ $requestInfo->term->term_name ?? 'N/A'}}" disabled>
     
-                                @error('invoice_no')
-                                    <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                @enderror
                             </div>
                         </div>
-    
-    
-                        <div class="col-md-12">
-                            <label for="receiving_no" class="form-label" style="width: 100; font-size: 13px">Receiving No.</label>
-                            <input wire:model="receiving_no" type="text" class="form-control" id="receiving_no"
-                                style="width: 100; font-size: 12px">
-                            @error('receiving_no')
-                                <span class="text-danger" style="font-size: 12px">{{ $message ?? 'N/A' }}</span>
-                            @enderror
-                        </div>
-    
-    
+                        
     
                         <div class="row mb-1">
                             <div class="col-md-12">
                                 <label for="remarks" class="form-label" style="font-size: 13px">Remarks</label>
-                                <textarea wire:model="remarks"  id="remarks" cols="30" rows="10" class="form-control md-12 "
-                                    style="height: 80px; font-size: 12px">
+                                <textarea  id="remarks" cols="30" rows="10" class="form-control md-12 "
+                                    style="height: 80px; font-size: 12px"> {{ $requestInfo->remarks ?? 'N/A'}}
                                 </textarea>
-                                @error('remarks')
-                                    <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                @enderror
                             </div>
                         </div>
-                        <div class="row mb-1">
-                            <div class="col-md-12">
-                                <label for="attachment" class="form-label" style="width: 100; font-size: 13px">Attachment</label>
-                                <input wire:model="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple>
-                                @error('attachments.*')
-                                    <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
+                       
                         <div class="row mb-1">
                             <div class="col-md-6">
-                                <label for="" class="form-label" style="width: 100; font-size: 13px">Total Request Amount</label>
+                                <label for="" class="form-label" style="width: 100; font-size: 13px">Recieved Backorder Amount</label>
                                 <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"
-                                    {{-- value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) { return $detail->qty * ($detail->items->costPrice->amount ?? 0); }), 2) }}" --}}
+                                    value="₱ {{ number_format($totalRegCost, 2) }}"
                                     readonly>
                             </div>
                             <div class="col-md-6">
-                                <label for="" class="form-label" style="width: 100; font-size: 13px">Total Received Amount</label>
+                                <label for="" class="form-label" style="width: 100; font-size: 13px">To Receive Backorder Amount</label>
                                 <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"
-                                    {{-- value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) use ($totalReceived) { return ($totalReceived[$detail->item_id] ?? 0) * ($detail->items->costPrice->amount ?? 0); }), 2) }}" --}}
+                                    value="₱ {{ number_format($totalToReceiveCost, 2) }}"
                                     readonly>
                             </div>
                         </div>
@@ -198,5 +178,43 @@
         </div>
     </div>
 
+    {{-- show receiving lists modal --}}
+    <div class="modal fade" id="showReceivingList" tabindex="-1" aria-labelledby="showReceivingListLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="showReceivingListLabel">Receiving Lists</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Receiving Number</th>
+                                        <th>Transaction Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($receivingList as $receiving)
+                                        <tr>
+                                            <td>{{ $receiving->RECEIVING_NUMBER }}</td>
+                                            <td>{{ $receiving->created_at->format('d-M-Y') }}</td>
+                                            <td>{{ $receiving->RECEIVING_STATUS}}</td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <x-primary-button class="float-end" data-bs-dismiss="modal" aria-label="Close"> CLOSE </x-primary-button>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
     
