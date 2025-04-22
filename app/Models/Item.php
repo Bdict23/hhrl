@@ -30,6 +30,11 @@ class Item extends Model
     {
         return $this->hasMany(PriceLevel::class, 'item_id');
     }
+    public function priceLevels()
+    {
+        return $this->hasMany(PriceLevel::class, 'item_id');
+    }   
+
     public function costPrice()
     {
         return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->latest()->with('supplier');

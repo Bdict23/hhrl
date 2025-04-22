@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\Item;
 use App\Models\PriceLevel;
 use App\Models\Supplier;
 use Illuminate\Support\Carbon;
@@ -65,6 +66,13 @@ class ItemCost extends Component
                 ->when($this->chartMonth, fn ($q) => $q->whereMonth('created_at', $this->chartMonth))
                 ->orderBy('created_at');
 
+            if ($query->count() === 0) {
+                $this->addError('chart', 'No cost data available for this item.');
+                $this->chartData = [];
+                $this->dispatch('loadAndRenderChart', $this->chartData);
+                return;
+            }
+
             if ($query->count() > 5000) {
                 $this->addError('chart', 'Too many records to display. Please narrow your filters.');
                 return;
@@ -89,15 +97,17 @@ class ItemCost extends Component
         $this->selectedItemId = $itemId;
         $this->selectedItemName = $itemName;
         $this->newCost = null;
-        $this->supplierId = ''; 
+        $this->supplierId = '';
         $this->costDate = now()->format('Y-m-d');
         $this->resetErrorBag();
+        $this->showForm = true; // Set showForm here to ensure state is ready
+        $this->dispatch('openAddCostModal', itemId: $itemId, itemName: $itemName); // Dispatch with parameters for debugging
     }
 
     public function addCost()
     {
-        $this->showForm = true;
-        $this->dispatch('open-modal', 'add-cost-modal');
+        // No need to set showForm here; handled in setItem
+        // This method is kept for compatibility with existing Blade events
     }
 
     public function saveCost()
@@ -105,6 +115,7 @@ class ItemCost extends Component
         $this->validate([
             'newCost' => 'required|numeric|min:0',
             'supplierId' => 'required|exists:suppliers,id',
+            'selectedItemId' => 'required|integer|exists:items,id',
         ]);
 
         try {
@@ -114,11 +125,12 @@ class ItemCost extends Component
                 'amount' => $this->newCost,
                 'supplier_id' => $this->supplierId,
                 'created_at' => $this->costDate ?? now(),
+                'company_id' => auth()->user()->branch->company_id,
             ]);
 
-            session()->flash('success', 'Cost added successfully.');
+            session()->flash('success', 'Cost added successfully for ' . $this->selectedItemName);
 
-            $this->dispatch('close-modal');
+            $this->dispatch('closeAddCostModal');
 
             if ($this->selectedItemId) {
                 $this->showChart($this->selectedItemId);
@@ -139,32 +151,37 @@ class ItemCost extends Component
 
     public function render()
     {
-        $priceLevels = PriceLevel::with(['item', 'supplier'])
-            ->whereHas('item', fn ($query) => $query->where('item_description', 'like', '%' . $this->search . '%'))
-            ->where('price_type', 'COST')
-            ->whereIn('id', fn ($subquery) => $subquery->selectRaw('MAX(id)')
-                ->from('price_levels')
-                ->groupBy('item_id'))
-            ->orderBy('created_at', 'desc')
+        $items = Item::query()
+            ->where('company_id', auth()->user()->branch->company_id)
+            ->where('item_description', 'like', '%' . $this->search . '%')
+            ->with(['priceLevels' => function ($query) {
+                $query->where('price_type', 'COST')
+                      ->orderBy('created_at', 'desc')
+                      ->take(1)
+                      ->with('supplier');
+            }])
+            ->orderBy('item_description', 'asc')
             ->paginate(10)
-            ->through(fn ($level) => [
-                'id' => $level->id,
-                'item_id' => $level->item_id,
-                'cost' => $level->amount,
-                'timestamp' => $level->created_at->format('Y-m-d'),
-                'item_name' => $level->item?->item_description ?? 'N/A',
-                'supplier_name' => $level->supplier?->supp_name ?? 'N/A',
-            ]);
+            ->through(function ($item) {
+                $priceLevel = $item->priceLevels->first();
+                return [
+                    'id' => $item->id,
+                    'item_id' => $item->id,
+                    'item_name' => $item->item_description ?? 'N/A',
+                    'cost' => $priceLevel ? (float) $priceLevel->amount : null,
+                    'timestamp' => $priceLevel ? Carbon::parse($priceLevel->created_at)->format('Y-m-d') : 'N/A',
+                    'supplier_name' => $priceLevel && $priceLevel->supplier ? $priceLevel->supplier->supp_name : 'N/A',
+                ];
+            });
 
         $suppliers = Supplier::orderBy('supp_name')->get(['id', 'supp_name']);
 
         return view('livewire.item-cost', [
-            'priceLevels' => $priceLevels,
+            'priceLevels' => $items,
             'months' => collect(range(1, 12))->mapWithKeys(fn ($m) => [
                 $m => Carbon::create()->month($m)->format('F'),
             ]),
             'suppliers' => $suppliers,
         ]);
-
     }
 }

@@ -49,20 +49,29 @@
                                                 <td>{{ $level['timestamp'] }}</td>
                                                 <td>{{ $level['item_name'] }}</td>
                                                 <td>{{ $level['supplier_name'] }}</td>
-                                                <td>{{ number_format($level['cost'], 2) }}</td>
+                                                <td>
+                                                    @if ($level['cost'] !== null)
+                                                        {{ number_format($level['cost'], 2) }}
+                                                    @else
+                                                        <span class="text-muted">No Cost</span>
+                                                    @endif
+                                                </td>
                                                 <td class="text-center">
+                                                    @if ($level['cost'] !== null)
+                                                        <button 
+                                                            wire:click="showChart({{ $level['item_id'] }})"
+                                                            class="btn btn-primary btn-sm">
+                                                            View Trend
+                                                        </button>
+                                                    @else
+                                                        <span class="text-muted">No Data</span>
+                                                    @endif
                                                     <button 
-                                                        wire:click="showChart({{ $level['item_id'] }})"
-                                                        class="btn btn-primary btn-sm">
-                                                        View Trend
-                                                    </button>
-                                                    <button 
-                                                        wire:click="addCost"
+                                                        wire:click="setItem({{ $level['item_id'] }}, '{{ $level['item_name'] }}')"
                                                         type="button"
                                                         class="btn btn-success btn-sm"
                                                         data-bs-toggle="modal"
-                                                        data-bs-target="#addCostModal"
-                                                        wire:click="setItem({{ $level['item_id'] }}, '{{ $level['item_name'] }}')">
+                                                        data-bs-target="#addCostModal">
                                                         Add Cost
                                                     </button>
                                                 </td>
@@ -95,6 +104,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form wire:submit.prevent="saveCost">
+                                        <input type="hidden" wire:model="selectedItemId" />
                                         <div class="mb-3">
                                             <label for="cost" class="form-label">Cost</label>
                                             <input 
@@ -395,7 +405,14 @@
             chartManager.handleNewData(data);
         });
 
-        Livewire.on('close-modal', () => {
+        Livewire.on('openAddCostModal', ({ itemId, itemName }) => {
+            console.log('Opening modal for item:', { itemId, itemName }); // Debug log
+            const modalElement = document.getElementById('addCostModal');
+            const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modal.show();
+        });
+
+        Livewire.on('closeAddCostModal', () => {
             const modalElement = document.getElementById('addCostModal');
             const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
             modal.hide();
