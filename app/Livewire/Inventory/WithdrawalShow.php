@@ -98,15 +98,31 @@ class WithdrawalShow extends Component
         $this->selectedItems = [];
 
         foreach ($withdrawal->cardex as $item) {
+            
             if ($item['qty_out'] > 0) {
                 $this->selectedItems[] = [
                     'id' => $item['item_id'],
                     'requested_qty' => (float) $item['qty_out'],
-                    'total' => (float) $item['qty_out'] * (float) $item['price_level_id'],
+                    'total_balance' =>  0,
+                    'total_available' => 0,
+                    'code' => $item->item->item_code ?? 'N/A',
+                    'name' => $item->item->item_description,
+                    'unit' => $item->item->uom->unit_symbol,
+                    'category' => $item->item->category->category_name,
+                    'classification' => $item->item->classification->classification_name ?? 'N/A',
+                    'barcode' => $item->item->item_barcode ?? 'N/A',
+                    'location' => $item->item->location->location_name ?? 'N/A',
+                    'uom' => $item->item->uom->unit_name ?? 'N/A',
+                    'brand' => $item->item->brand->brand_name ?? 'N/A',
+                    'status' => $item->item->item_status,
+                    'cost' => $item->item->costPrice->amount,
+                    'costId' => $item->item->costPrice->id,
+                    'total' => 0,
                 ];
             }
+            $this->overallTotal += (float) $item['qty_out'] * (float) $item->item->costPrice->amount;
+
         }
-        dd($this->selectedItems);
     }
 
     public function fetchData(){

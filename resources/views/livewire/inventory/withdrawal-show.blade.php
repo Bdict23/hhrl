@@ -198,11 +198,6 @@
                                         <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Will use on</label> <span style="color: red;">*</span>
                                         <input  wire:model.live="useDate"  type="date" class="form-control" id="usage_date"
                                            
-                                            {{-- value="{{ \Carbon\Carbon::parse($useDate)->format('Y-m-d') }}"  --}}
-                                            {{-- value="{{ $useDate }}"  --}}
-                                            {{-- value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"  --}}
-                                            {{-- value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"  --}}
-                                            {{-- value="{{ \Carbon\Carbon::parse($useDate)->format('Y-m-d') }}"  --}}
                                             {{ $isAlreadyFinal ? 'disabled' : '' }}>
                                         @error('useDate')
                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
@@ -280,7 +275,9 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
+                                        @if (!$isAlreadyFinal)
+                                            <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
