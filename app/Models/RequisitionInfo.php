@@ -13,7 +13,7 @@ use App\Models\Term;
 use App\Models\Item;
 
 
-class requisitionInfo extends Model
+class RequisitionInfo extends Model
 {
     //protected $primaryKey = 'requisition_number';
     use HasFactory;
