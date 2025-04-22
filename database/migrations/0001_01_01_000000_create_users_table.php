@@ -138,6 +138,47 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
+        Schema::create('modules', function (Blueprint $table) {
+            $table->id();
+            $table->string('module_name')->unique();
+            $table->string('module_description')->nullable();
+            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+        });
+        DB::table('modules')->insert([
+            ['module_name' => 'Purchase Order', 'module_description' => 'Description for Module 1'],
+            ['module_name' => 'Item Withdrawal', 'module_description' => 'Description for Module 2'],
+        ]);
+
+        
+        Schema::create('module_permissions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->foreignId('module_id')->constrained('modules')->onDelete('cascade');
+            $table->boolean('read_only')->default(false);
+            $table->boolean('full_access')->default(false);
+            $table->boolean('restrict')->default(false);
+            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+        });
+
+        
+        if (!Schema::hasTable('signatories')) {
+            Schema::create('signatories', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('employee_id')->constrained('employees')->onDelete('no action')->onUpdate('no action');
+                $table->ENUM('status', ['ACTIVE', 'INACTIVE'])->notNullable()->default('active');
+                $table->string('signatory_type');
+                $table->foreignId('module_id')->constrained('modules')->onDelete('no action')->onUpdate('no action');
+                $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
+                $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action');
+                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+    
+            });
+        }
+
 
     }
 
@@ -149,5 +190,14 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('modules');
+        Schema::dropIfExists('module_permissions');
+        Schema::dropIfExists('signatories');
+        Schema::dropIfExists('companies');
+        Schema::dropIfExists('branches');
+        Schema::dropIfExists('departments');
+        Schema::dropIfExists('employee_positions');
+        Schema::dropIfExists('employees');
+        Schema::dropIfExists('company_audits');
     }
 };

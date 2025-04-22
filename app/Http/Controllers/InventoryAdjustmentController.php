@@ -28,30 +28,7 @@ class InventoryAdjustmentController extends Controller
         $withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'preparedBy', 'cardex')->where('source_branch_id', auth()->user()->branch_id)->get();
         return view('inventory.withdrawal_summary', compact('withdrawals'));
     }
-    //Raw Material Request
-    public function NewItemWithdrawal(){
-        $suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
-        $types =  Term::all();
-        $items = Item::with('priceLevel', 'units','category','classification')->where([['item_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]] )->get();
-        $approvers = Signatory::where([['signatory_type', 'APPROVER','employees'],['branch_id', auth()->user()->branch_id],['status', 'ACTIVE'],['MODULE', 'ITEM_WITHDRAWAL']])->get();
-        $reviewers = Signatory::where([['signatory_type', 'REVIEWER','employees'],['branch_id', auth()->user()->branch_id],['status', 'ACTIVE'],['MODULE', 'ITEM_WITHDRAWAL']])->get();
-        $cardexBalance = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as inventory_qty'))
-            ->where('status', 'FINAL')
-            ->where('source_branch_id', auth()->user()->branch_id)
-            ->groupBy('item_id')
-            ->pluck('inventory_qty', 'item_id');
-        $cardexAvailable = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as available_qty'))
-            ->where(function($query) {
-                $query->where([['status', 'RESERVED'],['source_branch_id', auth()->user()->branch_id]])
-                      ->orWhere('status', 'FINAL');
-            })
-            ->where('source_branch_id', auth()->user()->branch_id)
-            ->groupBy('item_id')
-            ->pluck('available_qty', 'item_id');
-        $categories = DB::table('categories')->select('category_name')->where([['status', 'ACTIVE'],['category_type', 'ITEM'],['company_id', auth()->user()->branch->company_id]])->get();
-        $departments = Department::where([['company_id', auth()->user()->branch->company_id],['department_status', 'ACTIVE'],['branch_id', auth()->user()->branch_id]])->get();
-        return view('inventory.item_withdrawal', compact('suppliers','types','items','approvers','reviewers', 'cardexBalance', 'cardexAvailable', 'categories', 'departments'));
-    }
+
 
 
     public function storeWithdrawal(Request $request){
@@ -122,19 +99,6 @@ public function withdrawalApproval() {
     return view('inventory.withdrawal_approval_lists', compact('withdrawals'));
 }
 
-public function viewAndUpdateWithdrawal($id) {
-    $withdrawal = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
-
-
-    $departments = Department::where([['company_id', auth()->user()->branch->company_id], ['department_status', 'ACTIVE'], ['branch_id', auth()->user()->branch_id]])->get();
-    $approvers = Signatory::where([['signatory_type', 'APPROVER', 'employees'], ['branch_id', auth()->user()->branch_id], ['status', 'ACTIVE'], ['MODULE', 'ITEM_WITHDRAWAL']])->get();
-    $reviewers = Signatory::where([['signatory_type', 'REVIEWER', 'employees'], ['branch_id', auth()->user()->branch_id], ['status', 'ACTIVE'], ['MODULE', 'ITEM_WITHDRAWAL']])->get();
-    $items = Item::with('priceLevel', 'units', 'category', 'classification')->where([['item_status', 'ACTIVE'], ['company_id', auth()->user()->branch->company_id]])->get();
-    $categories = DB::table('categories')->select('category_name')->where([['status', 'ACTIVE'],['category_type', 'ITEM'],['company_id', auth()->user()->branch->company_id]])->get();
-
-    return view('inventory.withdrawal_view_update', compact('withdrawal', 'departments', 'approvers', 'reviewers', 'items', 'categories'));
-
-}
 
 public function printWidthrawal($id) {
     try {

@@ -95,9 +95,15 @@ class UserAccess extends Component
                     $currentPermission->full_access = $type == 'full_access' ? 1 : 0;
                     $currentPermission->restrict = $type == 'restrict' ? 1 : 0;
                     $currentPermission->save();
-                
-                // $this->resetExcept('employeeId');
-                // $this->fetchData();
+                $this->dispatch('clearTable');
+                $this->resetExcept('employeeId');
+                $this->reset('permissions','branches', 'positions', 'modules');
+                 $this->fetchData();
+                $this->permissions[$moduleId] = [
+                    'read_only' => $type == 'read_only' ? 1 : 0,
+                    'full_access' => $type == 'full_access' ? 1 : 0,
+                    'restrict' => $type == 'restrict' ? 1 : 0,
+                ];
                 $this->selectedUser($this->employeeId);
 
             }else if(!$action){
@@ -111,9 +117,20 @@ class UserAccess extends Component
                     $currentPermission->delete();
                 }
 
-                // $this->resetExcept('employeeId');
-                // $this->fetchData();
+                $this->resetExcept('employeeId');
+                $this->reset('permissions','branches', 'positions', 'modules');
+                
+
+                 $this->fetchData();
+                $this->permissions[$moduleId] = [
+                    'read_only' => false,
+                    'full_access' => false,
+                    'restrict' => false,
+                ];
+                $this->dispatch('clearTable');
                 $this->selectedUser($this->employeeId);
+                
+
             }
     }
 

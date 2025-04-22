@@ -34,4 +34,9 @@ class Signatory extends Model
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    public function module()
+    {
+        return $this->belongsTo(Module::class, 'module_id');
+    }
+
 }

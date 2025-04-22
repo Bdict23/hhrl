@@ -87,6 +87,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    
                                   
                                     @foreach ($modules as $module)
                                     <tr>
@@ -136,48 +137,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="card" style="display: none">
-                <div class="card-header">
-                    <h5 class="card-title">User Access</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped table-hover table-sm table-responsive-sm">
-                        <thead class="table-dark">
-                            <tr>
-                                <th colspan="1" class="text-center">User Access</th>
-                                <th colspan="1" class="text-center">Read Only : 0</th>
-                                <th colspan="1" class="text-center">Full Access : 0</th>
-                                <th colspan="1" class="text-center">Restrict : 0</th>
-
-                            </tr>
-                            <tr>
-                                <th>Module</th>
-                                <th class="text-center">Read Only</th>
-                                <th class="text-center">Full Access</th>
-                                <th class="text-center">Restrict</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                          
-                            @foreach ($modules as $module)
-                            <tr>
-                                <td>{{ $module->module_name }}</td>
-                
-                                @foreach (['read_only', 'full_access', 'restrict'] as $type)
-                                    <td>
-                                        <input 
-                                         {{-- wire:model.live="permissions.{{ $module->id }}.{{ $type }}"  --}}
-                                        type="checkbox" class="form-check-input" id="flexCheckDefault" 
-                                        {{ $permissions[$module->id][$type] ?? false ? 'checked' : '' }} disabled>
-                                    </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
-                           
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -251,10 +210,12 @@
     </div>
   
     <script>
-         function fetchEmployees() {
+        function fetchEmployees() {
             let branchId = document.getElementById('branch_select').value;
             @this.fetchEmployees(branchId);
             console.log(branchId);
     }
+        
+         
     </script>
 </div>

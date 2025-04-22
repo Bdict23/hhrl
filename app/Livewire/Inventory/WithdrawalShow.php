@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Inventory;
-
+use Illuminate\Http\Request;
 use Livewire\Component;
 use App\Models\Department;
 use App\Models\Withdrawal as WithdrawalModel;
@@ -12,9 +12,9 @@ use App\Models\Cardex;
 use App\Models\Item;
 use App\Models\Module;
 
-
-class Withdrawal extends Component
+class WithdrawalShow extends Component
 {
+    
 
     // Custom Columns Properties
     public $avlBal = false;
@@ -40,6 +40,7 @@ class Withdrawal extends Component
     public $approver = null; // selected approver from user
     public $categories = []; // display categories on ui
     public $finalStatus = false; // selected final status from user
+    public $isAlreadyFinal = false; // selected final status from user
     public $haveSpan = false; // selected span status from user
     public $spanDate = null; // selected span date from user
     public $useDate = null; // selected use date from user
@@ -70,9 +71,42 @@ class Withdrawal extends Component
     ];
 
 
-    public function mount()
+    public function mount(Request $request = null)
     {
+        if ($request->has('withdrawal-id')) {
+            //  dd($request->query('requisition-id'));
+            $this->fetchData();
+             $this->showWithdrawal($request->query('withdrawal-id'));
+        }
+
         $this->fetchData();
+    }
+
+    public function showWithdrawal($id)
+    {
+        $withdrawal = WithdrawalModel::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
+        $this->reference = $withdrawal->reference_number;
+        $this->selectedDepartment = $withdrawal->department_id;
+        $this->useDate = $withdrawal->usage_date;
+        $this->spanDate = $withdrawal->useful_date;
+        $this->remarks = $withdrawal->remarks;
+        $this->reviewer = $withdrawal->reviewed_by;
+        $this->approver = $withdrawal->approved_by;
+        $this->isAlreadyFinal = $withdrawal->withdrawal_status != 'PREPARING' ? true : false;
+        $this->finalStatus = $this->isAlreadyFinal;
+        $this->haveSpan = $withdrawal->useful_date != null ? true : false;
+        $this->selectedItems = [];
+
+        foreach ($withdrawal->cardex as $item) {
+            if ($item['qty_out'] > 0) {
+                $this->selectedItems[] = [
+                    'id' => $item['item_id'],
+                    'requested_qty' => (float) $item['qty_out'],
+                    'total' => (float) $item['qty_out'] * (float) $item['price_level_id'],
+                ];
+            }
+        }
+        dd($this->selectedItems);
     }
 
     public function fetchData(){
@@ -215,8 +249,9 @@ class Withdrawal extends Component
 
 
 
+   
     public function render()
     {
-        return view('livewire.inventory.withdrawal');
+        return view('livewire.inventory.withdrawal-show');
     }
 }

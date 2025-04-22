@@ -43,15 +43,7 @@ class PurchaseOrderController extends Controller
         $requistionType = Term::all();
         return Term::all();
      }
- public function newpo(){
-    $suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->emp_id]])->get();
-    $types =  Term::all();
-    $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
-    $approver = Signatory::where([['signatory_type', 'APPROVER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
-    $reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
-     return view('purchase_order.po_create', compact('suppliers','types','items','approver','reviewer'));
-    // return statuses::all();
- }
+
 
      public function printPO($id)
      {

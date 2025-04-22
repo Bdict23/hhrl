@@ -10,6 +10,7 @@ use App\Models\Signatory;
 use App\Models\RequisitionInfo;
 use App\Models\RequisitionDetail;
 use App\Models\Cardex;
+use App\Models\Module;
 use Illuminate\Support\Facades\DB;
 
 
@@ -32,6 +33,7 @@ class PurchaseOrderCreate extends Component
     public $approver_id;
     public $cardexAvailable = [];
     public $cardexBalance = [];
+    public $module;
 
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
@@ -146,9 +148,12 @@ class PurchaseOrderCreate extends Component
     {
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
+    
+    $purchasing = Module::where('module_name', 'Purchase order')->first();
+
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->get();
-    $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
-    $this->reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module','PURCHASING' ],['branch_id', auth()->user()->branch_id]])->get();
+    $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module_id', $purchasing->id  ],['branch_id', auth()->user()->branch_id]])->get();
+    $this->reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module_id',$purchasing->id ],['branch_id', auth()->user()->branch_id]])->get();
     $this->cardexAvailable = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as available_qty'))
             ->where(function($query) {
                 $query->where([['status', 'RESERVED'],['source_branch_id', auth()->user()->branch_id]])

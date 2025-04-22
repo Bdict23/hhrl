@@ -109,7 +109,6 @@ Route::get('/show_request_review/{id}', [PurchaseOrderController::class, 'show_r
 
 Route::get('/show_request_approval/{id}', [PurchaseOrderController::class, 'show_approval_request'])->middleware(['auth', 'verified'])->name('po.show_request_approval'); // Route to show the purchase order details (approval)
 
-Route::get('/po_create', [PurchaseOrderController::class, 'newpo'])->middleware(['auth', 'verified'])->name('po.create'); // Route to create a new purchase order
 
 Route::get('/get-po-details/{poNumber}', [ReceivingController::class, 'getPODetails'])->middleware(['auth', 'verified'])->name('po.po_receive'); // Route to get PO details
 // Route for storing receiving data
@@ -199,7 +198,6 @@ Route::post('/store_payment', [InvoicingController::class, 'storePayment'])->mid
 Route::get('/daily_sales_report', [InvoicingController::class, 'daily_sales_report'])->middleware(['auth', 'verified'])->name('daily_sales_report');
 
 
-Route::get('/item_withdrawal', [InventoryAdjustmentController::class, 'NewItemwithdrawal'])->middleware(['auth', 'verified'])->name('withdrawal.index'); // Route to show the raw materials requisition form
 
 
 Route::get('/branch_department', [DepartmentController::class, 'index'])->middleware(['auth', 'verified'])->name('departments.index'); // Route to show the raw materials requisition form
@@ -229,13 +227,13 @@ Route::get('/withdrawal_review', [InventoryAdjustmentController::class, 'withdra
 Route::get('/withdrawal_approval', [InventoryAdjustmentController::class, 'withdrawalApproval'])->middleware(['auth', 'verified'])->name('withdrawal.approval');
 
 // Route for withdrawal show
-Route::get('/withdrawal/{id}', [InventoryAdjustmentController::class, 'showWithdrawal'])->name('withdrawal.show');
+// Route::get('/withdrawal/{id}', [InventoryAdjustmentController::class, 'showWithdrawal'])->name('withdrawal.show');
 
 // Edit withdrawal
 Route::get('/withdrawal/{id}/edit', [InventoryAdjustmentController::class, 'editWithdrawal'])->name('withdrawal.edit');
 
 // view and update withdrawal
-Route::get('/withdrawal/{id}/view', [InventoryAdjustmentController::class, 'viewAndUpdateWithdrawal'])->name('withdrawal.view');
+Route::get('/withdrawal/{id}/view', function(){ return view('inventory.withdrawal_summary');})->name('withdrawal.view');
 
 // Route for updating withdrawal
 Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'printWidthrawal'])->name('withdrawal.print');
@@ -260,3 +258,16 @@ Route::get('/show-backorder', function () {
 Route::get('/receiving-summary', function () {
     return view('purchase_order.purchase-order-receiving-summary');
 })->middleware(['auth', 'verified'])->name('receiving-summary');
+
+
+//Route for purchase order create
+Route::get('/po_create', function(){ return view('purchase_order.po_create');})->middleware(['auth', 'verified'])->name('po.create'); // Route to create a new purchase order
+
+
+// Rout for item Withdrawal
+Route::get('/item_withdrawal', function(){ return view('inventory.item_withdrawal');})->middleware(['auth', 'verified'])->name('withdrawal.index'); // Route to show the raw materials requisition form
+
+// Route for withdrawal show
+Route::get('/withdrawal-show', function() {
+    return view('inventory.withdrawal_show'); // Ensure the view is returned
+})->name('withdrawal.show'); // Route to show the withdrawal details
