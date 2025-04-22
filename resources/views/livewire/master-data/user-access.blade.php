@@ -1,4 +1,5 @@
 <div>
+
    <div class="container row">
       
         <div class="col-md-6">
@@ -48,47 +49,93 @@
         </div>
 
         <div class=" col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">User Access</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped table-hover table-sm table-responsive-sm">
-                        <thead class="table-dark">
-                            <tr>
-                                <th colspan="1" class="text-center">User Access</th>
-                                <th colspan="1" class="text-center">Read Only : 0</th>
-                                <th colspan="1" class="text-center">Full Access : 0</th>
-                                <th colspan="1" class="text-center">Restrict : 0</th>
 
-                            </tr>
-                            <tr>
-                                <th>Module</th>
-                                <th class="text-center">Read Only</th>
-                                <th class="text-center">Full Access</th>
-                                <th class="text-center">Restrict</th>   
-                            </tr>
-                        </thead>
-                        <tbody>
-                          
-                            @foreach ($modules as $module)
-                            <tr>
-                                <td>{{ $module->module_name }}</td>
+            <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
+                        role="tab" aria-controls="invoice" aria-selected="true">Permision</button>
+                </li>
+    
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pcv-tab" data-bs-toggle="tab" data-bs-target="#pcv" type="button"
+                        role="tab" aria-controls="pcv" aria-selected="false">Role</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="jobOrderTabContent">
                 
-                                @foreach (['read_only', 'full_access', 'restrict'] as $type)
-                                    <td>
-                                        <input 
-                                         wire:click="setPermission( '{{$module->id}}','{{ $type }}',$event.target.checked)" 
-                                        type="checkbox" class="form-check-input" id="flexCheckDefault" 
-                                        {{-- value=""> --}} value="1"
-                                        {{ $permissions[$module->id][$type] ?? false ? 'checked' : '' }} >
-                                    </td>
+                <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">User Access</h5>
+                        </div>
+                        <div class="card-body table-responsive-sm">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th colspan="1" class="text-center">User Access</th>
+                                        <th colspan="1" class="text-center">Read Only : 0</th>
+                                        <th colspan="1" class="text-center">Full Access : 0</th>
+                                        <th colspan="1" class="text-center">Restrict : 0</th>
+                    
+                                    </tr>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th class="text-center">Read Only</th>
+                                        <th class="text-center">Full Access</th>
+                                        <th class="text-center">Restrict</th>   
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                    @foreach ($modules as $module)
+                                    <tr>
+                                        <td>{{ $module->module_name }}</td>
+                        
+                                        @foreach (['read_only', 'full_access', 'restrict'] as $type)
+                                            <td>
+                                                <input 
+                                                 wire:click="setPermission( '{{$module->id}}','{{ $type }}',$event.target.checked)" 
+                                                type="checkbox" class="form-check-input" id="flexCheckDefault" 
+                                                {{-- value=""> --}} value="1"
+                                                {{ $permissions[$module->id][$type] ?? false ? 'checked' : '' }} >
+                                            </td>
+                                        @endforeach
+                                    </tr>
                                 @endforeach
-                            </tr>
-                        @endforeach
-                           
-                        </tbody>
-                    </table>
+                                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pcv" role="tabpanel" aria-labelledby="pcv-tab">
+                    <!-- ROLE TAB -->
+                    <div class="card">
+                        <header class="card-header">
+                            <h6 >User Roles</h6>
+                        </header>
+                        <div class="card-body table-responsive-sm">                           
+                             <table class="table table-striped table-sm">
+                                <thead class="table-dark">
+                                    <tr class="text-smaller">
+                                        <th>Role</th>
+                                        <th>Module</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Reviewer</td>
+                                        <td>Recieving</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" wire:click="toggleRole('Recieving', 'Reviewer', $event.target.checked)">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card" style="display: none">

@@ -76,24 +76,44 @@ class UserAccess extends Component
     public function setPermission($moduleId, $type ,$action)
     {
         if($this->employeeId){
+           
             if($action){
                 $currentPermission = ModulePermission::where([
                     ['module_id', $moduleId],
                     [$type, '!=', null],
                     ['employee_id',$this->employeeId]
                 ])->first();
-
-                if (!$currentPermission && $action) {
+                
+                if ($currentPermission) {
+                    $currentPermission->delete();
+                }
+                
                     $currentPermission = new ModulePermission();
                     $currentPermission->module_id = $moduleId;
-                    $currentPermission->employee_id = $this->employeeId ?? null;
-                    $currentPermission->$type = 1;
+                    $currentPermission->employee_id = $this->employeeId;
+                    $currentPermission->read_only = $type == 'read_only' ? 1 : 0;
+                    $currentPermission->full_access = $type == 'full_access' ? 1 : 0;
+                    $currentPermission->restrict = $type == 'restrict' ? 1 : 0;
                     $currentPermission->save();
-                }
-                $this->resetExcept('employeeId');
-                $this->fetchData();
+                
+                // $this->resetExcept('employeeId');
+                // $this->fetchData();
                 $this->selectedUser($this->employeeId);
 
+            }else if(!$action){
+                $currentPermission = ModulePermission::where([
+                    ['module_id', $moduleId],
+                    ['employee_id', $this->employeeId],
+                ])->first();
+               
+
+                if ($currentPermission) {
+                    $currentPermission->delete();
+                }
+
+                // $this->resetExcept('employeeId');
+                // $this->fetchData();
+                $this->selectedUser($this->employeeId);
             }
     }
 
