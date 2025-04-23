@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('customer_address')->nullable();
             $table->string('email')->nullable();
             $table->string('tin')->nullable();
+            $table->date('birthday');
             $table->enum('type', ['INDIVIDUAL', 'WHOLESALE'])->default('INDIVIDUAL');
             $table->foreignId('branch_id')->constrained('branches')->nullable();
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');

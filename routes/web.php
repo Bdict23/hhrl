@@ -23,6 +23,18 @@ use App\Http\Controllers\InvoicingController;
 use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingsController;
+//ken gate-entrance module
+use Livewire\Livewire;
+use App\Livewire\GateEntrance\GateEntrance;
+use App\Livewire\GateEntrance\Gate\BookService;
+use App\Livewire\GateEntrance\Leisures;
+use App\Livewire\GateEntrance\Customers;
+use App\Livewire\GateEntrance\BookingView;
+use App\Livewire\GateEntrance\Customer\CustomersList;
+
+
+
+//
 
 Route::get('/', function () {
     $suppliers = Supplier::all(); // Fetching all suppliers from the database
@@ -239,3 +251,18 @@ Route::get('/withdrawal/{id}/view', [InventoryAdjustmentController::class, 'view
 
 // Route for updating withdrawal
 Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'printWidthrawal'])->name('withdrawal.print');
+
+// ken Gate Entrance Module
+// Route for Entrance view
+Route::get('/gate-entrance', GateEntrance::class)->name('gate.entrance.page');
+Route::get('/book-service/{id}', BookService::class)->name('book.service.page');
+Route::get('/booking-view/{booking_number}', BookingView::class)->name('booking.view.page');
+Route::get('/leisures', Leisures::class)->name('leisures.page');
+Route::get('/customers', Customers::class)->name('customers.page');
+Route::get('/customers_list', CustomersList::class)->name('customers.list');
+
+
+
+
+
+
