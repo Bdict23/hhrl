@@ -19,6 +19,7 @@ class UserAccess extends Component
     public $positions = [];
     public $position;
     public $modules;
+    public $modulesWithSignatory = [];
     public $userAccesss = [];
     public $branch; // Define branch property
     public $userAccessId;
@@ -30,6 +31,14 @@ class UserAccess extends Component
     public $employeeDepartment;
     public $employeePosition;
     public $employeeStatus;
+
+    // access count
+    public $readOnlyCount = 0;
+    public $fullAccessCount = 0;
+    public $restrictCount = 0;
+
+    // made changes
+    public $hasChanges = false;
 
     protected $listeners = [
         'selectedUser' => 'selectedUser',
@@ -46,6 +55,7 @@ class UserAccess extends Component
         $this->branches = Branch::where('branch_status', 'ACTIVE')->get();
         $this->positions = Position::where('position_status', 'ACTIVE')->get();
         $this->modules = Module::all();
+        $this->modulesWithSignatory = Module::where('has_signatory', 1)->get();
 
 
 
@@ -53,6 +63,8 @@ class UserAccess extends Component
 
     public function selectedUser($userId)
     {
+        $this->reset();
+        $this->fetchData();
         $this->userDetails = Employee::with('user')->find($userId);
         $this->userAccess = ModulePermission::where('employee_id', $userId)->get();
         $this->employeeId = $userId;
@@ -62,6 +74,17 @@ class UserAccess extends Component
                 ->where('module_id', $module->id)
                 ->first();
 
+            // access count
+            if ($perm->read_only ?? 0) {
+                $this->readOnlyCount ++;
+            }
+            if ($perm->full_access ?? 0) {
+                $this->fullAccessCount ++;
+            }
+            if ($perm->restrict ?? 0) {
+                $this->restrictCount ++;
+            }
+          
                 $this->permissions[$module->id] = [
                     'read_only' => (bool) ($perm->read_only ?? 0),
                     'full_access' => (bool) ($perm->full_access ?? 0),
@@ -73,67 +96,46 @@ class UserAccess extends Component
 
     }
 
-    public function setPermission($moduleId, $type ,$action)
+    public function setPermission($moduleId, $type)
     {
-        if($this->employeeId){
-           
-            if($action){
-                $currentPermission = ModulePermission::where([
-                    ['module_id', $moduleId],
-                    [$type, '!=', null],
-                    ['employee_id',$this->employeeId]
-                ])->first();
-                
-                if ($currentPermission) {
-                    $currentPermission->delete();
-                }
-                
-                    $currentPermission = new ModulePermission();
-                    $currentPermission->module_id = $moduleId;
-                    $currentPermission->employee_id = $this->employeeId;
-                    $currentPermission->read_only = $type == 'read_only' ? 1 : 0;
-                    $currentPermission->full_access = $type == 'full_access' ? 1 : 0;
-                    $currentPermission->restrict = $type == 'restrict' ? 1 : 0;
-                    $currentPermission->save();
-                $this->dispatch('clearTable');
-                $this->resetExcept('employeeId');
-                $this->reset('permissions','branches', 'positions', 'modules');
-                 $this->fetchData();
-                $this->permissions[$moduleId] = [
-                    'read_only' => $type == 'read_only' ? 1 : 0,
-                    'full_access' => $type == 'full_access' ? 1 : 0,
-                    'restrict' => $type == 'restrict' ? 1 : 0,
-                ];
-                $this->selectedUser($this->employeeId);
-
-            }else if(!$action){
-                $currentPermission = ModulePermission::where([
-                    ['module_id', $moduleId],
-                    ['employee_id', $this->employeeId],
-                ])->first();
-               
-
-                if ($currentPermission) {
-                    $currentPermission->delete();
-                }
-
-                $this->resetExcept('employeeId');
-                $this->reset('permissions','branches', 'positions', 'modules');
-                
-
-                 $this->fetchData();
-                $this->permissions[$moduleId] = [
-                    'read_only' => false,
-                    'full_access' => false,
-                    'restrict' => false,
-                ];
-                $this->dispatch('clearTable');
-                $this->selectedUser($this->employeeId);
-                
-
-            }
+        if($this->employeeId != null && $this->employeeId != '' ) {
+            $this->hasChanges = true;
+        }
+        $this->permissions[$moduleId] = [
+            'read_only' => $type == 'read_only' ? 1 : 0,
+            'full_access' => $type == 'full_access' ? 1 : 0,
+            'restrict' => $type == 'restrict' ? 1 : 0,
+        ];
+       
     }
 
+    public function savePersmissions()
+    {
+        $this->validate([
+            'employeeId' => 'required',
+        ]);
+
+        foreach ($this->permissions as $moduleId => $permission) {
+            $currentPermission = ModulePermission::where([
+                ['module_id', $moduleId],
+                ['employee_id', $this->employeeId]
+            ])->first();
+
+            if ($currentPermission) {
+                $currentPermission->delete();
+            } 
+            ModulePermission::create([
+                'module_id' => $moduleId,
+                'employee_id' => $this->employeeId,
+                'read_only' => $permission['read_only'],
+                'full_access' => $permission['full_access'],
+                'restrict' => $permission['restrict'],
+            ]);
+        }
+
+        $this->reset();
+        $this->fetchData();
+        session()->flash('success', 'Permissions saved successfully.');
     }
 
 

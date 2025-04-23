@@ -1,14 +1,19 @@
 <div>
 
    <div class="container row">
-      
+    @if (session()->has('success'))
+    <div class="alert alert-success" id="success-message">
+        {{ session('success') }}
+        <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
                   <div class="d-flex justify-content-end">
                     <x-primary-button type="button" data-bs-toggle="modal"
                     data-bs-target="#AddPersonnelsModal">Find User</x-primary-button>
-                    <button type="button" class="btn btn-sm btn-success ms-2" disabled>Save Changes</button>
+                    <button wire:click = "savePersmissions" type="button" class="btn btn-sm btn-success ms-2" {{ $hasChanges ? '' : 'disabled'}}>Save Changes</button>
                 </div>
                 </div>
                 <div class="card-body">
@@ -58,7 +63,7 @@
     
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pcv-tab" data-bs-toggle="tab" data-bs-target="#pcv" type="button"
-                        role="tab" aria-controls="pcv" aria-selected="false">Role</button>
+                        role="tab" aria-controls="pcv" aria-selected="false">Signatory</button>
                 </li>
             </ul>
 
@@ -74,16 +79,15 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th colspan="1" class="text-center">User Access</th>
-                                        <th colspan="1" class="text-center">Read Only : 0</th>
-                                        <th colspan="1" class="text-center">Full Access : 0</th>
-                                        <th colspan="1" class="text-center">Restrict : 0</th>
+                                        <th colspan="1" class="text-center">Read Only : {{ $readOnlyCount }}</th>
+                                        <th colspan="1" class="text-center">Full Access : {{$fullAccessCount}} </th>
+                                        <th colspan="1" class="text-center">Restrict : {{ $restrictCount }} </th>
                     
                                     </tr>
                                     <tr>
                                         <th>Module</th>
-                                        <th class="text-center">Read Only</th>
-                                        <th class="text-center">Full Access</th>
-                                        <th class="text-center">Restrict</th>   
+                                        <th class="text-center" colspan="3">Access</th>
+                                       
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -92,16 +96,25 @@
                                     @foreach ($modules as $module)
                                     <tr>
                                         <td>{{ $module->module_name }}</td>
-                        
-                                        @foreach (['read_only', 'full_access', 'restrict'] as $type)
-                                            <td>
-                                                <input 
-                                                 wire:click="setPermission( '{{$module->id}}','{{ $type }}',$event.target.checked)" 
-                                                type="checkbox" class="form-check-input" id="flexCheckDefault" 
-                                                {{-- value=""> --}} value="1"
-                                                {{ $permissions[$module->id][$type] ?? false ? 'checked' : '' }} >
-                                            </td>
-                                        @endforeach
+
+
+                                        <td colspan="3" class="text-center">
+                                            <select wire:change="setPermission('{{ $module->id }}', $event.target.value)"  class="form-select" aria-label="Default select example">
+                                                <option value="">Select Access</option>
+                                                <option value="read_only" 
+                                                @if ($permissions[$module->id]['read_only'] ?? false)
+                                                    selected 
+                                                @endif >Read Only</option>
+                                                <option value="full_access"
+                                                @if ($permissions[$module->id]['full_access'] ?? false)
+                                                    selected
+                                                @endif>Full Access</option>
+                                                <option value="restrict"
+                                                @if ($permissions[$module->id]['restrict'] ?? false)
+                                                    selected
+                                                @endif>Restrict</option>
+                                            </select>
+                                        </td>
                                     </tr>
                                 @endforeach
                                    
@@ -114,24 +127,31 @@
                     <!-- ROLE TAB -->
                     <div class="card">
                         <header class="card-header">
-                            <h6 >User Roles</h6>
+                            <h6 >Assign Signatory Role</h6>
                         </header>
                         <div class="card-body table-responsive-sm">                           
                              <table class="table table-striped table-sm">
                                 <thead class="table-dark">
                                     <tr class="text-smaller">
-                                        <th>Role</th>
                                         <th>Module</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Reviewer</td>
-                                        <td>Recieving</td>
-                                        <td>
-                                            <input type="checkbox" class="form-check-input" wire:click="toggleRole('Recieving', 'Reviewer', $event.target.checked)">
-                                        </td>
+                                        @foreach ($modulesWithSignatory as $module)
+                                            <tr>
+                                                <td>{{ $module->module_name }}</td>
+                                                <td>
+                                                    <select wire:change="setSignatory('{{ $module->id }}', $event.target.value)" class="form-select" aria-label="Default select example">
+                                                        <option value="">Select Role</option>
+                                                            <option value="Reviewer" >Reviewer</option>
+                                                            {{-- <option value="Approver" @if ($signatories[$module->id] == 'Approver') selected @endif>Approver</option> --}}
+                                                            </option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tr>
                                 </tbody>
                             </table>

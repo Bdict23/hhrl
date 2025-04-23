@@ -142,6 +142,7 @@ return new class extends Migration
             $table->id();
             $table->string('module_name')->unique();
             $table->string('module_description')->nullable();
+            $table->boolean('has_signatory')->default(false);
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
