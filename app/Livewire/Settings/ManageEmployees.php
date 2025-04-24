@@ -46,16 +46,25 @@ class ManageEmployees extends Component
         'position_id' => 'required|exists:employee_positions,id',
         'religion' => 'nullable|string|max:50',
         'birth_date' => 'nullable|date',
-        'branch_id' => 'required|exists:branches,id',
         'department_id' => 'nullable|exists:departments,id',
         'status' => 'required|in:ACTIVE,INACTIVE',
     ];
 
     public function mount()
     {
-        $this->branches = Branch::orderBy('branch_name')->get(['id', 'branch_name']);
-        $this->departments = Department::orderBy('department_name')->get(['id', 'department_name']);
-        $this->positions = Position::orderBy('position_name')->get(['id', 'position_name']);
+        try {
+            $this->branches = Branch::orderBy('branch_name')
+                ->where('company_id', auth()->user()->employee->branch->company_id)
+                ->get(['id', 'branch_name']);
+            
+            $this->branch_id = auth()->user()->employee->branch_id ?? null;
+            $this->departments = Department::orderBy('department_name')->get(['id', 'department_name']);
+            $this->positions = Position::orderBy('position_name')->get(['id', 'position_name']);
+        } catch (\Exception $e) {
+            Log::error("Failed to mount component: {$e->getMessage()}");
+            session()->flash('error', 'Failed to load initial data.');
+            $this->dispatch('clear-messages');
+        }
     }
 
     public function updatedSearch()
@@ -86,7 +95,7 @@ class ManageEmployees extends Component
             $this->position_id = $employee->position_id;
             $this->religion = $employee->religion;
             $this->birth_date = $employee->birth_date ? $employee->birth_date->format('Y-m-d') : null;
-            $this->branch_id = $employee->branch_id;
+            $this->branch_id = auth()->user()->employee->branch_id;
             $this->department_id = $employee->department_id;
             $this->status = $employee->status;
             $this->editMode = true;
@@ -131,15 +140,8 @@ class ManageEmployees extends Component
     public function store()
     {
         $this->validate();
-        Log::info('Store method called', [
-            'corporate_id' => $this->corporate_id,
-            'name' => $this->name,
-            'middle_name' => $this->middle_name,
-            'last_name' => $this->last_name,
-        ]);
 
         try {
-            DB::transaction(function () {
                 Employee::create([
                     'corporate_id' => $this->corporate_id,
                     'name' => $this->name,
@@ -149,11 +151,10 @@ class ManageEmployees extends Component
                     'position_id' => $this->position_id,
                     'religion' => $this->religion,
                     'birth_date' => $this->birth_date,
-                    'branch_id' => $this->branch_id,
+                    'branch_id' => auth()->user()->employee->branch_id,
                     'department_id' => $this->department_id,
                     'status' => $this->status,
                 ]);
-            });
             session()->flash('success', 'Employee created successfully.');
             $this->closeModal();
             $this->resetPage();
@@ -187,7 +188,7 @@ class ManageEmployees extends Component
                 'position_id' => $this->position_id,
                 'religion' => $this->religion,
                 'birth_date' => $this->birth_date,
-                'branch_id' => $this->branch_id,
+                'branch_id' => auth()->user()->employee->branch_id,
                 'department_id' => $this->department_id,
                 'status' => $this->status,
             ]);
@@ -294,7 +295,7 @@ class ManageEmployees extends Component
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
-
+        $this->branch_id = auth()->user()->employee->branch_id;
         return view('livewire.settings.manage-employees', [
             'employees' => $employees,
         ]);
