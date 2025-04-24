@@ -15,19 +15,22 @@ class Department extends Component
     // used by tables and forms
     public $departments = [];
     public $department = [];
-    public $branch; // Define branch property
     public $branches = [];
     public $employees = [];
     public $personnelData = [];
 
-    //
+    // for initializing the data
     private $auditCompanies = [];
     private $companyIds = [];
     private $branchIds = [];
+    public $getBranchEmployees;
 
     // used by forms
-    public $name;
-    public $description;
+    public $name = '';
+    public $description = '';
+    public $action = 'create'; // Default action is create
+    public $personnels = []; // for assigning employees to department
+    public $selectedBranchId; // Variable to store the branch ID selected by the user
 
     // for updating department
     public $departmentId;
@@ -37,8 +40,16 @@ class Department extends Component
     protected $rules = [
         'name' => 'required|string|max:255',
         'description' => 'nullable|string|max:255',
+        'selectedBranchId' => 'required|exists:branches,id', // Ensure branch is selected and exists in the database
 
 
+    ];
+
+    protected $messages = [
+        'name.required' => 'The department name is required.',
+        'description.required' => 'The department description is required.',
+        'selectedBranchId.required' => 'Please select a branch.',
+        'selectedBranchId.exists' => 'The selected branch does not exist.',
     ];
 
     public function mount()
@@ -51,30 +62,49 @@ class Department extends Component
 
     public function saveDepartment()
     {
+      
         $this->validate();
 
         $dept =  new DepartmentModel();
         $dept->branch_id = $this->branch ?? null; // Ensure branch is set or default to null
-        $dept->branch_id = auth()->user()->branch->id;
+        $dept->branch_id = $this->selectedBranchId ?? auth()->user()->branch->id; // Use selected branch ID or default to user's branch ID
         $dept->company_id = auth()->user()->branch->company_id;
         $dept->department_name = $this->name;
         $dept->department_description = $this->description;
         $dept->save();
 
-        if (!empty($this->personnelData)) {
-            Employee::whereIn('id', $this->personnelData)->update(['department_id' => $dept->id]);
+        //save sa department_id sa mga employees nga gi assign sa department
+        if (!empty($this->personnels)) {
+            foreach ($this->personnels as  $employeeData) {
+              
+                $employee = Employee::find($employeeData->id);
+                if ($employee) {
+                    $employee->department_id = $dept->id; // Assign the department ID to the employee
+                    $employee->save();
+                }
+            }
         }
+
         $this->reset();
-        session()->flash('success', 'Department created successfully!');
-        $this->dispatch('saved');
         $this->fetchDepartments();
+        session()->flash('success', 'Department created successfully!' );
+        $this->dispatch('dispatch-success');
+        $this->dispatch('dispatch-clearForm');
+
 
 }
 
+// remove employee from personnel list
+public function removeEmployee($index)
+    {
+       
+        unset($this->personnels[$index]);
+        $this->personnels = array_values($this->personnels); // Re-index the array
+    }
 
 
  public function deactivate($id)
-    { try {
+    {
         $department = DepartmentModel::find($id);
         $department->department_status = 'INACTIVE';
         $department->save();
@@ -86,11 +116,10 @@ class Department extends Component
                 $employee->save();
             }
         }
-        $this->resetForm();
+        $this->reset();
         $this->fetchDepartments();
-    } catch (\Exception $e) {
-        return $e->getMessage();
-    }
+        $this->dispatch('dispatch-success');
+        session()->flash('success', 'Department deactivated successfully!' );
 
  }
 
@@ -110,8 +139,8 @@ class Department extends Component
     }
 
     public function fetchEmployees($branch)
-    {   $this->branch = $branch;
-        $this->employees = Employee::with('position')->where('status', 'ACTIVE')->where('branch_id', $this->branch)->get();
+    {
+        $this->employees = Employee::with('position')->where('status', 'ACTIVE')->where('branch_id', $branch)->get();
     }
 
 
@@ -121,12 +150,42 @@ class Department extends Component
     {
         $this->departmentId = $id;
         $this->department = DepartmentModel::findOrFail($id);
+        //  dd($this->department->department_name);
         $this->name = $this->department->department_name;
         $this->description = $this->department->department_description;
-        $this->forUpdateEmployees = Employee::where('department_id', $id)->get();
+        $this->selectedBranchId = $this->department->branch_id; 
+        $this->action = 'update'; // Set action to update
+        $this->personnels = Employee::where('department_id', $id)->get();
 
     }
 
+    public function addEmployee($employeeId)
+    {
+        $employee = Employee::find($employeeId);
+        if ($employee) {
+            $this->personnels[] = $employee;
+        }
+    }
+
+    
+    public function updatedSelectedBranchId($branchId)
+    {
+        $this->personnels = []; // Reset personnel data when branch is changed
+        $this->branch = $branchId;
+        $this->employees = Employee::with('position')
+            ->where('status', 'ACTIVE')
+            ->where('branch_id', $this->branch)
+            ->get();
+        $this->dispatch('branchEmployeesFetched', ['employees' => $this->employees]);
+    }
+
+    public function createNewDepartment()
+    {
+        $this->reset();
+        $this->action = 'create'; // Reset action to create
+        $this->fetchDepartments();
+        $this->dispatch('dispatch-clearForm');
+    }
 
 
     public function updateDepartment()
@@ -143,18 +202,12 @@ class Department extends Component
             Employee::whereIn('id', $this->personnelData)->update(['department_id' => $this->departmentId]);
         }
         $this->forUpdateEmployees = Employee::where('department_id', $this->departmentId)->get();
-        $this->resetForm();
+        $this->reset();
         $this->dispatch('saved');
         $this->fetchDepartments();
 
     }
 
-    public function resetForm()
-    {
-       // $this->reset(['name', 'description', 'departmentId', 'personnelData', 'branch', 'forUpdateEmployees', 'employees', 'department', 'departments']);
-        $this->reset();
-        $this->fetchDepartments(); // Fetch departments again to refresh the list
-    }
 
     public function updatePersonnelData($data)
     {

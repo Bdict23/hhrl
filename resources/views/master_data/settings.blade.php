@@ -33,40 +33,36 @@
                 <hr>
 
             </ul>
-            <h5>Pricing</h5>
+            <h5>Price Level</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link btn-sm"
-                        onclick="showTab('price-levels-tables', this)">Price
-                        Levels</a></li>
-                <li class="nav-item"><a href="#" class="nav-link btn-sm">Menu Pricing</a></li>
+                        onclick="showTab('price-levels-tables', this)">Retail</a></li>
+                {{-- <li class="nav-item"><a href="#" class="nav-link btn-sm">Menu Pricing</a></li> --}}
                 <li class="nav-item">
-                    <a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Item Cost</a>
+                    <a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Cost</a>
                 </li>
             </ul>
             <hr>
-            <h5 class="text-muted">Menu Management</h5>
+            {{-- <h5 class="text-muted">Menu Management</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menus-table', this)">Menu
                         List</a></li>
             </ul>
-            <hr>
-            <h5 class="text-muted">Menu Properties</h5>
+            <hr> --}}
+            {{-- <h5 class="text-muted">Menu Properties</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link btn-sm"
                         onclick="showTab('menu-categories-table', this)">Menu
                         Categories</a></li>
             </ul>
-            <hr>
+            <hr> --}}
             <h6 class="text-muted">Business</h6>
             <ul class="nav flex-column">
-                <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
+                {{-- <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Department</a></li>
-                
-            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"
-                        onclick="showTab('departments-table', this)">Departments</a></li>
-
+                 --}}
+                <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
             </ul>
         </div>
 
@@ -116,9 +112,9 @@
 
 
             <!-- Departments Tab Content -->
-            <div>
+            {{-- <div>
                 @livewire('department')
-            </div>
+            </div> --}}
             <!-- Employees Tab Content -->
             <div>
                 @livewire('settings.manage-employees')
