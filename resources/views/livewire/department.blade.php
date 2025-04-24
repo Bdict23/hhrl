@@ -242,6 +242,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        @if (session()->has('error'))
+                            <div class="alert alert-danger float-start" id="alert-message">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>

@@ -163,6 +163,10 @@ public function removeEmployee($index)
     {
         $employee = Employee::find($employeeId);
         if ($employee) {
+            if (in_array($employee, $this->personnels)) {
+                session()->flash('error', 'The employee is already selected.');
+                return;
+            }
             $this->personnels[] = $employee;
         }
     }
