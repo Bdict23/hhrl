@@ -111,6 +111,10 @@
                             <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
                                 {{ __('Item Withdrawal') }}
                             </x-dropdown-link>
+
+                            <x-dropdown-link :href="url('/Merchandise-Inventory')" class="no-underline">
+                                {{ __('Merchnadise Inventory') }}
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 </div>

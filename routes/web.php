@@ -282,6 +282,11 @@ Route::get('/show-backorder', function () {
     return view('inventory.show-backorder');
 })->middleware(['auth', 'verified'])->name('show-backorder');
 
+// Route for Merchandise Inventory
+Route::get('/Merchandise-Inventory', function () {
+    return view('inventory.merchandise-inventory');
+})->middleware(['auth', 'verified'])->name('merchandise_inventory');
+
 //Route for receiving summary
 Route::get('/receiving-summary', function () {
     return view('purchase_order.purchase-order-receiving-summary');
