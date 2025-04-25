@@ -483,6 +483,7 @@
             </form>
         </div>
     </div>
+   
 
     {{-- update form --}}
     <div id="item-update-form" class="tab-content card" style="display: none" wire:ignore.self>
@@ -649,7 +650,6 @@
         </div>
     </div>
 
-@script
     <script>
         window.addEventListener('saved', event => {
             document.getElementById('item_code').value = '';
@@ -663,7 +663,7 @@
             document.getElementById('item_barcode').value = '';
         });
 
-        window.addEventListener('updated', event => {
+            window.addEventListener('updated', event => {
             document.getElementById('item_code-update').value = '';
             document.getElementById('uom_id-update').value = '';
             document.getElementById('item_description-update').value = '';
@@ -686,5 +686,5 @@
             document.getElementById('item_barcode-update').value = item.item_barcode;
         }
     </script>
-    @endscript
+   
 </div>

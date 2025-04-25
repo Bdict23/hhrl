@@ -3,19 +3,7 @@
         <h5 class="card-title mb-0">Employee Management</h5>
     </div>
     <div class="card-body">
-        <!-- Flash Messages -->
-        @if (session()->has('success'))
-            <div class="alert alert-success alert-dismissible fade show" id="success-message">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if (session()->has('error'))
-            <div class="alert alert-danger alert-dismissible fade show" id="error-message">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
+       
 
         <div class="row">
             <!-- Employees Table -->
@@ -58,7 +46,7 @@
                                             <td>{{ $employee->corporate_id ?? 'N/A' }}</td>
                                             <td>{{ $employee->name }} {{ $employee->middle_name ? $employee->middle_name . ' ' : '' }}{{ $employee->last_name }}</td>
                                             <td>{{ $employee->position->position_name ?? 'Not assigned' }}</td>
-                                            <td>{{ $branches->firstWhere('id', $employee->branch_id)?->branch_name ?? 'N/A' }}</td>
+                                            <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
                                             <td>
                                                 <span class="badge {{ $employee->status === 'ACTIVE' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $employee->status }}
@@ -122,7 +110,30 @@
                         <h5 class="modal-title" id="employeeModalLabel">
                             {{ $editMode ? 'Update Employee Details' : 'Create New Employee' }}
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" wire:click="closeModal"></button>
+                        @if (session()->has('success'))
+                            <div class="alert alert-success alert-dismissible fade show" id="success-message">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <script>
+                                setTimeout(() => {
+                                    const successMessage = document.getElementById('success-message');
+                                    if (successMessage) successMessage.style.display = 'none';
+                                }, 3000);
+                            </script>
+                        @endif
+                        @if (session()->has('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" id="error-message">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <script>
+                                setTimeout(() => {
+                                    const errorMessage = document.getElementById('error-message');
+                                    if (errorMessage) errorMessage.style.display = 'none';
+                                }, 3000);
+                            </script>
+                        @endif
                     </div>
                     <div class="modal-body">
                         <form wire:submit.prevent="{{ $editMode ? 'update' : 'store' }}">
@@ -146,7 +157,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="name_input" class="form-label">First Name</label>
-                                    <input type="text" wire:model="name" id="name_input" class="form-control" required>
+                                    <input type="text" wire:model="name" id="name_input" class="form-control">
                                     @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -156,7 +167,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="last_name_input" class="form-label">Last Name</label>
-                                    <input type="text" wire:model="last_name" id="last_name_input" class="form-control" required>
+                                    <input type="text" wire:model="last_name" id="last_name_input" class="form-control">
                                     @error('last_name') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -166,7 +177,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="position_id_input" class="form-label">Position</label>
-                                    <select wire:model="position_id" id="position_id_input" class="form-select" required>
+                                    <select wire:model="position_id" id="position_id_input" class="form-select">
                                         <option value="">Select Position</option>
                                         @foreach($positions as $position)
                                             <option value="{{ $position->id }}">{{ $position->position_name }}</option>
@@ -186,7 +197,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="status_input" class="form-label">Status</label>
-                                    <select wire:model="status" id="status_input" class="form-select" required>
+                                    <select wire:model="status" id="status_input" class="form-select">
                                         <option value="ACTIVE">Active</option>
                                         <option value="INACTIVE">Inactive</option>
                                     </select>
@@ -203,14 +214,13 @@
                                     @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="branch_id_input" class="form-label">Branch</label>
-                                    <select wire:model="branch_id" id="branch_id_input" class="form-select" required>
-                                        <option value="">Select Branch</option>
-                                        @foreach($branches as $branch)
-                                            <option value="{{ $branch->id }}">{{ $branch->branch_name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('branch_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <label for="branch_name_label" class="form-label">Branch</label>
+                                    <input 
+                                        type="text" 
+                                        id="branch_name_label" 
+                                        class="form-control" 
+                                        value="{{ $branch_name ? $branch_name : '' }}"
+                                        readonly>
                                 </div>
                             </div>
                             <div class="mt-3">
@@ -246,7 +256,6 @@
                                 {{ $selectedEmployee['name'] }} {{ $selectedEmployee['middle_name'] ? $selectedEmployee['middle_name'] . ' ' : '' }}{{ $selectedEmployee['last_name'] }}
                             @endif
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" wire:click="closeDetailsModal"></button>
                     </div>
                     <div class="modal-body">
                         @if($selectedEmployee)
@@ -265,7 +274,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Branch</label>
-                                    <p>{{ $branches->firstWhere('id', $selectedEmployee['branch_id'])?->branch_name ?? 'N/A' }}</p>
+                                    <p>{{ $branch_name ?? 'N/A' }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Department</label>

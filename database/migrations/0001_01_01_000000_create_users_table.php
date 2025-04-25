@@ -85,6 +85,7 @@ return new class extends Migration
 
             Schema::create('employees', function (Blueprint $table) {
                 $table->id(); // PK, INT(11), not null, unique
+                $table->string('corporate_id', 50)->nullable(); // VARCHAR(50)
                 $table->string('name', 50); // VARCHAR(50)
                 $table->string('middle_name', 255)->nullable(); // VARCHAR(255)
                 $table->string('last_name', 255); // VARCHAR(255)

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('booking_number');
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('branch_id');
-            $table->foreign('customers_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->string('booking_status');
             $table->timestamps();

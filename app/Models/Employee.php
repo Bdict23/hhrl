@@ -20,6 +20,10 @@ class Employee extends Model
         'department_id',
         'contact_number',
         'status',
+        'birth_date'
+    ];
+    protected $casts = [
+        'birth_date' => 'date',
     ];
     public function position()
     {

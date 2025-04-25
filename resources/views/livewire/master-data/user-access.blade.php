@@ -134,7 +134,8 @@
                                 <thead class="table-dark">
                                     <tr class="text-smaller">
                                         <th>Module</th>
-                                        <th>Action</th>
+                                        <th>Reviewer</th>
+                                        <th>Approver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -143,12 +144,10 @@
                                             <tr>
                                                 <td>{{ $module->module_name }}</td>
                                                 <td>
-                                                    <select wire:change="setSignatory('{{ $module->id }}', $event.target.value)" class="form-select" aria-label="Default select example">
-                                                        <option value="">Select Role</option>
-                                                            <option value="Reviewer" >Reviewer</option>
-                                                            {{-- <option value="Approver" @if ($signatories[$module->id] == 'Approver') selected @endif>Approver</option> --}}
-                                                            </option>
-                                                    </select>
+                                                   <input type="checkbox" wire:click="setSignatoryRole('reviewer', {{ $module->id }})" {{ $signatoryRoles[$module->id]['reviewer'] ?? false ? 'checked' : '' }}>
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox" wire:click="setSignatoryRole('approver', {{ $module->id }})" {{ $signatoryRoles[$module->id]['approver'] ?? false ? 'checked' : '' }}>
                                                 </td>
                                             </tr>
                                         @endforeach
