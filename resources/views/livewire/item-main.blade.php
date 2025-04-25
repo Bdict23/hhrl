@@ -1,15 +1,22 @@
 <div>
 
      {{-- return flash message --}}
-     @if (session()->has('success'))
+     @if (session()->has('item-main-success'))
      <div class="alert alert-success" id="success-message">
-         {{ session('success') }}
+         {{ session('item-main-success') }}
          <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
      </div>
      @endif
 
      <script>
         document.addEventListener('DOMContentLoaded', function () {
+            
+                setTimeout(function () {
+                       var successMessage = document.getElementById('success-message');
+                       if (successMessage) {
+                           successMessage.style.display = 'none';
+                       }
+                   }, 1500);
                // Listen for the clearForm event
                window.addEventListener('saved', function (event) {
                    setTimeout(function () {
@@ -22,9 +29,24 @@
         });
     </script>
 
+    
+<div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false">
+    <div class="toast-header">
+      <img src="..." class="rounded mr-2" alt="...">
+      <strong class="mr-auto">Bootstrap</strong>
+      <small>11 mins ago</small>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message.
+    </div>
+  </div>
+
     <div id="items-table" class="tab-content card" style="display: block" wire:ignore.self>
         <div class="card-header">
-            <h5>Item List</h5>
+            <h5>Item Lists</h5>
         </div>
         <div class="card-body">
             <x-primary-button type="button" class="mb-3"
@@ -573,7 +595,7 @@
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
                             <select class="form-control" id="brand_id-update" wire:model="brand_id">
-                                <option value="">Select</option>
+                                <option value="" >Select</option>
                                 @forelse ($brands as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
                                     </option>
