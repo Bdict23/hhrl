@@ -30,9 +30,9 @@ use App\Livewire\GateEntrance\Gate\BookService;
 use App\Livewire\GateEntrance\Leisures;
 use App\Livewire\GateEntrance\Customers;
 use App\Livewire\GateEntrance\BookingView;
+use App\Livewire\GateEntrance\Customer\CustomerDetails;
 use App\Livewire\GateEntrance\Customer\CustomersList;
-
-
+use App\Livewire\GateEntrance\Customer\CustomerRecords;
 
 //
 
@@ -260,6 +260,8 @@ Route::get('/booking-view/{booking_number}', BookingView::class)->name('booking.
 Route::get('/leisures', Leisures::class)->name('leisures.page');
 Route::get('/customers', Customers::class)->name('customers.page');
 Route::get('/customers_list', CustomersList::class)->name('customers.list');
+Route::get('/customers-records/{id}', CustomerRecords::class)->name('customers.records');
+
 
 
 
