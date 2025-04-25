@@ -29,6 +29,7 @@ class ManageEmployees extends Component
     public $position_id;
     public $religion;
     public $birth_date;
+    public $branch_name;
     public $branch_id;
     public $department_id;
     public $status = 'ACTIVE';
@@ -57,7 +58,7 @@ class ManageEmployees extends Component
                 ->where('company_id', auth()->user()->employee->branch->company_id)
                 ->get(['id', 'branch_name']);
             
-            $this->branch_id = auth()->user()->employee->branch_id ?? null;
+            $this->branch_name = auth()->user()->employee->branch->branch_name;
             $this->departments = Department::orderBy('department_name')->get(['id', 'department_name']);
             $this->positions = Position::orderBy('position_name')->get(['id', 'position_name']);
         } catch (\Exception $e) {
@@ -95,7 +96,7 @@ class ManageEmployees extends Component
             $this->position_id = $employee->position_id;
             $this->religion = $employee->religion;
             $this->birth_date = $employee->birth_date ? $employee->birth_date->format('Y-m-d') : null;
-            $this->branch_id = auth()->user()->employee->branch_id;
+            $this->branch_name = $employee->branch->branch_name;
             $this->department_id = $employee->department_id;
             $this->status = $employee->status;
             $this->editMode = true;
@@ -288,6 +289,7 @@ class ManageEmployees extends Component
     public function render()
     {
         $employees = Employee::with(['branch', 'department', 'position'])
+            ->where('branch_id', auth()->user()->employee->branch_id)
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', "%{$this->search}%")
                     ->orWhere('last_name', 'like', "%{$this->search}%")
@@ -295,7 +297,7 @@ class ManageEmployees extends Component
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
-        $this->branch_id = auth()->user()->employee->branch_id;
+    
         return view('livewire.settings.manage-employees', [
             'employees' => $employees,
         ]);

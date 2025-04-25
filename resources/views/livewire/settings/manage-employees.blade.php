@@ -46,7 +46,7 @@
                                             <td>{{ $employee->corporate_id ?? 'N/A' }}</td>
                                             <td>{{ $employee->name }} {{ $employee->middle_name ? $employee->middle_name . ' ' : '' }}{{ $employee->last_name }}</td>
                                             <td>{{ $employee->position->position_name ?? 'Not assigned' }}</td>
-                                            <td>{{ $branches->firstWhere('id', $employee->branch_id)?->branch_name ?? 'N/A' }}</td>
+                                            <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
                                             <td>
                                                 <span class="badge {{ $employee->status === 'ACTIVE' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $employee->status }}
@@ -214,12 +214,12 @@
                                     @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="branch_name_input" class="form-label">Branch</label>
+                                    <label for="branch_name_label" class="form-label">Branch</label>
                                     <input 
                                         type="text" 
-                                        id="branch_name_input" 
+                                        id="branch_name_label" 
                                         class="form-control" 
-                                        value="{{ $branches->firstWhere('id', $branch_id)?->branch_name ?? 'N/A' }}" 
+                                        value="{{ $branch_name ? $branch_name : '' }}"
                                         readonly>
                                 </div>
                             </div>
@@ -256,7 +256,6 @@
                                 {{ $selectedEmployee['name'] }} {{ $selectedEmployee['middle_name'] ? $selectedEmployee['middle_name'] . ' ' : '' }}{{ $selectedEmployee['last_name'] }}
                             @endif
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" wire:click="closeDetailsModal"></button>
                     </div>
                     <div class="modal-body">
                         @if($selectedEmployee)
@@ -275,7 +274,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Branch</label>
-                                    <p>{{ $branches->firstWhere('id', $selectedEmployee['branch_id'])?->branch_name ?? 'N/A' }}</p>
+                                    <p>{{ $branch_name ?? 'N/A' }}</p>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Department</label>
