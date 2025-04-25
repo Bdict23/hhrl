@@ -69,10 +69,26 @@
                                     <h1 class="h4">Create Department</h1>
                                     <div>
                                         @if ($action === 'update')
-                                            <x-primary-button type="submit">Update</x-primary-button>
+                                        <x-primary-button type="submit">
+                                            <span wire:loading wire:target="saveDepartment">
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                Updating...
+                                            </span>
+                                            <span wire:loading.remove wire:target="saveDepartment">
+                                                Update
+                                            </span>
+                                        </x-primary-button>
                                             <x-secondary-button class="mb-3 btn-sm" wire:click='createNewDepartment'>+ New</x-secondary-button>
                                         @elseif ($action === 'create')
-                                            <x-primary-button type="submit">Save</x-primary-button>
+                                            <x-primary-button type="submit">
+                                                <span wire:loading wire:target="saveDepartment">
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                    Saving...
+                                                </span>
+                                                <span wire:loading.remove wire:target="saveDepartment">
+                                                    Save
+                                                </span>
+                                            </x-primary-button>
                                         @endif
                                     </div>
                                 </header>
@@ -202,9 +218,17 @@
                     <div class="modal-body">
                         <div class="mb-3 d-flex row">
                             
-                            <div class="col-md-6 justify-content-end">
+                            <div class="col-md-6 justify-content-start">
                                 <input type="text" class="form-control" id="searchEmployee"
                                     placeholder="Search Employee">
+                            </div>
+                            <div class="col-md-6 justify-content-end">
+                                @if (session()->has('error'))
+                                    <div class="alert alert-danger float-start" id="alert-message">
+                                        {{ session('error') }}
+                                        <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div style="max-height: 200px; overflow-y: auto;">
@@ -242,7 +266,17 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      
+                        {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> --}}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <span wire:loading >
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Adding...
+                            </span>
+                            <span wire:loading.remove>
+                                Close
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>

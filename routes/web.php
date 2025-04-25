@@ -66,7 +66,6 @@ Route::get('/dashboard', function () {
 //route for company
 Route::post('/company_store', [CompanyController::class, 'store'])->middleware(['auth', 'verified'])->name('company.store');
 
-Route::get('/company_list', [CompanyController::class, 'index'])->middleware(['auth', 'verified'])->name('companies');
 
 Route::post('/company_update', [CompanyController::class, 'update'])->middleware(['auth', 'verified'])->name('company.update');
 
@@ -283,10 +282,18 @@ Route::get('/show-backorder', function () {
     return view('inventory.show-backorder');
 })->middleware(['auth', 'verified'])->name('show-backorder');
 
+// Route for Merchandise Inventory
+Route::get('/Merchandise-Inventory', function () {
+    return view('inventory.merchandise-inventory');
+})->middleware(['auth', 'verified'])->name('merchandise_inventory');
+
 //Route for receiving summary
 Route::get('/receiving-summary', function () {
     return view('purchase_order.purchase-order-receiving-summary');
 })->middleware(['auth', 'verified'])->name('receiving-summary');
+
+// Route for company summary
+Route::get('/company_list', function(){ return view('company.company_list');})->middleware(['auth', 'verified'])->name('companies');
 
 
 //Route for purchase order create

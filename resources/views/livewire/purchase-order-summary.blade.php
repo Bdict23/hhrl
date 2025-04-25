@@ -1,7 +1,7 @@
 <div class="content-fluid">
 
     <div class="card mt-3 mb-3">
-        <div class="card-header p-2">
+        <div class="card-header p-2 ">
             <div class="row">
                 <div class=" row col-md-6">
                     <div class="col-md-6">
@@ -44,8 +44,8 @@
         </div>
 
 
-        <div class="card-body d-sm-flex">
-                <table class="table table-striped table-hover table-responsive-sm">
+        <div class="card-body table-responsive-sm">
+                <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th>Order To</th>

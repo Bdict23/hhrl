@@ -101,6 +101,16 @@ class UserAccess extends Component
         if($this->employeeId != null && $this->employeeId != '' ) {
             $this->hasChanges = true;
         }
+        // count access
+        if ($type == 'read_only') {
+            $this->readOnlyCount = $this->permissions[$moduleId]['read_only'] ? $this->readOnlyCount + 1 : $this->readOnlyCount - 1;
+            $this->fullAccessCount = $this->permissions[$moduleId]['full_access'] ? $this->fullAccessCount - 1 : $this->fullAccessCount;
+        } elseif ($type == 'full_access') {
+            $this->fullAccessCount = $this->permissions[$moduleId]['full_access'] ? $this->fullAccessCount + 1 : $this->fullAccessCount - 1;
+        } elseif ($type == 'restrict') {
+            $this->restrictCount = $this->permissions[$moduleId]['restrict']  ? $this->restrictCount + 1 : $this->restrictCount - 1;
+        }
+        // set permission
         $this->permissions[$moduleId] = [
             'read_only' => $type == 'read_only' ? 1 : 0,
             'full_access' => $type == 'full_access' ? 1 : 0,
@@ -133,9 +143,8 @@ class UserAccess extends Component
             ]);
         }
 
-        $this->reset();
-        $this->fetchData();
-        session()->flash('success', 'Permissions saved successfully.');
+       
+        return redirect('/user-access')->with('success', 'Permission Applied!');
     }
 
 
