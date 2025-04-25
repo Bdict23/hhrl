@@ -59,8 +59,12 @@ class ManageEmployees extends Component
                 ->get(['id', 'branch_name']);
             
             $this->branch_name = auth()->user()->employee->branch->branch_name;
-            $this->departments = Department::orderBy('department_name')->get(['id', 'department_name']);
-            $this->positions = Position::orderBy('position_name')->get(['id', 'position_name']);
+            $this->departments = Department::orderBy('department_name')
+            ->get(['id', 'department_name'])
+            ->where('company_id', auth()->user()->employee->branch->company_id)
+            ->where('department_status', 'ACTIVE');
+            $this->positions = Position::orderBy('position_name')->get(['id', 'position_name'])
+            ->where('position_status', 'ACTIVE');
         } catch (\Exception $e) {
             Log::error("Failed to mount component: {$e->getMessage()}");
             session()->flash('error', 'Failed to load initial data.');
@@ -289,6 +293,7 @@ class ManageEmployees extends Component
     public function render()
     {
         $employees = Employee::with(['branch', 'department', 'position'])
+            ->where('status','ACTIVE')
             ->where('branch_id', auth()->user()->employee->branch_id)
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', "%{$this->search}%")
