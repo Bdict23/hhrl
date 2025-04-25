@@ -19,7 +19,8 @@
                     <thead>
                         <tr>
                             <th class="text-left">
-                                Customer</th>
+                                Customer
+                            </th>
                             <th class="text-left">Date Checked in</th>
                             <th class="text-left">Customer Code</th>
                             <th class="text-left">Action</th>

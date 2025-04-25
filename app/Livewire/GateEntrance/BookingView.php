@@ -27,7 +27,7 @@ class BookingView extends Component
     public function mount($booking_number)
     {
         $this->booking_number = $booking_number;
-        $this->customer_booking = BookingRecords::where('booking_number', $this->booking_number)->where('booking_status', 'Active')->first();
+        $this->customer_booking = BookingRecords::where('booking_number', $this->booking_number)->first();
         $this->services = Leisure::all();
         $this->booking_service = new BookingService();
     }

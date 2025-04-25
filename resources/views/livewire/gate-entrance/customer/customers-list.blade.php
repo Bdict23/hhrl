@@ -36,6 +36,7 @@
                                 href="{{ route('book.service.page', ['id' => $customer->id]) }}">select</a>
                         @endif
 
+                        <a class="btn btn-primary" href="{{ route('customers.records', ['id' => $customer->id]) }}">records</a>
                     </td>
                 </tr>
             @endforeach
