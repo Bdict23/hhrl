@@ -62,7 +62,9 @@ class Department extends Component
 
     public function saveDepartment()
     {
-      
+      if($this->action == 'update'){
+        return $this->updateDepartment();
+        }
         $this->validate();
 
         $dept =  new DepartmentModel();
@@ -92,14 +94,19 @@ class Department extends Component
         $this->dispatch('dispatch-clearForm');
 
 
-}
+    }
 
-// remove employee from personnel list
-public function removeEmployee($index)
+    // remove employee from personnel list
+    public function removeEmployee($index)
     {
        
         unset($this->personnels[$index]);
-        $this->personnels = array_values($this->personnels); // Re-index the array
+        // Re-index the array}
+        if($this->action == 'create'){ 
+            $this->personnels = array_values($this->personnels);
+        }elseif($this->action =='update'){ 
+            $this->personnels = array_values($this->personnels->toArray());
+        }
     }
 
 
@@ -150,12 +157,12 @@ public function removeEmployee($index)
     {
         $this->departmentId = $id;
         $this->department = DepartmentModel::findOrFail($id);
-        //  dd($this->department->department_name);
         $this->name = $this->department->department_name;
         $this->description = $this->department->department_description;
         $this->selectedBranchId = $this->department->branch_id; 
         $this->action = 'update'; // Set action to update
         $this->personnels = Employee::where('department_id', $id)->get();
+        $this->employees = Employee::with('position') ->where('status', 'ACTIVE')->where('branch_id', $this->selectedBranchId)->get();
 
     }
 
@@ -163,9 +170,16 @@ public function removeEmployee($index)
     {
         $employee = Employee::find($employeeId);
         if ($employee) {
-            if (in_array($employee, $this->personnels)) {
-                session()->flash('error', 'The employee is already selected.');
-                return;
+            if($this->action == 'create'){
+                if (in_array($employee, $this->personnels)) {
+                    session()->flash('error', 'The employee is already selected.');
+                    return;
+                }
+            }elseif($this->action == 'update'){
+                if (in_array($employee, $this->personnels->toArray())) {
+                    session()->flash('error', 'The employee is already selected.');
+                    return;
+                }
             }
             $this->personnels[] = $employee;
         }
@@ -207,7 +221,8 @@ public function removeEmployee($index)
         }
         $this->forUpdateEmployees = Employee::where('department_id', $this->departmentId)->get();
         $this->reset();
-        $this->dispatch('saved');
+        session()->flash('success', 'Department updated successfully!' );
+        $this->dispatch('dispatch-clearForm');
         $this->fetchDepartments();
 
     }

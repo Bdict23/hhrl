@@ -13,7 +13,14 @@
                   <div class="d-flex justify-content-end">
                     <x-primary-button type="button" data-bs-toggle="modal"
                     data-bs-target="#AddPersonnelsModal">Find User</x-primary-button>
-                    <button wire:click = "savePersmissions" type="button" class="btn btn-sm btn-success ms-2" {{ $hasChanges ? '' : 'disabled'}}>Save Changes</button>
+                    <button wire:click = "savePersmissions" type="button" class="btn btn-sm btn-success ms-2" {{ $hasChanges ? '' : 'disabled'}} wire:loading.attr="disabled">
+                        <span wire:loading wire:target="savePersmissions">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Saving...
+                    </span>
+                    <span wire:loading.remove wire:target="savePersmissions">
+                        Save Changes
+                    </span></button>
                 </div>
                 </div>
                 <div class="card-body">
@@ -94,37 +101,30 @@
                                     
                                   
                                     @foreach ($modules as $module)
-                                    <tr>
-                                        <td>{{ $module->module_name }}</td>
-
-
-                                        <td colspan="3" class="text-center">
-                                            <select wire:change="setPermission('{{ $module->id }}', $event.target.value)"  class="form-select" aria-label="Default select example">
-                                                <option value="">Select Access</option>
-                                                <option value="read_only" 
-                                                @if ($permissions[$module->id]['read_only'] ?? false)
-                                                    selected 
-                                                @endif >Read Only</option>
-                                                <option value="full_access"
-                                                @if ($permissions[$module->id]['full_access'] ?? false)
-                                                    selected
-                                                @endif>Full Access</option>
-                                                <option value="restrict"
-                                                @if ($permissions[$module->id]['restrict'] ?? false)
-                                                    selected
-                                                @endif>Restrict</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                        <tr>
+                                            <td>{{ $module->module_name }}</td>
+                                            <td colspan="3" class="text-center">
+                                                <select wire:change="setPermission('{{ $module->id }}', $event.target.value)"  class="form-select" aria-label="Default select example">
+                                                    <option value="">Select Access</option>
+                                                    <option value="read_only" {{ $permissions[$module->id]['read_only'] ?? false ? 'selected' : '' }}>
+                                                      Read Only</option>
+                                                    <option value="full_access" {{ $permissions[$module->id]['full_access'] ?? false ? 'selected' : '' }}>Full Access</option>
+                                                    <option value="restrict" {{ $permissions[$module->id]['restrict'] ?? false ? 'selected' : '' }}>Restrict</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                    
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+
+
                 <div class="tab-pane fade" id="pcv" role="tabpanel" aria-labelledby="pcv-tab">
-                    <!-- ROLE TAB -->
+
+                    <!-- Signatory TAB -->
                     <div class="card">
                         <header class="card-header">
                             <h6 >Assign Signatory Role</h6>
