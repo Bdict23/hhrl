@@ -17,7 +17,7 @@ class SupplierController extends Controller
             'contact_no_1' => 'nullable|string|max:25',
             'supp_address' => 'nullable|string|max:155',
             'contact_no_2' => 'nullable|string|max:55',
-            'tin_number' => 'nullable|string|unique:suppliers,tin_number',
+            'tin_number' => 'nullable|numeric|unique:suppliers,tin_number',
             'contact_person' => 'nullable|string|max:100',
             'input_tax' => 'nullable|string|max:55',
             'supplier_code' => 'nullable|string|max:55',

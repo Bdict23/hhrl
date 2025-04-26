@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\Position;
 use App\Models\ModulePermission;
 use App\Models\Module;
+use App\Models\Signatory;
 
 
 class UserAccess extends Component
@@ -21,6 +22,8 @@ class UserAccess extends Component
     public $modules;
     public $modulesWithSignatory = [];
     public $userAccesss = [];
+    public $assignedSignatory = [];
+    public $signatoryRole = [];
     public $branch; // Define branch property
     public $userAccessId;
 
@@ -39,6 +42,7 @@ class UserAccess extends Component
 
     // made changes
     public $hasChanges = false;
+    public $signatoryChanges = false;
 
     protected $listeners = [
         'selectedUser' => 'selectedUser',
@@ -92,7 +96,31 @@ class UserAccess extends Component
                 ];
         }
 
-    //    dd($this->permissions);
+    
+        //get the assigned signatory
+        foreach ($this->modulesWithSignatory as $module) {
+           
+            $signatory = Signatory::where('employee_id', $userId)
+                ->where('module_id', $module->id)
+                ->get();
+            if ($signatory->isNotEmpty()) {
+                foreach ($signatory as $sign) {
+                    $this->signatoryRole[$sign->branch_id][$sign->module_id] = [
+                        'REVIEWER' => $sign->signatory_type == 'REVIEWER' ? true : false,
+                        'APPROVER' => $sign->signatory_type == 'APPROVER' ? true : false,
+                    ];
+                    // dd($this->signatoryRole);
+                    $this->assignedSignatory[$sign->branch_id][$sign->signatory_type][$sign->signatory_type] = [
+                        'module_id' => $module->id,
+                        'type' => $sign->signatory_type,
+                        'value' => true,
+                        'branch' => $sign->branch_id,
+                    ];
+                }
+            }
+        }
+       
+       
 
     }
 
@@ -121,6 +149,7 @@ class UserAccess extends Component
 
     public function savePersmissions()
     {
+        // dd($this->assignedSignatory);
         $this->validate([
             'employeeId' => 'required',
         ]);
@@ -143,6 +172,50 @@ class UserAccess extends Component
             ]);
         }
 
+        if($this->signatoryChanges) {
+           
+            foreach ($this->assignedSignatory as $branch => $types) {
+                foreach ($types as $type => $module) {
+                    foreach ($module as $data => $value) {
+                        
+                        if (!$value['value']) {
+                            $currentSignatory = Signatory::where([
+                                ['module_id', $value['module_id']],
+                                ['employee_id', $this->employeeId],
+                                ['signatory_type', $type],
+                                ['branch_id', $branch]
+                            ])->first();
+            
+                            if ($currentSignatory) {
+                                $currentSignatory->delete();
+                            }
+                            continue;
+                        }
+                        if ($value['value']) { 
+                            $currentSignatory = Signatory::where([
+                                ['module_id', $moduleId],
+                                ['employee_id', $this->employeeId],
+                                ['branch_id', $branch],
+                                ['signatory_type', $type]
+                            ])->first();
+
+                            if ($currentSignatory) {
+                                $currentSignatory->delete();
+                            } 
+                            Signatory::create([
+                                'module_id' => $moduleId,
+                                'employee_id' => $this->employeeId,
+                                'signatory_type' => $type,
+                                'branch_id' => $branch,
+                                'company_id' => auth()->user()->branch->company_id,
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        
        
         return redirect('/user-access')->with('success', 'Permission Applied!');
     }
@@ -156,5 +229,24 @@ class UserAccess extends Component
     public function render()
     {
         return view('livewire.master-data.user-access');
+    }
+
+    public function setSignatoryRole($branch , $moduleId , $type , $value)
+    {
+        
+        if($this->employeeId != null && $this->employeeId != '' ) {
+            $this->hasChanges = true;
+            $this->signatoryChanges = true;
+            $this->assignedSignatory[$branch][$type][$moduleId] = [
+                'module_id' => $moduleId,
+                'type' => $type,
+                'value' => $value,
+                'branch' => $branch,
+            ];  
+            
+        }else {
+            $this->hasChanges = false;
+        }
+       
     }
 }

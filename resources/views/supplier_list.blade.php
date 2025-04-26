@@ -8,6 +8,22 @@
         </h2>
     </x-slot>
 
+    @if ($errors->any())
+        @foreach ($errors->all() as $error)
+            <div class="alert alert-danger" id="danger-message">
+                {{ $error }}
+                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endforeach
+    @endif
+    <div class="container row">
+        @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
     <div class="dashboard">
         <header>
             <h2>Supplier List</h2>
@@ -52,11 +68,7 @@
     </div>
 
 
-    @if ($errors->any())
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    @endif
+    
     <!-- Modal create-->
     <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -112,7 +124,7 @@
                                         style="color: red;">*</span></label>
                                 <select name="input_tax" id="InputTax" class="form-select" required>
                                     <option value="NON-VAT">NON-VAT</option>
-                                    <option value="VATABLE">VATABLE</option>
+                                    <option value="VAT">VAT</option>
                                     <option value="UNDECLARED">UNDECLARED</option>
                                 </select>
                             </div>
@@ -204,7 +216,7 @@
                                         style="color: red;">*</span></label>
                                 <select name="input_tax" id="InputTax2" class="form-select" required>
                                     <option value="NON-VAT">NON-VAT</option>
-                                    <option value="VATABLE">VATABLE</option>
+                                    <option value="VAT">VAT</option>
                                     <option value="UNDECLARED">UNDECLARED</option>
                                 </select>
                             </div>
@@ -299,7 +311,7 @@
                                 <label for="InputTax3" class="form-label">Input Tax</label>
                                 <select name="input_tax" id="InputTax3" class="form-select" disabled>
                                     <option value="NON-VAT">NON-VAT</option>
-                                    <option value="VATABLE">VAT</option>
+                                    <option value="VAT">VAT</option>
                                     <option value="UNDECLARED">UNDECLARED</option>
                                 </select>
                             </div>

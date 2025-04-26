@@ -61,4 +61,15 @@ public function user()
     return $this->hasOne(User::class, 'emp_id');
 }
 
+public function modulePermission()
+{
+    return $this->hasMany(ModulePermission::class, 'employee_id');
+}
+
+public function getModulePermission($moduleId)
+{
+   
+    return $this->modulePermission()->where('module_id', $moduleId)->first();
+}
+
 }

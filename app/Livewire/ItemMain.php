@@ -61,7 +61,7 @@ class ItemMain extends Component
 
 
     protected $rules = [
-        'item_code' => 'required|string|max:80',
+        'item_code' => 'required|string|max:80|unique:items,item_code',
         'item_description' => 'required|string|max:255',
         'item_barcode' => 'nullable|string|max:100',
         'uom_id' => 'required|exists:unit_of_measures,id',
@@ -92,7 +92,7 @@ class ItemMain extends Component
 
             $this->validate();
             $item = new Item();
-            $item->item_code = $this->item_code;
+            $item->item_code = strtoupper($this->item_code);
             $item->item_description = $this->item_description;
             $item->item_barcode = $this->item_barcode;
             $item->uom_id = $this->uom_id;

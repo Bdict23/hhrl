@@ -60,9 +60,8 @@
             </div>
         </div>
 
-        <div class=" col-md-6">
-
-            <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
+        <div class=" col-md-6" wire:ignore.self>
+            <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist" wire:ignore>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
                         role="tab" aria-controls="invoice" aria-selected="true">Permision</button>
@@ -74,9 +73,9 @@
                 </li>
             </ul>
 
-            <div class="tab-content" id="jobOrderTabContent">
+            <div class="tab-content" id="jobOrderTabContent" wire:ignore.self>
                 
-                <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
+                <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab" wire:ignore.self>
                     <div class="card">
                         <div class="card-header">
                             <h5 class="card-title">User Access</h5>
@@ -122,16 +121,16 @@
                 </div>
 
 
-                <div class="tab-pane fade" id="pcv" role="tabpanel" aria-labelledby="pcv-tab">
+                <div class="tab-pane fade" id="pcv" role="tabpanel" aria-labelledby="pcv-tab" wire:ignore.self>
 
                     <!-- Signatory TAB -->
                     <div class="card">
                         <header class="card-header">
                             <h6 >Assign Signatory Role</h6>
                         </header>
-                        <div class="card-body table-responsive-sm">                           
+                        <div class="card-body table-responsive-sm" style="height: 300px; overflow-y: auto;">                           
                              <table class="table table-striped table-sm">
-                                <thead class="table-dark">
+                                <thead class="table-dark" style="position: -webkit-sticky; position: sticky; top: 0;">
                                     <tr class="text-smaller">
                                         <th>Module</th>
                                         <th>Reviewer</th>
@@ -139,19 +138,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        @foreach ($modulesWithSignatory as $module)
-                                            <tr>
-                                                <td>{{ $module->module_name }}</td>
-                                                <td>
-                                                   <input type="checkbox" wire:click="setSignatoryRole('reviewer', {{ $module->id }})" {{ $signatoryRoles[$module->id]['reviewer'] ?? false ? 'checked' : '' }}>
-                                                </td>
-                                                <td>
-                                                    <input type="checkbox" wire:click="setSignatoryRole('approver', {{ $module->id }})" {{ $signatoryRoles[$module->id]['approver'] ?? false ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tr>
+                                    @foreach ($branches as $branch)
+                                        <tr> 
+                                            <td colspan="4" class="text-center"> {{ $branch->branch_name}}</td>
+                                        </tr>
+                                    
+                                        <tr>
+                                            @foreach ($modulesWithSignatory as $module )
+                                                <tr>
+                                                    <td>{{ $module->module_name }}</td>
+                                                    <td>
+                                                    <input type="checkbox" wire:click="setSignatoryRole({{ $branch->id}},{{ $module->id }}, 'REVIEWER', $event.target.checked)" {{ $signatoryRole[$branch->id][$module->id]['REVIEWER'] ?? false ? 'checked' : '' }} >   
+                                                    </td>
+                                                    <td>
+                                                    <input type="checkbox" wire:click="setSignatoryRole({{$branch->id}},{{ $module->id }}, 'APPROVER', $event.target.checked )" {{ $signatoryRole[$branch->id][$module->id]['APPROVER'] ?? false ? 'checked' : '' }} >
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
