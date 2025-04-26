@@ -162,7 +162,7 @@ class Cardex extends Model
         ->where('item_id',$itemId)
         ->where('status','FINAL')
         ->first();
-        return $item->priceLevel->amount;
+        return $item->priceLevel->amount ?? 0;
     }
   
 }

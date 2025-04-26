@@ -516,7 +516,7 @@ public $receivingInfo = [];
     }
 
     public function loadReceiveRequest(){
-        $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULFILLED'])->get();
+        $this->toReceiveRequests = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->whereIn('requisition_status', ['TO RECEIVE', 'PARTIALLY FULFILLED'])->where('from_branch_id', auth()->user()->branch_id)->get();
     }
  
 
