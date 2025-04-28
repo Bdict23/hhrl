@@ -190,34 +190,36 @@
                         </div>
                     </div>
                     <!-- Table for Item Selection -->
-                    <table class="table table-striped table-hover table-sm table-responsive">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>ITEM CODE</th>
-                                <th>ITEM DESCRIPTION</th>
-                                <th>INV. COUNT</th>
-                                <th>AVAILABLE</th>
-                                <th>COST</th>
-                                <th>STATUS</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsTableBody">
-                            @foreach ($items as $item)
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-striped table-hover table-sm table-responsive">
+                            <thead class="table-dark sticky-top">
                                 <tr>
-                                    <td>{{ $item->item_code }}</td>
-                                    <td>{{ $item->item_description }}</td>
-                                    <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
-                                    <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
-                                    <td>{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
-                                    <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
-                                    </td>
+                                    <th>ITEM CODE</th>
+                                    <th>ITEM DESCRIPTION</th>
+                                    <th>INV. COUNT</th>
+                                    <th>AVAILABLE</th>
+                                    <th>COST</th>
+                                    <th>STATUS</th>
+                                    <th>ACTION</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                @foreach ($items as $item)
+                                    <tr>
+                                        <td>{{ $item->item_code }}</td>
+                                        <td>{{ $item->item_description }}</td>
+                                        <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
+                                        <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
+                                        <td>{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
+                                        <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
                 <div class="modal-footer">

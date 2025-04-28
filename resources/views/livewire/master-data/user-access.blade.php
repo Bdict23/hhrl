@@ -130,7 +130,7 @@
                         </header>
                         <div class="card-body table-responsive-sm" style="height: 300px; overflow-y: auto;">                           
                              <table class="table table-striped table-sm">
-                                <thead class="table-dark" style="position: -webkit-sticky; position: sticky; top: 0;">
+                                <thead class="table-dark sticky-top">
                                     <tr class="text-smaller">
                                         <th>Module</th>
                                         <th>Reviewer</th>
@@ -140,7 +140,7 @@
                                 <tbody>
                                     @foreach ($branches as $branch)
                                         <tr> 
-                                            <td colspan="4" class="text-center"> {{ $branch->branch_name}}</td>
+                                            <td colspan="4" class="text-center" style="background-color: #c9f5df;"><strong>{{ $branch->branch_name }}</strong></td>
                                         </tr>
                                     
                                         <tr>
@@ -148,10 +148,10 @@
                                                 <tr>
                                                     <td>{{ $module->module_name }}</td>
                                                     <td>
-                                                    <input type="checkbox" wire:click="setSignatoryRole({{ $branch->id}},{{ $module->id }}, 'REVIEWER', $event.target.checked)" {{ $signatoryRole[$branch->id][$module->id]['REVIEWER'] ?? false ? 'checked' : '' }} >   
+                                                    <input class="form-check-input" type="checkbox" wire:click="setSignatoryRole({{ $branch->id}},{{ $module->id }}, 'REVIEWER', $event.target.checked)" {{ $signatoryRole[$branch->id][$module->id]['REVIEWER'] ?? false ? 'checked' : '' }} >   
                                                     </td>
                                                     <td>
-                                                    <input type="checkbox" wire:click="setSignatoryRole({{$branch->id}},{{ $module->id }}, 'APPROVER', $event.target.checked )" {{ $signatoryRole[$branch->id][$module->id]['APPROVER'] ?? false ? 'checked' : '' }} >
+                                                    <input class="form-check-input" type="checkbox" wire:click="setSignatoryRole({{$branch->id}},{{ $module->id }}, 'APPROVER', $event.target.checked )" {{ $signatoryRole[$branch->id][$module->id]['APPROVER'] ?? false ? 'checked' : '' }} >
                                                     </td>
                                                 </tr>
                                             @endforeach
