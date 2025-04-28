@@ -300,11 +300,15 @@ class PurchaseOrderController extends Controller
     public function po_printed(Request $request)
     {
         try {
-            DB::transaction(function () use ($request) {
-                $requisitionInfo = RequisitionInfo::find($request->id);
-                $requisitionInfo->requisition_status = 'FOR REVIEW';
-                $requisitionInfo->save();
-            });
+            $requsition = RequisitionInfo::find($request->id);
+            if($requsition->requisition_status == 'PREPARING'){
+                DB::transaction(function () use ($request) {
+                    $requisitionInfo = RequisitionInfo::find($request->id);
+                    $requisitionInfo->requisition_status = 'FOR REVIEW';
+                    $requisitionInfo->save();
+                });
+            }
+            
 
             // Set success status
             return redirect()->route('purchase_order.po_summary')->with('response', 'okay kaayo');

@@ -103,7 +103,7 @@
                                     style="color: red;">*</span></label>
                             <div class="input-group">
                                 <select class="form-control" id="uom_id" wire:model="uom_id"
-                                    style="font-size: x-small;">
+                                    style="font-size: x-small;" data-live-search="true">
                                     <option value="">Select</option>
                                     @forelse ($uoms as $uom)
                                         <option value="{{ $uom->id }}" style="font-size: x-small;">
@@ -114,6 +114,11 @@
                                         <option value="">No Symbol</option>
                                     @endforelse
                                 </select>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        $('#uom_id').selectpicker();
+                                    });
+                                </script>
                                 <button class="input-group-text" type="button"
                                     style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addUomModal">+</button>
 
@@ -213,7 +218,7 @@
                     <div class=" col-md-6">
                         <label for="category_id" class="form-label">Category <span style="color: red;">*</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="category_id" wire:model="category_id">
+                            <select class="form-control" id="category_id" wire:model="category_id" data-live-search="true">
                                 <option value="">Select</option>
                                 @forelse ($categories as $category)
                                     <option value="{{ $category->id }}"> {{ $category->category_name }}
@@ -276,7 +281,7 @@
                         <label for="brand_id" class="form-label">Brand <span
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="brand_id" wire:model="brand_id">
+                            <select class="form-control" id="brand_id" wire:model="brand_id" data-live-search="true">
                                 <option value="">Select</option>
                                 @forelse ($brands as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
@@ -339,7 +344,7 @@
                         <label for="classification_id" class="form-label">Classification<span
                                 style="color: red;">*</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="classification_id" wire:model="classification_id" >
+                            <select class="form-control" id="classification_id" wire:model="classification_id" data-live-search="true">
                                 <option value="">Select</option>
                                 @forelse ($classifications as $classification)
                                     <option value="{{ $classification->id }}">
@@ -401,7 +406,7 @@
                         <label for="sub_classification_id" class="form-label">Sub-Class
                             <div class="input-group">
                                 <select class="form-control" id="sub_classification_id"
-                                    wire:model="sub_classification_id">
+                                    wire:model="sub_classification_id" data-live-search="true">
                                     <option value="">Select</option>
                                     @forelse ($sub_classifications as $subClassification)
                                         <option value="{{ $subClassification->id }}">

@@ -49,6 +49,8 @@ public $receivingInfo = [];
     private $backorderCount = 0;
     private $fulfilled = 0;
 
+    public $totalReceivedAmount = 0;
+
     protected $listeners = [
         'selectPO' => 'selectPO',
         'loadRequestInfo' => 'loadRequestInfo',
@@ -123,7 +125,6 @@ public $receivingInfo = [];
         if($this->isExists){
             $this->receivingOnCardex = Cardex::where('receiving_id', $this->receivingInfo->id)->get();
             $firstReceiving = Cardex::where('requisition_id', $this->id)->orderBy('created_at', 'asc')->first();
-               
                 foreach($this->receivingOnCardex as $item){
                     $itemId = $item->item_id;
                     $receivingId = $item->receiving_id;
@@ -131,7 +132,7 @@ public $receivingInfo = [];
                     $this->cardexSum[$itemId] =  $cardex->totalInByRequisition($this->id, $itemId);
                     $this->cardexSumFinal[$itemId] = ($receivingId == $firstReceiving->receiving_id ? 0 : ($this->finalStatus  ? $cardex->totalInByReceivingAsFinal($receivingId, $itemId) : $cardex->totalInByRequisition($this->id, $itemId)));
                     $this->cardexSumTemp[$itemId] =  ($cardex->totalInByReceivingAsTemp($receivingId, $itemId) != null ? $cardex->totalInByReceivingAsTemp($receivingId, $itemId) : 0);
-            
+                    $this->totalReceivedAmount += $this->cardexSumFinal[$itemId] * ($item->items->costPrice->amount ?? 0);
                 }
                 foreach ($this->requisitionDetails as $item) {
                     $itemId = $item->items->id;
@@ -370,7 +371,7 @@ public $receivingInfo = [];
                     $path = $attachment->store('receiving_attachments', 'public');
                     ReceivingAttachment::create([
                         'file_path' => $path,
-                        'receiving_id' => 1, // Replace with the actual receiving ID
+                        'receiving_id' => $updateRecieving->id, // Replace with the actual receiving ID
                     ]);
                 }
             }
@@ -388,9 +389,9 @@ public $receivingInfo = [];
 
         foreach ($this->qtyAndPrice as $index => $value) {
             $maxIndex = count($this->qtyAndPrice) - 1; // Get the maximum index
+            // dd('cardersum is '.($this->cardexSum[$value['id']] ?? 0 ).' + qty is '.$value['qty'].' = req_qty is '.$value['req_qty']);
 
             if ((($this->cardexSum[$value['id']] ?? 0 ) + $value['qty']) != $value['req_qty'] && $this->finalStatus) {
-
                 //check if has existing backorder for a specific item
                 $hasBackorder = Backorder::where('requisition_id', $this->requestInfo->id)
                     ->where('item_id', $value['id'])

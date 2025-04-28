@@ -121,7 +121,7 @@
                             </td>
                             <td>{{ $reqdetail->items->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? '' }}
                             </td>
-                            <td class="total-price">{{ $reqdetail->total ?? '' }}</td>
+                            <td class="total-price">{{ $reqdetail->total ?? $reqdetail->qty * $reqdetail->items->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? 0 }}</td>
                             <td><button
                                     class="btn {{ $requisitionInfo && $requisitionInfo->requisition_status == 'PREPARING' ? 'btn-danger' : 'btn-secondary' }} btn-sm"
                                     onclick="removeRow(this)"
