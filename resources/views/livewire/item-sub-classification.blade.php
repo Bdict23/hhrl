@@ -13,24 +13,28 @@
             <h5>Sub Classification Lists</h5>
         </div>
         <div class="card-body">
-            <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('sub-classification-form', document.querySelector('.nav-link.active'))"
-                wire:click="showAddSubClassification">+ Add Sub
-                Classification</x-primary-button>
+            @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') == 1 )
+                <x-primary-button type="button" class="mb-3 btn-sm"
+                    onclick="showTab('sub-classification-form', document.querySelector('.nav-link.active'))"
+                    wire:click="showAddSubClassification">+ Add Sub
+                    Classification</x-primary-button>
+            @endif
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 wire:click="fetchData()">Refresh</x-secondary-button>
 
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
-                    <thead>
+                    <thead class="table-dark sticky-top">
                         <tr>
                             <th>Name</th>
                             <th>DESCRIPTION</th>
                             <th class="text-end">STATUS</th>
                             <th class="text-end">Parent Class</th>
                             <th class="text-end">REG. COMPANY</th>
-                            <th class="text-end">ACTIONS</th>
+                            @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') == 1 )
+                                <th class="text-end">ACTIONS</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -46,10 +50,12 @@
                                 <td class="text-end">
                                     {{ $sub_classification->classification->company->company_name ?? 'Not Registered' }}
                                 </td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-primary btn-sm" onclick="UpdateSubClassField({{json_encode($sub_classification)}})" data-bs-toggle="modal" data-bs-target="#UpdateSubClass" wire:click="editSubClassification({{ $sub_classification->id }})" >Edit</button>
-                                    <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $sub_classification->id }})">Delete</a>
-                                </td>
+                                @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') == 1 )
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-sm btn-primary btn-sm" onclick="UpdateSubClassField({{json_encode($sub_classification)}})" data-bs-toggle="modal" data-bs-target="#UpdateSubClass" wire:click="editSubClassification({{ $sub_classification->id }})" >Edit</button>
+                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $sub_classification->id }})">Delete</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

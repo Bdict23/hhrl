@@ -34,20 +34,24 @@
             <h5>Item Lists</h5>
         </div>
         <div class="card-body">
-            <x-primary-button type="button" class="mb-3"
+            @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
+                <x-primary-button type="button" class="mb-3"
                 onclick="showTab('item-form', document.querySelector('.nav-link.active'))">+ Add
-                Item</x-primary-button>
+                Item</x-primary-button>      
+            @endif 
+           
             <div class="table-responsive  mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm table-hover small">
-                    <thead>
+                    <thead class="table-dark sticky-top">
                         <tr>
                             <th>SKU</th>
                             <th>NAME</th>
                             <th class="text-end">CATEGORY</th>
                             <th class="text-end">CLASSIFICATION</th>
                             <th class="text-end">SUB CLASS</th>
-                            <th class="text-end">ACTIONS</th>
+                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Manage Item') != 1) style="display: none;" @endif
+                                >ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,13 +65,16 @@
                                 </td>
                                 <td class="text-end">
                                     {{ $item->sub_classification->classification_name ?? 'N/A' }}</td>
-                                <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-primary btn-sm"
-                                        wire:click="edit({{ $item->id }})"
-                                        onclick="showTab('item-update-form', document.querySelector('.nav-link.active')) , updateItem({{ json_encode($item) }})">Edit</a>
-                                    <a href="#" class="btn btn-sm btn-danger btn-sm"
-                                        wire:click="deactivate({{ $item->id }})">Delete</a>
-                                </td>
+                                    @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
+                                    <td class="text-end">
+                                        <a href="#" class="btn btn-sm btn-primary btn-sm"
+                                            wire:click="edit({{ $item->id }})"
+                                            onclick="showTab('item-update-form', document.querySelector('.nav-link.active')) , updateItem({{ json_encode($item) }})"
+                                            >Edit</a>
+                                        <a href="#" class="btn btn-sm btn-danger btn-sm"
+                                            wire:click="deactivate({{ $item->id }})" >Delete</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

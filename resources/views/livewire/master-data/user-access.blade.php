@@ -78,7 +78,8 @@
                 <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab" wire:ignore.self>
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">User Access</h5>
+                            <strong class="card-title">User Access</strong>
+                            <input type="text" class="form-control" id="searchModule" placeholder="Search Module" onkeyup="filterModules()">
                         </div>
                         <div class="card-body table-responsive-sm" style="height: 400px; overflow-y: auto;">
                             <table class="table table-striped">
@@ -238,6 +239,19 @@
             let branchId = document.getElementById('branch_select').value;
             @this.fetchEmployees(branchId);
             console.log(branchId);
+    }
+    function filterModules() {
+        let input = document.getElementById('searchModule').value.toLowerCase();
+        let table = document.querySelector('.card-body table tbody');
+        let rows = table.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            let moduleCell = rows[i].getElementsByTagName('td')[0];
+            if (moduleCell) {
+                let moduleName = moduleCell.textContent || moduleCell.innerText;
+                rows[i].style.display = moduleName.toLowerCase().includes(input) ? '' : 'none';
+            }
+        }
     }
         
          

@@ -11,21 +11,23 @@
             <h5>Item Category List</h5>
         </div>
         <div class="card-body">
-            <x-primary-button type="button" class="mb-3 btn-sm"
+            @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('category-form', document.querySelector('.nav-link.active'))">+ ADD
                 CATEGORY</x-primary-button>
+            @endif
                 <x-secondary-button type="button" class="mb-3 btn-sm"
                 wire:click="fetchData()">Refresh</x-secondary-button>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
-                    <thead>
+                    <thead class="table-dark sticky-top">
                         <tr>
                             <th>Name</th>
                             <th>DESCRIPTION</th>
                             <th class="text-end">STATUS</th>
-                            <th class="text-end">REG. COMPANY</th>
-                            <th class="text-end">ACTIONS</th>
+                            <th class="text-end">COMPANY</th>
+                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Item Categories') != 1 ) style="display: none;"  @endif>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,10 +39,12 @@
                                 <td class="text-end">
                                     {{ optional($category->company)->company_name ?? 'No Company' }}
                                 </td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#UpdateCategory" onclick="updateCategory({{ json_encode($category) }})" wire:click="editCategory({{ $category->id }})">Edit</button>
-                                    <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $category->id }})">Delete</a>
-                                </td>
+                                @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-sm btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#UpdateCategory" onclick="updateCategory({{ json_encode($category) }})" wire:click="editCategory({{ $category->id }})">Edit</button>
+                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $category->id }})">Delete</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

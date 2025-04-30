@@ -9,40 +9,47 @@
 
     <div id="unit-of-measures-table" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-body">
-
-            <x-primary-button type="button" class="mb-3 btn-sm"
+            @if (auth()->user()->employee->getModulePermission('Item Unit of Measure') == 1 )
+                <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('unit-of-measure-form', document.querySelector('.nav-link.active'))">+ ADD UNIT OF
                 MEASURE</x-primary-button>
+            @endif
+           
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 wire:click="fetchData()">Refresh</x-secondary-button>
-            <table class="table table-striped table-sm small">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>DESCRIPTION</th>
-                        <th class="text-center">SYMBOL</th>
-                        <th class="text-end">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($unit_of_measures as $uom)
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-striped table-sm small">
+                    <thead class="table-dark sticky-top">
                         <tr>
-                            <td>{{ $uom->unit_name }}</td>
-                            <td>{{ $uom->unit_description }}</td>
-                            <td class="text-center">{{ $uom->unit_symbol }}</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateUOM" onclick="updateUOMField({{ json_encode($uom)}})" wire:click="editUOM({{ $uom->id }})">Edit</button>
-                                <button class="btn btn-sm btn-danger" wire:click="deactivate({{ $uom->id }})">Delete</button>
-                            </td>
+                            <th>Name</th>
+                            <th>DESCRIPTION</th>
+                            <th class="text-center">SYMBOL</th>
+                            @if (auth()->user()->employee->getModulePermission('Item Unit of Measure') == 1 )
+                                <th class="text-end">ACTIONS</th>
+                            @endif
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center">No unit of measure found</td>
-                        </tr>
-                    @endforelse
-
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @forelse ($unit_of_measures as $uom)
+                            <tr>
+                                <td>{{ $uom->unit_name }}</td>
+                                <td>{{ $uom->unit_description }}</td>
+                                <td class="text-center">{{ $uom->unit_symbol }}</td>
+                                @if (auth()->user()->employee->getModulePermission('Item Unit of Measure') == 1 )
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateUOM" onclick="updateUOMField({{ json_encode($uom)}})" wire:click="editUOM({{ $uom->id }})">Edit</button>
+                                        <button class="btn btn-sm btn-danger" wire:click="deactivate({{ $uom->id }})">Delete</button>
+                                    </td>
+                                @endif
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">No unit of measure found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

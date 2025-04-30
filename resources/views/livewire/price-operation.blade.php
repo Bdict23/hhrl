@@ -5,9 +5,11 @@
             <h5>Price Levels</h5>
         </div>
         <div class="card-body">
-            <x-primary-button type="button" class="mb-3 btn-sm"
+            @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
+                <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('costing-form', document.querySelector('.nav-link.active'))">+ Batch
                 Pricing</x-primary-button>
+            @endif
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-hover table-sm small hover">
@@ -18,7 +20,9 @@
                             <th>Cost Price</th>
                             <th>Retail Price</th>
                             <th>Markup</th>
-                            <th>Update</th>
+                            @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
+                                <th>Update</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -29,9 +33,11 @@
                                 <td>{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
                                 <td>{{ $item->sellingPrice ? $item->sellingPrice->amount : 'N/A' }}</td>
                                 <td>{{ $item->sellingPrice ? $item->sellingPrice->markup . '%' : 'N/A' }}</td>
+                                @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
                                 <td>
                                     <a href="#" class="btn btn-sm btn-secondary btn-sm">Update Cost</a>
                                 </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>

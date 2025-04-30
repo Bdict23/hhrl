@@ -20,24 +20,28 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Employees</h5>
-                            <button 
-                                wire:click="create" 
-                                class="btn btn-primary btn-sm">
-                                Add Employee
-                            </button>
+                            @if (auth()->user()->employee->getModulePermission('Employee') == 1)
+                                <button 
+                                    wire:click="create" 
+                                    class="btn btn-primary btn-sm">
+                                    Add Employee
+                                </button>
+                            @endif
                         </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                             <table class="table table-striped mb-0 table-sm table-responsive-sm">
-                                <thead class="table-light table-sm">
+                                <thead class="table-dark table-sm sticky-top">
                                     <tr>
                                         <th>Employee ID</th>
                                         <th>Name</th>
                                         <th>Position</th>
                                         <th>Branch</th>
                                         <th>Status</th>
-                                        <th class="text-center">Actions</th>
+                                        @if (auth()->user()->employee->getModulePermission('Employee') == 1)
+                                            <th class="text-center">Actions</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -52,37 +56,39 @@
                                                     {{ $employee->status }}
                                                 </span>
                                             </td>
-                                            <td class="text-center">
-                                                <button 
-                                                    wire:click="edit({{ $employee->id }})" 
-                                                    class="btn btn-primary btn-sm">
-                                                    Edit
-                                                </button>
-                                                <button 
-                                                    wire:click="openDetailsModal({{ $employee->id }})" 
-                                                    class="btn btn-info btn-sm">
-                                                    View
-                                                </button>
-                                                @if($employee->status === 'ACTIVE')
+                                            @if (auth()->user()->employee->getModulePermission('Employee') == 1)
+                                                <td class="text-center">
                                                     <button 
-                                                        wire:click.prevent="deactivate({{ $employee->id }})" 
-                                                        class="btn btn-danger btn-sm">
-                                                        Deactivate
+                                                        wire:click="edit({{ $employee->id }})" 
+                                                        class="btn btn-primary btn-sm">
+                                                        Edit
                                                     </button>
-                                                @else
                                                     <button 
-                                                        wire:click.prevent="activate({{ $employee->id }})" 
-                                                        class="btn btn-success btn-sm">
-                                                        Activate
+                                                        wire:click="openDetailsModal({{ $employee->id }})" 
+                                                        class="btn btn-info btn-sm">
+                                                        View
                                                     </button>
-                                                @endif
-                                            </td>
+                                                    @if($employee->status === 'ACTIVE')
+                                                        <button 
+                                                            wire:click.prevent="deactivate({{ $employee->id }})" 
+                                                            class="btn btn-danger btn-sm">
+                                                            Deactivate
+                                                        </button>
+                                                    @else
+                                                        <button 
+                                                            wire:click.prevent="activate({{ $employee->id }})" 
+                                                            class="btn btn-success btn-sm">
+                                                            Activate
+                                                        </button>
+                                                    @endif
+                                                </td>
+                                            @endif
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center">No employees found.</td>
-                                        </tr>
-                                    @endforelse
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">No employees found.</td>
+                                            </tr>
+                                        @endforelse
                                 </tbody>
                             </table>
                         </div>

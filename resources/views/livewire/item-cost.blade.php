@@ -34,7 +34,7 @@
                         <div class="card-body p-0">
                             <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
                                 <table class="table table-striped mb-0">
-                                    <thead class="table-light">
+                                    <thead class="table-dark sticky-top">
                                         <tr>
                                             <th>Date</th>
                                             <th>Item</th>
@@ -66,14 +66,16 @@
                                                     @else
                                                         <span class="text-muted">No Data</span>
                                                     @endif
-                                                    <button 
-                                                        wire:click="setItem({{ $level['item_id'] }}, '{{ $level['item_name'] }}')"
-                                                        type="button"
-                                                        class="btn btn-success btn-sm"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#addCostModal">
-                                                        Add Cost
-                                                    </button>
+                                                    @if (auth()->user()->employee->getModulePermission('Item Cost Price') == 1)
+                                                        <button 
+                                                            wire:click="setItem({{ $level['item_id'] }}, '{{ $level['item_name'] }}')"
+                                                            type="button"
+                                                            class="btn btn-success btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#addCostModal">
+                                                            Add Cost
+                                                        </button>   
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

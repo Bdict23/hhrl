@@ -12,22 +12,26 @@
             <h5>Brand List</h5>
         </div>
         <div class="card-body">
-            <x-primary-button type="button" class="mb-3 btn-sm"
+            @if (auth()->user()->employee->getModulePermission('Item Brands'))
+                <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
                 BRAND</x-primary-button>
+            @endif
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 wire:click="fetchData()">Refresh</x-secondary-button>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
 
                 <table class="table table-striped table-sm small">
-                    <thead>
+                    <thead class="table-dark sticky-top">
                         <tr>
                             <th>Name</th>
                             <th>DESCRIPTION</th>
                             <th class="text-end">STATUS</th>
                             <th class="text-end">REG. COMPANY</th>
-                            <th class="text-end">ACTIONS</th>
+                            @if (auth()->user()->employee->getModulePermission('Item Brands'))
+                                <th class="text-end">ACTIONS</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -37,10 +41,12 @@
                                 <td> {{ $brand->brand_description }}</td>
                                 <td class="text-end">{{ $brand->status }}</td>
                                 <td class="text-end">{{ $brand->company->company_name ?? 'Not Registered' }}</td>
-                                <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-primary btn-sm" onclick="editBrand({{ json_encode($brand) }})" data-bs-toggle="modal" data-bs-target="#updateBrandModal" wire:click="editBrand({{ $brand->id }})">Edit</a>
-                                    <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $brand->id }})">Delete</a>
-                                </td>
+                                @if (auth()->user()->employee->getModulePermission('Item Brands'))
+                                    <td class="text-end">
+                                        <a href="#" class="btn btn-sm btn-primary btn-sm" onclick="editBrand({{ json_encode($brand) }})" data-bs-toggle="modal" data-bs-target="#updateBrandModal" wire:click="editBrand({{ $brand->id }})">Edit</a>
+                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $brand->id }})">Delete</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

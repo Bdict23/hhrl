@@ -6,7 +6,7 @@
         <!-- Sidebar -->
         <div class="sidebar" style="overflow-y: auto; max-height: 500px;">
 
-            @if(auth()->user()->employee->getModulePermission('Item Management') !=2)
+            @if(auth()->user()->employee->getModulePermission('Manage Item') !=2)
                 <h5 class="text-muted">Item Management</h5>
                     <ul class="nav flex-column">
                         <li class="nav-item"><a href="#" class="nav-link active btn-sm" onclick="showTab('items-table', this)"
@@ -92,7 +92,7 @@
         <div class="content">
         
             <!-- item Tab Content -->
-            @if(auth()->user()->employee->getModulePermission('Item Management') !=2)
+            @if(auth()->user()->employee->getModulePermission('Manage Item') !=2)
                 <div>
                     @livewire('item-main')
                 </div>

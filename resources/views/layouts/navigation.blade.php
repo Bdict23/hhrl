@@ -57,10 +57,14 @@
                                     {{ __('User Access') }}
                                 </x-dropdown-link>
                             @endif
-                           
-                            <x-dropdown-link :href="url('/settings')" class="no-underline">
+                           @if (auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
+                                || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
+                                || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
+                                || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+                               <x-dropdown-link :href="url('/settings')" class="no-underline">
                                 {{ __('Settings') }}
-                            </x-dropdown-link>
+                                </x-dropdown-link>
+                           @endif
                         </x-slot>
                     </x-dropdown>
                 </div>
