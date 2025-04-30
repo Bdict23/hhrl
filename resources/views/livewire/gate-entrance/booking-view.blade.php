@@ -1,6 +1,6 @@
 {{-- Stop trying to control. --}}
 <div class="container mt-5">
-    <h2 class="text-center mb-4"><b>View Booking Details</b></h2>
+        <h2 class="text-center mb-4"><b>View Booking Details</b></h2>
     <div class="table-responsive">
         <div class="mb-4 p-4 border border-gray-300 rounded">
             <h2>Customer Details</h2>
@@ -9,9 +9,11 @@
             </p>
             <p>
                 <strong>Booking No:</strong> {{ $customer_booking->booking_number }}
+            @if(auth()->user()->employee->getModulePermission('Gate Entrance') == 1)
                 @if ($customer_booking->booking_status == 'Active')
                     <button wire:click="CheckOut" class="btn btn-warning">Check Out</button>
                 @endif
+            @endif
             </p>
         </div>
 
@@ -95,13 +97,13 @@
             </table>
         </div>
 
-        @if ($customer_booking->booking_status == 'Active')
-
+        @if(auth()->user()->employee->getModulePermission('Gate Entrance') == 1)
+            @if ($customer_booking->booking_status == 'Active')
             <div class="mb-4 p-4 border border-gray-300 rounded">
                 <span>
                     <h1>Add New Service</h1>
-                </span>
-                <span class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ServiceModal">Add Services</span>
+                    </span>
+                    <span class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ServiceModal">Add Services</span>
                 <table class="table table-striped table-bordered">
                     <thead class="table-dark">
                         <tr>
@@ -169,6 +171,7 @@
 
 
             </div>
+            @endif
 
             <!-- Services Modal -->
             <div class="modal fade" id="ServiceModal" tabindex="-1" aria-labelledby="exampleModalLabel"

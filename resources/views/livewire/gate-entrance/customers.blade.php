@@ -2,7 +2,9 @@
 
     <div class="text-center">
         <h1 class="text-2xl font-bold">Customers Module</h1>
-        <button class="btn btn-success" wire:click="ChangeComponent('add')">Add Customer</button>
+        @if (auth()->user()->employee->getModulePermission('Gate Entrance') == 1)
+            <button class="btn btn-success" wire:click="ChangeComponent('add')">+Add Customer</button>
+        @endif
         <button class="btn btn-success" wire:click="ChangeComponent('list')">List Customer</button>
 
         <p class="text-gray-600"></p>
