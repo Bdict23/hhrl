@@ -24,6 +24,9 @@ class AddCustomer extends Component
 
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Customer')->read_only != 1){
+            return redirect()->to('dashboard');
+        }
         $this->branch_id = 1; // Set a default branch ID
         $this->gender = 'MALE'; // Set a default branch ID
 
