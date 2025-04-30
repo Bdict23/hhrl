@@ -29,28 +29,35 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/supplier_list')" class="no-underline">
-                                {{ __('Supplier') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/company_list')" class="no-underline">
-                                {{ __('Company') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/branch_department')" class="no-underline">
-                                {{ __('Departments') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/branch_list')" class="no-underline">
-                                {{ __('Branches') }}
-                            </x-dropdown-link>
-                            {{-- <x-dropdown-link :href="url('/create_menu')" class="no-underline">
-                                {{ __('Create Menu') }}
-                            </x-dropdown-link>
-
-                            <x-dropdown-link :href="url('/menu_lists')" class="no-underline">
-                                {{ __('Menu Lists') }}
-                            </x-dropdown-link> --}}
-                            <x-dropdown-link :href="url('/user-access')" class="no-underline">
-                                {{ __('User Access') }}
-                            </x-dropdown-link>
+                            @if(auth()->user()->employee->getModulePermission('Suppliers') !=2)
+                                <x-dropdown-link :href="url('/supplier_list')" class="no-underline">
+                                    {{ __('Supplier') }}
+                                </x-dropdown-link>
+                            @endif
+                            @if (auth()->user()->employee->getModulePermission('Companies') !=2)
+                                <x-dropdown-link :href="url('/company_list')" class="no-underline">
+                                    {{ __('Company') }}
+                                </x-dropdown-link>
+                            @endif
+                            
+                            @if (auth()->user()->employee->getModulePermission('Departments') !=2)
+                                <x-dropdown-link :href="url('/branch_department')" class="no-underline">
+                                    {{ __('Departments') }}
+                                </x-dropdown-link>
+                            @endif
+                            
+                            @if (auth()->user()->employee->getModulePermission('Branches') !=2)
+                                <x-dropdown-link :href="url('/branch_list')" class="no-underline">
+                                    {{ __('Branches') }}
+                                </x-dropdown-link>
+                            @endif
+                           
+                            @if (auth()->user()->employee->getModulePermission('User Access') !=2)
+                                <x-dropdown-link :href="url('/user-access')" class="no-underline">
+                                    {{ __('User Access') }}
+                                </x-dropdown-link>
+                            @endif
+                           
                             <x-dropdown-link :href="url('/settings')" class="no-underline">
                                 {{ __('Settings') }}
                             </x-dropdown-link>
@@ -77,12 +84,17 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
-                                {{ __('PO Summary') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
-                                {{ __('Receiving') }}
-                            </x-dropdown-link>
+                            
+                            @if (auth()->user()->employee->getModulePermission('Purchase Order') != 2 )
+                                <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
+                                    {{ __('PO Summary') }}
+                                </x-dropdown-link>
+                            @endif
+                           @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
+                                <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
+                                    {{ __('Receiving') }}
+                                </x-dropdown-link>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -104,14 +116,16 @@
                                 data-bs-target="#cardexModal" >
                                 {{ __('Cardex') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/back-orders')" class="no-underline">
-                                {{ __('Back Orders') }}
-                            </x-dropdown-link>
-
-                            <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
-                                    {{ __('Item Withdrawal') }}
-                            </x-dropdown-link>
-                          
+                            @if(auth()->user()->employee->getModulePermission('Back Orders') != 2 )
+                                <x-dropdown-link :href="url('/back-orders')" class="no-underline">
+                                    {{ __('Back Orders') }}
+                                </x-dropdown-link>
+                            @endif
+                            @if (auth()->user()->employee->getModulePermission('Item Withdrawal') != 2 )
+                                <x-dropdown-link :href="url('/item_withdrawal')" class="no-underline">
+                                        {{ __('Item Withdrawal') }}
+                                </x-dropdown-link>
+                            @endif
 
                             <x-dropdown-link :href="url('/Merchandise-Inventory')" class="no-underline">
                                 {{ __('Merchnadise Inventory') }}
@@ -209,25 +223,29 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
-                                {{ __('P.O - Review') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                            @if (auth()->user()->employee->getModulePermission('PO Review') == 1 )
+                                <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
+                                    {{ __('P.O - Review') }}
+                                </x-dropdown-link>
+                            @endif
+                           @if (auth()->user()->employee->getModulePermission('PO Approval') == 1 )
+                                <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
                                 {{ __('P.O - Approval') }}
-                            </x-dropdown-link>
-                            {{-- <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
-                                {{ __('Menu Approval') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/menu_review_lists')" class="no-underline">
-                                {{ __('Menu Review') }}
-                            </x-dropdown-link> --}}
+                                </x-dropdown-link>
+                           @endif
+                            
+                            
+                            @if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1 )
                                 <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
                                     {{ __('Withdrawal - Review') }}
                                 </x-dropdown-link>
+                            @endif
+                            @if (auth()->user()->employee->getModulePermission('Approve Withdrawals') == 1 )
                                 <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
                                     {{ __('Withdrawal - Approval') }}
-                                </x-dropdown-link>
-
+                                </x-dropdown-link>                               
+                            @endif
+                                
                         </x-slot>
                     </x-dropdown>
 

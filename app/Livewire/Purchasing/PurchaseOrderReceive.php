@@ -80,12 +80,15 @@ public $receivingInfo = [];
     ];
     public function mount(Request $request = null)
     {
-
-        if ($request->has('receiving-number')) {
-            //  dd($request->query('requisition-id'));
-            $this->editReceiveRequest($request->query('receiving-number'), $request->query('requisition-id'));
+        if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 ){
+            if ($request->has('receiving-number')) {
+                //  dd($request->query('requisition-id'));
+                $this->editReceiveRequest($request->query('receiving-number'), $request->query('requisition-id'));
+            }
+            $this->loadReceiveRequest();
+        }else{
+            return redirect()->to('dashboard');
         }
-        $this->loadReceiveRequest();
     }
 
     public function loadRequestInfo($id)

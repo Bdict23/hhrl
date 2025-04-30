@@ -53,6 +53,8 @@ class UserAccess extends Component
     public function mount()
     {
        $this->fetchData();
+      
+        // dd($this->userDetails);
     }
     public function fetchData()
     {
@@ -79,24 +81,23 @@ class UserAccess extends Component
                 ->first();
 
             // access count
-            if ($perm->read_only ?? 0) {
-                $this->readOnlyCount ++;
+            if ($perm && $perm->access == 0) {
+                $this->readOnlyCount++;
             }
-            if ($perm->full_access ?? 0) {
-                $this->fullAccessCount ++;
+            if ($perm && $perm->access == 1) {
+                $this->fullAccessCount++;
+            } else {
+                $this->restrictCount++;
             }
-            if ($perm->restrict ?? 0) {
-                $this->restrictCount ++;
-            }
-          
-                $this->permissions[$module->id] = [
-                    'read_only' => (bool) ($perm->read_only ?? 0),
-                    'full_access' => (bool) ($perm->full_access ?? 0),
-                    'restrict' => (bool) ($perm->restrict ?? 0),
-                ];
+            // set permission
+                // $this->permissions[$module->id] = [
+                //     'read_only' => (bool) ($perm->access == 0 ?? 0),
+                //     'full_access' => (bool) ($perm->access == 1 ?? 0),
+                //     'restrict' => (bool) ($perm->access != 0 && $perm->access != 1 ?? 0),
+                // ];
+                $this->permissions[$module->id] =  ($perm->access ?? 2 );
         }
 
-    
         //get the assigned signatory
         foreach ($this->branches as $branch) {
             foreach ($this->modulesWithSignatory as $module) {
@@ -133,19 +134,20 @@ class UserAccess extends Component
         }
         // count access
         if ($type == 'read_only') {
-            $this->readOnlyCount = $this->permissions[$moduleId]['read_only'] ? $this->readOnlyCount + 1 : $this->readOnlyCount - 1;
-            $this->fullAccessCount = $this->permissions[$moduleId]['full_access'] ? $this->fullAccessCount - 1 : $this->fullAccessCount;
+            $this->readOnlyCount++;
+            $this->fullAccessCount = max(0, $this->fullAccessCount - 1);
+            $this->restrictCount = max(0, $this->restrictCount - 1);
         } elseif ($type == 'full_access') {
-            $this->fullAccessCount = $this->permissions[$moduleId]['full_access'] ? $this->fullAccessCount + 1 : $this->fullAccessCount - 1;
+            $this->fullAccessCount++;
+            $this->readOnlyCount = max(0, $this->readOnlyCount - 1);
+            $this->restrictCount = max(0, $this->restrictCount - 1);
         } elseif ($type == 'restrict') {
-            $this->restrictCount = $this->permissions[$moduleId]['restrict']  ? $this->restrictCount + 1 : $this->restrictCount - 1;
+            $this->restrictCount++;
+            $this->readOnlyCount = max(0, $this->readOnlyCount - 1);
+            $this->fullAccessCount = max(0, $this->fullAccessCount - 1);
         }
         // set permission
-        $this->permissions[$moduleId] = [
-            'read_only' => $type == 'read_only' ? 1 : 0,
-            'full_access' => $type == 'full_access' ? 1 : 0,
-            'restrict' => $type == 'restrict' ? 1 : 0,
-        ];
+        $this->permissions[$moduleId] = $type == 'read_only' ? 0 : ($type == 'full_access' ? 1 : 2);
        
     }
 
@@ -165,13 +167,16 @@ class UserAccess extends Component
             if ($currentPermission) {
                 $currentPermission->delete();
             } 
-            ModulePermission::create([
-                'module_id' => $moduleId,
-                'employee_id' => $this->employeeId,
-                'read_only' => $permission['read_only'],
-                'full_access' => $permission['full_access'],
-                'restrict' => $permission['restrict'],
-            ]);
+
+            //  dd('module id', $moduleId, 'employee id', $this->employeeId, 'permission', $permission);
+            // if persmission is equal to 0 or 1 permission will create alse no permission will be created
+          if( $permission == 0 || $permission == 1) {
+                ModulePermission::create([
+                    'module_id' => $moduleId,
+                    'employee_id' => $this->employeeId,
+                    'access' => $permission,
+                ]);
+            }
         }
 
         if($this->signatoryChanges) {

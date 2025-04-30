@@ -14,7 +14,9 @@
                         <header>
                             <h1> Item Withdrawal</h1>
                             <div class="me-3">
-                                <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
+                                @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
+                                    <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
+                                @endif
                                 <x-secondary-button style="color: rgb(135, 235, 168);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary </x-secondary-button>
                                 <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                             </div>
@@ -272,7 +274,9 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
+                                        @if (auth()->user()->employee->getModulePermission('Make Withdrawal') == 1)
+                                            <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

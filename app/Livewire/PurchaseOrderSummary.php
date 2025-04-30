@@ -27,8 +27,12 @@ class PurchaseOrderSummary extends Component
 
     public function mount()
     {
-        // Initialization code can go here if needed
-        $this->fetchData();
+        if(auth()->user()->employee->getModulePermission('Purchase Order') != 2 ){
+            $this->fetchData();
+        }else{
+            return redirect()->to('dashboard');
+        }
+       
     }
 
     public function fetchData()

@@ -22,11 +22,14 @@ class PurchaseOrderShow extends Component
     public $terms = [];
     public function mount(Request $request)
     {
+        if(auth()->user()->employee->getModulePermission('Purchase Order') != 2 ){
+            $this->requestInfo = $request->session()->get('requestInfo');
+            if (empty($this->requestInfo)) {
+                $this->loadRequisitionInfo($this->id); // Use $this->id instead of $id
 
-        $this->requestInfo = $request->session()->get('requestInfo');
-        if (empty($this->requestInfo)) {
-            $this->loadRequisitionInfo($this->id); // Use $this->id instead of $id
-
+            }
+        }else{
+            return redirect()->to('dashboard');
         }
 
     }

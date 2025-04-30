@@ -66,10 +66,26 @@ public function modulePermission()
     return $this->hasMany(ModulePermission::class, 'employee_id');
 }
 
-public function getModulePermission($moduleId)
+public function getModulePermission($moduleName)
 {
-   
-    return $this->modulePermission()->where('module_id', $moduleId)->first();
+    $moduleId = Module::where('module_name', $moduleName)->value('id');
+    
+    if (!$moduleId) {
+        return 2; // or handle the case when the module is not found
+    }
+   $access = ModulePermission::where('module_id', $moduleId)->first();
+    return $access->access ?? 2;
+}
+
+public function getGroupedModulePermissions($moduleGroup)
+{
+        $moduleId = Module::where('group_name', $moduleGroup)->value('id');
+        
+        if (!$moduleId) {
+            return 2; // or handle the case when the module is not found
+        }
+    $access = ModulePermission::where('module_id', $moduleId)->first();
+        return $access->access ?? 2;
 }
 
 }

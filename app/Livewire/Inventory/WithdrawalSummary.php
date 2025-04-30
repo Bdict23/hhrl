@@ -11,6 +11,9 @@ class WithdrawalSummary extends Component
     public $withdrawals = [];
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Item Withdrawal') == 2){
+            return redirect()->to('dashboard');
+        }
         $this->fetchData();
         // Initialization or data fetching can be done here if needed
     }

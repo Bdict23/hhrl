@@ -21,7 +21,7 @@
                                 ITEM</x-primary-button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body table-responsive-sm">
                         <table class="table table-striped table-hover table-sm table-responsive">
                             <thead class="table-dark">
                                 <tr style="font-size: x-small">
@@ -37,16 +37,16 @@
                                 {{-- POPULATE TABLE FOR SELECTED ITEMS --}}
                                 @forelse ($selectedItems as $index => $item)
                                     <tr>
-                                        <td>{{ $item->item_code }}</td>
-                                        <td>{{ $item->item_description }}</td>
+                                        <td style="font-size: 80%">{{ $item->item_code }}</td>
+                                        <td style="font-size: 80%">{{ $item->item_description }}</td>
                                         <td>
                                             <input wire:model="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="1" onchange="updateTotalPrice(this)">
                                         </td>
-                                        <td>{{ number_format($item->costPrice->amount, 2) }}</td>
-                                        <td class="total-price" id="total-price{{ $index }}">
+                                        <td style="font-size: 80%">{{ number_format($item->costPrice->amount, 2) }}</td>
+                                        <td class="total-price" id="total-price{{ $index }}" style="font-size: 80%">
                                             {{ number_format($item->costPrice->amount * $item->qty, 2) }}
                                         </td>
-                                        <td>
+                                        <td style="font-size: 80%">
                                             <button type="button" class="btn btn-danger btn-sm" wire:click="removeItem({{ $item->id }})">Remove</button>
                                         </td>
                                     </tr>

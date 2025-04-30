@@ -6,9 +6,12 @@
     {{-- Search Bar --}}
     <div class="row">
         <div class="col-md-6">
-            <div>
+            @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1 )
+                <div>
                 <a href="{{ route('withdrawal.index') }}" class="btn btn-primary">Create New Withdrawal</a>
-            </div>
+                </div>
+            @endif
+            
         </div>
         <div class="d-flex justify-content-end mb-3 col-md-6">
             <input type="text" name="search" class="form-control me-2" placeholder="Search..."

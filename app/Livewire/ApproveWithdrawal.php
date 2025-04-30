@@ -37,6 +37,9 @@ class ApproveWithdrawal extends Component
 
     public function viewWithdrawalDetails($id)
     {
+        if(auth()->user()->employee->getModulePermission('PO Receiving') == 1)
+        {
+            // Fetch the withdrawal details
 
         $withdrawal = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'preparedBy', 'cardex')
             ->where('id', $id)
@@ -61,6 +64,11 @@ class ApproveWithdrawal extends Component
             }
         $this->showWithdrawalSummary = false;
         $this->showViewWithdrawal = true;
+        }
+        else
+        {
+            return redirect()->to('/dashboard');
+        }
     }
 
     public function fetchData()

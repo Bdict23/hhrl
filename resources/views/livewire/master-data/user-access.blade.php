@@ -80,9 +80,9 @@
                         <div class="card-header">
                             <h5 class="card-title">User Access</h5>
                         </div>
-                        <div class="card-body table-responsive-sm">
+                        <div class="card-body table-responsive-sm" style="height: 400px; overflow-y: auto;">
                             <table class="table table-striped">
-                                <thead class="table-dark">
+                                <thead class="table-dark sticky-top">
                                     <tr>
                                         <th colspan="1" class="text-center">User Access</th>
                                         <th colspan="1" class="text-center">Read Only : {{ $readOnlyCount }}</th>
@@ -104,11 +104,11 @@
                                             <td>{{ $module->module_name }}</td>
                                             <td colspan="3" class="text-center">
                                                 <select wire:change="setPermission('{{ $module->id }}', $event.target.value)"  class="form-select" aria-label="Default select example">
-                                                    <option value="">Select Access</option>
-                                                    <option value="read_only" {{ $permissions[$module->id]['read_only'] ?? false ? 'selected' : '' }}>
-                                                      Read Only</option>
-                                                    <option value="full_access" {{ $permissions[$module->id]['full_access'] ?? false ? 'selected' : '' }}>Full Access</option>
-                                                    <option value="restrict" {{ $permissions[$module->id]['restrict'] ?? false ? 'selected' : '' }}>Restrict</option>
+                                                    <option value="" disabled>Select Access</option>
+                                                    <option value="restrict" {{ ($permissions[$module->id] ?? null) == 2 ? 'selected' : '' }}>Restrict</option>
+                                                    <option value="read_only" {{ ($permissions[$module->id] ?? null) ==  0 ?? false ? 'selected' : '' }}>Read Only</option>
+                                                    <option value="full_access" {{ ($permissions[$module->id] ?? null) == 1 ?? false ? 'selected' : '' }}>Full Access</option>
+
                                                 </select>
                                             </td>
                                         </tr>

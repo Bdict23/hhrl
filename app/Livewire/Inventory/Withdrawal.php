@@ -72,6 +72,9 @@ class Withdrawal extends Component
 
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Item Withdrawal') == 2 ){
+            return redirect()->to('dashboard');
+        }
         $this->fetchData();
     }
 

@@ -73,6 +73,12 @@ class WithdrawalShow extends Component
 
     public function mount(Request $request = null)
     {
+        // Check if the user has access to the "Item Withdrawal" module
+        // $module = Module::where('module_name', 'Item Withdrawal')->first();
+        // if (!$module || !auth()->user()->modules->contains($module->id)) {
+        //     abort(403, 'Unauthorized access to this module.');
+        // }
+
         if ($request->has('withdrawal-id')) {
             //  dd($request->query('requisition-id'));
             $this->fetchData();

@@ -20,7 +20,16 @@ class ReviewWithdrawal extends Component
 
     public function mount()
     {
-        $this->fetchData();
+        if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1)
+        {
+            $this->fetchData();
+        }
+        else
+        {
+            return redirect()->to('dashboard');
+
+        }
+
     }
 
     public function viewWithdrawal($id)

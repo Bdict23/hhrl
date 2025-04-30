@@ -11,6 +11,7 @@ class ModulePermission extends Model
     protected $fillable = [
         'employee_id',
         'module_id',
+        'access',
         'permission',
         'read_only',
         'full_access',

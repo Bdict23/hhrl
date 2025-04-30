@@ -6,43 +6,61 @@
         <!-- Sidebar -->
         <div class="sidebar" style="overflow-y: auto; max-height: 500px;">
 
-            <h5 class="text-muted">Item Management</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a href="#" class="nav-link active btn-sm" onclick="showTab('items-table', this)"
-                        style="background-color: #dddddd">Item
-                        List</a></li>
-            </ul>
-            <hr>
-            <h5 class="text-muted">Item Properties</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
+            @if(auth()->user()->employee->getModulePermission('Item Management') !=2)
+                <h5 class="text-muted">Item Management</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a href="#" class="nav-link active btn-sm" onclick="showTab('items-table', this)"
+                            style="background-color: #dddddd">Item List</a></li>
+                    </ul>
+                    <hr>
+            @endif
+            
+            @if(auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2)
+                <h5 class="text-muted">Item Properties</h5>
+                <ul class="nav flex-column">
+                    @if (auth()->user()->employee->getModulePermission('Item Categories') !=2)
+                    <li class="nav-item"><a href="#" class="nav-link btn-sm"
                         onclick="showTab('category-table', this)">Item Categories</a></li>
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                    @endif
+                   @if (auth()->user()->employee->getModulePermission('Item Classifications') !=2)
+                    <li class="nav-item"><a href="#" class="nav-link btn-sm"
                         onclick="showTab('classification-table', this)">Classification</a></li>
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
-                        onclick="showTab('sub-classification-table', this)">Sub
-                        Classifications</a></li>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') !=2)
+                        <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                            onclick="showTab('sub-classification-table', this)">Sub
+                            Classifications</a></li>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Unit of Measures') !=2)
+                        <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                            onclick="showTab('unit-of-measures-table', this)">Unit of
+                            measures</a></li>
+                   @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Brands') !=2)
+                        <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                            onclick="showTab('brand-table', this)">Brands</a></li>
+                        </li>
+                    @endif
+                    <hr>
+                </ul>
+            @endif
 
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
-                        onclick="showTab('unit-of-measures-table', this)">Unit of
-                        measures</a></li>
-
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
-                        onclick="showTab('brand-table', this)">Brands</a></li>
-                </li>
+            @if (auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2)
+                <h5>Price Level</h5>
+                <ul class="nav flex-column">
+                    @if (auth()->user()->employee->getModulePermission('Item Retail Price') !=2)
+                        <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                            onclick="showTab('price-levels-tables', this)">Retail</a></li>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Cost Price') !=2)
+                        <li class="nav-item">
+                            <a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Cost</a>
+                        </li>
+                    @endif
+                </ul>                                                               
                 <hr>
-
-            </ul>
-            <h5>Price Level</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a href="#" class="nav-link btn-sm"
-                        onclick="showTab('price-levels-tables', this)">Retail</a></li>
-                {{-- <li class="nav-item"><a href="#" class="nav-link btn-sm">Menu Pricing</a></li> --}}
-                <li class="nav-item">
-                    <a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Cost</a>
-                </li>
-            </ul>
-            <hr>
+            @endif
+           
             {{-- <h5 class="text-muted">Menu Management</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menus-table', this)">Menu
@@ -56,23 +74,29 @@
                         Categories</a></li>
             </ul>
             <hr> --}}
-            <h6 class="text-muted">Business</h6>
-            <ul class="nav flex-column">
-                {{-- <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Department</a></li>
-                 --}}
-                <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
-            </ul>
+            @if (auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+                <h6 class="text-muted">Business</h6>
+                @if (auth()->user()->employee->getModulePermission('Employee') !=2)
+                    <ul class="nav flex-column">
+                        {{-- <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Department</a></li>
+                        --}}
+                        <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
+                    </ul>
+                @endif
+            @endif
         </div>
 
         <!-- Main Content -->
         <div class="content">
         
             <!-- item Tab Content -->
-            <div>
-                @livewire('item-main')
-            </div>
+            @if(auth()->user()->employee->getModulePermission('Item Management') !=2)
+                <div>
+                    @livewire('item-main')
+                </div>
+            @endif
 
             <!-- category Tab Content -->
             <div>

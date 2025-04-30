@@ -23,7 +23,12 @@ class BackOrderSummary extends Component
 
 
     public function mount(){
-        $this->fetchData();
+        if(auth()->user()->employee->getModulePermission('Back Orders') != 2 ){
+            $this->fetchData();
+        }else{
+            return redirect()->to('dashboard');
+        }
+        
     }
 
     public function fetchData()

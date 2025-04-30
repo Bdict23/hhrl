@@ -5,9 +5,11 @@
             <div class="row">
                 <div class=" row col-md-6">
                     <div class="col-md-6">
-                        <x-primary-button style="text-decoration: none;">
-                            <a href="{{ route('po.create') }}" style="text-decoration: none; color: inherit;">+ Create Purchase Order</a>
-                        </x-primary-button>
+                        @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
+                            <x-primary-button style="text-decoration: none;">
+                                <a href="{{ route('po.create') }}" style="text-decoration: none; color: inherit;">+ Create Purchase Order</a>
+                            </x-primary-button>
+                        @endif
                     </div>
                     <div class="col-md-6">
                         <span wire:loading class="spinner-border text-primary" role="status"></span>

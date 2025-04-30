@@ -144,6 +144,7 @@ return new class extends Migration
             $table->string('module_name')->unique();
             $table->string('module_description')->nullable();
             $table->boolean('has_signatory')->default(false);
+            $table->string('group_name')->nullable();
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
@@ -158,9 +159,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->foreignId('module_id')->constrained('modules')->onDelete('cascade');
-            $table->boolean('read_only')->default(false);
-            $table->boolean('full_access')->default(false);
-            $table->boolean('restrict')->default(false);
+            $table->tinyInteger('access')->default(0);
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
         });

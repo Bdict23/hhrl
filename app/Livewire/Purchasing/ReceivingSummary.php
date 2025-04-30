@@ -16,6 +16,9 @@ class ReceivingSummary extends Component
 
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Receiving') == 2) {
+            return redirect()->to('dashboard');
+        }
         $this->fetchData();
     }
 

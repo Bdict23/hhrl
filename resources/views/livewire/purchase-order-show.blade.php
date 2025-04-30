@@ -30,19 +30,20 @@
                             {{ $requestInfo->requisition_status != 'TO RECEIVE' ? 'disabled' : '' }}>
                             Receive
                         </button> --}}
+                        @if (auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
+                            <button onclick="window.location.href='{{ route('po.edit', ['id' => $requestInfo->id]) }}'"
+                                class="btn {{ $requestInfo->requisition_status == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"
+                                {{ $requestInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>
+                                Update PO
+                            </button>
 
-                        <button onclick="window.location.href='{{ route('po.edit', ['id' => $requestInfo->id]) }}'"
-                            class="btn {{ $requestInfo->requisition_status == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"
-                            {{ $requestInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>
-                            Update PO
-                        </button>
-
-                        <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}" class="btn btn-primary">
-                            Print Preview
-                        </a>
-                        <a href="/po_create" class="btn btn-primary">
-                            + New PO
-                        </a>
+                            <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}" class="btn btn-primary">
+                                Print Preview
+                            </a>
+                            <a href="/po_create" class="btn btn-primary">
+                                + New PO
+                            </a>
+                        @endif
                         <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                     </div>
 
