@@ -135,9 +135,9 @@ class Department extends Component
 
     public function fetchDepartments()
     {
-        $this->auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
-        $this->companyIds = $this->auditCompanies->pluck('company.id')->toArray();
-        $this->branches = Branch::where('branch_status', 'ACTIVE')->whereIn('company_id', $this->companyIds)->get();
+        // $this->auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
+        // $this->companyIds = $this->auditCompanies->pluck('company.id')->toArray();
+        $this->branches = Branch::where('branch_status', 'ACTIVE')->where('company_id', auth()->user()->branch->company->id )->get();
         $this->branchIds = $this->branches->pluck('id')->toArray();
 
         $this->departments = DepartmentModel::where('department_status', 'ACTIVE')->whereIn('branch_id', $this->branchIds)->get();

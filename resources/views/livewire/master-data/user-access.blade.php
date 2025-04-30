@@ -13,14 +13,16 @@
                   <div class="d-flex justify-content-end">
                     <x-primary-button type="button" data-bs-toggle="modal"
                     data-bs-target="#AddPersonnelsModal">Find User</x-primary-button>
-                    <button wire:click = "savePersmissions" type="button" class="btn btn-sm btn-success ms-2" {{ $hasChanges ? '' : 'disabled'}} wire:loading.attr="disabled">
-                        <span wire:loading wire:target="savePersmissions">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Saving...
-                    </span>
-                    <span wire:loading.remove wire:target="savePersmissions">
-                        Save Changes
-                    </span></button>
+                    @if (auth()->user()->employee->getModulePermission('User Access') == 1)
+                        <button wire:click = "savePersmissions" type="button" class="btn btn-sm btn-success ms-2" {{ $hasChanges ? '' : 'disabled'}} wire:loading.attr="disabled">
+                            <span wire:loading wire:target="savePersmissions">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Saving...
+                        </span>
+                        <span wire:loading.remove wire:target="savePersmissions">
+                            Save Changes
+                        </span></button>
+                    @endif
                 </div>
                 </div>
                 <div class="card-body">

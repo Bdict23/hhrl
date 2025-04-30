@@ -73,18 +73,17 @@ public function getModulePermission($moduleName)
     if (!$moduleId) {
         return 2; // or handle the case when the module is not found
     }
-   $access = ModulePermission::where('module_id', $moduleId)->first();
+   $access = ModulePermission::where([['module_id', $moduleId], ['employee_id', $this->id]])->first();
     return $access->access ?? 2;
 }
 
 public function getGroupedModulePermissions($moduleGroup)
 {
-        $moduleId = Module::where('group_name', $moduleGroup)->value('id');
-        
+        $moduleId = Module::where('group_name', $moduleGroup)->get('id');
         if (!$moduleId) {
             return 2; // or handle the case when the module is not found
         }
-    $access = ModulePermission::where('module_id', $moduleId)->first();
+    $access = ModulePermission::whereIn('module_id', $moduleId)->where('employee_id', $this->id)->first();
         return $access->access ?? 2;
 }
 

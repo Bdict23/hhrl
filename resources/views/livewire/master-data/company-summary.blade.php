@@ -10,9 +10,11 @@
             <div class="row">
                 <div class=" row col-md-12">
                     <div class="col-md-6">
-                        <x-primary-button style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
-                           + New Company
-                        </x-primary-button>
+                        @if (auth()->user()->employee->getModulePermission('companies') == 1)
+                            <x-primary-button style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
+                                + New Company
+                            </x-primary-button>
+                        @endif
                         <span wire:loading class="spinner-border text-primary" role="status"></span>
                     </div>
                     <div class="col-md-6">
@@ -54,12 +56,14 @@
                                         <div class="button-group">
                                             <a href="{{ route('company.show', ['id' => $company->id]) }}" class="action-btn"
                                                 style="text-decoration: none">View</a>
-                                            <button onclick='viewCompany({{ json_encode($company) }})' class="action-btn"
-                                                data-bs-target="#supplierUpdateModal" data-bs-toggle="modal"
-                                                style="text-decoration: none">Edit</button>
-                                            <a href="{{ route('company.deactivate', ['id' => $company->id]) }}"
-                                                class="action-btn btn-sm" style="text-decoration: none">
-                                                {{ _('Remove') }}</a>
+                                            @if (auth()->user()->employee->getModulePermission('companies') == 1)
+                                                <button onclick='viewCompany({{ json_encode($company) }})' class="action-btn"
+                                                    data-bs-target="#supplierUpdateModal" data-bs-toggle="modal"
+                                                    style="text-decoration: none">Edit</button>
+                                                <a href="{{ route('company.deactivate', ['id' => $company->id]) }}"
+                                                    class="action-btn btn-sm" style="text-decoration: none">
+                                                    {{ _('Remove') }}</a>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

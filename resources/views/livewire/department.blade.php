@@ -9,7 +9,13 @@
          @endif
     
           {{-- left panel (dept. lists) --}}
-        <div class="col-md-6" wire:ignore.self>
+        <div 
+        @if (auth()->user()->employee->getModulePermission('Departments') == 1)
+            class="col-md-6"
+        @else
+            class="col-md-12"
+        @endif
+        wire:ignore.self>
             <div class="card">
                 <div class="shadow-sm">
                     <div class="card-body">
@@ -27,8 +33,10 @@
                                     <th>Department Name</th>
                                     <th>Branch</th>
                                     <th>Status</th>
-                                    <th>Personnel</th>
-                                    <th>Actions</th>
+                                    <th class="text-center">Personnel</th>
+                                    @if (auth()->user()->employee->getModulePermission('Departments') == 1)
+                                        <th>Actions</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody id="departmentTableBody">
@@ -38,11 +46,13 @@
                                         <td>{{ $department->branch->branch_name }}</td>
                                         <td>{{ $department->department_status }}</td>
                                         <td style="text-align: center">{{ $department->employees->count() }}</td>
-                                        <td>
-                                            <button class="btn btn-primary btn-sm" wire:click="edit({{ $department->id }})">Edit</button>
-                                            <button class="btn btn-danger btn-sm"
-                                                wire:click="deactivate({{ $department->id }})">Deactivate</button>
-                                        </td>
+                                        @if (auth()->user()->employee->getModulePermission('Departments') == 1)
+                                            <td>
+                                                <button class="btn btn-primary btn-sm" wire:click="edit({{ $department->id }})">Edit</button>
+                                                <button class="btn btn-danger btn-sm"
+                                                    wire:click="deactivate({{ $department->id }})">Deactivate</button>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr>
@@ -56,6 +66,7 @@
             </div>
         </div>
     
+       @if (auth()->user()->employee->getModulePermission('Departments') == 1)
         {{-- Right Panel (dept. info) --}}
         <div class="col-md-6">
             <form  wire:submit.prevent="saveDepartment" id="departmentForm">
@@ -134,8 +145,8 @@
                                                         Add Personnel</x-primary-button>
                                                 </div>
                                                 <div style="max-height: 200px; overflow-y: auto;">
-                                                    <table class="table table-striped table-sm">
-                                                        <thead>
+                                                    <table class="table table-striped table-hover table-sm">
+                                                        <thead class="table-dark sticky-top">
                                                             <tr style="font-size: smaller;">
                                                                 <th hidden>ID</th>
                                                                 <th style="font-size: smaller;">Name</th>
@@ -203,9 +214,8 @@
                 </div>
             </form>
         </div>
-    
-       
-    
+        @endif
+
         {{-- Add Personnel Modal --}}
         <div class="modal fade" id="AddPersonnelsModal" tabindex="-1" aria-labelledby="AddPersonnelModalLabel"
             aria-hidden="true" wire:ignore.self>
@@ -282,6 +292,7 @@
             </div>
         </div>
     
+       
     </div>
     
     

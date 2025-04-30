@@ -10,98 +10,107 @@
                     </a>
                 </div>
 
+                @if (auth()->user()->employee->getGroupedModulePermissions('Master Data') !=2 
+                    ||auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
+                    || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
+                    || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
+                    || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                        <x-dropdown>
+                            <x-slot name="trigger">
+                                <button
+                                    class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    <div>{{ __('Master Data') }}</div>
+                                    <div class="ms-1">
+                                        {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg> --}}
+                                    </div>
+                                </button>
+                            </x-slot>
+    
+                            <x-slot name="content">
+                                @if(auth()->user()->employee->getModulePermission('Suppliers') !=2)
+                                    <x-dropdown-link :href="url('/supplier_list')" class="no-underline">
+                                        {{ __('Supplier') }}
+                                    </x-dropdown-link>
+                                @endif
+                                @if (auth()->user()->employee->getModulePermission('Companies') !=2)
+                                    <x-dropdown-link :href="url('/company_list')" class="no-underline">
+                                        {{ __('Company') }}
+                                    </x-dropdown-link>
+                                @endif
+                                
+                                @if (auth()->user()->employee->getModulePermission('Departments') !=2)
+                                    <x-dropdown-link :href="url('/branch_department')" class="no-underline">
+                                        {{ __('Departments') }}
+                                    </x-dropdown-link>
+                                @endif
+                                
+                                @if (auth()->user()->employee->getModulePermission('Branches') !=2)
+                                    <x-dropdown-link :href="url('/branch_list')" class="no-underline">
+                                        {{ __('Branches') }}
+                                    </x-dropdown-link>
+                                @endif
+                               
+                                @if (auth()->user()->employee->getModulePermission('User Access') !=2)
+                                    <x-dropdown-link :href="url('/user-access')" class="no-underline">
+                                        {{ __('User Access') }}
+                                    </x-dropdown-link>
+                                @endif
+                               @if (auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
+                                    || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
+                                    || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
+                                    || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+                                   <x-dropdown-link :href="url('/settings')" class="no-underline">
+                                    {{ __('Settings') }}
+                                    </x-dropdown-link>
+                               @endif
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+                @endif
                 <!-- Dropdown Menu for Master Data -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
-                    <x-dropdown>
-                        <x-slot name="trigger">
-                            <button
-                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <div>{{ __('Master Data') }}</div>
-                                <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
-                                </div>
-                            </button>
-                        </x-slot>
+              
 
-                        <x-slot name="content">
-                            @if(auth()->user()->employee->getModulePermission('Suppliers') !=2)
-                                <x-dropdown-link :href="url('/supplier_list')" class="no-underline">
-                                    {{ __('Supplier') }}
-                                </x-dropdown-link>
-                            @endif
-                            @if (auth()->user()->employee->getModulePermission('Companies') !=2)
-                                <x-dropdown-link :href="url('/company_list')" class="no-underline">
-                                    {{ __('Company') }}
-                                </x-dropdown-link>
-                            @endif
-                            
-                            @if (auth()->user()->employee->getModulePermission('Departments') !=2)
-                                <x-dropdown-link :href="url('/branch_department')" class="no-underline">
-                                    {{ __('Departments') }}
-                                </x-dropdown-link>
-                            @endif
-                            
-                            @if (auth()->user()->employee->getModulePermission('Branches') !=2)
-                                <x-dropdown-link :href="url('/branch_list')" class="no-underline">
-                                    {{ __('Branches') }}
-                                </x-dropdown-link>
-                            @endif
-                           
-                            @if (auth()->user()->employee->getModulePermission('User Access') !=2)
-                                <x-dropdown-link :href="url('/user-access')" class="no-underline">
-                                    {{ __('User Access') }}
-                                </x-dropdown-link>
-                            @endif
-                           @if (auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
-                                || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
-                                || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
-                                || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
-                               <x-dropdown-link :href="url('/settings')" class="no-underline">
-                                {{ __('Settings') }}
-                                </x-dropdown-link>
-                           @endif
-                        </x-slot>
-                    </x-dropdown>
-                </div>
+                @if (auth()->user()->employee->getGroupedModulePermissions('Purchasing') !=2 )
+                    <!-- Dropdown Menu for Purchase Order -->
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                        <x-dropdown>
+                            <x-slot name="trigger">
+                                <button
+                                    class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    <div>{{ __('Purchase Order') }}</div>
+                                    <div class="ms-1">
+                                        {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg> --}}
+                                    </div>
+                                </button>
+                            </x-slot>
 
-                <!-- Dropdown Menu for Purchase Order -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
-                    <x-dropdown>
-                        <x-slot name="trigger">
-                            <button
-                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <div>{{ __('Purchase Order') }}</div>
-                                <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
-                                </div>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            
-                            @if (auth()->user()->employee->getModulePermission('Purchase Order') != 2 )
-                                <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
-                                    {{ __('PO Summary') }}
-                                </x-dropdown-link>
-                            @endif
-                           @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
-                                <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
-                                    {{ __('Receiving') }}
-                                </x-dropdown-link>
-                            @endif
-                        </x-slot>
-                    </x-dropdown>
-                </div>
+                            <x-slot name="content">
+                                
+                                @if (auth()->user()->employee->getModulePermission('Purchase Order') != 2 )
+                                    <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
+                                        {{ __('PO Summary') }}
+                                    </x-dropdown-link>
+                                @endif
+                            @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
+                                    <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
+                                        {{ __('Receiving') }}
+                                    </x-dropdown-link>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+                @endif
 
                 <!-- Dropdown Menu for Inventory -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
@@ -209,49 +218,49 @@
                         </x-slot>
                     </x-dropdown> --}}
 
+                    @if(auth()->user()->employee->getGroupedModulePermissions('Validations') !=2)
+                        <x-dropdown>
+                            <x-slot name="trigger">
+                                <button
+                                    class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    <div>{{ __('Validations') }}</div>
+                                    <div class="ms-1">
+                                        {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg> --}}
+                                    </div>
+                                </button>
+                            </x-slot>
 
-                    <x-dropdown>
-                        <x-slot name="trigger">
-                            <button
-                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <div>{{ __('Validations') }}</div>
-                                <div class="ms-1">
-                                    {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg> --}}
-                                </div>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            @if (auth()->user()->employee->getModulePermission('PO Review') == 1 )
-                                <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
-                                    {{ __('P.O - Review') }}
-                                </x-dropdown-link>
-                            @endif
-                           @if (auth()->user()->employee->getModulePermission('PO Approval') == 1 )
-                                <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                {{ __('P.O - Approval') }}
-                                </x-dropdown-link>
-                           @endif
-                            
-                            
-                            @if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1 )
-                                <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
-                                    {{ __('Withdrawal - Review') }}
-                                </x-dropdown-link>
-                            @endif
-                            @if (auth()->user()->employee->getModulePermission('Approve Withdrawals') == 1 )
-                                <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
-                                    {{ __('Withdrawal - Approval') }}
-                                </x-dropdown-link>                               
+                            <x-slot name="content">
+                                @if (auth()->user()->employee->getModulePermission('PO Review') == 1 )
+                                    <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
+                                        {{ __('P.O - Review') }}
+                                    </x-dropdown-link>
+                                @endif
+                            @if (auth()->user()->employee->getModulePermission('PO Approval') == 1 )
+                                    <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                                    {{ __('P.O - Approval') }}
+                                    </x-dropdown-link>
                             @endif
                                 
-                        </x-slot>
-                    </x-dropdown>
+                                
+                                @if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1 )
+                                    <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
+                                        {{ __('Withdrawal - Review') }}
+                                    </x-dropdown-link>
+                                @endif
+                                @if (auth()->user()->employee->getModulePermission('Approve Withdrawals') == 1 )
+                                    <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
+                                        {{ __('Withdrawal - Approval') }}
+                                    </x-dropdown-link>                               
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
+                    @endif
 
 
                     {{-- Ken Entrance module --}}

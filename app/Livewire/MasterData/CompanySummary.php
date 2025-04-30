@@ -35,10 +35,11 @@ class CompanySummary extends Component
 
 
     public function fetchCompanySummary()
-    {
-        $this->auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
-        $this->companyIds = $this->auditCompanies->pluck('company.id')->toArray();
-        $this->companies = Company::where('company_status', 'active')->whereIn('id', $this->companyIds)->get();
+    {  
+        // $this->auditCompanies = Audit::with('company')->where('created_by', auth()->user()->emp_id)->get();
+        // $this->companyIds = $this->auditCompanies->pluck('company_id')->toArray();
+        $this->companies = Company::all();
+       
     }
 
     public function render()

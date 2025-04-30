@@ -47,9 +47,11 @@
         <header>
             <h1>Branch Lists</h1>
             <div>
-                <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#BranchCreateModal">+
-                    Add
-                    Branch</button>
+                @if (auth()->user()->employee->getModulePermission('branches') == 1)
+                    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#BranchCreateModal">+
+                        Add
+                        Branch</button>
+                @endif
                 <button onclick="history.back()" class="btn btn-secondary" type="button"> Back </button>
             </div>
         </header>
@@ -65,7 +67,7 @@
                 </tr>
             </thead>
             <tbody>
-
+                @if (auth()->user()->employee->getModulePermission('branches') != 2)
                 @foreach ($company->branches as $branch)
                     <tr>
                         <td>{{ $branch->branch_name }}</td>
@@ -79,14 +81,21 @@
                             <div class="button-group">
                                 <button class="action-btn" data-bs-target="#branchViewModal" data-bs-toggle="modal"
                                     onclick='viewBranch({{ json_encode($branch) }})'>{{ __('View') }}</button>
-                                <button class="action-btn" data-bs-target="#branchUpdateModal" data-bs-toggle="modal"
-                                    onclick='viewBranch({{ json_encode($branch) }})'>{{ __('Edit') }}</button>
-                                <button class="action-btn"
-                                    onclick="location.href='{{ route('branch.deactivate', ['id' => $branch->id]) }}'">{{ __('Remove') }}</button>
+                                @if (auth()->user()->employee->getModulePermission('branches') == 1)
+                                    <button class="action-btn" data-bs-target="#branchUpdateModal" data-bs-toggle="modal"
+                                        onclick='viewBranch({{ json_encode($branch) }})'>{{ __('Edit') }}</button>
+                                    <button class="action-btn"
+                                        onclick="location.href='{{ route('branch.deactivate', ['id' => $branch->id]) }}'">{{ __('Remove') }}</button>
+                                @endif
                             </div>
                         </td>
                     </tr>
                 @endforeach
+                @else
+                    <tr>
+                        <td colspan="6" class="text-center">{{ __('Permission Denied to view branch lists') }}</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
