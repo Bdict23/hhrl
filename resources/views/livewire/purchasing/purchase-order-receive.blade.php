@@ -49,7 +49,7 @@
                             <input wire:model="finalStatus" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
                             {{ $finalStatus ? 'checked' : '' }} title="Marks receiving as final; edits disabled after save." {{ $isExists && $finalStatus ? 'disabled' : '' }}>
                           </div>
-                          @if (auth()->user()->employee->getModulePermission('Receiving Summary') == 1 )
+                          @if (auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
                             <a href="/receiving-summary">  <x-secondary-button> Summary </x-secondary-button> </a>
                           @endif
 
@@ -58,9 +58,9 @@
                     </div>
 
 
-                <div class="card-body table-responsive-sm" wire:ignore.self>
+                <div class="card-body table-responsive-sm" wire:ignore.self style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-striped table-hover table-sm table-responsive-sm">
-                        <thead class="table-dark">
+                        <thead class="table-dark sticky-top">
                             <tr style="font-size: x-small">
                                 <th>Code</th>
                                 <th>Name</th>
@@ -199,7 +199,7 @@
                         <div class="row mb-1">
                             <div class="col-md-12">
                                 <label for="attachment" class="form-label" style="width: 100; font-size: 13px">Attachment</label>
-                                <input wire:model="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple>
+                                    <input wire:model.live="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple>  
                                 @error('attachments.*')
                                     <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                 @enderror
@@ -219,6 +219,25 @@
                                     readonly>
                             </div>
                         </div>
+                        @if ($attachments)
+                        <strong for="" class="form-label">Attached Files</strong>
+                           <div class="list-group list-group-horizontal table-responsive-sm">
+                                @foreach ($attachments as $attachment)
+                                    @if ($isExists == false)
+                                        <img class="img-thumbnail" src="{{ $attachment->temporaryUrl() }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                    @else
+                                        <div>
+                                            <a href="{{ asset('storage/' . $attachment) }}" target="_blank" class="text-decoration-none">
+                                                <img class="img-thumbnail" src="{{ asset('storage/' . $attachment) }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                            </a>
+                                        </div>
+                                    @endif
+
+                                @endforeach
+                           </div>
+                               
+                            
+                        @endif
                 </div>
             </div>
         </div>

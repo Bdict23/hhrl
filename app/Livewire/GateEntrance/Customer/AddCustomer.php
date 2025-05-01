@@ -24,7 +24,7 @@ class AddCustomer extends Component
 
     public function mount()
     {
-        if(auth()->user()->employee->getModulePermission('Gate Entrance')->read_only != 1){
+        if(auth()->user()->employee->getModulePermission('Gate Entrance') != 1){
             return redirect()->to('dashboard');
         }
         $this->branch_id = 1; // Set a default branch ID

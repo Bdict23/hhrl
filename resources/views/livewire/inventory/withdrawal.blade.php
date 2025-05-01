@@ -274,7 +274,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        @if (auth()->user()->employee->getModulePermission('Make Withdrawal') == 1)
+                                        @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
                                             <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
                                         @endif
                                     </div>

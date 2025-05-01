@@ -184,8 +184,7 @@ public $receivingInfo = [];
 
     public function saveReceiveRequest()
     {
-        
-        
+        // dd($this->attachments);
             // if isExists is true, update the receiving request
             if ($this->isExists) {
                  $this->updateReceiveRequest();
@@ -211,11 +210,13 @@ public $receivingInfo = [];
         $newRecieving->save();
 
         // Save attachments
-        if ($this->attachments) {
-            foreach ($this->attachments as $attachment) {
+        foreach ($this->attachments as $attachment) {
+            if ($attachment) {
+                // Store the attachment and save the path
                 $path = $attachment->store('receiving_attachments', 'public');
-                $newRecieving->attachments()->create([
+                ReceivingAttachment::create([
                     'file_path' => $path,
+                    'receiving_id' => $newRecieving->id, // Replace with the actual receiving ID
                 ]);
             }
         }
@@ -412,7 +413,7 @@ public $receivingInfo = [];
 
                 } else {
 
-                    // create new backorder and update receiving status to 'PARTIALLY FULLFILLED'
+                    // create new backorder and update receiving status to 'PARTIALLY FULFILLED'
 
                     $this->requestInfo->update(['requisition_status' => 'PARTIALLY FULFILLED']);
                     $this->createBackorder($value['id']);
@@ -497,12 +498,6 @@ public $receivingInfo = [];
     {
         $this->isExists = true; 
         $this->receiving_no = $recNo;
-        // $this->requisitionDetails = RequisitionDetail::with('items', 'cost')
-        //     ->where('requisition_info_id', $reqId)
-        //     ->get();
-        // $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
-        //     ->where('id', $reqId)
-        //     ->first();
         $this->receivingInfo = Receiving::where('RECEIVING_NUMBER', $recNo)->first();
 
         $this->receivingId = $this->receivingInfo->id;
@@ -511,11 +506,21 @@ public $receivingInfo = [];
         $this->invoice_no = $this->receivingInfo->INVOICE_NUMBER ?? '';
         $this->delivered_by = $this->receivingInfo->DELIVERED_BY  ?? '';
         $this->remarks = $this->receivingInfo->remarks ?? '';
-        $this->attachments = $this->receivingInfo->attachments ?? [];
         $this->finalStatus = $this->receivingInfo->RECEIVING_STATUS == 'FINAL' ? true : false;
         $this->receiving_no = $this->receivingInfo->RECEIVING_NUMBER;
         $this->id = $this->receivingInfo->REQUISITION_ID;
 
+        // Retrieve the file paths from ReceivingAttachment and load the files into $this->attachments
+        $imagePaths = ReceivingAttachment::where('receiving_id', $this->receivingInfo->id)->get('file_path')->toArray();
+        $this->attachments = [];
+        foreach ($imagePaths as $imagePath) {
+            $filePath = storage_path('app/public/' . $imagePath['file_path']);
+            // dd($filePath);
+            if (file_exists($filePath)) {
+                $this->attachments[] = $imagePath['file_path'];
+            }
+        }
+        // dd($this->attachments);
         $this->selectPO($reqId);
     }
 
