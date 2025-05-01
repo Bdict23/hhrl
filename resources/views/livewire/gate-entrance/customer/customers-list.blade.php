@@ -1,5 +1,5 @@
 <div>
-    <input type="text" class="border border-gray-300 rounded p-2 mx-2" wire:model="search"
+    <input type="text" class="border border-gray-300 rounded p-2 mx-2" wire:model.live="search"
         placeholder="Search Customer Name">
     <button class="btn btn-primary" wire:click="searchCustomer">Search</button>
 
@@ -18,7 +18,7 @@
         <tbody>
             @foreach ($customers as $customer)
                 <tr>
-                    <td class="border  border-gray-300 ">
+                    <td class="border  border-gray-300 "> 
                         {{ $customer->customer_lname . ' ' . $customer->customer_fname }}
                     </td>
                     <td class="border  border-gray-300">{{ $customer->gender }}</td>
