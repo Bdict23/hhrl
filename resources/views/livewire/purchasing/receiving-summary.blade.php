@@ -56,7 +56,7 @@
                                 <td>{{ $receivingSummary->requisition->supplier->supp_name }}</td>
                                 <td>{{ $receivingSummary->requisition->requisition_number }}</td>
                                 <td>{{ $receivingSummary->RECEIVING_NUMBER }}</td>
-                                <td>{{ $receivingSummary->created_at }}</td>
+                                <td>{{ $receivingSummary->created_at->format('d-m-Y') }}</td>
                                 <td>{{ $receivingSummary->preparedBy->name }}</td>
                                 <td> <span class="@if($receivingSummary->RECEIVING_STATUS == 'FINAL') badge bg-success @else badge bg-secondary @endif">{{ $receivingSummary->RECEIVING_STATUS }}</span></td>
                                 <td>{{ $receivingSummary->remarks }}</td>

@@ -13,70 +13,18 @@
 
         <div class="row p-4">
 
-            @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
-                <div class="col-md-6 ">
-                    <div class="card">
-                        <strong class="card-header"> New Service</strong>
-                            <div class="card-body">
-                                <form wire:submit.prevent="createLeisure" >
-                                    @csrf
-                                    
-                                        <div class="">
-                                            <div class="row mt-2">
-                                                <label for="name" class="col-md-3">Leisure Name <span style="color: red;">*</span></label>
-                                                <input type="text" id="name" wire:model="name"
-                                                    class="col-md-9 border border-gray-300 rounded" placeholder="Leisure Name">
-                                            </div>
-                                            @error('name')
-                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="">
-                                            <div class="row">
-                                                <label for="description" class="col-md-3 mt-1"> Description <span style="color: red;">*</span> </label>
-                                                <input type="text" id="description" wire:model="description"
-                                                    class="col-md-9 mt-1 border border-gray-300 rounded " placeholder="Description">
-                                                @error('description')
-                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="">
-                                    
-                                            <div class="row">
-                                                <label for="description" class="col-md-3 mt-1">Amount <span style="color: red;">*</span></label>
-                                                <input type="number" id="description" wire:model="amount"
-                                                    class="col-md-9 mt-1 border border-gray-300 rounded " placeholder="Amount">
-                                                @error('description')
-                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="">
-                                            {{-- hidden input --}}
-                                            <input type="hidden" id="status" wire:model="status" value="1">
-                                            <input type="hidden" id="branch_id" wire:model="branch_id" value="1">
-                                            <input type="submit" value="Create Leisure"
-                                                class="bg-blue-500 hover:bg-blue-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
-                                        </div>
-                                </form>
-                            </div>
-                    </div>
-                </div>
-            @endif
-           
-
+            {{-- left --}}
             <div
             @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
-                class="col-md-6 mt-4"
+                class="col-md-6"
             @else
                 class="col-md-12"
             @endif>
                 <div class="card">
                     <strong class="card-header"> Services List</strong>
-                    <br>
-                    <div class="card-body">
-                        <table class="table table-responsive-sm">
+                    <input type="text" id="searchInput" class="col-md-6 border border-gray-300 rounded mt-2 ml-1" placeholder="Search...">
+                    <div class="card-body table-responsive">
+                        <table class="table table-responsive-sm" id="leisuresTable">
                             <thead class="table-dark"> 
                                 <tr>
                                     <th> Name</th>
@@ -107,7 +55,7 @@
                                                     Edit
                                                 </x-secondary-button>
                                                 <x-danger-button wire:click="deactivateLeisure({{ $leisure->id }})">
-                                                    Deactivate
+                                                    Inactive
                                                 </x-danger-button>
                                             </td>
                                         @endif
@@ -119,6 +67,60 @@
                     </div>
                 </div>
             </div>
+           
+            {{-- right --}}
+           
+            @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
+                <div class="col-md-6 ">
+                    <div class="card">
+                        <strong class="card-header"> New Service</strong>
+                            <div class="card-body">
+                                <form wire:submit.prevent="createLeisure" >
+                                    @csrf
+                                    
+                                        <div class="">
+                                            <div class="row mt-2">
+                                                <label for="name" class="col-md-3">Leisure Name <span style="color: red;">*</span></label>
+                                                <input type="text"  wire:model="name"
+                                                    class="col-md-9 border border-gray-300 rounded" placeholder="Leisure Name">
+                                            </div>
+                                            @error('name')
+                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="">
+                                            <div class="row">
+                                                <label for="description" class="col-md-3 mt-1"> Description <span style="color: red;">*</span> </label>
+                                                <input type="text"  wire:model="description"
+                                                    class="col-md-9 mt-1 border border-gray-300 rounded " placeholder="Description">
+                                                @error('description')
+                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                    
+                                            <div class="row">
+                                                <label for="description" class="col-md-3 mt-1">Amount <span style="color: red;">*</span></label>
+                                                <input type="number"  wire:model="amount"
+                                                    class="col-md-9 mt-1 border border-gray-300 rounded " placeholder="Amount">
+                                                @error('description')
+                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            {{-- hidden input --}}
+                                            <input type="hidden" wire:model="status" value="1">
+                                            <input type="hidden"  wire:model="branch_id" value="1">
+                                            <input type="submit" value="Create Leisure"
+                                                class="bg-blue-500 hover:bg-blue-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
+                                        </div>
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
          {{-- modal --}}
@@ -163,7 +165,17 @@
     </div>
 
     <script>
-         function editLeisure($leisure) {
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#leisuresTable tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
+                row.style.display = match ? '' : 'none';
+            });
+        });
+
+        function editLeisure($leisure) {
             document.getElementById('sname').value = $leisure.name;
             document.getElementById('sdescription').value = $leisure.description;
             document.getElementById('samount').value = $leisure.amount;

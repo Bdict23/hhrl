@@ -50,6 +50,7 @@ public $receivingInfo = [];
     private $fulfilled = 0;
 
     public $totalReceivedAmount = 0;
+    public $newAttachment = false;
 
     protected $listeners = [
         'selectPO' => 'selectPO',
@@ -190,7 +191,19 @@ public $receivingInfo = [];
                  $this->updateReceiveRequest();
                  return;
             }
-        $this->validate();
+        $this->validate([
+            'id' => 'required|exists:requisition_infos,id',
+            'waybill_no' => 'required_without_all:delivery_no,invoice_no|nullable|max:55',
+            'delivery_no' => 'required_without_all:waybill_no,invoice_no|nullable|max:55',
+            'invoice_no' => 'required_without_all:waybill_no,delivery_no|nullable|max:55',
+            'receiving_no' => 'required|string|max:55|unique:receivings,RECEIVING_NUMBER',
+            'delivered_by' => 'nullable|string|max:55',
+            'remarks' => 'nullable|string|max:150',
+            'qtyAndPrice.*.newCost' => 'required|numeric|min:1',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'attachments' => 'required',
+            'attachments.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $this->id)->first();
 
         //create receiving
@@ -339,7 +352,7 @@ public $receivingInfo = [];
             'delivered_by' => 'nullable|string|max:55',
             'remarks' => 'nullable|string|max:150',
             'qtyAndPrice.*.newCost' => 'required|numeric|min:1',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+
         ]);
 
         $this->requestInfo = RequisitionInfo::with('supplier', 'preparer', 'reviewer', 'approver', 'term', 'requisitionDetails')
@@ -366,8 +379,21 @@ public $receivingInfo = [];
             $updateRecieving->save();
         }
 
-      
-        // Save attachments
+       if($this->newAttachment){
+            // delete the images on the storage
+            $existingAttachments = ReceivingAttachment::where('receiving_id', $updateRecieving->id)->get();
+            foreach ($existingAttachments as $attachment) {
+                if ($attachment) {
+                    $filePath = storage_path('app/public/' . $attachment->file_path);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+            }
+            // delete the existing attachments from the database
+            ReceivingAttachment::where('receiving_id', $updateRecieving->id)->delete();
+
+            // Save attachments
         if ($this->attachments) {
             foreach ($this->attachments as $attachment) {
                 if ($attachment) {
@@ -380,6 +406,9 @@ public $receivingInfo = [];
                 }
             }
         }
+        }
+      
+        
        
         // delete existing cardex records
         $this->receivingOnCardex = Cardex::where('receiving_id', $this->receivingInfo->id)->get();
@@ -534,6 +563,14 @@ public $receivingInfo = [];
         return view('livewire.purchasing.purchase-order-receive');
     }
 
+    public function updatedAttachments()
+    {
+        $this->validate([
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+        $this->Attachments = [];
+        $this->newAttachment = true;
+    }
 
     private function createBackorder($itemId){
         $backOrder = new Backorder();

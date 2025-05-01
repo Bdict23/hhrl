@@ -21,6 +21,20 @@ class AddCustomer extends Component
     public $branch_id;
     public $bday;
 
+    protected $rules = [
+        'fname' => 'required',
+        'lname' => 'required',
+        'mname' => 'nullable',
+        'gender' => 'required',
+        'contact_person' => 'nullable',
+        'relation' => 'nullable',
+        'email' => 'nullable|email',
+        'contact_no_1' => 'nullable|numeric',
+        'contact_no_2' => 'nullable|numeric',
+        'address' => 'nullable',
+        'branch_id' => 'required|numeric',
+        'bday' => 'required|date',
+    ];
 
     public function mount()
     {
@@ -33,10 +47,8 @@ class AddCustomer extends Component
     }
     public function submit()
     {
-        try {
-            // Here you can handle the form submission, e.g., save to the database
-            // For demonstration, we'll just flash a message
-            // You can also use the Customer model to save the data
+       
+            $this->validate();
             Customer::create([
                 'customer_fname' => $this->fname,
                 'customer_lname' => $this->lname,
@@ -49,17 +61,16 @@ class AddCustomer extends Component
                 'customer_address'  => $this->address,
                 'email'  => $this->email,
                 'tin' => '',
-                'branch_id'=> $this->branch_id,
+                'branch_id'=> auth()->user()->branch_id,
                 'birthday'=> $this->bday,
 
             ]);
 
                  $this->reset();
+                 $this->mount();
 
             session()->flash('message', 'Form submitted successfully!');
-        }catch(\Exception $e) {
-            session()->flash('message', 'An error occurred: ' . $e->getMessage());
-        }
+        
     }
     public function render()
     {

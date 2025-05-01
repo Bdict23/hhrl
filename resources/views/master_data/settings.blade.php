@@ -85,6 +85,12 @@
                         <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
                     </ul>
                 @endif
+                {{-- program settings --}}
+                @if (auth()->user()->employee->getModulePermission('Program Settings') !=2)
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('program-settings', this)">Program Settings</a></li>
+                    </ul>
+                @endif
             @endif
         </div>
 
@@ -206,6 +212,10 @@
                     </div>
                     <x-primary-button type="submit">Save</x-primary-button>
                 </form>
+            </div>
+
+            <div>
+                @livewire('settings.program-settings')
             </div>
 
         </div>

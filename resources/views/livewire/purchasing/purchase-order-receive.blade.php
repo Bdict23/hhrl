@@ -199,8 +199,11 @@
                         <div class="row mb-1">
                             <div class="col-md-12">
                                 <label for="attachment" class="form-label" style="width: 100; font-size: 13px">Attachment</label>
-                                    <input wire:model.live="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple>  
-                                @error('attachments.*')
+                                    <input wire:model.live="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple
+                                    @if($isExists && $finalStatus)
+                                        disabled
+                                    @endif>  
+                                @error('attachments' && 'attachments.*')
                                     <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -226,17 +229,20 @@
                                     @if ($isExists == false)
                                         <img class="img-thumbnail" src="{{ $attachment->temporaryUrl() }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
                                     @else
-                                        <div>
-                                            <a href="{{ asset('storage/' . $attachment) }}" target="_blank" class="text-decoration-none">
-                                                <img class="img-thumbnail" src="{{ asset('storage/' . $attachment) }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
-                                            </a>
-                                        </div>
+
+                                        @if ($newAttachment)
+                                            <img class="img-thumbnail" src="{{ $attachment->temporaryUrl() }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;"> 
+                                        @else
+                                            <div>
+                                                <a href="{{ asset('storage/' . $attachment) }}" target="_blank" class="text-decoration-none">
+                                                    <img class="img-thumbnail" src="{{ asset('storage/' . $attachment) }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                                </a>
+                                            </div>
+                                        @endif
                                     @endif
 
                                 @endforeach
                            </div>
-                               
-                            
                         @endif
                 </div>
             </div>
@@ -294,6 +300,7 @@
             </div>
         </div>
     </div>
+
 
     <script>
         function closeModal() {

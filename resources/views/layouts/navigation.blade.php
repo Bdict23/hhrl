@@ -343,10 +343,6 @@
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
-
-                            <x-dropdown-link :href="route('profile.edit')" class="no-underline">
-                                {{ __('Employees') }}
-                            </x-dropdown-link>
                         </form>
                     </x-slot>
                 </x-dropdown>

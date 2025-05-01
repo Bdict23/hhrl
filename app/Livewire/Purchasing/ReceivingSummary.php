@@ -8,6 +8,8 @@ use App\Models\Receiving as ReceivingModel;
 class ReceivingSummary extends Component
 {
     public $receivingSummaryList = [];
+    public $fromDate;
+    public $toDate;
 
     public function render()
     {
@@ -33,5 +35,18 @@ class ReceivingSummary extends Component
         // Fetch data from the database
         $this->receivingSummaryList = ReceivingModel::with(['requisition',  'branch', 'company','preparedBy'])->where('branch_id', auth()->user()->branch_id)->get();
 
+    }
+
+    public function search(){
+        $query = ReceivingModel::with(['requisition', 'branch', 'company','preparedBy'])
+            ->where('branch_id', auth()->user()->branch_id);
+
+        
+        if ($this->fromDate && $this->toDate) {
+            $query->whereDate('created_at', '>=', $this->fromDate)
+                  ->whereDate('created_at', '<=', $this->toDate);
+        }
+
+        $this->receivingSummaryList = $query->get();
     }
 }
