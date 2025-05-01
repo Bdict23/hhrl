@@ -3,127 +3,173 @@
     <div class="text-center">
         <h1 class="text-2xl font-bold">Services</h1>
         <p class="text-gray-600">HHRL</p>
+        
         @if (session()->has('message'))
-            <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-                {{ session('message') }}
-            </div>
+        <div class="alert alert-success" id="success-message">
+            {{ session('message') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         @endif
 
-        <div class="flex flex-wrap -mx-2 p-2">
+        <div class="row p-4">
 
-            <div class="w-1/6 px-2 p-4">
-            </div>
             @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
-                <div class="w-2/6 px-2 border border-black p-4">
-                    <div class="font-bold"> New Service</div>
-                    <hr>
-                    <form wire:submit.prevent="createLeisure" action="">
-                        @csrf
-                        <div class="flex flex-wrap mx-2">
-                            <div class="w-3/3 p-4">
-                                <label for="name" class="">Leisure
-                                    Name:</label>
-                                <input type="text" id="name" wire:model="name"
-                                    class="border border-gray-300 rounded p-2 mx-2" placeholder="Leisure Name">
-                                @error('name')
-                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
-                                @enderror
+                <div class="col-md-6 ">
+                    <div class="card">
+                        <strong class="card-header"> New Service</strong>
+                            <div class="card-body">
+                                <form wire:submit.prevent="createLeisure" >
+                                    @csrf
+                                    
+                                        <div class="">
+                                            <div class="row mt-2">
+                                                <label for="name" class="col-md-3">Leisure Name <span style="color: red;">*</span></label>
+                                                <input type="text" id="name" wire:model="name"
+                                                    class="col-md-9 border border-gray-300 rounded" placeholder="Leisure Name">
+                                            </div>
+                                            @error('name')
+                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="">
+                                            <div class="row">
+                                                <label for="description" class="col-md-3 mt-1"> Description <span style="color: red;">*</span> </label>
+                                                <input type="text" id="description" wire:model="description"
+                                                    class="col-md-9 mt-1 border border-gray-300 rounded " placeholder="Description">
+                                                @error('description')
+                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                    
+                                            <div class="row">
+                                                <label for="description" class="col-md-3 mt-1">Amount <span style="color: red;">*</span></label>
+                                                <input type="number" id="description" wire:model="amount"
+                                                    class="col-md-9 mt-1 border border-gray-300 rounded " placeholder="Amount">
+                                                @error('description')
+                                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            {{-- hidden input --}}
+                                            <input type="hidden" id="status" wire:model="status" value="1">
+                                            <input type="hidden" id="branch_id" wire:model="branch_id" value="1">
+                                            <input type="submit" value="Create Leisure"
+                                                class="bg-blue-500 hover:bg-blue-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
+                                        </div>
+                                </form>
                             </div>
-                        </div>
-                        <div class="flex flex-wrap mx-2">
-                            <div class="w-3/3 p-4">
-                                <label for="description" class=""> Description: </label>
-                                <input type="text" id="description" wire:model="description"
-                                    class="border border-gray-300 rounded p-2 mx-2" placeholder="Description">
-                                @error('description')
-                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap mx-2">
-
-                            <div class="w-3/3 p-4">
-                                <label for="description">Amount:</label>
-                                <input type="number" id="description" wire:model="amount"
-                                    class="border border-gray-300 rounded p-2 mx-2" placeholder="Amount">
-                                @error('description')
-                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap mx-2">
-                            {{-- hidden input --}}
-                            <input type="hidden" id="status" wire:model="status" value="1">
-                            <input type="hidden" id="branch_id" wire:model="branch_id" value="1">
-
-
-
-                            <input type="submit" value="Create Leisure"
-                                class="bg-blue-500 hover:bg-blue-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
-                        </div>
-                    </form>
-
-
+                    </div>
                 </div>
             @endif
            
 
-            <div class="w-2/6 px-2  p-4">
-                <div class="font-bold"> Services List</div>
-                <hr>
-                <br>
-                <table class="table-auto border-collapse border border-gray-300 w-full p-4">
-                    <thead>
-                        <tr>
-                            <th class="border border-gray-300 p-4"> Name</th>
-                            <th class="border border-gray-300 p-4">Description</th>
-                            <th class="border border-gray-300 p-4">Amount</th>
-                            <th class="border border-gray-300 p-4">Status</th>
-                            @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
-                                <th class="border border-gray-300 p-4">Action</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($leisures as $leisure)
-                            <tr>
-                                <td class="border border-gray-300 p-2">{{ $leisure->name }}</td>
-                                <td class="border border-gray-300 p-2">{{ $leisure->description }}</td>
-                                <td class="border border-gray-300 p-2">{{ $leisure->amount }}</td>
-                                <td class="border border-gray-300 p-2">
-                                    @if ($leisure->status == 1)
-                                        Active
-                                    @else
-                                        Inactive
+            <div
+            @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
+                class="col-md-6 mt-4"
+            @else
+                class="col-md-12"
+            @endif>
+                <div class="card">
+                    <strong class="card-header"> Services List</strong>
+                    <br>
+                    <div class="card-body">
+                        <table class="table table-responsive-sm">
+                            <thead class="table-dark"> 
+                                <tr>
+                                    <th> Name</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
+                                        <th >Action</th>
                                     @endif
-                                </td>
-                                @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
-                                    <td class="border border-gray-300 p-2 ">
-                                        <button wire:click="editLeisure({{ $leisure->id }})"
-                                            class="bg-blue-500 hover:bg-blue-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
-                                            Edit
-                                        </button>
-                                        <button wire:click="deleteLeisure({{ $leisure->id }})"
-                                            class="bg-red-500 hover:bg-red-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
-                                            Delete
-                                        </button>
-                                    </td>
-                                @endif
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($leisures as $leisure)
+                                    <tr>
+                                        <td>{{ $leisure->name }}</td>
+                                        <td>{{ $leisure->description }}</td>
+                                        <td>{{ $leisure->amount }}</td>
+                                        <td>
+                                            @if ($leisure->status == 1)
+                                                Active
+                                            @else
+                                                Inactive
+                                            @endif
+                                        </td>
+                                        @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
+                                            <td>
+                                                <x-secondary-button onclick="editLeisure({{$leisure}})" wire:click="editLeisure({{ $leisure->id }})" data-bs-toggle="modal" data-bs-target="#aditServiceModal">
+                                                    Edit
+                                                </x-secondary-button>
+                                                <x-danger-button wire:click="deactivateLeisure({{ $leisure->id }})">
+                                                    Deactivate
+                                                </x-danger-button>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-
-            <div class="w-1/6 px-2 p-4">
-            </div>
-
         </div>
 
+         {{-- modal --}}
+         <div class="modal fade" id="aditServiceModal" tabindex="-1" aria-labelledby="aditServiceModal" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="aditServiceModalLabel">Service Info</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{-- Ensure the fields are populated with the selected leisure's data --}}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="sname" class="form-label">Leisure Name <span style="color: red;">*</span> </label>
+                                <input type="text" class="border border-gray-300 rounded" id="sname" wire:model="name">
+                                @error('name')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="sdescription" class="form-label">Description <span style="color: red;">*</span> </label>
+                                <input type="text" class="border border-gray-300 rounded" id="sdescription" wire:model="description">
+                                @error('description')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div>
+                            <label for="samount" class="form-label">Amount <span style="color: red;">*</span> </label>
+                            <input type="number" class="border border-gray-300 rounded" id="samount" wire:model="amount">
+                            @error('amount')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <x-primary-button class="mt-4" wire:click="updateLeisure" data-bs-dismiss="modal">Update</x-primary-button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
+    <script>
+         function editLeisure($leisure) {
+            document.getElementById('sname').value = $leisure.name;
+            document.getElementById('sdescription').value = $leisure.description;
+            document.getElementById('samount').value = $leisure.amount;
+            // Set the status and branch_id if needed
+        }
+    </script>
 
 
 
