@@ -39,7 +39,28 @@ class BookingView extends Component
     }
     public function updatedTotalPayment()
     {
+         if ($this->total_service_payment <= 0) {
+            session()->flash('error', 'No Payable Amount Available');
+            return $this->total_payment=0;
+        }
+        if ($this->total_payment <= -1) {
+            session()->flash('error', 'Please enter a valid payment amount.');
+            return $this->total_payment=0;
+        }
         $this->balance =  (double)$this->total_service_payment - (double)$this->total_payment ;
+    }
+
+    public function PaymentSecurity()
+    {
+         if ($this->total_service_payment <= 0) {
+            session()->flash('error', 'No Payable Amount Available');
+            return $this->total_payment=0;
+        }
+        if ($this->total_payment <= -1) {
+            session()->flash('error', 'Please enter a valid payment amount.');
+            return $this->total_payment=0;
+        }
+
     }
 
     public function addService($id)
@@ -75,6 +96,7 @@ class BookingView extends Component
     public function saveBookingPayment()
     {
         try {
+
             $this->booking_payment = BookingPayments::create([
                 'booking_records_id' => $this->customer_booking->id,
                 'amount_due' => (double)$this->total_service_payment,
@@ -113,18 +135,34 @@ class BookingView extends Component
               $this->message .= '\n An error occurred: ' . $th->getMessage();
         }
     }
+
     public function Submit(){
         try {
             //code...
+             if ($this->total_payment <= 0) {
+                 session()->flash('error', 'Please enter a valid payment amount.');
+                return;
+            }else if ($this->total_payment < $this->total_service_payment) {
+                session()->flash('error', 'Payment amount cannot be less than the total service payment.');
+                return;
+            }
             $this->saveBookingPayment();
 
             $this->saveBookingService();
+
+            $this->total_service_payment = 0.0;
+            $this->total_payment = 0.0;
+            $this->balance = 0.0;
+            $this->availed_services = [];
+            $this->reset(['total_payment', 'availed_services']);
 
             session()->flash('message', $this->message);
         } catch (\Throwable $th) {
             session()->flash('message', 'An error occurred: ' . $th->getMessage()." ".$this->message);
         }
     }
+
+
 
     public function CheckOut()
     {

@@ -63,6 +63,16 @@ class BookService extends Component
 
     public function updatedTotalPayment()
     {
+         if ($this->total_payable > -1) {
+            session()->flash('error', 'Invalid Amount');
+            $this->total_payment = 0;
+            return;
+        }
+        if ($this->total_payment <= -1) {
+            session()->flash('error', 'Invalid Amount');
+            $this->total_payment = 0;
+            return;
+        }
         $this->balance = (double)$this->total_payable - (double)$this->total_payment;
     }
 

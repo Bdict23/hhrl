@@ -139,9 +139,9 @@
                             <td colspan="3" class="text-right"><strong>Payment:</strong></td>
                             <td>
                                 <div class="input-group mb-3">
-                                    <span class="input-group-text">₱</span>
-                                    <input type="text" wire:model.live='total_payment' class="form-control"
-                                        placeholder="Amount">
+                                    <span class="input-group-text"></span>
+                                    <input type="number" wire:model.live='total_payment' value="{{$total_payment}}" min='0.0' max="{{$total_service_payment}}" class="form-control"
+                                        placeholder="Amount" >
                                 </div>
                             </td>
                         </tr>
@@ -156,6 +156,11 @@
                                 @if (session()->has('message'))
                                     <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded mb-4">
                                         {{ session('message') }}
+                                    </div>
+                                @endif
+                                @if (session()->has('error'))
+                                    <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
+                                        {{ session('error') }}
                                     </div>
                                 @endif
 

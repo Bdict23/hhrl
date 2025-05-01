@@ -59,20 +59,20 @@
                                 <td class="border  border-gray-300">
                                     <input wire:model.live='booking_details.{{ $index }}.male_count'
                                         {{-- wire:keydown='setAmount({{ $index }},`male_count`,$event.target.value )' --}} size="1" value="0" min="0"
-                                        type="Number" class="border border-gray-400 text-center">
+                                        type="Number" value='{{(int)($booking_details[$index]['male_count'] ?? 0)}}' min='0' class="border border-gray-400 text-center">
                                 </td>
                                 </td>
                                 <td class="border  border-gray-300">
                                     <input wire:model.live='booking_details.{{ $index }}.female_count'
                                         {{-- wire:keydown='setAmount({{ $index }},`female_count`,$event.target.value )' --}} size="1" value="0" min="0"
-                                        type="Number" class="border border-gray-400 text-center">
+                                        type="Number" value="{{(int)($booking_details[$index]['female_count'] ?? 0 )}}" min='0' class="border border-gray-400 text-center">
                                 </td>
                                 <td class="border  border-gray-300">
-                                    {{ $booking_details[$index]['female_count'] + $booking_details[$index]['male_count'] }}
+                                    {{ (int)($booking_details[$index]['female_count'] ?? 0 ) + (int)($booking_details[$index]['male_count'] ?? 0) }}
                                 </td>
                                 <td class="border  border-gray-300">
                                     ₱
-                                    {{ ($booking_details[$index]['female_count'] + $booking_details[$index]['male_count']) * $detail['entrance_fee'] }}
+                                    {{ ((int)($booking_details[$index]['female_count'] ?? 0 ) + (int)($booking_details[$index]['male_count'] ?? 0)) * $detail['entrance_fee'] }}
                                 </td>
 
 
@@ -99,7 +99,7 @@
 
                 <h2 class="font-bold">Services</h2>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Open Modal
+                    Add Service
                 </button>
 
                 <table class="table-auto w-full border border-gray-300 mt-4 table-bordered">
@@ -175,8 +175,15 @@
                         <tr>
                             <td></td>
                             <td><b>Payed Amount:</b></td>
-                            <td> <input wire:model.live='total_payment' type="text" size="1"
-                                    class="form-control" placeholder="₱ 00.00" required> </b>
+                            <td> <input wire:model.live='total_payment' type="number"  size="1"
+                                    class="form-control" min="0" placeholder="₱ 00.00" required> </b>
+
+                                       @if (session()->has('error'))
+                                            <div class="bg-red-100 text-red-800 px-4 rounded">
+                                                {{ session('error') }}
+                                            </div>
+                                        @endif
+
                             </td>
                         </tr>
                         <tr>
@@ -224,6 +231,7 @@
                                     <td>
                                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
                                             wire:click='addService({{ $service->id }})'>Add</button>
+
                                     </td>
                                 </tr>
                             @endforeach
