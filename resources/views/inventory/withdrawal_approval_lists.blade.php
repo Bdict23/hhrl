@@ -4,7 +4,7 @@
         <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
-                    role="tab" aria-controls="invoice" aria-selected="true">For Approval</button>
+                    role="tab" aria-controls="invoice" aria-selected="true">For Approvals</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="job-order-tab" data-bs-toggle="tab" data-bs-target="#job-order" type="button"

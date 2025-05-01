@@ -95,7 +95,7 @@ public function editWithdrawal($id) {
 }
 
 public function withdrawalApproval() {
-    $withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->where('approved_by', auth()->user()->emp_id)->get();
+    $withdrawals = Withdrawal::where('approved_by', auth()->user()->emp_id)->get();
     return view('inventory.withdrawal_approval_lists', compact('withdrawals'));
 }
 

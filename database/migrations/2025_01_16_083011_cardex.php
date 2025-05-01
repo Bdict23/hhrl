@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->date('usage_date')->useCurrent()->index('usage_date');
                 $table->date('useful_date')->nullable()->index('useful_date');
                 $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
-                $table->foreignId('reviewed_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
+                $table->foreignId('reviewed_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('cascade');
                 $table->foreignId('approved_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
                 $table->foreignId('department_id')->constrained('departments')->onDelete('no action')->onUpdate('cascade');
                 $table->text('remarks')->nullable();

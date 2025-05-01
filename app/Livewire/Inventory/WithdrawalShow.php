@@ -46,6 +46,7 @@ class WithdrawalShow extends Component
     public $useDate = null; // selected use date from user
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
+    public $hasReviewer = false; // check if reviewer is required
     protected $rules = [
         'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
@@ -91,6 +92,7 @@ class WithdrawalShow extends Component
     public function showWithdrawal($id)
     {
         $withdrawal = WithdrawalModel::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
+        $this->hasReviewer = $withdrawal->reviewed_by != null ? true : false;
         $this->reference = $withdrawal->reference_number;
         $this->selectedDepartment = $withdrawal->department_id;
         $this->useDate = $withdrawal->usage_date;

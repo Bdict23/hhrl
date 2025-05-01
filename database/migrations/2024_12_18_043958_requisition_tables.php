@@ -30,7 +30,7 @@ return new class extends Migration
     DB::table('terms')->insert([
     
         [
-            'term_name' => 'Net 30',
+            'term_name' => '30 Days',
             'term_description' => 'Payment due in 30 days',
             'payment_days' => 30,
             'term_status' => 'ACTIVE',
@@ -38,7 +38,7 @@ return new class extends Migration
             'created_by' => null,
         ],
         [
-            'term_name' => 'Net 60',
+            'term_name' => '60 Days',
             'term_description' => 'Payment due in 60 days',
             'payment_days' => 60,
             'term_status' => 'ACTIVE',
@@ -46,7 +46,7 @@ return new class extends Migration
             'created_by' => null,
         ],
         [
-            'term_name' => 'Net 90',
+            'term_name' => '90 Days',
             'term_description' => 'Payment due in 90 days',
             'payment_days' => 90,
             'term_status' => 'ACTIVE',

@@ -45,6 +45,7 @@ class Withdrawal extends Component
     public $useDate = null; // selected use date from user
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
+    public $hasReviewer = false; // check if reviewer is required
     protected $rules = [
         'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
@@ -79,7 +80,7 @@ class Withdrawal extends Component
     }
 
     public function fetchData(){
-
+        $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Withdrawal') == 1 ? true : false;
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();
         $module = Module::where('module_name', 'Item Withdrawal')->first();
@@ -148,7 +149,19 @@ class Withdrawal extends Component
     }
     public function store()
     {
-        $this->validate();
+        if($this->hasReviewer){
+            $this->validate();
+        }else{
+            $this->validate([
+                'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
+                'selectedDepartment' => 'required',
+                'useDate' => 'required',
+                'spanDate' => 'nullable|date|after_or_equal:useDate',
+                'remarks' => 'nullable|string|max:150',
+                'selectedItems' => 'required|array|min:1',
+                'approver' => 'required',
+            ]);
+        }
 
         $withdrawal = new WithdrawalModel();
         $withdrawal->reference_number = $this->reference;
@@ -157,7 +170,7 @@ class Withdrawal extends Component
         $withdrawal->reviewed_by = $this->reviewer;
         $withdrawal->approved_by = $this->approver;
         $withdrawal->remarks = $this->remarks;
-        $withdrawal->withdrawal_status = $this->finalStatus ? 'FOR REVIEW' : 'PREPARING';
+        $withdrawal->withdrawal_status = $this->finalStatus ?  ($this->hasReviewer ? 'FOR REVIEW' : 'FOR APPROVAL') : ('PREPARING');
         $withdrawal->source_branch_id = auth()->user()->branch_id;
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
@@ -215,8 +228,6 @@ class Withdrawal extends Component
             $this->useDate = now();
         }
     }
-
-
 
     public function render()
     {

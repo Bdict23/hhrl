@@ -231,36 +231,44 @@
                                         @enderror
                                     </div>
                                     <div class="row mt-1">
-                                        <div class="col-md-6">
-                                            <label for="reviewed_to" class="form-label" style="font-size: 13px;">Reviewed
-                                                To</label>
-                                            <select wire:model="reviewer" id="reviewed_to" class="form-select"
-                                                aria-label="Default select example">
-                                                <option value="">Select</option>
+                                        @if($hasReviewer)
+                                            <div class="col-md-6">
+                                                <label for="reviewed_to" class="form-label" style="font-size: 13px;">Reviewed
+                                                    To</label>
+                                                <select wire:model="reviewer" id="reviewed_to" class="form-select"
+                                                    aria-label="Default select example">
+                                                    @if ($reviewers->isEmpty())
+                                                        <option style="font-size: 10px">No Reviewer Found</option>
+                                                    @else
+                                                    <option value="">Select</option>
+                                                        @foreach ($reviewers as $reviewer)
+                                                            <option value="{{ $reviewer->employees->id }}">
+                                                                {{ $reviewer->employees->name }}
+                                                                {{ $reviewer->employees->last_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        @endif
+                                        @error('reviewer')
+                                            <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                        @enderror
+                                        
 
-                                                @if ($reviewers->isEmpty())
-                                                    <option style="font-size: 10px">No Reviewer Found</option>
-                                                @else
-                                                    @foreach ($reviewers as $reviewer)
-                                                        <option value="{{ $reviewer->employees->id }}">
-                                                            {{ $reviewer->employees->name }}
-                                                            {{ $reviewer->employees->last_name }}
-                                                        </option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            @error('reviewer')
-                                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-6">
+                                        <div 
+                                        @if ($hasReviewer)
+                                            class="col-md-6"
+                                        @else
+                                            class="col-md-12"
+                                        @endif>
                                             <label for="approved_to" class="form-label" style="font-size: 13px;">Approved To</label>
                                             <select wire:model="approver" id="approved_to" class="form-select"
                                                 aria-label="Default select example">
-                                                <option value="" disabled>Select</option>
-                                                @if ($reviewers->isEmpty())
-                                                    <option style="font-size: 10px" disabled>No Reviewer Found</option>
+                                                @if ($approvers->isEmpty())
+                                                    <option style="font-size: 10px" disabled>No Approver Found</option>
                                                 @else
+                                                    <option value="">Select</option>
                                                     @foreach ($approvers as $approver)
                                                         <option value="{{ $approver->employees->id }}">
                                                             {{ $approver->employees->name }}

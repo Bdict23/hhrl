@@ -37,7 +37,7 @@ class ApproveWithdrawal extends Component
 
     public function viewWithdrawalDetails($id)
     {
-        if(auth()->user()->employee->getModulePermission('PO Receiving') == 1)
+        if(auth()->user()->employee->getModulePermission('Approve Withdrawals') == 1)
         {
             // Fetch the withdrawal details
 
@@ -76,7 +76,7 @@ class ApproveWithdrawal extends Component
         // Fetch all withdrawals where reviewed_by is the current user's emp_id
         $this->showWithdrawalSummary = true;
         $this->showViewWithdrawal = false;
-        $this->withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->where([['reviewed_by', auth()->user()->emp_id], ['withdrawal_status', 'FOR APPROVAL']])->get();
+        $this->withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->where([['approved_by', auth()->user()->emp_id], ['withdrawal_status', 'FOR APPROVAL']])->get();
     }
     public function render()
     {
