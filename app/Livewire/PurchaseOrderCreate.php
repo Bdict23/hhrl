@@ -34,6 +34,7 @@ class PurchaseOrderCreate extends Component
     public $cardexAvailable = [];
     public $cardexBalance = [];
     public $module;
+    public $hasReviewer = false;
 
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
@@ -60,7 +61,19 @@ class PurchaseOrderCreate extends Component
 
     public function store()
     {
-        $this->validate();
+        if($this->hasReviewer) {
+            $this->validate();    
+        }else {
+            $this->validate([
+                'supplierId' => 'required|exists:suppliers,id',
+                'mPoNumber' => 'nullable|string|max:25',
+                'term_id' => 'required',
+                'remarks' => 'nullable|string|max:55',
+                'approver_id' => 'required|exists:employees,id',
+                'selectedItems' => 'required|array',
+            ]);
+        }
+       
         // Save to requisitionInfos table
         $requisitionInfo = new RequisitionInfo();
 
@@ -76,7 +89,7 @@ class PurchaseOrderCreate extends Component
         $requisitionInfo->supplier_id = $this->supplierId;
         $requisitionInfo->prepared_by = auth()->user()->emp_id;
         $requisitionInfo->approved_by = $this->approver_id;
-        $requisitionInfo->reviewed_by = $this->reviewer_id;
+        $requisitionInfo->reviewed_by = $this->hasReviewer ? $this->reviewer_id : null;
         $requisitionInfo->requisition_status = 'PREPARING';
         $requisitionInfo->trans_date = now();
         $requisitionInfo->term_id = $this->term_id;
@@ -159,6 +172,7 @@ class PurchaseOrderCreate extends Component
 
     public function fetchdata()
     {
+    $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
     

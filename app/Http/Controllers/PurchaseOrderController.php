@@ -304,7 +304,7 @@ class PurchaseOrderController extends Controller
             if($requsition->requisition_status == 'PREPARING'){
                 DB::transaction(function () use ($request) {
                     $requisitionInfo = RequisitionInfo::find($request->id);
-                    $requisitionInfo->requisition_status = 'FOR REVIEW';
+                    $requisitionInfo->requisition_status = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? 'FOR REVIEW': 'FOR APPROVAL';
                     $requisitionInfo->save();
                 });
             }

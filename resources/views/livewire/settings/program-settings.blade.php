@@ -1,8 +1,14 @@
-<div>
-    <div id="program-settings" class="tab-content card" style="display: none;">
+<div >
+    <div id="program-settings" class="tab-content card" style="display: none;" wire:ignore.self>
 
-        <div class="card-header">
+        <div class="card-header ">
+          <div class="d-flex justify-content-between">
             <h5>Program Settings</h5>
+            <span wire:loading>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Applying...
+              </span>  
+            </div>
         </div>
         {{-- <div class="card-body">
                <div class="p-1 mt-3 mb-3 justify-content-center ">
@@ -24,7 +30,9 @@
         </div> --}}
 
         <div class="card">
-            <div class="card-body table-responsive-sm" style="height: 300px; overflow-y: auto;">                           
+            
+            <div class="card-body table-responsive-sm" style="height: 300px; overflow-y: auto;">  
+                          
                  <table class="table table-striped table-sm">
                     <thead class="table-dark sticky-top">
                         <tr class="text-smaller">
@@ -40,12 +48,12 @@
                         
                             @foreach ($programSettings as $setting)
                             <tr>
-                                <td class="text-smaller">{{ $setting->name }}</td>
+                                <td class="text-smaller">{{ $setting->setting_name }}</td>
                                     <td >
-                                        <select  class="form-select" aria-label="Default select example">
+                                        <select wire:change="setBranchConfiguration({{ $branch->id }}, {{ $setting->id}} , $event.target.value )"  class="form-select" aria-label="Default select example">
                                             <option value="" disabled>Select Access</option>
-                                            <option >Not Allowed</option>
-                                            <option>Allowed</option>
+                                            <option value = "0" {{ $branchConfiguration[$branch->id][$setting->id]==0 ? 'selected': ''}} >Not Allow</option>
+                                            <option value = "1" {{ $branchConfiguration[$branch->id][$setting->id]==1 ? 'selected': ''}} >Allow</option>
                                         </select>
                                     </td>   
                                 </tr>

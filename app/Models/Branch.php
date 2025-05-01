@@ -50,4 +50,24 @@ class Branch extends Model
         return $this->hasMany(Signatory::class, 'branch_id');
     }
 
+    //has many branch setting configuration
+    public function branchSettings()
+    {
+        return $this->hasMany(BranchSettingConfig::class, 'branch_id');
+    }
+
+    public function getBranchSettingConfig($settingName)
+    {
+        //get program setting id
+        $programSetting = ProgramSetting::where('setting_name', $settingName)->first();
+        
+        if($programSetting) {
+            $setting = BranchSettingConfig::where([['setting_id', $programSetting->id],['branch_id',auth()->user()->branch_id]])->first();
+            if($setting) {
+                return $setting->value;
+            }
+            return 0;
+        }
+        
+    }
 }

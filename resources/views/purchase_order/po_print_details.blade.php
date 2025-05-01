@@ -159,8 +159,10 @@
     <div class="footer">
         <span>{{ $requestInfo->preparer->name }}
             {{ $requestInfo->preparer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
-        <span>{{ $requestInfo->reviewer->name }}
-            {{ $requestInfo->reviewer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
+            @if ($requestInfo->reviewer)
+                <span>{{ $requestInfo->reviewer->name }}
+                {{ $requestInfo->reviewer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
+            @endif
         <span>{{ $requestInfo->approver->name }} {{ $requestInfo->approver->middle_name }}
             {{ $requestInfo->approver->last_name }}</span>
     </div>

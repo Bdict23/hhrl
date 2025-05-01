@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('program_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique()->comment('Name of the program setting');
+            $table->string('setting_name')->unique()->comment('Name of the program setting');
             $table->string('description')->nullable()->comment('Description of the program setting');
             $table->timestamps();
 

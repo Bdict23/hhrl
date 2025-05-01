@@ -128,13 +128,16 @@
                             value="{{ $requestInfo->preparer->name }} {{ $requestInfo->preparer->last_name }}" readonly
                             style="width: 100; font-size: 12px">
                     </div>
+                    @if ($requestInfo->reviewer)
                     <div class="col-md-10">
                         <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Reviewed
                             By</label>
                         <input type="text" class="form-control" id="contact1" name="company_tin"
                             value="{{ $requestInfo->reviewer->name }} {{ $requestInfo->reviewer->last_name }}" readonly
                             style="width: 100; font-size: 12px">
-                    </div>
+                        </div>
+                    @endif
+                    
                     <div class="col-md-10">
                         <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Approved
                             By</label>

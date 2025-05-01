@@ -130,6 +130,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="row ">
+
+                                    @if ($hasReviewer)
                                     <div class="col-md-6">
                                         <label for="" class="form-label">Reviewed To <span style="color: red; font-size: x-small;"> *</span></label>
                                         <select wire:model="reviewer_id"  class="form-control" style="font-size: x-small">
@@ -140,12 +142,20 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('reviewer_id')
-                                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                        @enderror
+                                        
                                     </div>
+                                    @endif
+                                    @error('reviewer_id')
+                                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                    @enderror
+                                    
                         
-                                    <div class="col-md-6">
+                                    <div
+                                    @if (!$hasReviewer)
+                                        class="col-md-12"
+                                    @else
+                                        class="col-md-6"
+                                    @endif>
                                         <label for="contact_no_2" class="form-label">Approved To <span style="color: red; font-size: x-small;"> *</span></label>
                                         <select wire:model="approver_id" class="form-control" style="font-size: x-small">
                                             <option value="" selected>Select Approver</option>
