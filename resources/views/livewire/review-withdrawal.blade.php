@@ -3,9 +3,9 @@
         <header class="card-header">
             <h2>For review withdrawals</h2>
         </header>
-        <div class="card-body">
-            <table class="table table-striped table-hover table-responsive">
-                <thead class="thead-light">
+        <div class="card-body overflow-x-auto">
+            <table class="table table-striped table-hover table-sm">
+                <thead class="table-dark sticky-top">
                     <tr>
                         <th>Reference</th>
                         <th>Department</th>
@@ -43,7 +43,7 @@
 
     <div {{ $showViewWithdrawal ? 'style=display:block' : 'style=display:none' }}>
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-7 mb-4">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
@@ -58,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body overflow-x-auto">
                         <table class="table table-striped table-hover table-responsive">
                             <thead class="thead-dark me-3">
                                 <tr>

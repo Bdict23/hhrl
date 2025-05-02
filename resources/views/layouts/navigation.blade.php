@@ -61,6 +61,14 @@
                                         {{ __('User Access') }}
                                     </x-dropdown-link>
                                 @endif
+
+                                @if (auth()->user()->employee->getModulePermission('User Registration') !=2)
+                                    <x-dropdown-link :href="route('register')" class="no-underline">
+                                        {{ __('User Registration') }}
+                                    </x-dropdown-link>
+                                @endif
+                                
+
                                @if (auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
                                     || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
                                     || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
@@ -410,6 +418,11 @@
                     @if (auth()->user()->employee->getModulePermission('User Access') !=2)
                         <x-responsive-nav-link :href="url('/user-access')" class="no-underline">
                             {{ __('User Access') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('User Registration') !=2)
+                        <x-responsive-nav-link :href="route('register')" class="no-underline">
+                            {{ __('User Registration') }}
                         </x-responsive-nav-link>
                     @endif
                     @if (auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 

@@ -9,7 +9,7 @@
     </div>
     <div class="row container">
         <!-- Left Dashboard -->
-        <div class="card col-md-7">
+        <div class="card col-md-7 mb-4">
             <div class="card " style="flex:1">
             
                     <div class="card-header">
@@ -29,8 +29,8 @@
                             <x-danger-button data-bs-toggle="modal" data-bs-target="#reviewModal"> REVISE</x-danger-button>
                             <x-secondary-button ><a href="/review_request_list" class="no-underline">Summary</a> </x-secondary-button>
                         </div>
-                    <div class="card-body">
-                        <table class="table table-striped table-hover table-sm table-responsive">
+                    <div class="card-body overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
+                        <table class="table table-striped table-hover table-sm">
                             <thead class="table-dark">
                                 <tr style="font-size: x-small">
                                     <th>Code</th>
@@ -70,7 +70,7 @@
             </div>
         </div>
         <!-- Right Dashboard -->
-        <div class=" col-md-5">
+        <div class=" col-md-5 mb-8">
             <div class="card">
                 <header class="card-header">
                     <h1>Purchase Order Information</h1>

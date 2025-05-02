@@ -22,12 +22,12 @@
             <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
                 <!-- Purchase Order Content -->
 
-                <div class="dashboard table-responsive-sm">
+                <div class="dashboard overflow-x-auto">
                     <header>
-                        <h3>Review Request</h3>
+                        <h3>Review Requests</h3>
                     </header>
-                    <table class="table table-striped table-hover">
-                        <thead class="thead-light">
+                    <table class="table table-striped table-hover" style="display: height: 400px; overflow-x: auto;">
+                        <thead class="table-dark sticky-top">
                             <tr>
                                 <th>Order To</th>
                                 <th>Order Number</th>
@@ -73,35 +73,37 @@
                         <h2>Summary</h2>
 
                     </header>
-                    <table class="table table-striped table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Order To</th>
-                                <th>Order Number</th>
-                                <th>Order Date</th>
-                                <th>Prepared By</th>
-                                <th>PO Status</th>
-                                <th>Remarks</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($all_review_requests as $requestInfo)
-                            <tr>
-                                <td>{{ $requestInfo->supplier->supp_name }}</td>
-                                <td>{{ $requestInfo->requisition_number }}</td>
-                                <td>{{ $requestInfo->trans_date }}</td>
-                                <td>{{ $requestInfo->remarks }}</td>
-                                <td>{{ $requestInfo->requisition_status }}</td>
-                                <td>{{ $requestInfo->remarks }}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" onclick="addToTable({{ $requestInfo }})">
-                                        View
-                                    </button>
+                    <div class="overflow-x-auto">
+                        <table class="table table-striped table-hover" style="display: height: 400px; overflow-x: auto;">
+                            <thead class="table-dark sticky-top">
+                                <tr>
+                                    <th>Order To</th>
+                                    <th>Order Number</th>
+                                    <th>Order Date</th>
+                                    <th>Prepared By</th>
+                                    <th>PO Status</th>
+                                    <th>Remarks</th>
+                                    <th>Action</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($all_review_requests as $requestInfo)
+                                <tr>
+                                    <td>{{ $requestInfo->supplier->supp_name }}</td>
+                                    <td>{{ $requestInfo->requisition_number }}</td>
+                                    <td>{{ $requestInfo->trans_date }}</td>
+                                    <td>{{ $requestInfo->remarks }}</td>
+                                    <td>{{ $requestInfo->requisition_status }}</td>
+                                    <td>{{ $requestInfo->remarks }}</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="addToTable({{ $requestInfo }})">
+                                            View
+                                        </button>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -23,6 +23,7 @@ use App\Http\Controllers\InvoicingController;
 use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 //ken gate-entrance module
 use Livewire\Livewire;
 use App\Livewire\GateEntrance\GateEntrance;
@@ -35,6 +36,9 @@ use App\Livewire\GateEntrance\Customer\CustomersList;
 use App\Livewire\GateEntrance\Customer\CustomerRecords;
 
 //
+Route::get('register', [RegisteredUserController::class, 'create'])
+->name('register');
+Route::post('register', [RegisteredUserController::class, 'store']);
 
 Route::get('/', function () {
     return view('dashboard');

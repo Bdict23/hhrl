@@ -16,15 +16,15 @@
             {{-- left --}}
             <div
             @if(auth()->user()->employee->getModulePermission('Leisures') == 1)
-                class="col-md-6"
+                class="col-md-6 mb-3"
             @else
-                class="col-md-12"
+                class="col-md-12 mb-3"
             @endif>
                 <div class="card">
                     <strong class="card-header"> Services List</strong>
                     <input type="text" id="searchInput" class="col-md-6 border border-gray-300 rounded mt-2 ml-1" placeholder="Search...">
-                    <div class="card-body table-responsive">
-                        <table class="table table-responsive-sm" id="leisuresTable">
+                    <div class="card-body overflow-auto" style="height: 400px;">
+                        <table class="table table-sm" id="leisuresTable">
                             <thead class="table-dark"> 
                                 <tr>
                                     <th> Name</th>

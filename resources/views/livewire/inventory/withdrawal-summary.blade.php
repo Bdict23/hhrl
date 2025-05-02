@@ -22,8 +22,8 @@
 
 
     {{-- Withdrawal Summary Table --}}
-    <div class="table-responsive-sm">
-        <table class="table table-hover table-bordered table-striped table-sm">
+    <div class="overflow-x-auto">
+        <table class="table table-hover table-bordered table-striped table-sm" style="display: height : 400px; overflow-x: auto;">
             <thead class="table-dark table-hover ">
                 <tr>
                     <th>Reference Number</th>

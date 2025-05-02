@@ -3,4 +3,3 @@
 
   @livewire('master-data.user-access')
   
-  @endsection

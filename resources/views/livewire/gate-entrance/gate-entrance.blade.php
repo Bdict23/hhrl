@@ -15,8 +15,8 @@
             </div>
 
             <div class="w-4/6 px-2 rounded border border-gray-300 p-4 text-center">
-                <table class="table table-striped table-bordered text-center">
-                    <thead>
+                <table class="table table-striped table-bordered text-center table-sm">
+                    <thead class="table-dark sticky-top">
                         <tr>
                             <th class="text-left">
                                 Customer
