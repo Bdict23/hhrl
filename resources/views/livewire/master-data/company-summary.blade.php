@@ -29,10 +29,9 @@
         </div>
 
 
-        <div class="card-body">
-            <div class="table-responsive-sm">
-                <div class="d-flex justify-content-between mb-3">
-                    <table class="table table-striped table-hover table-sm table-responsive">
+            <div class="card-body">
+                <div class="overflow-x-auto">
+                    <table class="table min-w-full">
                         <thead class="table-dark table-sm ">
                             <tr>
                                 <th>Company Name</th>
@@ -75,11 +74,8 @@
 
                         </tbody>
                     </table>
-
+                </div>
             </div>
-                
-        </div>
-    </div>
 
 
      <!-- Modal Company Create-->

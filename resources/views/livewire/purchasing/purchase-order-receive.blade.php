@@ -18,7 +18,7 @@
     <div class="row  container">
         <!-- Left Dashboard -->
         <div class="col-md-7">
-            <div class="card">
+            <div class="card mt-2">
 
                 @csrf
                 <div class="card-header">
@@ -118,7 +118,7 @@
       
         <!-- Right Dashboard -->
         <div class="col-md-5">
-            <div class="card">
+            <div class="card mt-2">
                 <header class="card-header">
                     <h1>Purchase Order Information</h1>
                 </header>

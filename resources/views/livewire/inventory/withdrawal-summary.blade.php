@@ -1,4 +1,5 @@
-<div class="container dashboard">
+<div class="dashboard">
+    {{-- Page Header --}}
 
     {{-- Page Title --}}
     <h2 class="mb-4">Withdrawal Summary</h2>

@@ -40,30 +40,34 @@
                 readonly value="{{ $totalBalance }}">
         </div>
     </div>
-    <table class="table table-striped card-body">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>In</th>
-                <th>Out</th>
-                <th>Balance</th>
-                <th>Transaction</th>
-                <th>Reference</th>
-            </tr>
-        </thead>
-        <tbody id="cardexTableBody">
-            @foreach ($cardexData as $index => $cardexItem)
-                <tr>
-                    <td>{{ \Carbon\Carbon::parse($cardexItem['created_at'])->format('Y-m-d') }}</td>
-                    <td>{{ $cardexItem['in'] }}</td>
-                    <td>{{ $cardexItem['out'] }}</td>
-                    <td>{{ $cardexItem['balance'] }}</td>
-                    <td>{{ $cardexItem['transaction_type'] }}</td>
-                    <td>{{ $cardexItem['reference']}}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div>
+       <div class="table-responsive card-body" style="display: height: 200px; overflow: auto;">
+         <table class="table table-striped table-bordered table-hover">
+             <thead class="table-dark sticky-top">
+                 <tr>
+                     <th>Date</th>
+                     <th>In</th>
+                     <th>Out</th>
+                     <th>Balance</th>
+                     <th>Transaction</th>
+                     <th>Reference</th>
+                 </tr>
+             </thead>
+             <tbody id="cardexTableBody">
+                 @foreach ($cardexData as $index => $cardexItem)
+                     <tr>
+                         <td>{{ \Carbon\Carbon::parse($cardexItem['created_at'])->format('Y-m-d') }}</td>
+                         <td>{{ $cardexItem['in'] }}</td>
+                         <td>{{ $cardexItem['out'] }}</td>
+                         <td>{{ $cardexItem['balance'] }}</td>
+                         <td>{{ $cardexItem['transaction_type'] }}</td>
+                         <td>{{ $cardexItem['reference']}}</td>
+                     </tr>
+                 @endforeach
+             </tbody>
+         </table>
+       </div>
+    </div>
 
 </div>
 

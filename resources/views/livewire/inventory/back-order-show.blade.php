@@ -17,7 +17,7 @@
     </div>
     <div class="row  container">
         <!-- Left Dashboard -->
-        <div class="col-md-7">
+        <div class="col-md-7 mt-2">
             <div class="card">
 
                 @csrf
@@ -38,7 +38,7 @@
                     </div>
 
 
-                <div class="card-body table-responsive-sm" wire:ignore.self>
+                <div class="card-body table-responsive-sm" style="display: height: 400px; overflow-x: auto;" wire:ignore.self>
                     <table class="table table-striped table-hover table-sm table-responsive-sm">
                         <thead class="table-dark">
                             <tr style="font-size: x-small">
@@ -95,7 +95,7 @@
         </div>
       
         <!-- Right Dashboard -->
-        <div class="col-md-5">
+        <div class="col-md-5 mt-2">
             <div class="card">
                 <header class="card-header">
                     <h1>Purchase Order Information</h1>

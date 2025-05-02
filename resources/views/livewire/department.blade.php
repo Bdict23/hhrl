@@ -11,10 +11,11 @@
           {{-- left panel (dept. lists) --}}
         <div 
         @if (auth()->user()->employee->getModulePermission('Departments') == 1)
-            class="col-md-6"
+            class="col-md-6 mt-2"
         @else
             class="col-md-12"
         @endif
+
         wire:ignore.self>
             <div class="card">
                 <div class="shadow-sm">
@@ -27,40 +28,42 @@
                                     placeholder="Search Department">
                             </div>
                         </header>
-                        <table class="table table-striped table-hover table-sm">
-                            <thead class="table-dark">
-                                <tr style="font-size: smaller;">
-                                    <th>Department Name</th>
-                                    <th>Branch</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Personnel</th>
-                                    @if (auth()->user()->employee->getModulePermission('Departments') == 1)
-                                        <th>Actions</th>
-                                    @endif
-                                </tr>
-                            </thead>
-                            <tbody id="departmentTableBody">
-                                @forelse ($departments as $department)
+                        <div class="overflow-x-auto" >
+                            <table class="table table-striped min-w-full">
+                                <thead class="table-dark">
                                     <tr style="font-size: smaller;">
-                                        <td>{{ $department->department_name }}</td>
-                                        <td>{{ $department->branch->branch_name }}</td>
-                                        <td>{{ $department->department_status }}</td>
-                                        <td style="text-align: center">{{ $department->employees->count() }}</td>
+                                        <th>Department Name</th>
+                                        <th>Branch</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Personnel</th>
                                         @if (auth()->user()->employee->getModulePermission('Departments') == 1)
-                                            <td>
-                                                <button class="btn btn-primary btn-sm" wire:click="edit({{ $department->id }})">Edit</button>
-                                                <button class="btn btn-danger btn-sm"
-                                                    wire:click="deactivate({{ $department->id }})">Deactivate</button>
-                                            </td>
+                                            <th>Actions</th>
                                         @endif
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center">No departments found</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody id="departmentTableBody">
+                                    @forelse ($departments as $department)
+                                        <tr style="font-size: smaller;">
+                                            <td>{{ $department->department_name }}</td>
+                                            <td>{{ $department->branch->branch_name }}</td>
+                                            <td>{{ $department->department_status }}</td>
+                                            <td style="text-align: center">{{ $department->employees->count() }}</td>
+                                            @if (auth()->user()->employee->getModulePermission('Departments') == 1)
+                                                <td>
+                                                    <button class="btn btn-primary btn-sm" wire:click="edit({{ $department->id }})">Edit</button>
+                                                    <button class="btn btn-danger btn-sm"
+                                                        wire:click="deactivate({{ $department->id }})">Deactivate</button>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center">No departments found</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -68,7 +71,7 @@
     
        @if (auth()->user()->employee->getModulePermission('Departments') == 1)
         {{-- Right Panel (dept. info) --}}
-        <div class="col-md-6">
+        <div class="col-md-6 mt-2">
             <form  wire:submit.prevent="saveDepartment" id="departmentForm">
                 @csrf
                 <div class="row">

@@ -83,7 +83,7 @@
                             <x-slot name="trigger">
                                 <button
                                     class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                    <div>{{ __('Purchase Order') }}</div>
+                                    <div>{{ __('Purchasing') }}</div>
                                     <div class="ms-1">
                                         {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 20 20">
@@ -148,8 +148,8 @@
                 </div>
 
                 <!-- Dropdown Menu for Sales Order -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
-                    {{-- <x-dropdown>
+                {{-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                     <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
@@ -216,9 +216,12 @@
                                 {{ __('Daily Sales') }}
                             </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown> --}}
+                    </x-dropdown> 
+                </div> --}}
 
-                    @if(auth()->user()->employee->getGroupedModulePermissions('Validations') !=2)
+                <!-- Dropdown Menu for Validation -->
+                @if(auth()->user()->employee->getGroupedModulePermissions('Validations') !=2)
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
                         <x-dropdown>
                             <x-slot name="trigger">
                                 <button
@@ -234,7 +237,7 @@
                                     </div>
                                 </button>
                             </x-slot>
-
+                        
                             <x-slot name="content">
                                 @if (auth()->user()->employee->getModulePermission('PO Review') == 1 )
                                     <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
@@ -260,54 +263,56 @@
                                 @endif
                             </x-slot>
                         </x-dropdown>
-                    @endif
+                    </div class="">
+                @endif
 
 
-                    {{-- Ken Entrance module --}}
+                {{-- Ken Entrance module --}}
                     @if (auth()->user()->employee->getGroupedModulePermissions('Entrance') !=2)
-                        <x-dropdown>
-                            <x-slot name="trigger">
-                                <button
-                                    class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                    <div>Entrance</div>
-                                    <div class="ms-1">
-                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                </button>
-                            </x-slot>
-                            <x-slot name="content">   
-                                @if (auth()->user()->employee->getModulePermission('Gate Entrance') !=2)
-                                    <x-dropdown-link :href="route('gate.entrance.page')" class="no-underline">
-                                        Gates
-                                        </x-dropdown-link>
-                                    <x-dropdown-link :href="route('customers.page')" class="no-underline">
-                                            Customer
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                    <x-dropdown>
+                        <x-slot name="trigger">
+                            <button
+                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                <div>Entrance</div>
+                                <div class="ms-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">   
+                            @if (auth()->user()->employee->getModulePermission('Gate Entrance') !=2)
+                                <x-dropdown-link :href="route('gate.entrance.page')" class="no-underline">
+                                    Gates
                                     </x-dropdown-link>
-                                @endif
-                                
-                                {{-- <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                    Payment
+                                <x-dropdown-link :href="route('customers.page')" class="no-underline">
+                                        Customer
                                 </x-dropdown-link>
-                                <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
-                                Records
-                                </x-dropdown-link> --}}
-                                @if (auth()->user()->employee->getModulePermission('Leisures') !=2)
-                                    <x-dropdown-link :href="route('leisures.page')" class="no-underline">
-                                        Leisures
-                                    </x-dropdown-link>
-                                @endif
-                            </x-slot>
-                        </x-dropdown>
-                    @endif
-
-                    {{-- end Ken Entrance module --}}
-
+                            @endif
+                            
+                            {{-- <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                                Payment
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
+                            Records
+                            </x-dropdown-link> --}}
+                            @if (auth()->user()->employee->getModulePermission('Leisures') !=2)
+                                <x-dropdown-link :href="route('leisures.page')" class="no-underline">
+                                    Leisures
+                                </x-dropdown-link>
+                            @endif
+                        </x-slot>
+                    </x-dropdown>
                 </div>
+                @endif
+                {{-- end Ken Entrance module --}}
+
+                
             </div>
 
             <!-- Settings Dropdown -->
@@ -370,18 +375,140 @@
             <x-responsive-nav-link :href="route('dashboard')" class="no-underline" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('suppliers')" class="no-underline" :active="request()->routeIs('suppliers')">
-                {{ __('Supplier') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('companies')" class="no-underline" :active="request()->routeIs('companies')">
-                {{ __('Company') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('departments.index')" class="no-underline" :active="request()->routeIs('departments.index')">
-                {{ __('Departments') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('branch.index')" class="no-underline" :active="request()->routeIs('branch.index')">
-                {{ __('Branches') }}
-            </x-responsive-nav-link>
+
+            <!-- Responsive Master Data Menu -->
+            @if (auth()->user()->employee->getGroupedModulePermissions('Master Data') !=2 
+            ||auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
+            || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
+            || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
+            || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition duration-150 ease-in-out">
+                    {{ __('Master Data') }}
+                </button>
+                <div x-show="open" class="space-y-1 pl-4">
+                    @if(auth()->user()->employee->getModulePermission('Suppliers') !=2)
+                        <x-responsive-nav-link :href="route('suppliers')" class="no-underline" :active="request()->routeIs('suppliers')">
+                            {{ __('Supplier') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Companies') !=2)
+                        <x-responsive-nav-link :href="route('companies')" class="no-underline" :active="request()->routeIs('companies')">
+                            {{ __('Company') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Departments') !=2)
+                        <x-responsive-nav-link :href="route('departments.index')" class="no-underline" :active="request()->routeIs('departments.index')">
+                            {{ __('Departments') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Branches') !=2)
+                        <x-responsive-nav-link :href="route('branch.index')" class="no-underline" :active="request()->routeIs('branch.index')">
+                            {{ __('Branches') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('User Access') !=2)
+                        <x-responsive-nav-link :href="url('/user-access')" class="no-underline">
+                            {{ __('User Access') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
+                        || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
+                        || auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2 
+                        || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+                        <x-responsive-nav-link :href="url('/settings')" class="no-underline">
+                            {{ __('Settings') }}
+                        </x-responsive-nav-link>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            @if (auth()->user()->employee->getGroupedModulePermissions('Purchasing') !=2 )
+            <!-- Responsive Purchasing Menu -->
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition duration-150 ease-in-out">
+                        {{ __('Purchasing') }}
+                    </button>
+                    <div x-show="open" class="space-y-1 pl-4">
+                        @if (auth()->user()->employee->getModulePermission('Purchase Order') != 2 )
+                            <x-responsive-nav-link :href="url('/purchase_order')" class="no-underline">
+                                {{ __('PO Summary') }}
+                            </x-responsive-nav-link>
+                        @endif
+                        @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
+                            <x-responsive-nav-link :href="url('/receive_stock')" class="no-underline">
+                                {{ __('Receiving') }}
+                            </x-responsive-nav-link>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+
+            <!-- Responsive Inventory Menu -->
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition duration-150 ease-in-out">
+                    {{ __('Inventory') }}
+                </button>
+                <div x-show="open" class="space-y-1 pl-4">
+                    <x-responsive-nav-link  class="no-underline"  class="no-underline" data-bs-toggle="modal" onclick="unhideModal()"
+                    data-bs-target="#cardexModal" >
+                        {{ __('Cardex') }}
+                    </x-responsive-nav-link>
+                    @if(auth()->user()->employee->getModulePermission('Back Orders') != 2 )
+                        <x-responsive-nav-link :href="url('/back-orders')" class="no-underline" >
+                            {{ __('Back Order') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Withdrawal') != 2 )
+                        <x-responsive-nav-link :href="url('/item_withdrawal')" class="no-underline">
+                            {{ __('Item Withdrawal') }}
+                        </x-responsive-nav-link>
+                    @endif
+                </div>
+            </div>
+
+
+            <!-- Responsive Validation Menu -->
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition duration-150 ease-in-out">
+                    {{ __('Validations') }}
+                </button>
+                <div x-show="open" class="space-y-1 pl-4">
+                    <x-responsive-nav-link :href="url('/review_request_list')" class="no-underline">
+                        {{ __('P.O - Review') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="url('/approval_request_list')" class="no-underline">
+                        {{ __('P.O - Approval') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="url('/withdrawal_review')" class="no-underline">
+                        {{ __('Withdrawal - Review') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="url('/withdrawal_approval')" class="no-underline">
+                        {{ __('Withdrawal - Approval') }}
+                    </x-responsive-nav-link>
+                </div>
+            </div>
+            <!-- Responsive Entrance menu -->
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition duration-150 ease-in-out">
+                    {{ __('Entrance') }}
+                </button>
+                <div x-show="open" class="space-y-1 pl-4">
+                    <x-responsive-nav-link :href="route('gate.entrance.page')" class="no-underline">
+                        {{ __('Gates') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('customers.page')" class="no-underline">
+                        {{ __('Customers') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('leisures.page')" class="no-underline">
+                        {{ __('Leisures') }}
+                    </x-responsive-nav-link>
+                </div>
+            </div>
+           
+            
             {{-- <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
                 {{ __('Create Menu') }}
             </x-responsive-nav-link> --}}
@@ -389,14 +516,7 @@
                 {{ __('Menu Lists') }}
             </x-responsive-nav-link> --}}
 
-            <x-responsive-nav-link :href="url('/user-access')" class="no-underline">
-                {{ __('User Access') }}
-            </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('settings.index')" class="no-underline" :active="request()->routeIs('settings.index')">
-                {{ __('Settings') }}
-            </x-responsive-nav-link>
-        </div>
+        
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">

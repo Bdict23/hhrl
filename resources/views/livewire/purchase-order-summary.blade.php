@@ -1,4 +1,4 @@
-<div class="content-fluid">
+<div class="overflow-x-auto">
 
     <div class="card mt-3 mb-3">
         <div class="card-header p-2 ">
@@ -46,56 +46,58 @@
         </div>
 
 
-        <div class="card-body table-responsive-sm">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Order To</th>
-                            <th>Order Number</th>
-                            <th>Order Date</th>
-                            <th>Prepared By</th>
-                            <th>PO Status</th>
-                            <th>Remarks</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($purchaseOrderSummary as $requisition)
+        <div class="card-body ">
+                <div class="overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
+                    <table class="table min-w-full table-striped table-hover">
+                        <thead class="table-dark">
                             <tr>
-                                <td>{{ $requisition->supplier->supp_name ?? 'N/A' }}</td>
-                                <td>{{ $requisition->requisition_number }}</td>
-                                <td>{{ $requisition->trans_date }}</td>
-                                <td>{{ $requisition->preparer->name }}</td>
-                                <td>
-                                    <span class="
-                                    @if($requisition->requisition_status == 'PREPARING') badge bg-secondary
-                                    @elseif($requisition->requisition_status == 'FOR REVIEW') badge bg-dark
-                                    @elseif($requisition->requisition_status == 'FOR APPROVAL') badge bg-dark
-                                    @elseif($requisition->requisition_status == 'TO RECIEVE') badge bg-primary 
-                                    @elseif($requisition->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
-                                    @elseif($requisition->requisition_status == 'COMPLETED') badge bg-success 
-                                    @elseif($requisition->requisition_status == 'REJECTED') badge bg-danger
-                                    @elseif($requisition->requisition_status == 'CANCELLED') badge bg-danger 
-                                    @else badge bg-secondary 
-                                    @endif"> {{ $requisition->requisition_status }}
-                                </span>
-                                   </td>
-                                <td>{{ $requisition->remarks }}</td>
-                                <input id="company_id" name='company_id' type="hidden">
-                                <td>
-                                    <a style="text-decoration: none" href="{{ route('po.show', ['id' => $requisition->id]) }}">
-                                        <x-primary-button class="button-group">View</x-primary-button>
-                                    <a>
-                                </td>
+                                <th>Order To</th>
+                                <th>Order Number</th>
+                                <th>Order Date</th>
+                                <th>Prepared By</th>
+                                <th>PO Status</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center">No purchase order found</td>
-                            </tr>
-                        @endforelse
-
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse ($purchaseOrderSummary as $requisition)
+                                <tr>
+                                    <td>{{ $requisition->supplier->supp_name ?? 'N/A' }}</td>
+                                    <td>{{ $requisition->requisition_number }}</td>
+                                    <td>{{ $requisition->trans_date }}</td>
+                                    <td>{{ $requisition->preparer->name }}</td>
+                                    <td>
+                                        <span class="
+                                        @if($requisition->requisition_status == 'PREPARING') badge bg-secondary
+                                        @elseif($requisition->requisition_status == 'FOR REVIEW') badge bg-dark
+                                        @elseif($requisition->requisition_status == 'FOR APPROVAL') badge bg-dark
+                                        @elseif($requisition->requisition_status == 'TO RECIEVE') badge bg-primary 
+                                        @elseif($requisition->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
+                                        @elseif($requisition->requisition_status == 'COMPLETED') badge bg-success 
+                                        @elseif($requisition->requisition_status == 'REJECTED') badge bg-danger
+                                        @elseif($requisition->requisition_status == 'CANCELLED') badge bg-danger 
+                                        @else badge bg-secondary 
+                                        @endif"> {{ $requisition->requisition_status }}
+                                    </span>
+                                       </td>
+                                    <td>{{ $requisition->remarks }}</td>
+                                    <input id="company_id" name='company_id' type="hidden">
+                                    <td>
+                                        <a style="text-decoration: none" href="{{ route('po.show', ['id' => $requisition->id]) }}">
+                                            <x-primary-button class="button-group">View</x-primary-button>
+                                        <a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center">No purchase order found</td>
+                                </tr>
+                            @endforelse
+                    
+                        </tbody>
+                    </table>
+                </div>
         </div>
     </div>
 </div>

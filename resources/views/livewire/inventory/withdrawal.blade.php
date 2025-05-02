@@ -9,7 +9,7 @@
             @endif
        </div>
             <div class="row me-3 w-100">
-                <div class=" col-md-8 card">
+                <div class=" col-md-8 card mt-2">
                     <div class=" card-body">
                         <header>
                             <h1> Item Withdrawal</h1>
@@ -23,110 +23,110 @@
                         </header>
                        
                       
-                        <table class="table table-striped table-hover me-3">
-                           
-                           
-                            <thead class="table-light me-3">
-                                <tr style="font-size: x-small;">
-                                    @if ($avlBal)
-                                        <th>BAL.</th>
-                                    @endif
-                                    @if ($avlQty)
-                                        <th>AVAIL.</th>
-                                    @endif
-                                    @if ($code)
-                                        <th>SKU</th>
-                                    @endif
-                                    <th>NAME</th>
-                                    @if ($uom)
-                                        <th>UNIT</th>
-                                    @endif
-                                    @if ($category)
-                                        <th>CATEGORY</th>
-                                    @endif
-                                    @if ($location)
-                                        <th>LOCATION</th>
-                                    @endif
-                                    @if ($brand)
-                                        <th>BRAND</th>
-                                    @endif
-                                    @if ($status)
-                                        <th>STATUS</th>
-                                    @endif
-                                    @if ($classification)
-                                        <th>CLASSIFICATION</th>
-                                    @endif
-                                    @if ($barcode)
-                                        <th>BARCODE</th>
-                                    @endif
-                                    <th>REQ. QTY</th>
-                                    <th>COST</th>
-                                    <th>TOTAL</th>
-                                    <th>
-                                        ACTION
-                                        <button type="button"
-                                        class="btn btn-sm float-end"
-                                        style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#customCol"
-                                        title="Add or remove column">
-                                        +
-                                    </button>
-                                    </th>
-                                    
-                                </tr>
-                               
-                           
-                            </thead>
-                            <tbody id="itemTableBody">
-                                @forelse ($selectedItems as $index => $item)
+                        <div class="overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
+                            <table class="table table-striped table-hover me-3">
+                                <thead class="table-light me-3">
                                     <tr style="font-size: x-small;">
                                         @if ($avlBal)
-                                            <td>{{ $item['total_balance'] }}</td>
+                                            <th>BAL.</th>
                                         @endif
                                         @if ($avlQty)
-                                            <td>{{ $item['total_available'] }}</td>
+                                            <th>AVAIL.</th>
                                         @endif
                                         @if ($code)
-                                            <td>{{ $item['code'] }}</td>
+                                            <th>SKU</th>
                                         @endif
-                                        <td>{{ $item['name'] }}</td>
+                                        <th>NAME</th>
                                         @if ($uom)
-                                            <td>{{ $item['uom'] }}</td>
+                                            <th>UNIT</th>
                                         @endif
                                         @if ($category)
-                                            <td>{{ $item['category'] }}</td>
+                                            <th>CATEGORY</th>
                                         @endif
                                         @if ($location)
-                                            <td>{{ $item['location'] }}</td>
+                                            <th>LOCATION</th>
                                         @endif
                                         @if ($brand)
-                                            <td>{{ $item['brand'] }}</td>
+                                            <th>BRAND</th>
                                         @endif
                                         @if ($status)
-                                            <td>{{ $item['status'] }}</td>
+                                            <th>STATUS</th>
                                         @endif
                                         @if ($classification)
-                                            <td>{{ $item['classification'] }}</td>
+                                            <th>CLASSIFICATION</th>
                                         @endif
                                         @if ($barcode)
-                                            <td>{{ $item['barcode'] }}</td>
+                                            <th>BARCODE</th>
                                         @endif
-                                        <td><input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
-                                                min="1" max="{{ $item['total_available'] }}"></td>
-                                        <td>{{ $item['cost'] }}</td>
-                                        <td>{{ $item['total'] }}</td>
-                                        <td><button type="button" class="btn btn-danger btn-sm"
-                                                wire:click="removeItem({{ $index }})">Remove</button></td>
+                                        <th>REQ. QTY</th>
+                                        <th>COST</th>
+                                        <th>TOTAL</th>
+                                        <th>
+                                            ACTION
+                                            <button type="button"
+                                            class="btn btn-sm float-end"
+                                            style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#customCol"
+                                            title="Add or remove column">
+                                            +
+                                        </button>
+                                        </th>
+                                        
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="15" class="text-center">No items selected</td>
-                                    </tr>
-                                @endforelse
-
-                            </tbody>
-                        </table>
+                                   
+                               
+                                </thead>
+                                <tbody id="itemTableBody">
+                                    @forelse ($selectedItems as $index => $item)
+                                        <tr style="font-size: x-small;">
+                                            @if ($avlBal)
+                                                <td>{{ $item['total_balance'] }}</td>
+                                            @endif
+                                            @if ($avlQty)
+                                                <td>{{ $item['total_available'] }}</td>
+                                            @endif
+                                            @if ($code)
+                                                <td>{{ $item['code'] }}</td>
+                                            @endif
+                                            <td>{{ $item['name'] }}</td>
+                                            @if ($uom)
+                                                <td>{{ $item['uom'] }}</td>
+                                            @endif
+                                            @if ($category)
+                                                <td>{{ $item['category'] }}</td>
+                                            @endif
+                                            @if ($location)
+                                                <td>{{ $item['location'] }}</td>
+                                            @endif
+                                            @if ($brand)
+                                                <td>{{ $item['brand'] }}</td>
+                                            @endif
+                                            @if ($status)
+                                                <td>{{ $item['status'] }}</td>
+                                            @endif
+                                            @if ($classification)
+                                                <td>{{ $item['classification'] }}</td>
+                                            @endif
+                                            @if ($barcode)
+                                                <td>{{ $item['barcode'] }}</td>
+                                            @endif
+                                            <td><input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
+                                                    min="1" max="{{ $item['total_available'] }}"></td>
+                                            <td>{{ $item['cost'] }}</td>
+                                            <td>{{ $item['total'] }}</td>
+                                            <td><button type="button" class="btn btn-danger btn-sm"
+                                                    wire:click="removeItem({{ $index }})">Remove</button></td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="15" class="text-center">No items selected</td>
+                                        </tr>
+                                    @endforelse
+                            
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <div class="row">
@@ -161,7 +161,7 @@
                     </div>
 
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mt-2">
                     <div class="card">
                         <div class="card-body">
                             <div class="alert" style="background-color: #f2f4f7;" role="alert">

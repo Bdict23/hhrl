@@ -35,7 +35,7 @@
 
 
         <div class="card-body">
-            <div class="table-responsive-sm">
+            <div class="overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
                 <div class="d-flex justify-content-between mb-3">
                     <table class="table table-striped table-hover table-sm table-responsive">
                         <thead class="table-dark table-sm ">

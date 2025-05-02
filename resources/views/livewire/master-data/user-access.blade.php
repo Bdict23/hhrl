@@ -7,7 +7,7 @@
         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
-        <div class="col-md-6">
+        <div class="col-md-6 mt-1">
             <div class="card">
                 <div class="card-header">
                   <div class="d-flex justify-content-end">
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class=" col-md-6" wire:ignore.self>
+        <div class=" col-md-6 mt-2" wire:ignore.self>
             <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist" wire:ignore>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
