@@ -12,10 +12,14 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans">
+<body class="font-sans antialiased">
+    <div class="min-h-screen bg-gray-100">
     @include('layouts.navigation')
+    <main>
     {{ $slot }}
+    </main>
     @livewireScripts
+    </div>
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
