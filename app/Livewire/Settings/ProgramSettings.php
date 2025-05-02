@@ -21,7 +21,7 @@ class ProgramSettings extends Component
 
     public function refresh()
     {
-        $this->branches = Branch::all();
+        $this->branches = Branch::where('branch_status', 'active')->get();
         $this->programSettings = ProgramSettingsModel::all();
 
         foreach ($this->branches as $branch) {
