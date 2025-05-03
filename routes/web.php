@@ -36,7 +36,7 @@ use App\Livewire\GateEntrance\Customer\CustomersList;
 use App\Livewire\GateEntrance\Customer\CustomerRecords;
 
 //
-Route::get('register', [RegisteredUserController::class, 'create'])
+Route::get('register', [RegisteredUserController::class, 'create'])->middleware(['auth', 'verified'])
 ->name('register');
 Route::post('register', [RegisteredUserController::class, 'store']);
 
@@ -50,7 +50,7 @@ Route::post('/update_supplier', [SupplierController::class, 'update'])->middlewa
 
 Route::get('/supplier_list', [SupplierController::class, 'index'])->middleware(['auth', 'verified'])->name('suppliers');
 
-Route::get('/supplier_deactivate/{id}', [SupplierController::class, 'deactivate'])->name('supplier.deactivate');
+Route::get('/supplier_deactivate/{id}', [SupplierController::class, 'deactivate'])->middleware(['auth', 'verified'])->name('supplier.deactivate');
 
 
 Route::get('/dashboard', function () {
@@ -228,8 +228,8 @@ Route::get('/settings', [SettingsController::class, 'index'])->middleware(['auth
 
 
 // Routes for storing categories and classifications
-Route::post('/settings/category/store', [SettingsController::class, 'storeCategory'])->name('settings.category.store');
-Route::post('/settings/classification/store', [SettingsController::class, 'storeClassification'])->name('settings.classification.store');
+Route::post('/settings/category/store', [SettingsController::class, 'storeCategory'])->middleware(['auth', 'verified'])->name('settings.category.store');
+Route::post('/settings/classification/store', [SettingsController::class, 'storeClassification'])->middleware(['auth', 'verified'])->name('settings.classification.store');
 
 
 // Route for storing a new withdarawal
@@ -257,13 +257,13 @@ Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'pri
 
 // ken Gate Entrance Module
 // Route for Entrance view
-Route::get('/gate-entrance', GateEntrance::class)->name('gate.entrance.page');
-Route::get('/book-service/{id}', BookService::class)->name('book.service.page');
-Route::get('/booking-view/{booking_number}', BookingView::class)->name('booking.view.page');
-Route::get('/leisures', Leisures::class)->name('leisures.page');
-Route::get('/customers', Customers::class)->name('customers.page');
-Route::get('/customers_list', CustomersList::class)->name('customers.list');
-Route::get('/customers-records/{id}', CustomerRecords::class)->name('customers.records');
+Route::get('/gate-entrance', GateEntrance::class)->middleware(['auth', 'verified'])->name('gate.entrance.page');
+Route::get('/book-service/{id}', BookService::class)->middleware(['auth', 'verified'])->name('book.service.page');
+Route::get('/booking-view/{booking_number}', BookingView::class)->middleware(['auth', 'verified'])->name('booking.view.page');
+Route::get('/leisures', Leisures::class)->middleware(['auth', 'verified'])->name('leisures.page');
+Route::get('/customers', Customers::class)->middleware(['auth', 'verified'])->name('customers.page');
+Route::get('/customers_list', CustomersList::class)->middleware(['auth', 'verified'])->name('customers.list');
+Route::get('/customers-records/{id}', CustomerRecords::class)->middleware(['auth', 'verified'])->name('customers.records');
 
 
 
@@ -312,4 +312,4 @@ Route::get('/item_withdrawal', function(){ return view('inventory.item_withdrawa
 // Route for withdrawal show
 Route::get('/withdrawal-show', function() {
     return view('inventory.withdrawal_show'); // Ensure the view is returned
-})->name('withdrawal.show'); // Route to show the withdrawal details
+})->middleware(['auth', 'verified'])->name('withdrawal.show'); // Route to show the withdrawal details

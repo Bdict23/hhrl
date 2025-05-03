@@ -56,9 +56,8 @@
                             <option value="ACTIVE" {{ $userDetails && $userDetails->status == 'ACTIVE' ? 'SELECTED' : '' }}>Active</option>
                             <option value="INACTIVE" {{ $userDetails && $userDetails->status == 'INACTIVE' ? 'SELECTED' : '' }}>Inactive</option>
                         </select>
-
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
 
@@ -76,14 +75,13 @@
             </ul>
 
             <div class="tab-content" id="jobOrderTabContent" wire:ignore.self>
-                
                 <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab" wire:ignore.self>
                     <div class="card">
                         <div class="card-header">
                             <strong class="card-title">User Access</strong>
                             <input type="text" class="form-control" id="searchModule" placeholder="Search Module" onkeyup="filterModules()">
                         </div>
-                        <div class="card-body table-responsive-sm" style="height: 400px; overflow-y: auto;">
+                        <div class="card-body table-responsive-sm" style="height: 400px; overflow-y: auto;" id="userAccessTable">
                             <table class="table table-striped">
                                 <thead class="table-dark sticky-top">
                                     <tr>
@@ -131,7 +129,7 @@
                         <header class="card-header">
                             <h6 >Assign Signatory Role</h6>
                         </header>
-                        <div class="card-body table-responsive-sm" style="height: 300px; overflow-y: auto;">                           
+                        <div class="card-body table-responsive-sm" style="height: 300px; overflow-y: auto;" id="signatoryTable">                           
                              <table class="table table-striped table-sm">
                                 <thead class="table-dark sticky-top">
                                     <tr class="text-smaller">
@@ -172,90 +170,99 @@
 
    {{-- Add Personnel Modal --}}
     <div class="modal fade" id="AddPersonnelsModal" tabindex="-1" aria-labelledby="AddPersonnelModalLabel"
-    aria-hidden="true" wire:ignore.self>
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="AddPersonnelModalLabel">Employees Lists</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3 d-flex row">
-                    <div class="col-md-4 justify-content-start ">
-                        <select name="branch" class="form-control" id="branch_select" onchange="fetchEmployees()">
-                            <option value="">Select Branch</option>
-                            @foreach ($branches as $branch)
-                                <option value="{{ $branch->id }}">{{ $branch->branch_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-6 justify-content-end">
-                        <input type="text" class="form-control" id="searchEmployee"
-                            placeholder="Search Employee">
-                    </div>
+        aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddPersonnelModalLabel">Employees Lists</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div style="max-height: 200px; overflow-y: auto;">
-                    <table class="table table-striped table-hover table-sm">
-                        <thead class="table-dark">
-                            <tr style="font-size: smaller;">
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Department</th>
-                                <th>Branch Registered</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employeeTableBody">
-                            @forelse ($employees as $employee)
+                <div class="modal-body">
+                    <div class="mb-3 d-flex row">
+                        <div class="col-md-6 justify-content-end">
+                            <input type="text" class="form-control" id="searchEmployeeId"
+                                placeholder="Search Employee" onkeyup="filterEmployees()">
+                        </div>
+                    </div>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        <table class="table table-striped table-hover table-sm">
+                            <thead class="table-dark sticky-top">
                                 <tr style="font-size: smaller;">
-                                    <td>{{ $employee->name }} {{ $employee->middle_name }}
-                                        {{ $employee->last_name }}
-                                    </td>
-                                    <td>{{ $employee->position->position_name }}</td>
-                                    <td>{{ $employee->department ? $employee->department->department_name : 'N/A' }}
-                                    </td>
-                                    <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" value="{{ $employee->id }}"
-                                            wire:click="selectedUser({{ $employee->id }})" data-bs-dismiss="modal" aria-label="Close">Select</button>
-                                    </td>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Department</th>
+                                    <th>Branch Registered</th>
+                                    <th>Actions</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center">No employees found</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="employeeTableBody">
+                                @forelse ($employees as $employee)
+                                    <tr style="font-size: smaller;">
+                                        <td>{{ $employee->name }} {{ $employee->middle_name }}
+                                            {{ $employee->last_name }}
+                                        </td>
+                                        <td>{{ $employee->position->position_name }}</td>
+                                        <td>{{ $employee->department ? $employee->department->department_name : 'N/A' }}
+                                        </td>
+                                        <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" value="{{ $employee->id }}"
+                                                wire:click="selectedUser({{ $employee->id }})" data-bs-dismiss="modal" aria-label="Close">Select</button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center">No employees found</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-    </div>
   
     <script>
-        function fetchEmployees() {
-            let branchId = document.getElementById('branch_select').value;
-            @this.fetchEmployees(branchId);
-            console.log(branchId);
-    }
-    function filterModules() {
-        let input = document.getElementById('searchModule').value.toLowerCase();
-        let table = document.querySelector('.card-body table tbody');
-        let rows = table.getElementsByTagName('tr');
+        function filterModules() {
+            try {
+                let input = document.getElementById('searchModule').value.toLowerCase();
+                let table = document.querySelector('#userAccessTable table tbody');
+                let rows = table.getElementsByTagName('tr');
 
-        for (let i = 0; i < rows.length; i++) {
-            let moduleCell = rows[i].getElementsByTagName('td')[0];
-            if (moduleCell) {
-                let moduleName = moduleCell.textContent || moduleCell.innerText;
-                rows[i].style.display = moduleName.toLowerCase().includes(input) ? '' : 'none';
+            for (let i = 0; i < rows.length; i++) {
+                let moduleCell = rows[i].getElementsByTagName('td')[0];
+                if (moduleCell) {
+                    let moduleName = moduleCell.textContent || moduleCell.innerText;
+                    rows[i].style.display = moduleName.toLowerCase().includes(input) ? '' : 'none';
+                }
+            }
+                
+            } catch (error) {
+                console.error("Error filtering modules:", error);
+            }
+        
+        }
+
+        function filterEmployees() {
+            try {
+                let input = document.getElementById('searchEmployeeId').value.toLowerCase();
+                let table = document.querySelector('#employeeTableBody');
+                let rows = table.getElementsByTagName('tr');
+
+                for (let i = 0; i < rows.length; i++) {
+                    let nameCell = rows[i].getElementsByTagName('td')[0];
+                    if (nameCell) {
+                        let employeeName = nameCell.textContent || nameCell.innerText;
+                        rows[i].style.display = employeeName.toLowerCase().includes(input) ? '' : 'none';
+                    }
+                }
+            } catch (error) {
+                console.error("Error filtering employees:", error);
             }
         }
-    }
-        
-         
     </script>
 </div>

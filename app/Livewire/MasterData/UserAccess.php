@@ -62,6 +62,7 @@ class UserAccess extends Component
         $this->positions = Position::where('position_status', 'ACTIVE')->get();
         $this->modules = Module::all();
         $this->modulesWithSignatory = Module::where('has_signatory', 1)->get();
+        $this->employees = Employee::where('status', 'ACTIVE')->get();
 
 
 

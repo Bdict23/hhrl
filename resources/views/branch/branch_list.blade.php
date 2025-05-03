@@ -7,7 +7,7 @@
                 <a class="add-btn" type="button" href="\branch\branch_create" style="text-decoration: none;">+ Add Branch</a> 
             @endif
         </header>
-        <div class="overflow-x-auto">
+        <div class="table-responsive-sm">
             <table class="table min-w-full">
                 <thead class="table-dark sticky-top">
                     <tr>
