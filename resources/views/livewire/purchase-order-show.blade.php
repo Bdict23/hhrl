@@ -1,90 +1,91 @@
 <div class="container-fluid" style="width: 100%; height: 100%;">
     <div class="row justify-content-center" style="display: flex;">
         <!-- Left Dashboard -->
-        <div class="card col-md-7 " style="flex:1">
-
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5>Purchase Order Information</h5>
-                        </div>
-                        <div class="col-md-6 text-end">
-                            <span  class="
-                            @if($requestInfo->requisition_status == 'PREPARING') badge bg-secondary
-                            @elseif($requestInfo->requisition_status == 'FOR REVIEW') badge bg-dark
-                            @elseif($requestInfo->requisition_status == 'FOR APPROVAL') badge bg-dark
-                            @elseif($requestInfo->requisition_status == 'TO RECIEVE') badge bg-primary 
-                            @elseif($requestInfo->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
-                            @elseif($requestInfo->requisition_status == 'COMPLETED') badge bg-success 
-                            @elseif($requestInfo->requisition_status == 'REJECTED') badge bg-danger
-                            @elseif($requestInfo->requisition_status == 'CANCELLED') badge bg-danger 
-                            @else badge bg-secondary 
-                            @endif">{{ $requestInfo->requisition_status }}</span>
+        <div class="col-md-7" >
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Purchase Order Items</h5>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span  class="
+                                @if($requestInfo->requisition_status == 'PREPARING') badge bg-secondary
+                                @elseif($requestInfo->requisition_status == 'FOR REVIEW') badge bg-dark
+                                @elseif($requestInfo->requisition_status == 'FOR APPROVAL') badge bg-dark
+                                @elseif($requestInfo->requisition_status == 'TO RECIEVE') badge bg-primary 
+                                @elseif($requestInfo->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
+                                @elseif($requestInfo->requisition_status == 'COMPLETED') badge bg-success 
+                                @elseif($requestInfo->requisition_status == 'REJECTED') badge bg-danger
+                                @elseif($requestInfo->requisition_status == 'CANCELLED') badge bg-danger 
+                                @else badge bg-secondary 
+                                @endif">{{ $requestInfo->requisition_status }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                    <div class="m-2">
-                        {{-- <button class="btn {{ $requestInfo->requisition_status == 'TO RECEIVE' ? 'btn-success' : 'btn-secondary' }}"
-                            type="button"
-                            onclick="window.location.href='{{ route('po.po_receive', ['poNumber' => $requestInfo->requisition_number]) }}'"
-                            {{ $requestInfo->requisition_status != 'TO RECEIVE' ? 'disabled' : '' }}>
-                            Receive
-                        </button> --}}
-                        @if (auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                            <button onclick="window.location.href='{{ route('po.edit', ['id' => $requestInfo->id]) }}'"
-                                class="btn {{ $requestInfo->requisition_status == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"
-                                {{ $requestInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>
-                                Update PO
-                            </button>
-
-                            <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}" class="btn btn-primary">
-                                Print Preview
-                            </a>
-                            <a href="/po_create" class="btn btn-primary">
-                                + New PO
-                            </a>
-                        @endif
-                        <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
+                        <div class="m-2">
+                            {{-- <button class="btn {{ $requestInfo->requisition_status == 'TO RECEIVE' ? 'btn-success' : 'btn-secondary' }}"
+                                type="button"
+                                onclick="window.location.href='{{ route('po.po_receive', ['poNumber' => $requestInfo->requisition_number]) }}'"
+                                {{ $requestInfo->requisition_status != 'TO RECEIVE' ? 'disabled' : '' }}>
+                                Receive
+                            </button> --}}
+                            @if (auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
+                                <button onclick="window.location.href='{{ route('po.edit', ['id' => $requestInfo->id]) }}'"
+                                    class="btn {{ $requestInfo->requisition_status == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"
+                                    {{ $requestInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>
+                                    Update PO
+                                </button>
+    
+                                <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}" class="btn btn-primary">
+                                    Print Preview
+                                </a>
+                                <a href="/po_create" class="btn btn-primary">
+                                    + New PO
+                                </a>
+                            @endif
+                            <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
+                        </div>
+    
+                    <div class="card-body">
+                        <table class="table table-striped table-hover table-sm table-responsive">
+                            <thead class="table-dark">
+                                <tr style="font-size: x-small">
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Req. Qty.</th>
+                                    <th>Rec. Qty.</th>
+                                    <th>Cost</th>
+                                    <th>Sub-Total</th>
+                                    <th>Cost. Ref.</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-optical-sizing: auto">
+                                @forelse ($requestInfo->requisitionDetails as $reqdetail)
+                                    <tr data-id="{{ $reqdetail->requisition_number }}">
+                                        <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
+                                        <td style="font-size: small">{{ $reqdetail->items->item_description }} </td>
+                                        <td style="font-size: small"> {{ $reqdetail->qty }}</td>
+                                        <td style="font-size: small">{{ $totalReceived[$reqdetail->item_id] ?? 0 }}</td>
+                                        <td style="font-size: small">{{ $reqdetail->items->costPrice->amount }}</td>
+                                        <td style="font-size: small">{{ ($totalReceived[$reqdetail->item_id] ?? 0) * ($reqdetail->items->costPrice->amount ?? 0) }}</td>
+                                        <td style="font-size: small">{{ $reqdetail->items->costPrice->supplier->supplier_code ?? 'N/A' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">No data available</td>
+    
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
-
-                <div class="card-body">
-                    <table class="table table-striped table-hover table-sm table-responsive">
-                        <thead class="table-dark">
-                            <tr style="font-size: x-small">
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Req. Qty.</th>
-                                <th>Rec. Qty.</th>
-                                <th>Cost</th>
-                                <th>Sub-Total</th>
-                                <th>Cost. Ref.</th>
-                            </tr>
-                        </thead>
-                        <tbody style="font-optical-sizing: auto">
-                            @forelse ($requestInfo->requisitionDetails as $reqdetail)
-                                <tr data-id="{{ $reqdetail->requisition_number }}">
-                                    <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
-                                    <td style="font-size: small">{{ $reqdetail->items->item_description }} </td>
-                                    <td style="font-size: small"> {{ $reqdetail->qty }}</td>
-                                    <td style="font-size: small">{{ $totalReceived[$reqdetail->item_id] ?? 0 }}</td>
-                                    <td style="font-size: small">{{ $reqdetail->items->costPrice->amount }}</td>
-                                    <td style="font-size: small">{{ ($totalReceived[$reqdetail->item_id] ?? 0) * ($reqdetail->items->costPrice->amount ?? 0) }}</td>
-                                    <td style="font-size: small">{{ $reqdetail->items->costPrice->supplier->supplier_code ?? 'N/A' }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center">No data available</td>
-
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-footer">
+                    <div class="card-footer">
+                        
+                        <strong style="float: right">Total QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</strong>
+                    </div>
                     
-                    <strong style="float: right">Total QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</strong>
                 </div>
-
         </div>
         <!-- Right Dashboard -->
         <div class="card col-md-5">

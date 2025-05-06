@@ -50,6 +50,7 @@ public $receivingInfo = [];
     private $fulfilled = 0;
 
     public $totalReceivedAmount = 0;
+    public $totalReceived = [];
     public $newAttachment = false;
 
     protected $listeners = [
@@ -177,6 +178,15 @@ public $receivingInfo = [];
             }
     
         }
+
+        $this->totalReceived = Cardex::select('item_id', DB::raw('SUM(qty_in) as received_qty'))
+            ->where(function($query) use ($id) {
+                $query->whereIn('status', ['TEMP', 'FINAL'])
+                      ->where('source_branch_id', auth()->user()->branch_id)
+                      ->where('requisition_id', $id);
+            })
+            ->groupBy('item_id')
+            ->pluck('received_qty', 'item_id');
 
 
        
