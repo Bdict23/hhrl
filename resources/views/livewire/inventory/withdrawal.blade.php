@@ -255,9 +255,9 @@
                                             <label for="approved_to" class="form-label" style="font-size: 13px;">Approved To</label>
                                             <select wire:model="approver" id="approved_to" class="form-select"
                                                 aria-label="Default select example">
-                                                <option value="">Select</option>
+                                                <option value="" disabled>Select</option>
                                                 @if ($reviewers->isEmpty())
-                                                    <option style="font-size: 10px">No Reviewer Found</option>
+                                                    <option style="font-size: 10px" disabled>No Reviewer Found</option>
                                                 @else
                                                     @foreach ($approvers as $approver)
                                                         <option value="{{ $approver->employees->id }}">

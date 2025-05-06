@@ -9,7 +9,9 @@
             </p>
             <p>
                 <strong>Booking No:</strong> {{ $customer_booking->booking_number }}
-                <button wire:click="CheckOut" class="btn btn-warning">Check Out</button>
+                @if ($customer_booking->booking_status == 'Active')
+                    <button wire:click="CheckOut" class="btn btn-warning">Check Out</button>
+                @endif
             </p>
         </div>
 

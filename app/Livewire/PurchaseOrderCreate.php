@@ -115,6 +115,19 @@ class PurchaseOrderCreate extends Component
         }, $this->selectedItems);
     }
 
+    public function removeItem($itemId)
+    {
+        // Remove the item from the selected items
+        $this->selectedItems = array_filter($this->selectedItems, function ($item) use ($itemId) {
+            return $item->id !== $itemId;
+        });
+
+        // Remove the item from the purchase request
+        $this->purchaseRequest = array_filter($this->purchaseRequest, function ($item) use ($itemId) {
+            return $item['id'] !== $itemId;
+        });
+    }
+
     public function addItem($itemId)
     {
         $item = Item::with('costPrice')->find($itemId);

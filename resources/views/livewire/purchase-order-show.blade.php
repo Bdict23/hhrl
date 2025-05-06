@@ -160,7 +160,7 @@
                         <div class="col-md-6">
                             <label for="" class="form-label" style="width: 100; font-size: 13px">Total Received Amount</label>
                             <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"
-                                value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) use ($totalReceived) { return ($totalReceived[$detail->item_id] ?? 0) * ($detail->items->costPrice->amount ?? 0); }), 2) }}"
+                                value="₱ {{ number_format($requestInfo->requisitionDetails->sum(function($detail) use ($totalReceived) { return ($totalReceived[$detail->item_id] ?? 0) * ($detail->items->costPrice->amount ?? 0); }), 2) }}"
                                 readonly>
                         </div>
                     </div>

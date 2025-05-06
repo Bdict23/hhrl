@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('contact_no_2')->nullable();
             $table->string('tin_number')->nullable();;
             $table->string('contact_person')->nullable();;
-            $table->enum('input_tax', ['NON-VAT', 'VATABLE', 'UNDECLARED'])->default('UNDECLARED');
+            $table->enum('input_tax', ['NON-VAT', 'VAT', 'UNDECLARED'])->default('UNDECLARED');
             $table->string('supplier_code')->nullable();;
             $table->string('email')->nullable();
             $table->text('description')->nullable();

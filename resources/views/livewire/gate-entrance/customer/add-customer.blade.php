@@ -18,13 +18,13 @@
             <div class="w-1/2 px-2 p-1">
                 <label class="p-2" for="">Last Name:</label>
                 <input type="text" class="border border-gray-300 rounded p-2  mx-2" wire:model="lname"
-                    placeholder="Last Name">
+                    placeholder="Last Name" required>
             </div>
 
             <div class="w-1/2 px-2 p-1">
                 <label class="" for="">First Name:</label>
                 <input type="text" class="border border-gray-300 rounded p-2  mx-2" wire:model="fname"
-                    placeholder="First Name">
+                    placeholder="First Name" required>
             </div>
 
         </div>
@@ -33,13 +33,13 @@
             <div class="w-1/2 px-2 p-1">
                 <label class="p-2" for="">Middle Name</label>
                 <input type="text" class="border border-gray-200 rounded p-2 mx-2" wire:model="mname"
-                    placeholder="Middle Name">
+                    placeholder="Middle Name" required>
             </div>
 
             <div class="w-1/2 px-2">
                 <label class=" p-2" for="">Suffix:</label>
                 <input type="text" class="border border-gray-300 rounded p-2 mx-2" wire:model="suffix"
-                    placeholder="Suffix">
+                    placeholder="Suffix" required>
             </div>
         </div>
 

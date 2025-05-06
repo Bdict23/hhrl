@@ -1,15 +1,22 @@
 <div>
 
      {{-- return flash message --}}
-     @if (session()->has('success'))
+     @if (session()->has('item-main-success'))
      <div class="alert alert-success" id="success-message">
-         {{ session('success') }}
+         {{ session('item-main-success') }}
          <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
      </div>
      @endif
 
      <script>
         document.addEventListener('DOMContentLoaded', function () {
+            
+                setTimeout(function () {
+                       var successMessage = document.getElementById('success-message');
+                       if (successMessage) {
+                           successMessage.style.display = 'none';
+                       }
+                   }, 1500);
                // Listen for the clearForm event
                window.addEventListener('saved', function (event) {
                    setTimeout(function () {
@@ -24,7 +31,7 @@
 
     <div id="items-table" class="tab-content card" style="display: block" wire:ignore.self>
         <div class="card-header">
-            <h5>Item List</h5>
+            <h5>Item Lists</h5>
         </div>
         <div class="card-body">
             <x-primary-button type="button" class="mb-3"
@@ -96,7 +103,7 @@
                                     style="color: red;">*</span></label>
                             <div class="input-group">
                                 <select class="form-control" id="uom_id" wire:model="uom_id"
-                                    style="font-size: x-small;">
+                                    style="font-size: x-small;" data-live-search="true">
                                     <option value="">Select</option>
                                     @forelse ($uoms as $uom)
                                         <option value="{{ $uom->id }}" style="font-size: x-small;">
@@ -107,6 +114,11 @@
                                         <option value="">No Symbol</option>
                                     @endforelse
                                 </select>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        $('#uom_id').selectpicker();
+                                    });
+                                </script>
                                 <button class="input-group-text" type="button"
                                     style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addUomModal">+</button>
 
@@ -206,7 +218,7 @@
                     <div class=" col-md-6">
                         <label for="category_id" class="form-label">Category <span style="color: red;">*</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="category_id" wire:model="category_id">
+                            <select class="form-control" id="category_id" wire:model="category_id" data-live-search="true">
                                 <option value="">Select</option>
                                 @forelse ($categories as $category)
                                     <option value="{{ $category->id }}"> {{ $category->category_name }}
@@ -269,7 +281,7 @@
                         <label for="brand_id" class="form-label">Brand <span
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="brand_id" wire:model="brand_id">
+                            <select class="form-control" id="brand_id" wire:model="brand_id" data-live-search="true">
                                 <option value="">Select</option>
                                 @forelse ($brands as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
@@ -332,7 +344,7 @@
                         <label for="classification_id" class="form-label">Classification<span
                                 style="color: red;">*</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="classification_id" wire:model="classification_id" >
+                            <select class="form-control" id="classification_id" wire:model="classification_id" data-live-search="true">
                                 <option value="">Select</option>
                                 @forelse ($classifications as $classification)
                                     <option value="{{ $classification->id }}">
@@ -394,7 +406,7 @@
                         <label for="sub_classification_id" class="form-label">Sub-Class
                             <div class="input-group">
                                 <select class="form-control" id="sub_classification_id"
-                                    wire:model="sub_classification_id">
+                                    wire:model="sub_classification_id" data-live-search="true">
                                     <option value="">Select</option>
                                     @forelse ($sub_classifications as $subClassification)
                                         <option value="{{ $subClassification->id }}">
@@ -476,6 +488,7 @@
             </form>
         </div>
     </div>
+   
 
     {{-- update form --}}
     <div id="item-update-form" class="tab-content card" style="display: none" wire:ignore.self>
@@ -573,7 +586,7 @@
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
                             <select class="form-control" id="brand_id-update" wire:model="brand_id">
-                                <option value="">Select</option>
+                                <option value="" >Select</option>
                                 @forelse ($brands as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
                                     </option>
@@ -642,7 +655,6 @@
         </div>
     </div>
 
-
     <script>
         window.addEventListener('saved', event => {
             document.getElementById('item_code').value = '';
@@ -656,7 +668,7 @@
             document.getElementById('item_barcode').value = '';
         });
 
-        window.addEventListener('updated', event => {
+            window.addEventListener('updated', event => {
             document.getElementById('item_code-update').value = '';
             document.getElementById('uom_id-update').value = '';
             document.getElementById('item_description-update').value = '';
@@ -679,4 +691,5 @@
             document.getElementById('item_barcode-update').value = item.item_barcode;
         }
     </script>
+   
 </div>

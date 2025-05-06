@@ -19,7 +19,7 @@
                         <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
                             <option value="all">All</option>
                             <option value="ACTIVE">ACTIVE</option>
-                            <option value="FULLFILLED">FULLFILLED</option>
+                            <option value="FULFILLED">FULFILLED</option>
                             <option value="FOR PO">FOR PO</option>
                             <option value="CANCELLED">CANCELLED</option>
                         </select>

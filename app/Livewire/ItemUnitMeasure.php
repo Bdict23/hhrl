@@ -67,6 +67,7 @@ class ItemUnitMeasure extends Component
 
     public function updateUOM()
     {
+        $this->validate();
         $unit_of_measure = UOM::find($this->unit_of_measure->id);
         $unit_of_measure->unit_name = $this->unit_name;
         $unit_of_measure->unit_symbol = $this->unit_symbol;

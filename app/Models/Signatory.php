@@ -11,12 +11,12 @@ class Signatory extends Model
 
     protected $fillable = [
         'signatory_name',
-        'signatory_position',
-        'signatory_email',
-        'signatory_contact',
+        'employee_id',
         'signatory_type',
-        'signatory_status',
-        'signatory_branch',
+        'module_id',
+        'company_id',
+        'branch_id',
+
     ];
 
     public function company()

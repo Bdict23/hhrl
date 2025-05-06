@@ -61,7 +61,7 @@ class ItemMain extends Component
 
 
     protected $rules = [
-        'item_code' => 'required|string|max:80',
+        'item_code' => 'required|string|max:80|unique:items,item_code',
         'item_description' => 'required|string|max:255',
         'item_barcode' => 'nullable|string|max:100',
         'uom_id' => 'required|exists:unit_of_measures,id',
@@ -92,14 +92,14 @@ class ItemMain extends Component
 
             $this->validate();
             $item = new Item();
-            $item->item_code = $this->item_code;
+            $item->item_code = strtoupper($this->item_code);
             $item->item_description = $this->item_description;
             $item->item_barcode = $this->item_barcode;
             $item->uom_id = $this->uom_id;
             $item->category_id = $this->category_id;
             $item->brand_id = $this->brand_id ? $this->brand_id : null;
             $item->classification_id = $this->classification_id;
-            $item->sub_class_id = $this->sub_classification_id; // Corrected property name
+            $item->sub_class_id = $this->sub_classification_id ?  $this->sub_classification_id : null ; // Corrected property name
             $item->company_id = auth()->user()->branch->company_id;
             $item->created_by = auth()->user()->emp_id;
             $item->save();
@@ -115,7 +115,7 @@ class ItemMain extends Component
 
             $this->reset();
             $this->fetchData();
-            session()->flash('success', 'Item successfully added.');
+            session()->flash('item-main-success', 'Item successfully added.');
             $this->dispatch('saved');
 
     }
@@ -146,9 +146,9 @@ class ItemMain extends Component
         $this->item->item_barcode = $this->item_barcode;
         $this->item->uom_id = $this->uom_id;
         $this->item->category_id = $this->category_id;
-        $this->item->brand_id = $this->brand_id;
+        $this->item->brand_id = $this->brand_id ? $this->brand_id : null;
         $this->item->classification_id = $this->classification_id;
-        $this->item->sub_class_id = $this->sub_classification_id;
+        $this->item->sub_class_id = $this->sub_classification_id ?  $this->sub_classification_id : null ;
         $this->item->company_id = auth()->user()->branch->company_id;
         $this->item->updated_by = auth()->user()->emp_id;
         $this->item->save();
@@ -156,7 +156,7 @@ class ItemMain extends Component
         $this->dispatch('updated');
         $this->reset();
         $this->fetchData();
-        session()->flash('message', 'Item successfully updated.');
+        return redirect('/settings')->with('item-main-success', 'Item Updated!');
     }
 
 
@@ -168,7 +168,7 @@ class ItemMain extends Component
         $this->dispatch('deleted');
         $this->reset();
         $this->fetchData();
-        session()->flash('message', 'Item successfully deactivated.');
+        session()->flash('item-main-success', 'Item successfully deactivated.');
     }
 
     public function render()
