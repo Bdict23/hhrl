@@ -12,6 +12,7 @@ use App\Models\Cardex;
 use App\Models\Item;
 use App\Models\Module;
 
+
 class WithdrawalShow extends Component
 {
     
@@ -47,6 +48,9 @@ class WithdrawalShow extends Component
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
     public $hasReviewer = false; // check if reviewer is required
+
+    public $withdrawalID = null; // withdrawal id for update
+    
     protected $rules = [
         'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
@@ -74,11 +78,7 @@ class WithdrawalShow extends Component
 
     public function mount(Request $request = null)
     {
-        // Check if the user has access to the "Item Withdrawal" module
-        // $module = Module::where('module_name', 'Item Withdrawal')->first();
-        // if (!$module || !auth()->user()->modules->contains($module->id)) {
-        //     abort(403, 'Unauthorized access to this module.');
-        // }
+        $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Withdrawal') == 1 ? true : false;
 
         if ($request->has('withdrawal-id')) {
             //  dd($request->query('requisition-id'));
@@ -91,6 +91,7 @@ class WithdrawalShow extends Component
 
     public function showWithdrawal($id)
     {
+        $this->withdrawalID = $id;
         $withdrawal = WithdrawalModel::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
         $this->hasReviewer = $withdrawal->reviewed_by != null ? true : false;
         $this->reference = $withdrawal->reference_number;
@@ -106,13 +107,18 @@ class WithdrawalShow extends Component
         $this->selectedItems = [];
 
         foreach ($withdrawal->cardex as $item) {
+            $totalIn = Cardex::where('status', 'final')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_in');
+            $totalOut = Cardex::where('status', 'final')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');
+            $totalReserved = Cardex::where('status', 'reserved')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');
+            $totalBal = $totalIn - $totalOut;
+            $totalAvailable = $totalBal - $totalReserved;
             
             if ($item['qty_out'] > 0) {
                 $this->selectedItems[] = [
                     'id' => $item['item_id'],
                     'requested_qty' => (float) $item['qty_out'],
-                    'total_balance' =>  0,
-                    'total_available' => 0,
+                    'total_balance' =>  $totalBal,
+                    'total_available' => $totalAvailable,
                     'code' => $item->item->item_code ?? 'N/A',
                     'name' => $item->item->item_description,
                     'unit' => $item->item->uom->unit_symbol,
@@ -201,24 +207,52 @@ class WithdrawalShow extends Component
         unset($this->selectedItems[$index]);
         $this->selectedItems = array_values($this->selectedItems);
     }
-    public function store()
+    public function updateWithdrawal()
     {
-        $this->validate();
-
-        $withdrawal = new WithdrawalModel();
+        if ($this->hasReviewer) {
+            $this->validate(
+                [
+                    'reference' => 'required|string|max:25|unique:withdrawals,reference_number,' . $this->withdrawalID,
+                    'selectedDepartment' => 'required',
+                    'useDate' => 'required',
+                    'spanDate' => 'nullable|date|after_or_equal:useDate',
+                    'remarks' => 'nullable|string|max:150',
+                    'selectedItems' => 'required|array|min:1',
+                    'approver' => 'required',
+                    'reviewer' => 'required',
+                ]);
+        } else {
+            $this->validate(
+                [
+                    'reference' => 'required|string|max:25|unique:withdrawals,reference_number,' . $this->withdrawalID,
+                    'selectedDepartment' => 'required',
+                    'useDate' => 'required',
+                    'spanDate' => 'nullable|date|after_or_equal:useDate',
+                    'remarks' => 'nullable|string|max:150',
+                    'selectedItems' => 'required|array|min:1',
+                    'approver' => 'required',
+                ]
+            );
+        }
+       
+        
+        $withdrawal = WithdrawalModel::find($this->withdrawalID);
         $withdrawal->reference_number = $this->reference;
         $withdrawal->department_id = $this->selectedDepartment;
         $withdrawal->prepared_by = auth()->user()->emp_id;
-        $withdrawal->reviewed_by = $this->reviewer;
+        $withdrawal->reviewed_by  = $this->hasReviewer ? $this->reviewer : null;
         $withdrawal->approved_by = $this->approver;
         $withdrawal->remarks = $this->remarks;
-        $withdrawal->withdrawal_status = $this->finalStatus ? 'FOR REVIEW' : 'PREPARING';
+        $withdrawal->withdrawal_status = $this->finalStatus ? $this->hasReviewer ? 'FOR REVIEW' : 'FOR APPROVAL' : 'PREPARING';
         $withdrawal->source_branch_id = auth()->user()->branch_id;
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
         $withdrawal->save();
-        $withdrawalId = $withdrawal->id; // Ensure the ID is retrieved after saving
+        $withdrawalId = $this->withdrawalID; // Ensure the ID is retrieved after saving
 
+        // Delete existing cardex records for the withdrawal
+        Cardex::where('withdrawal_id', $withdrawalId)->delete();
+        // Create new cardex records for the withdrawal
         foreach ($this->selectedItems as $item) {
             if ($item['requested_qty'] > 0) {
                 $cardex = new Cardex();
@@ -234,7 +268,7 @@ class WithdrawalShow extends Component
             }
         }
 
-        session()->flash('success', 'Withdrawal request created successfully.');
+        session()->flash('success', 'Withdrawal request updated successfully.');
         $this->reset();
         $this->fetchData();
     }

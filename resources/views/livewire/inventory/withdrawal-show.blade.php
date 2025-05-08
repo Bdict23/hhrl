@@ -171,7 +171,7 @@
                                         <label for="reference" class="form-label">REFERENCE<span style="color: red;">&nbsp;*</span></label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input wire:model="reference" type="text" class="form-control" id="reference_number" >
+                                        <input wire:model="reference" type="text" class="form-control" id="reference_number" disabled>
                                         @error('reference')
                                             <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                         @enderror
@@ -288,7 +288,7 @@
                                     </div>
                                     <div>
                                         @if (!$isAlreadyFinal)
-                                            <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
+                                            <x-primary-button wire:click="updateWithdrawal" type="button" class=" mt-3">Save</x-primary-button>
                                         @endif
                                     </div>
                                 </div>

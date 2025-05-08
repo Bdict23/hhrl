@@ -14,10 +14,10 @@
                         <div class=" w-10 h-10 rounded-full bg-gray-500 text-white flex items-center justify-center font-bold mb-3 sm:mb-0">
                             {{ strtoupper(substr('Manager', 0, 1)) }}
                         </div>
-                        <textarea type="text" placeholder="What's on your mind?"
-                        class="ml-1 mb-2 w-full flex-1 border rounded-full  px-4 pt-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"></textarea>
+                        <div class="ml-1 mb-2 w-full flex-1 border rounded-full  px-4 pt-3 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400">
+                            <span class="">What's on your mind, Benedict?</span>
+                        </div>
                     </div>
-                    <button class="h-12 m-2 bg-blue-500 text-white rounded-full px-4 py-2 text-sm">Post</button>
 
                 </div>
                 <div class="flex justify-end text-sm text-gray-500 border-t pt-2">
@@ -62,7 +62,7 @@
                     <div class="flex items-center space-x-2">
                         <input type="text" placeholder="Write a comment..."
                             class="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400">
-                        <button class="bg-blue-500 text-white rounded-full px-4 py-2 text-sm">Comment</button>
+                        <button class="bg-blue-500 text-white rounded-full px-4 py-2 text-sm">Post</button>
                     </div>
                 </div>
             </div>
