@@ -1,12 +1,8 @@
-<div id="items-cost" class="tab-content card dashboard" style="display: none;" wire:ignore.self>
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Item Cost</h5>
-        </div>
+<div id="items-cost" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-body">
             <div class="row">
                 <!-- Left Column: Items Table & Search -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="mb-3">
                         <input 
                             type="text" 
@@ -33,7 +29,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
-                                <table class="table table-striped mb-0">
+                                <table class="table table-striped mb-0 w-100">
                                     <thead class="table-dark sticky-top">
                                         <tr>
                                             <th>Date</th>
@@ -46,9 +42,9 @@
                                     <tbody>
                                         @foreach ($priceLevels as $level)
                                             <tr wire:key="{{ $level['item_id'] }}">
-                                                <td>{{ $level['timestamp'] }}</td>
-                                                <td>{{ $level['item_name'] }}</td>
-                                                <td>{{ $level['supplier_name'] }}</td>
+                                                <td class="text-xs">{{ $level['timestamp'] }}</td>
+                                                <td class="text-xs">{{ $level['item_name'] }}</td>
+                                                <td class="text-xs">{{ $level['supplier_name'] }}</td>
                                                 <td>
                                                     @if ($level['cost'] !== null)
                                                         {{ number_format($level['cost'], 2) }}
@@ -56,12 +52,14 @@
                                                         <span class="text-muted">No Cost</span>
                                                     @endif
                                                 </td>
-                                                <td class="text-center">
+                                                <td class="text-nowrap">
                                                     @if ($level['cost'] !== null)
                                                         <button 
                                                             wire:click="showChart({{ $level['item_id'] }})"
-                                                            class="btn btn-primary btn-sm">
-                                                            View Trend
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#trendModal"
+                                                            class="btn btn-primary btn-sm text-smaller">
+                                                            Trend
                                                         </button>
                                                     @else
                                                         <span class="text-muted">No Data</span>
@@ -69,11 +67,12 @@
                                                     @if (auth()->user()->employee->getModulePermission('Item Cost Price') == 1)
                                                         <button 
                                                             wire:click="setItem({{ $level['item_id'] }}, '{{ $level['item_name'] }}')"
+                                                            class=" btn btn-outline-primary btn-sm"
                                                             type="button"
-                                                            class="btn btn-success btn-sm"
+                                                            style="font-size: smaller;"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#addCostModal">
-                                                            Add Cost
+                                                            Update Cost
                                                         </button>   
                                                     @endif
                                                 </td>
@@ -253,55 +252,66 @@
                     </div>
                 </div>
                 <!-- Right Column: Cost Trend Chart with Filters -->
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Cost Trend</h5>
-                            <div class="d-flex gap-2">
-                                <select wire:model="chartYear" 
-                                        class="form-select form-select-sm"
-                                        style="width: 100px;">
-                                    <option value="">All Years</option>
-                                    @foreach($availableYears as $year)
-                                        <option value="{{ $year }}">{{ $year }}</option>
-                                    @endforeach
-                                </select>
-                                <select wire:model="chartMonth" 
-                                        class="form-select form-select-sm"
-                                        style="width: 120px;">
-                                    <option value="">All Months</option>
-                                    @foreach($months as $num => $name)
-                                        <option value="{{ $num }}">{{ $name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-body position-relative" style="height: 400px; min-height: 400px;">
-                            @if($chartLoading)
-                                <div class="chart-overlay">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
+                <div  
+                class="modal modal-xl " 
+                id="trendModal" 
+                tabindex="-1" 
+                aria-labelledby="trendModalLabel" 
+                aria-hidden="true" wire:ignore.self>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="flex gap-2 align-items-center">
+                                     <h5 class="card-title mb-0">Cost Trend</h5>
+                                     <div class="d-flex gap-2">
+                                         <select wire:model="chartYear" 
+                                                 class="form-select form-select-sm"
+                                                 style="width: 100px;">
+                                             <option value="">All Years</option>
+                                             @foreach($availableYears as $year)
+                                                 <option value="{{ $year }}">{{ $year }}</option>
+                                             @endforeach
+                                         </select>
+                                         <select wire:model="chartMonth" 
+                                                 class="form-select form-select-sm"
+                                                 style="width: 120px;">
+                                             <option value="">All Months</option>
+                                             @foreach($months as $num => $name)
+                                                 <option value="{{ $num }}">{{ $name }}</option>
+                                             @endforeach
+                                         </select>
+                                     </div>
                                 </div>
-                            @endif
-                            @if(empty($chartData))
-                                <div class="d-flex align-items-center justify-content-center h-100">
-                                    <div class="text-muted">
-                                        @if($selectedItemId)
-                                            Cost of {{ now()->format('F Y') }} not available
-                                        @else
-                                            Select an item to view cost trend
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
-                            <canvas id="itemCostChart"></canvas>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                             </div>
+                           <div class="modal-body">
+                             <div class="card-body position-relative" style="height: 400px; min-height: 400px;">
+                                 @if($chartLoading)
+                                     <div class="chart-overlay">
+                                         <div class="spinner-border text-primary" role="status">
+                                             <span class="visually-hidden">Loading...</span>
+                                         </div>
+                                     </div>
+                                 @endif
+                                 @if(empty($chartData))
+                                     <div class="d-flex align-items-center justify-content-center h-100">
+                                         <div class="text-muted">
+                                             @if($selectedItemId)
+                                                 Cost of {{ now()->format('F Y') }} not available
+                                             @else
+                                                 Select an item to view cost trend
+                                             @endif
+                                         </div>
+                                     </div>
+                                 @endif
+                                 <canvas id="itemCostChart"></canvas>
+                             </div>
+                           </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <style>
         .chart-overlay {

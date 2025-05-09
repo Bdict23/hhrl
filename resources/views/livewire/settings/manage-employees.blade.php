@@ -1,35 +1,20 @@
-<div id="employee-management" class="tab-content card dashboard" style="display: none;" wire:ignore.self>
+<div id="employee-management" class="tab-content card " style="display: none;" wire:ignore.self>
     <div class="card-header">
         <h5 class="card-title mb-0">Employee Management</h5>
     </div>
     <div class="card-body">
-       
-
-        <div class="row">
             <!-- Employees Table -->
-            <div class="col-md-12">
-                <div class="mb-3">
-                    <input 
-                        type="text" 
-                        wire:model.live.debounce.300ms="search" 
-                        placeholder="Search employees..." 
-                        class="form-control" 
-                    />
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Employees</h5>
-                            @if (auth()->user()->employee->getModulePermission('Employee') == 1)
-                                <button 
-                                    wire:click="create" 
-                                    class="btn btn-primary btn-sm">
-                                    Add Employee
-                                </button>
-                            @endif
-                        </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        @if (auth()->user()->employee->getModulePermission('Employee') == 1)
+                            <button 
+                                wire:click="create" 
+                                class="btn btn-primary btn-sm">
+                                Add Employee
+                            </button>
+                        @endif
+                        <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search employees..." class="form-control w-50" />
                     </div>
-                    <div class="card-body p-0">
+                    
                         <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                             <table class="table table-striped mb-0 table-sm table-responsive-sm">
                                 <thead class="table-dark table-sm sticky-top">
@@ -47,17 +32,17 @@
                                 <tbody>
                                     @forelse($employees as $employee)
                                         <tr wire:key="employee-{{ $employee->id }}">
-                                            <td>{{ $employee->corporate_id ?? 'N/A' }}</td>
-                                            <td>{{ $employee->name }} {{ $employee->middle_name ? $employee->middle_name . ' ' : '' }}{{ $employee->last_name }}</td>
-                                            <td>{{ $employee->position->position_name ?? 'Not assigned' }}</td>
-                                            <td>{{ $employee->branch->branch_name ?? 'N/A' }}</td>
-                                            <td>
+                                            <td class="text-sm">{{ $employee->corporate_id ?? 'N/A' }}</td>
+                                            <td class="text-sm">{{ $employee->name }} {{ $employee->middle_name ? $employee->middle_name . ' ' : '' }}{{ $employee->last_name }}</td>
+                                            <td class="text-sm">{{ $employee->position->position_name ?? 'Not assigned' }}</td>
+                                            <td class="text-xs">{{ $employee->branch->branch_name ?? 'N/A' }}</td>
+                                            <td class="text-sm">
                                                 <span class="badge {{ $employee->status === 'ACTIVE' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $employee->status }}
                                                 </span>
                                             </td>
                                             @if (auth()->user()->employee->getModulePermission('Employee') == 1)
-                                                <td class="text-center">
+                                                <td class="text-center text-sm">
                                                     <button 
                                                         wire:click="edit({{ $employee->id }})" 
                                                         class="btn btn-primary btn-sm">
@@ -86,20 +71,16 @@
                                         </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6" class="text-center">No employees found.</td>
+                                                <td colspan="6" class="text-center text-sm">No employees found.</td>
                                             </tr>
                                         @endforelse
                                 </tbody>
                             </table>
                         </div>
-                    </div>
                     <div class="card-footer">
                         {{ $employees->links() }}
                     </div>
-                </div>
-            </div>
-        </div>
-
+       
         <!-- Employee Form Modal -->
         @if($showForm)
         <div 

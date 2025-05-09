@@ -7,7 +7,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
-                    <x-primary-button type="button" class="btn-sm"
+                    <x-primary-button type="button"
                     onclick="showTab('costing-form', document.querySelector('.nav-link.active'))">+ Batch
                     Pricing</x-primary-button>
                 @endif

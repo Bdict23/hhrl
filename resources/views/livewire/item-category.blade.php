@@ -34,7 +34,7 @@
                         @forelse ($ItemCategories as $category)
                             <tr>
                                 <td>{{ $category->category_name }}</td>
-                                <td>{{ $category->category_description ?? 'N/A' }}</td>
+                                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $category->category_description ?? 'N/A' }}</td>
                                 <td class="text-end">{{ $category->status }}</td>
                                 <td class="text-end">
                                     {{ optional($category->company)->company_name ?? 'No Company' }}

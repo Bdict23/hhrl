@@ -40,7 +40,7 @@
                         @forelse ($classifications as $classification)
                             <tr>
                                 <td>{{ $classification->classification_name }}</td>
-                                <td>{{ $classification->classification_description }}</td>
+                                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $classification->classification_description }}</td>
                                 <td class="text-end">{{ $classification->status }}</td>
                                 <td class="text-end">
                                     {{ optional($classification->sub_classifications)->count() ?? 0 }}
