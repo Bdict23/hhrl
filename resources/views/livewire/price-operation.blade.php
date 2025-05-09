@@ -5,14 +5,20 @@
             <h5>Price Levels</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('costing-form', document.querySelector('.nav-link.active'))">+ Batch
-                Pricing</x-primary-button>
-            @endif
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
+                    <x-primary-button type="button" class="btn-sm"
+                    onclick="showTab('costing-form', document.querySelector('.nav-link.active'))">+ Batch
+                    Pricing</x-primary-button>
+                @endif
+               
+                    <input type="text" class="form-control w-50" id="searchItem"
+                        placeholder="Search Item" onkeyup="filterTable()">
+              
+            </div>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover table-sm small hover">
+                <table class="table table-hover table-sm small hover" id="itemTable">
                     <thead>
                         <tr>
                             <th>Item Code</th>
@@ -20,9 +26,6 @@
                             <th>Cost Price</th>
                             <th>Retail Price</th>
                             <th>Markup</th>
-                            @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
-                                <th>Update</th>
-                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -34,9 +37,7 @@
                                 <td>{{ $item->sellingPrice ? $item->sellingPrice->amount : 'N/A' }}</td>
                                 <td>{{ $item->sellingPrice ? $item->sellingPrice->markup . '%' : 'N/A' }}</td>
                                 @if (auth()->user()->employee->getModulePermission('Item Retail Price'))
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-secondary btn-sm">Update Cost</a>
-                                </td>
+                              
                                 @endif
                             </tr>
                         @endforeach
@@ -360,3 +361,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    function filterTable() {
+        const searchInput = document.getElementById('searchItem').value.toLowerCase();
+        const table = document.getElementById('itemTable');
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) { // Skip the header row
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].innerText.toLowerCase().includes(searchInput)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    }
+</script>

@@ -26,6 +26,36 @@
                        }
                    }, 1500);
                });
+               window.addEventListener('propertyAdded', function (event) {
+                   setTimeout(function () {
+                       var successMessage = document.getElementById('success-message');
+                       if (successMessage) {
+                           successMessage.style.display = 'none';
+                       }
+                   }, 1500);
+               });
+
+               // Search functionality
+               document.getElementById('searchItems').addEventListener('input', function () {
+                   const searchValue = this.value.toLowerCase();
+                   const rows = document.querySelectorAll('#items-table tbody tr');
+
+                   rows.forEach(row => {
+                       const itemCode = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                       const itemName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                       const category = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                       const classification = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+                       const subClass = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+
+                       if (itemCode.includes(searchValue) || itemName.includes(searchValue) || 
+                           category.includes(searchValue) || classification.includes(searchValue) || 
+                           subClass.includes(searchValue)) {
+                           row.style.display = '';
+                       } else {
+                           row.style.display = 'none';
+                       }
+                   });
+               });
         });
     </script>
 
@@ -34,11 +64,19 @@
             <h5>Item Lists</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
-                <x-primary-button type="button" class="mb-3"
-                onclick="showTab('item-form', document.querySelector('.nav-link.active'))">+ Add
-                Item</x-primary-button>      
-            @endif 
+            <div class="row">
+                @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
+                    <div class="col-md-6 mb-2">
+                        <x-primary-button type="button"
+                        onclick="showTab('item-form', document.querySelector('.nav-link.active'))">+ Add
+                        Item</x-primary-button>   
+                    </div>   
+                @endif 
+                    <div class="col-md-6 mb-2">
+                        <input type="text" class="form-control" id="searchItems"
+                            placeholder="Search Item">
+                    </div>
+            </div>
            
             <div class="table-responsive  mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">

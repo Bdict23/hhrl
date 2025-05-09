@@ -203,6 +203,8 @@ class ItemMain extends Component
 
         $this->dispatch('uomAdded');
         $this->reset('unit_symbol', 'unit_description', 'unit_name', 'uoms','uom_id');
+        session()->flash('item-main-success', 'UOM successfully added.');
+        $this->dispatch('propertyAdded');
         $this->fetchData();
 
     }
@@ -221,8 +223,10 @@ class ItemMain extends Component
          $category->created_by = auth()->user()->emp_id;
          $category->save();
          $this->category_id = $category->id;
-         $this->dispatch('categoryAdded');
          $this->reset('category_name', 'category_description', 'categories');
+         session()->flash('item-main-success', 'Category successfully added.');
+         $this->dispatch('propertyAdded');
+         $this->dispatch('categoryAdded');
          $this->fetchData();
     }
 
@@ -239,6 +243,8 @@ class ItemMain extends Component
         $this->brand_id = $brand->id;
         $this->dispatch('brandAdded');
         $this->reset('brand_name', 'brands');
+        session()->flash('item-main-success', 'Brand successfully added.');
+        $this->dispatch('propertyAdded');
         $this->fetchData();
     }
 
@@ -256,6 +262,8 @@ class ItemMain extends Component
         $this->classification_id = $classification->id;
         $this->dispatch('classificationAdded');
         $this->reset('classification_name', 'classifications');
+        session()->flash('item-main-success', 'Classification successfully added.');
+        $this->dispatch('propertyAdded');
         $this->fetchData();
     }
 
@@ -277,6 +285,8 @@ class ItemMain extends Component
         $this->sub_classification_id = $classification->id;
         $this->dispatch('subClassificationAdded');
         $this->reset('sub_classification_name', 'sub_classification_description', 'parent_classification_id'); // Reset new property
+        session()->flash('item-main-success', 'Sub Classification successfully added.');
+        $this->dispatch('propertyAdded');
         $this->fetchData();
     }
 
