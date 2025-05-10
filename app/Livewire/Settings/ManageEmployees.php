@@ -56,6 +56,7 @@ class ManageEmployees extends Component
         try {
             $this->branches = Branch::orderBy('branch_name')
                 ->where('company_id', auth()->user()->employee->branch->company_id)
+                ->where('branch_status', 'ACTIVE')
                 ->get(['id', 'branch_name']);
             
             $this->branch_name = auth()->user()->employee->branch->branch_name;

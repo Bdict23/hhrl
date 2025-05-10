@@ -8,7 +8,11 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-
+    resolve: {
+        alias: {
+            'chart.js/auto': 'chart.js/auto',
+        },
+    },
     // server: {
     //     host: '0.0.0.0', // Allow access from any IP
     //     port: 3000,      // Default Vite port; change if needed
