@@ -81,7 +81,7 @@
             <div class="table-responsive  mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm table-hover small">
-                    <thead class="table-dark sticky-top">
+                    <thead class="table-dark">
                         <tr>
                             <th>SKU</th>
                             <th>NAME</th>
@@ -384,8 +384,8 @@
                         @enderror
                     </div>
                 </div>
-                <div class="row">
-                    <div class="mb-3 col-md-6">
+                <div class="row mt-1">
+                    <div class=" col-md-6">
                         <label for="classification_id" class="form-label">Classification<span
                                 style="color: red;">*</span></label>
                         <div class="input-group">
