@@ -159,11 +159,11 @@
                                         <option value="">No Symbol</option>
                                     @endforelse
                                 </select>
-                                <script>
+                                {{-- <script>
                                     document.addEventListener('DOMContentLoaded', function () {
                                         $('#uom_id').selectpicker();
                                     });
-                                </script>
+                                </script> --}}
                                 <button class="input-group-text" type="button"
                                     style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addUomModal">+</button>
 

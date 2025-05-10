@@ -302,21 +302,21 @@
             });
         });
 
-        document.getElementById('searchDepartment').addEventListener('input', function() {
-            const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#departmentTableBody tr');
-            rows.forEach(row => {
-                const departmentName = row.cells[0].textContent.toLowerCase();
-                const branchName = row.cells[1].textContent.toLowerCase();
-                const status = row.cells[2].textContent.toLowerCase();
-                if (departmentName.includes(searchValue) || branchName.includes(searchValue) || status
-                    .includes(searchValue)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
+        // document.getElementById('searchDepartment').addEventListener('input', function() {
+        //     const searchValue = this.value.toLowerCase();
+        //     const rows = document.querySelectorAll('#departmentTableBody tr');
+        //     rows.forEach(row => {
+        //         const departmentName = row.cells[0].textContent.toLowerCase();
+        //         const branchName = row.cells[1].textContent.toLowerCase();
+        //         const status = row.cells[2].textContent.toLowerCase();
+        //         if (departmentName.includes(searchValue) || branchName.includes(searchValue) || status
+        //             .includes(searchValue)) {
+        //             row.style.display = '';
+        //         } else {
+        //             row.style.display = 'none';
+        //         }
+        //     });
+        // });
 
         // Show success or error modal based on the session status
         @if (session('status') === 'success')
