@@ -14,12 +14,12 @@
                                 @elseif($requestInfo->requisition_status == 'FOR REVIEW') badge bg-dark
                                 @elseif($requestInfo->requisition_status == 'FOR APPROVAL') badge bg-dark
                                 @elseif($requestInfo->requisition_status == 'TO RECIEVE') badge bg-primary 
-                                @elseif($requestInfo->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
+                                @elseif($requestInfo->requisition_status == 'PARTIALLY FULFILLED') badge bg-warning  text-dark
                                 @elseif($requestInfo->requisition_status == 'COMPLETED') badge bg-success 
                                 @elseif($requestInfo->requisition_status == 'REJECTED') badge bg-danger
                                 @elseif($requestInfo->requisition_status == 'CANCELLED') badge bg-danger 
                                 @else badge bg-secondary 
-                                @endif">{{ $requestInfo->requisition_status }}</span>
+                                @endif">{{ $requestInfo->requisition_status == 'PARTIALLY FULFILLED' ? 'PARTIAL' : $requestInfo->requisition_status }}</span>
                             </div>
                         </div>
                     </div>

@@ -24,7 +24,7 @@
                         <label for="to_date" class="input-group-text">To:</label>
                         <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
                             class="form-control form-control-sm">
-                            <button wire:click="search" class="btn btn-warning input-group-text">search</button>
+                            <button wire:click="search" class="btn btn-primary input-group-text">search</button>
                     </div>
                     <div>
                     </div>
@@ -61,7 +61,7 @@
                                 <td> <span class="@if($receivingSummary->RECEIVING_STATUS == 'FINAL') badge bg-success @else badge bg-secondary @endif">{{ $receivingSummary->RECEIVING_STATUS }}</span></td>
                                 <td>{{ $receivingSummary->remarks }}</td>
                                 <td>
-                                    <button wire:click="openReceivingNumber('{{ $receivingSummary->RECEIVING_NUMBER }}',{{ $receivingSummary->requisition->id }})" class="btn btn-primary btn-sm">View</button>
+                                    <button wire:click="openReceivingNumber('{{ $receivingSummary->RECEIVING_NUMBER }}',{{ $receivingSummary->requisition->id }})" class="btn btn-primary btn-sm "><u>View</u></button>
                                 </td>
                             </tr>
                             @empty

@@ -70,11 +70,11 @@
                                         @elseif($backOrder->requisition_status == 'FOR PO') badge bg-info
                                         @elseif($backOrder->requisition_status == 'CANCELLED') badge bg-secondary 
                                         @else badge bg-secondary 
-                                        @endif">{{ $backOrder->requisition_status }} 
+                                        @endif">{{ $backOrder->requisition_status == 'PARTIALLY FULFILLED' ? 'PARTIAL' : $backOrder->requisition_status }} 
                                     </span>
                                 </td>
                                 <td>
-                                    <a wire:click="showBackorder('{{ $backOrder->requisition_number}}')" class="btn btn-primary btn-sm" >View</a>
+                                    <a wire:click="showBackorder('{{ $backOrder->requisition_number}}')" ><x-primary-button> <u>View</u> </x-primary-button></a>
                                 </td>
                             </tr>
                         @empty

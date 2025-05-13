@@ -84,7 +84,7 @@ class PurchaseOrderCreate extends Component
             ->whereYear('trans_date', $currentYear)
             ->count() + 1;
 
-        $this->requisitionNumber = 'PO-' . now()->format('my') . '-' . str_pad($yearlyCount, 3, '0', STR_PAD_LEFT);
+        $this->requisitionNumber = 'PO-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
 
         $requisitionInfo->supplier_id = $this->supplierId;
         $requisitionInfo->prepared_by = auth()->user()->emp_id;

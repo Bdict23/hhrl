@@ -36,7 +36,7 @@
                         <label for="to_date" class="input-group-text">To:</label>
                         <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
                             class="form-control form-control-sm">
-                            <button wire:click="search" class="btn btn-warning input-group-text">search</button>
+                            <button wire:click="search" class="btn btn-primary input-group-text">search</button>
                     </div>
                     <div>
                     </div>
@@ -73,19 +73,19 @@
                                         @elseif($requisition->requisition_status == 'FOR REVIEW') badge bg-dark
                                         @elseif($requisition->requisition_status == 'FOR APPROVAL') badge bg-dark
                                         @elseif($requisition->requisition_status == 'TO RECIEVE') badge bg-primary 
-                                        @elseif($requisition->requisition_status == 'PARTIALLY FULFILLED') badge bg-info 
+                                        @elseif($requisition->requisition_status == 'PARTIALLY FULFILLED') badge bg-warning text-dark 
                                         @elseif($requisition->requisition_status == 'COMPLETED') badge bg-success 
                                         @elseif($requisition->requisition_status == 'REJECTED') badge bg-danger
                                         @elseif($requisition->requisition_status == 'CANCELLED') badge bg-danger 
                                         @else badge bg-secondary 
-                                        @endif"> {{ $requisition->requisition_status }}
+                                        @endif"> {{ $requisition->requisition_status  == 'PARTIALLY FULFILLED' ? 'PARTIAL' : $requisition->requisition_status  }}
                                     </span>
                                        </td>
                                     <td>{{ $requisition->remarks }}</td>
                                     <input id="company_id" name='company_id' type="hidden">
                                     <td>
                                         <a style="text-decoration: none" href="{{ route('po.show', ['id' => $requisition->id]) }}">
-                                            <x-primary-button class="button-group">View</x-primary-button>
+                                            <x-primary-button class="button-group"><u>View</u></x-primary-button>
                                         <a>
                                     </td>
                                 </tr>

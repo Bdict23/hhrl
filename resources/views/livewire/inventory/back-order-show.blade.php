@@ -66,7 +66,7 @@
                                 <td style="font-size: x-small">{{$item->receiving_attempt}}</td>
                                 <td style="font-size: x-small">
                                     <span class="
-                                        @if($item->status == 'ACTIVE') badge bg-warning
+                                        @if($item->status == 'ACTIVE') badge bg-warning text-dark
                                         @elseif($item->status == 'FULFILLED') badge bg-success
                                         @elseif($itemitem->status == 'FOR PO') badge bg-info
                                         @elseif($item->status == 'CANCELLED') badge bg-danger 
