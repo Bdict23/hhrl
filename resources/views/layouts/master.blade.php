@@ -89,40 +89,13 @@
             margin-bottom: 20px;
         }
 
-        header h1 {
-            font-size: 24px;
-            color: #333;
-        }
 
-        .add-btn {
-            padding: 10px 15px;
-            background-color: #6c63ff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f0f2f5;
-            font-weight: bold;
-            color: #333;
-        }
+        
 
         td {
             color: #555;
+            font-size: small;
         }
 
         .action-btn {

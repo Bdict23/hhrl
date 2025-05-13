@@ -1,5 +1,7 @@
 @extends('layouts.master')
 @section('content')
+
+    <h5 class="text-start d:ml-3">User Registration Form</h5>
     <div class="dashboard">
         <form method="POST" 
         action="{{ route('register') }}" >

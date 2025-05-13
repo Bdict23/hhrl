@@ -24,12 +24,35 @@
     
                             <h1 class="h4">Department List</h1>
                             <div>
-                                <input type="text" class="form-control" id="searchDepartment" name="searchDepartment"
+                                <input type="text" class="form-control" id="searchDepartment"
                                     placeholder="Search Department">
                             </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const searchInput = document.getElementById('searchDepartment');
+                                    const tableBody = document.getElementById('departmentTableBody');
+
+                                    searchInput.addEventListener('input', function() {
+                                        const searchTerm = searchInput.value.toLowerCase();
+                                        const rows = tableBody.getElementsByTagName('tr');
+
+                                        Array.from(rows).forEach(row => {
+                                            const departmentName = row.cells[0]?.textContent.toLowerCase() || '';
+                                            const branchName = row.cells[1]?.textContent.toLowerCase() || '';
+                                            const status = row.cells[2]?.textContent.toLowerCase() || '';
+
+                                            if (departmentName.includes(searchTerm) || branchName.includes(searchTerm) || status.includes(searchTerm)) {
+                                                row.style.display = '';
+                                            } else {
+                                                row.style.display = 'none';
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
                         </header>
                         <div class="overflow-x-auto" >
-                            <table class="table table-striped min-w-full">
+                            <table class="table table-striped min-w-full" id="departmentTable">
                                 <thead class="table-dark">
                                     <tr style="font-size: smaller;">
                                         <th>Department Name</th>
@@ -49,10 +72,11 @@
                                             <td>{{ $department->department_status }}</td>
                                             <td style="text-align: center">{{ $department->employees->count() }}</td>
                                             @if (auth()->user()->employee->getModulePermission('Departments') == 1)
-                                                <td>
-                                                    <button class="btn btn-primary btn-sm" wire:click="edit({{ $department->id }})">Edit</button>
+                                                <td class="text-nowrap">
+                                                    <a  wire:click="edit({{ $department->id }})"><x-secondary-button><u>Edit</u></x-secondary-button></a>
                                                     <button class="btn btn-danger btn-sm"
-                                                        wire:click="deactivate({{ $department->id }})">Deactivate</button>
+                                                        wire:click="deactivate({{ $department->id }})"
+                                                        onclick="return confirm('Are you sure you want to deactivate this department?')">Deactivate</button>
                                                 </td>
                                             @endif
                                         </tr>

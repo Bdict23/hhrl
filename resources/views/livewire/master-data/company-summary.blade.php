@@ -5,11 +5,12 @@
         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
+        <h4> Company Lists</h4>
     <div class="card mt-3 mb-3">
         <div class="card-header p-2">
             <div class="row">
                 <div class=" row col-md-12">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-2">
                         @if (auth()->user()->employee->getModulePermission('companies') == 1)
                             <x-primary-button style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
                                 + New Company
@@ -18,7 +19,33 @@
                         <span wire:loading class="spinner-border text-primary" role="status"></span>
                     </div>
                     <div class="col-md-6">
-                        <h5>Company Lists</h5>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search..." onkeyup="filterTable()">
+                        <script>
+                            // search function on company table
+                            function filterTable() {
+                                let input = document.getElementById('searchInput');
+                                let filter = input.value.toLowerCase();
+                                let table = document.querySelector('#companyTable');
+                                let rows = table.getElementsByTagName('tr');
+
+                                for (let i = 1; i < rows.length; i++) {
+                                    let cells = rows[i].getElementsByTagName('td');
+                                    let match = false;
+
+                                    for (let j = 0; j < cells.length; j++) {
+                                        if (cells[j]) {
+                                            let textValue = cells[j].textContent || cells[j].innerText;
+                                            if (textValue.toLowerCase().indexOf(filter) > -1) {
+                                                match = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    rows[i].style.display = match ? '' : 'none';
+                                }
+                            }
+                        </script> 
                     </div>
                 </div>
 
@@ -31,7 +58,7 @@
 
             <div class="card-body">
                 <div class="overflow-x-auto">
-                    <table class="table min-w-full">
+                    <table class="table min-w-full" id="companyTable" style="height:400px;">
                         <thead class="table-dark table-sm ">
                             <tr>
                                 <th>Company Name</th>
@@ -53,12 +80,15 @@
             
                                     <td>
                                         <div class="button-group">
-                                            <a href="{{ route('company.show', ['id' => $company->id]) }}" class="action-btn"
-                                                style="text-decoration: none">View</a>
+                                            <a href="{{ route('company.show', ['id' => $company->id]) }}">
+                                                <x-primary-button >
+                                                    <u>View</u>
+                                                    </x-primary-button>
+                                            </a>
                                             @if (auth()->user()->employee->getModulePermission('companies') == 1)
-                                                <button onclick='viewCompany({{ json_encode($company) }})' class="action-btn"
+                                                <x-secondary-button onclick='viewCompany({{ json_encode($company) }})'
                                                     data-bs-target="#supplierUpdateModal" data-bs-toggle="modal"
-                                                    style="text-decoration: none">Edit</button>
+                                                    style="text-decoration: none">Edit</x-secondary-button>
                                                 <a href="{{ route('company.deactivate', ['id' => $company->id]) }}"
                                                     class="action-btn btn-sm" style="text-decoration: none">
                                                     {{ _('Remove') }}</a>

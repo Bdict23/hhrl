@@ -16,21 +16,56 @@
             </div>
         @endforeach
     @endif
-    <div class="container row">
+    <div class="row">
+         <div class="col-md-6">
+            <h5>SUPPLIER LIST</h5>
+        </div>
         @if (session()->has('success'))
-        <div class="alert alert-success" id="success-message">
+        <div class="alert alert-success col-md-6" id="success-message">
             {{ session('success') }}
             <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
+    </div>
+    <div class="card mb-3">
+        <div class="card-header p-2">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#supplierModal">+ Add
+                    Supplier</x-primary-button>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control w-10" id="searchInput" placeholder="Search Supplier">
+                </div>
+            </div>
+        </div>
 
-    <div class="dashboard">
-        <header>
-            <h2>Supplier List</h2>
-            <button class="add-btn" type="button" data-bs-toggle="modal" data-bs-target="#supplierModal">+ Add
-                Supplier</button>
-        </header>
-        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+       <div class="table-responsive card-body mb-2" style="max-height: 500px; overflow-y: auto;">
+           <div class="row mb-2">
+               <div class="col-md-6">
+                   
+               </div>
+           </div>
+            <script>
+                document.getElementById('searchInput').addEventListener('keyup', function() {
+                    var input = this.value.toLowerCase();
+                    var rows = document.querySelectorAll('.table tbody tr');
+                    rows.forEach(function(row) {
+                        var cells = row.querySelectorAll('td');
+                        var found = false;
+                        cells.forEach(function(cell) {
+                            if (cell.textContent.toLowerCase().includes(input)) {
+                                found = true;
+                            }
+                        });
+                        if (found) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            </script>
             <table class="table table-striped table-responsive-lg">
                 <thead class="table-dark  table-sm">
                     <tr>
@@ -50,11 +85,11 @@
                             <td>{{ $supplier->input_tax }}</td>
                             <td>
                                 <div class="button-group">
-                                    <button onclick='getSupplier({{ json_encode($supplier) }})' class="action-btn btn-sm"
-                                        data-bs-target="#supplierViewModal" data-bs-toggle="modal">View</button>
-                                    <button class="btn btn-info btn-sm" data-bs-target="#supplierUpdateModal"
+                                    <x-primary-button onclick='getSupplier({{ json_encode($supplier) }})'
+                                        data-bs-target="#supplierViewModal" data-bs-toggle="modal"><u>View</u></x-primary-button>
+                                    <x-secondary-button data-bs-target="#supplierUpdateModal"
                                         data-bs-toggle="modal"
-                                        onclick='getSupplier({{ json_encode($supplier) }})'>Edit</button>
+                                        onclick='getSupplier({{ json_encode($supplier) }})'>Edit</x-secondary-button>
                                     <a type="button" class="btn btn-danger btn-sm"
                                         href="{{ route('supplier.deactivate', $supplier->id) }}">Remove</a>
                                 </div>
