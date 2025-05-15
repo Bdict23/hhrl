@@ -2,7 +2,7 @@
 @section('content')
     <div class="dashboard">
         <header>
-            <h1>Update Purchase Order</h1>
+            <h5>Update Purchase Order</h5>
         </header>
         <form id="poForm" method="POST" action="{{ route('purchase_order.update', $requisitionInfo->id ?? '') }}">
             @csrf
@@ -84,18 +84,14 @@
                 </div>
             </div>
             <header>
-                <h1>Item Lists</h1>
+                <h5>Item Lists</h5>
                 <div>
-                    <button
-                        class="btn {{ $requisitionInfo && $requisitionInfo->requisition_status == 'PREPARING' ? 'btn-success' : 'btn-secondary' }}"
-                        type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal"
-                        {{ $requisitionInfo && $requisitionInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>+
-                        Add ITEM</button>
-                    <button
-                        class="btn {{ $requisitionInfo->requisition_status ?? '' == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"
-                        type="button" onclick="document.getElementById('poForm').submit();"
-                        {{ $requisitionInfo && $requisitionInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>Update</button>
-                    <button onclick="history.back()" class="btn btn-primary" type="button">Back</button>
+                    <x-primary-button
+                        type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+
+                        Add ITEM</x-primary-button>
+                    <x-primary-button
+                         onclick="document.getElementById('poForm').submit();">Update</x-primary-button>
+                    <x-secondary-button onclick="history.back()" type="button">Back</x-secondary-button>
                 </div>
             </header>
             <table class="table table-striped table-hover">

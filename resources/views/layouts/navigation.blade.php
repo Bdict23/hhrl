@@ -9,7 +9,6 @@
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
-
                 @if (auth()->user()->employee->getGroupedModulePermissions('Master Data') !=2 
                     ||auth()->user()->employee->getGroupedModulePermissions('Item Management') !=2 
                     || auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2
@@ -82,8 +81,6 @@
                     </div>
                 @endif
                 <!-- Dropdown Menu for Master Data -->
-              
-
                 @if (auth()->user()->employee->getGroupedModulePermissions('Purchasing') !=2 )
                     <!-- Dropdown Menu for Purchase Order -->
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
@@ -147,10 +144,11 @@
                                         {{ __('Item Withdrawal') }}
                                 </x-dropdown-link>
                             @endif
-
-                            <x-dropdown-link :href="url('/Merchandise-Inventory')" class="no-underline">
-                                {{ __('Merchnadise Inventory') }}
-                            </x-dropdown-link>
+                             @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') != 2 )
+                                <x-dropdown-link :href="url('/Merchandise-Inventory')" class="no-underline">
+                                    {{ __('Merchnadise Inventory') }}
+                                </x-dropdown-link>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -475,6 +473,11 @@
                         @if (auth()->user()->employee->getModulePermission('Item Withdrawal') != 2 )
                             <x-responsive-nav-link :href="url('/item_withdrawal')" class="no-underline">
                                 {{ __('Item Withdrawal') }}
+                            </x-responsive-nav-link>
+                        @endif
+                         @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') != 2 )
+                            <x-responsive-nav-link :href="url('/Merchandise-Inventory')" class="no-underline">
+                                {{ __('Merchandise Inventory') }}
                             </x-responsive-nav-link>
                         @endif
                     </div>

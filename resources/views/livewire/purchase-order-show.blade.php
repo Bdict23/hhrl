@@ -23,25 +23,25 @@
                             </div>
                         </div>
                     </div>
-                        <div class="m-2">
-                            {{-- <button class="btn {{ $requestInfo->requisition_status == 'TO RECEIVE' ? 'btn-success' : 'btn-secondary' }}"
-                                type="button"
-                                onclick="window.location.href='{{ route('po.po_receive', ['poNumber' => $requestInfo->requisition_number]) }}'"
-                                {{ $requestInfo->requisition_status != 'TO RECEIVE' ? 'disabled' : '' }}>
-                                Receive
-                            </button> --}}
+                        <div class="m-1">
                             @if (auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                                <button onclick="window.location.href='{{ route('po.edit', ['id' => $requestInfo->id]) }}'"
-                                    class="btn {{ $requestInfo->requisition_status == 'PREPARING' ? 'btn-primary' : 'btn-secondary' }}"
-                                    {{ $requestInfo->requisition_status != 'PREPARING' ? 'disabled' : '' }}>
-                                    Update PO
-                                </button>
-    
-                                <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}" class="btn btn-primary">
-                                    Print Preview
+                                <a href="/po_create" >
+                                    <x-primary-button   style="background-color: rgb(84, 161, 248)">
+                                        + New PO
+                                    </x-primary-button>
                                 </a>
-                                <a href="/po_create" class="btn btn-primary">
-                                    + New PO
+                                @if ($requestInfo->requisition_status == 'PREPARING')
+                                    <a href="{{ route('po.edit', ['id' => $requestInfo->id]) }}">
+                                        <x-primary-button >
+                                            Update PO
+                                        </x-primary-button>
+                                    </a>
+                                @endif
+                                
+                                 <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}"  >
+                                    <x-primary-button >
+                                       Print Preview
+                                    </x-primary-button>
                                 </a>
                             @endif
                             <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
@@ -90,7 +90,7 @@
         <!-- Right Dashboard -->
         <div class="card col-md-5">
             <header class="card-header">
-                <h1>Purchase Order Information</h1>
+                <h5>Purchase Order Information</h5>
             </header>
             <div class="card-body">
                 <form>

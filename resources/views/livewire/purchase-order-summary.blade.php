@@ -1,5 +1,9 @@
 <div class="overflow-x-auto">
-
+@if (session('status') == 'error')
+    <div class="alert alert-danger">
+        {{ session('message') ?? 'Something went wrong.' }}
+    </div>
+@endif
     <div class="card mt-3 mb-3">
         <div class="card-header p-2 ">
             <div class="row">

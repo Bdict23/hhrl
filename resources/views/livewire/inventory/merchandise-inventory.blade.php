@@ -5,86 +5,168 @@
         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
+     <h5>Merchandise Inventory</h5>
     <div class="card mt-3 mb-3">
         <div class="card-header p-2">
             <div class="row">
-                <div class=" row col-md-12">
-                    {{-- <div class="col-md-6">
-                        <x-primary-button style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
-                           + Print Inventory
-                        </x-primary-button>
-                        <span wire:loading class="spinner-border text-primary" role="status"></span>
-                    </div> --}}
-                    <div class="col-md-6">
-                        <h5>Merchandise Inventory</h5>
+                  @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') == 1)
+                     <div class=" row col-md-6">
+                        <div class="col-md-6 mb-2">
+                                <x-primary-button style="text-decoration: none;" onclick="printInventory()">
+                                + Print Preview
+                                </x-primary-button>
+                                <span wire:loading class="spinner-border text-primary" role="status"></span>
+                        </div>
                     </div>
-                </div>
+                  @endif
+               
 
                 <div class="col-md-6">
-                
+                            <input type="text" class="form-control form-control-sm" placeholder="Search..." id="searchInput" onkeyup="filterTable()">
+                            <script>
+                                function filterTable() {
+                                    const input = document.getElementById('searchInput');
+                                    const filter = input.value.toLowerCase();
+                                    const table = document.querySelector('#cardexTable');
+                                    const rows = table.getElementsByTagName('tr');
+
+                                    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+                                        const cells = rows[i].getElementsByTagName('td');
+                                        let match = false;
+
+                                        for (let j = 0; j < cells.length; j++) {
+                                            if (cells[j]) {
+                                                const textValue = cells[j].textContent || cells[j].innerText;
+                                                if (textValue.toLowerCase().indexOf(filter) > -1) {
+                                                    match = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        rows[i].style.display = match ? '' : 'none';
+                                    }
+                                }
+                            </script>
                 </div>
             </div>
         </div>
 
 
-        <div class="card-body">
-            <div class="table-responsive-sm">
-                <div class="d-flex justify-content-between mb-3">
-                    <table class="table table-striped table-hover table-sm table-responsive">
-                                <thead class="table-light me-3">
-                                    <tr style="font-size: x-small;">
-                                        @if ($avlBal)
-                                            <th>BAL.</th>
-                                        @endif
-                                        @if ($avlQty)
-                                            <th>AVAIL.</th>
-                                        @endif
-                                        @if ($totalReserved)
-                                            <th>Reserved</th>
-                                        @endif
-                                        @if ($code)
-                                            <th>SKU</th>
-                                        @endif
-                                        <th>NAME</th>
-                                        @if ($uom)
-                                            <th>UNIT</th>
-                                        @endif
-                                        @if ($category)
-                                            <th>CATEGORY</th>
-                                        @endif
-                                        @if ($location)
-                                            <th>LOCATION</th>
-                                        @endif
-                                        @if ($brand)
-                                            <th>BRAND</th>
-                                        @endif
-                                        @if ($status)
-                                            <th>STATUS</th>
-                                        @endif
-                                        @if ($classification)
-                                            <th>CLASSIFICATION</th>
-                                        @endif
-                                        @if ($barcode)
-                                            <th>BARCODE</th>
-                                        @endif
-                                       
-                                        <th>COST</th>
-                                      
-                                        <th>
-                                            ACTION
+        <div class="card-body overflow-auto" wire:ignore.self>
+            <div class="table-responsive-sm h-100">
+                <div class="mb-3"  style="max-height: 600px; overflow-y: auto;">
+                    <table class="table table-striped table-hover table-bordered table-sm table-responsive">
+                        <thead class="table-light me-3 sticky-top">
+                            <tr style="font-size: x-small;">
+                                @if ($avlBal)
+                                    <th>BAL.</th>
+                                @endif
+                                @if ($avlQty)
+                                    <th>AVAIL.</th>
+                                @endif
+                                @if ($totalReserved)
+                                    <th>Reserved</th>
+                                @endif
+                                @if ($code)
+                                    <th>SKU</th>
+                                @endif
+                                <th>NAME</th>
+                                @if ($uom)
+                                    <th>UNIT</th>
+                                @endif
+                                @if ($category)
+                                    <th>CATEGORY</th>
+                                @endif
+                                @if ($location)
+                                    <th>LOCATION</th>
+                                @endif
+                                @if ($brand)
+                                    <th>BRAND</th>
+                                @endif
+                                @if ($status)
+                                    <th>STATUS</th>
+                                @endif
+                                @if ($classification)
+                                    <th>CLASSIFICATION</th>
+                                @endif
+                                @if ($barcode)
+                                    <th>BARCODE</th>
+                                @endif
+                                @if($cost)
+                                <th>COST</th>
+                                @endif
+                                  @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') == 1)
+                                    <th>
+                                        ACTION
                                             <button type="button"
-                                            class="btn btn-sm float-end"
-                                            style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#customCol"
-                                            title="Add or remove column">
-                                            +
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#customCol"
+                                                title="Add or remove column">
+                                                +
                                         </button>
-                                        </th> 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
+                                
+                                    
+                                    </th>
+                                @endif 
+                            </tr>
+                        </thead>
+                        <tbody id="cardexTable">
+                            @forelse ($cardex as $index => $item)
+                                <tr style="font-size: x-small;">
+                                    @if ($avlBal)
+                                        <td>{{ $item->total_balance }}</td>
+                                    @endif
+                                    @if ($avlQty)
+                                        <td>{{ $item->total_available}}</td>
+                                    @endif
+                                    @if ($totalReserved)
+                                        <td>{{ $item->total_reserved }}</td>
+                                    @endif
+                                    @if ($code)
+                                        <td>{{ $item->item_code }}</td>
+                                    @endif
+                                        <td>{{ $item->item_description }}</td>
+                                    @if ($uom)
+                                        <td>{{ $item->uom->unit_symbol }}</td>
+                                    @endif
+                                    @if ($category)
+                                            <td>{{ $item->category->category_name ?? 'N/A' }}</td>
+                                    @endif
+                                    @if ($location)
+                                        <td>{{ $item->location ?? 'N/A' }}</td>
+                                    @endif
+                                    @if ($brand)
+                                        <td>{{ $item->brand->brand_name ?? 'N/A' }}</td>
+                                    @endif
+                                    @if ($status)
+                                        <td>{{ $item->item_status }}</td>
+                                    @endif
+                                    @if ($classification)
+                                        <td>{{ $item->classification->classification_name ?? 'N/A' }}</td>
+                                    @endif
+                                    @if ($barcode)
+                                        <td>{{ $item->item_barcode }}</td>
+                                    @endif
+                                    @if ($cost)
+                                        <td>{{ $item->costPrice->amount ?? 0 }}</td>
+                                    @endif
+                                    @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') == 1)
+                                         <td class="w-10 h-5">
+                                            <x-primary-button data-bs-target="#editModal{{ $item->id }}">
+                                                <i class="fa-solid fa-pen-to-square"><u>view</u></i>
+                                            </x-primary-button>
+                                        </td>    
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="12" class="text-center">No data available</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
                     </table>
                 </div>
             </div>

@@ -83,7 +83,10 @@ class PurchaseOrderController extends Controller
 
     public function po_edit($id=null)
     {
-        $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing']])->find($id);
+        $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing'],['from_branch_id', auth()->user()->branch_id]])->find($id);
+        if (!$requisitionInfo) {
+            return redirect()->route('purchase_order.po_summary')->with('status', 'error');
+        }
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
         $terms =  Term::all();
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
