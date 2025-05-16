@@ -11,6 +11,7 @@ use App\Models\Branch;
 use App\Models\Term;
 use App\Models\Item;
 use App\Models\PriceLevel;
+use App\Models\Module;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Signatory;
@@ -83,6 +84,7 @@ class PurchaseOrderController extends Controller
 
     public function po_edit($id=null)
     {
+        $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
         $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing'],['from_branch_id', auth()->user()->branch_id]])->find($id);
         if (!$requisitionInfo) {
             return redirect()->route('purchase_order.po_summary')->with('status', 'error');
@@ -90,9 +92,12 @@ class PurchaseOrderController extends Controller
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
         $terms =  Term::all();
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
-        $approver = Signatory::where('signatory_type', 'APPROVER')->get();
-        $reviewer = Signatory::where('signatory_type', 'REVIEWER')->get();
-        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'terms', 'items', 'approver', 'reviewer'));
+
+        $module = Module::where('module_name', 'Purchase Order')->first();
+        $reviewer = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'reviewer'],['branch_id',auth()->user()->branch_id]])->get();
+        $approver = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'approver'],['branch_id',auth()->user()->branch_id]])->get();
+
+        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'terms', 'items', 'approver', 'reviewer', 'hasReviewer'));
     }
 
     public function po_update(Request $request)

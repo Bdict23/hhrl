@@ -53,6 +53,7 @@
                                 <tr style="font-size: x-small">
                                     <th>Code</th>
                                     <th>Name</th>
+                                    <th>Unit</th>
                                     <th>Req. Qty.</th>
                                     <th>Rec. Qty.</th>
                                     <th>Cost</th>
@@ -65,6 +66,7 @@
                                     <tr data-id="{{ $reqdetail->requisition_number }}">
                                         <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
                                         <td style="font-size: small">{{ $reqdetail->items->item_description }} </td>
+                                        <td style="font-size: small">{{ $reqdetail->items->uom->unit_symbol }}</td>
                                         <td style="font-size: small"> {{ $reqdetail->qty }}</td>
                                         <td style="font-size: small">{{ $totalReceived[$reqdetail->item_id] ?? 0 }}</td>
                                         <td style="font-size: small">{{ $reqdetail->items->costPrice->amount }}</td>

@@ -1,49 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    {{-- <div class="dashboard">
-        <header>
-            <h2>Company List</h2>
-            <button class="add-btn" type="button" data-bs-toggle="modal" data-bs-target="#supplierModal">+ Add Company</button>
-        </header>
-
-        <table class="table table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Company Name</th>
-                    <th>Company Code</th>
-                    <th>TIN</th>
-                    <th>Company Type</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @foreach ($companies as $company)
-                    <tr>
-                        <td>{{ $company->company_name }}</td>
-                        <td>{{ $company->company_code }}</td>
-                        <td>{{ $company->company_tin }}</td>
-                        <td>{{ $company->company_type }}</td>
-                        <td>{{ $company->company_description }}</td>
-
-                        <td>
-                            <div class="button-group">
-                                <a href="{{ route('company.show', ['id' => $company->id]) }}" class="action-btn"
-                                    style="text-decoration: none">View</a>
-                                <button onclick='viewCompany({{ json_encode($company) }})' class="action-btn"
-                                    data-bs-target="#supplierUpdateModal" data-bs-toggle="modal"
-                                    style="text-decoration: none">Edit</button>
-                                <a href="{{ route('company.deactivate', ['id' => $company->id]) }}"
-                                    class="action-btn btn-sm" style="text-decoration: none">
-                                    {{ _('Remove') }}</a>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div> --}}
+    
     <div>
         @livewire('master-data.company-summary')
     </div>
