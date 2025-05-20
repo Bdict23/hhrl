@@ -80,6 +80,8 @@ return new class extends Migration
                 ]);
             }
 
+            
+
         if (!Schema::hasTable('employees')) {
 
 
@@ -103,6 +105,16 @@ return new class extends Migration
 
                 $table->timestamps(); // created_at and updated_at
             });}
+
+            // create assigned branch table
+            if (!Schema::hasTable('assigned_branches')) {
+                Schema::create('assigned_branches', function (Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade')->onUpdate('cascade');
+                    $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade');
+                    $table->timestamps();
+                });
+            }
 
             // Step 5: Create an Audit Table for Tracking Created By
             Schema::create('company_audits', function (Blueprint $table) {

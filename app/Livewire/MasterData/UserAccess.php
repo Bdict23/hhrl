@@ -9,6 +9,7 @@ use App\Models\Position;
 use App\Models\ModulePermission;
 use App\Models\Module;
 use App\Models\Signatory;
+use App\Models\AssignedBranch;
 
 
 class UserAccess extends Component
@@ -26,6 +27,9 @@ class UserAccess extends Component
     public $signatoryRole = [];
     public $branch; // Define branch property
     public $userAccessId;
+    public $accountAccess = [];
+    public $branchAccessChanged = false;
+
 
     // employee details
     public $employeeId;
@@ -122,7 +126,30 @@ class UserAccess extends Component
                 }
             }
             }
+
+            //assigned branch
+            $assignedBranch = AssignedBranch::where('employee_id', $userId)
+                ->where('branch_id', $branch->id)
+                ->get();
+            if ($assignedBranch->isNotEmpty()) {
+                
+                $this->accountAccess[$branch->id] = [
+                    'value' => true,
+                    'branch' => $branch->branch_id,
+                ];
+                
+            } else {
+                $this->accountAccess[$branch->id] = 
+                [
+                    'value' => false,
+                    'branch' => $branch->branch_id,
+                ];
+            }
+            
+
+
         }
+
 
        
 
@@ -152,6 +179,21 @@ class UserAccess extends Component
        
     }
 
+
+    public function setBranchAccess($branchId, $value)
+    {
+        if($this->employeeId != null && $this->employeeId != '' ) {
+            $this->hasChanges = true;
+            $this->branchAccessChanged = true;
+        }
+        // set permission
+        $this->accountAccess[$branchId] = [
+            'value' => $value,
+            'branch' => $branchId,
+        ];
+    }
+
+
     public function savePersmissions()
     {
         // dd($this->assignedSignatory);
@@ -177,6 +219,27 @@ class UserAccess extends Component
                     'employee_id' => $this->employeeId,
                     'access' => $permission,
                 ]);
+            }
+        }
+
+        // save branch access
+        if($this->branchAccessChanged) {
+            foreach ($this->accountAccess as $branchId => $value) {
+                $currentBranch = AssignedBranch::where([
+                    ['employee_id', $this->employeeId],
+                    ['branch_id', $branchId]
+                ])->first();
+
+                if ($currentBranch) {
+                    $currentBranch->delete();
+                } 
+
+                if ($value['value'] == '1') {
+                    AssignedBranch::create([
+                        'employee_id' => $this->employeeId,
+                        'branch_id' => $branchId,
+                    ]);
+                }
             }
         }
 

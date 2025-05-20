@@ -163,6 +163,57 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Accounts TAB --}}
+                <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab" wire:ignore.self>
+                    <div class="card">
+                        <div class="card-header">
+                            <strong class="card-title">Accounts</strong>
+                        </div>
+                        <div class="card-body overflow-auto" style="height: 400px;">
+                             <table class="table table-striped">
+                                <thead class="table-dark sticky-top">
+                                    <tr>
+                                        <th>Branch</th>
+                                        <th class="text-center" colspan="3">Access</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                  
+                                    @foreach ($branches as $module)
+                                        <tr>
+                                            <td>{{ $module->branch_name }}</td>
+                                            <td colspan="3" class="text-center">
+                                                <select wire:change="setBranchAccess('{{ $module->id }}', $event.target.value)"  class="form-select" aria-label="Default select example">
+                                                    <option value="" disabled>Select Access</option>
+                                                    <option value="1" {{ ($accountAccess[$module->id]['value'] ?? null) == true ? 'selected' : '' }}>Allowed</option>
+                                                    <option value="0" {{ ($accountAccess[$module->id]['value'] ?? null) ==  false ?? false ? 'selected' : '' }}>Not Allowed</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // Add the Accounts tab to the nav-tabs
+                        let navTabs = document.getElementById('jobOrderTabs');
+                        if (navTabs && !document.getElementById('accounts-tab')) {
+                            let li = document.createElement('li');
+                            li.className = 'nav-item';
+                            li.role = 'presentation';
+                            li.innerHTML = `<button class="nav-link" id="accounts-tab" data-bs-toggle="tab" data-bs-target="#accounts" type="button" role="tab" aria-controls="accounts" aria-selected="false">Accounts</button>`;
+                            navTabs.appendChild(li);
+                        }
+                    });
+                </script>
             </div>
         </div>
    </div>

@@ -220,13 +220,16 @@
     </style>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-600 leading-tight text-sm">
-            {{ Auth::user()->branch()->first()->branch_name }}
-            @if (Auth::user()->branch()->first()->branch_status == 'INACTIVE')
-                <span style="color: rgb(219, 69, 69);">(INACTIVE)</span>
-            @endif
-        </h2>
+        @livewire('current-branch')
     </x-slot>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, { delay: { "show": 1000, "hide": 100 } });
+        });
+        });
+    </script>
 
     <div class = 'container'>
         @yield('content')
