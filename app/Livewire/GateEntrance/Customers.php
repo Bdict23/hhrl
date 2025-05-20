@@ -20,14 +20,14 @@ class Customers extends Component
     public $contact_no_2;
     public $address;
     public $branch_id;
-    public $renderComponent='list';
+    public $renderComponent='gate';
 
     public function mount()
     {
         $this->customers = Customer::all();
         $this->branch_id = 1; // Set a default branch ID
     }
-  
+
     public function ChangeComponent($component)
     {
         $this->renderComponent = $component;

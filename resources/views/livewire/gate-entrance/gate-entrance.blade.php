@@ -1,5 +1,4 @@
 <div>
-
     <div class="text-center">
         <h1 class="text-2xl font-bold">Gate Entrance</h1>
         <p class="text-gray-600">HHRL</p>
@@ -29,7 +28,7 @@
                     <tbody>
                         @foreach ($bookingrecords as $bookingrecord)
                             <tr>
-                                <td>{{ $bookingrecord->customer->customer_fname . ' ' . $bookingrecord->customer->customer_lname }}
+                                <td>{{ $bookingrecord->customer_id ==0 ? 'Walk in' :$bookingrecord->customer->customer_fname . ' ' . $bookingrecord->customer->customer_lname }}
                                 </td>
                                 <td>{{ $bookingrecord->created_at->format('M d,Y') }}</td>
                                 <td>{{ $bookingrecord->booking_number }}</td>

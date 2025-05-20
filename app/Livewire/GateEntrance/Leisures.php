@@ -16,6 +16,7 @@ class Leisures extends Component
     public $description;
     public $amount;
     public $status;
+    public $unit;
     public $branch_id;
     public $isOpen = false;
     public $isdelete = false;
@@ -24,7 +25,7 @@ class Leisures extends Component
 
     function mount()
     {
-        $this->leisures = Leisure::where('status','=',1)->get();
+        $this->leisures = Leisure::all();
         $this->status = 1;
         $this->branch_id = 1;
     }
@@ -42,6 +43,7 @@ class Leisures extends Component
                 'description' => $this->description,
                 'amount' => (double) $this->amount,
                 'status' => $this->status,
+                'unit' => $this->unit,
                 'branch_id' => $this->branch_id,
             ]);
 
@@ -112,13 +114,21 @@ class Leisures extends Component
         try {
             $leisure = Leisure::find($id);
             if ($leisure) {
-                  $leisure->update([
-                    'status' => 0,
-                ]);
-                session()->flash('delete_message', 'Leisure deleted successfully.');
-            } else {
+                if ($leisure->status == 1) {
+                    $leisure->update([
+                        'status' => 0,
+                    ]);
+                    session()->flash('delete_message', 'Leisure deleted successfully.');
+                } else {
+                    $leisure->update([
+                        'status' => 1,
+                    ]);
+                    session()->flash('delete_message', 'Leisure restored successfully.');
+                }
+            }else {
                 session()->flash('delete_message', 'Leisure not found.');
             }
+            $this->leisures = Leisure::all();
         } catch (\Exception $e) {
             session()->flash('delete_message', 'Failed to delete leisure: ' . $e->getMessage());
         }

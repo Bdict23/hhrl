@@ -255,7 +255,7 @@ Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'pri
 // ken Gate Entrance Module
 // Route for Entrance view
 Route::get('/gate-entrance', GateEntrance::class)->name('gate.entrance.page');
-Route::get('/book-service/{id}', BookService::class)->name('book.service.page');
+Route::get('/book-service', BookService::class)->name('book.service.page');
 Route::get('/booking-view/{booking_number}', BookingView::class)->name('booking.view.page');
 Route::get('/leisures', Leisures::class)->name('leisures.page');
 Route::get('/customers', Customers::class)->name('customers.page');

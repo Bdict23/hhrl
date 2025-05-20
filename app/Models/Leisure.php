@@ -11,6 +11,7 @@ class Leisure extends Model
         'description',
         'amount',
         'status',
+        'unit',
         'branch_id'
     ];
 

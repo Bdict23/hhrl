@@ -40,7 +40,7 @@
                             <tr>
                                 <td>{{ $leisure->name }}</td>
                                 <td>{{ $leisure->description }}</td>
-                                <td>{{ $leisure->amount }}</td>
+                                <td>{{ $leisure->amount.' '.$leisure->unit }}</td>
                                 <td>
                                     @if ($leisure->status == 1)
                                         Active
@@ -55,8 +55,13 @@
                                         Edit
                                     </button>
                                     <button wire:click="deleteLeisure({{ $leisure->id }})"
-                                        class="bg-red-500 hover:bg-red-100 text-white font-bold py-2 px-4 rounded mx-2 mt-2">
-                                        Delete
+                                        class="btn btn-{{$leisure->status==1?'danger':'success'}}  text-white font-bold py-2 px-4 rounded mx-2 mt-2">
+                                        @if ($leisure->status == 1)
+                                            Delete
+                                        @else
+                                            Restore
+                                        @endif
+
                                     </button>
                                 </td>
                             </tr>
@@ -115,12 +120,21 @@
                             </div>
                         </div>
                         <div class="flex flex-wrap mx-2">
-
                             <div class="w-3/3 p-4">
                                 <label for="description">Amount:</label>
                                 <input type="number" id="description" wire:model="amount"
                                     class="border border-gray-300 rounded p-2 mx-2" placeholder="Amount">
                                 @error('description')
+                                    <span class="text-red-500 text-xs italic">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap mx-2">
+                            <div class="w-3/3 p-4">
+                                <label for="description">Unit Price:</label>
+                                <input type="text" id="description" wire:model="unit"
+                                    class="border border-gray-300 rounded p-2 mx-2" placeholder="ex. per hour, per day, etc...">
+                                @error('unit')
                                     <span class="text-red-500 text-xs italic">{{ $message }}</span>
                                 @enderror
                             </div>

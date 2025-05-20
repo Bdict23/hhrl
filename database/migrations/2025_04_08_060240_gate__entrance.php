@@ -14,38 +14,38 @@ return new class extends Migration
         //
 
 
-        // Schema::create('leisures', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->string('name');
-        //     $table->float('amount');
-        //     $table->string('description');
-        //     $table->integer('status');
-        //     $table->unsignedBigInteger('branch_id');
-        //     $table->timestamps();
-        // });
+        Schema::create('leisures', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->float('amount');
+            $table->string('description');
+            $table->integer('status');
+            $table->string('unit');
+            $table->unsignedBigInteger('branch_id');
+            $table->timestamps();
+        });
 
         // Schema::create('booking_records', function (Blueprint $table) {
         //     $table->id();
         //     $table->string('booking_number');
-        //     $table->unsignedBigInteger('customers_id');
+        //     $table->unsignedBigInteger('customer_id');
         //     $table->unsignedBigInteger('branch_id');
-        //     $table->foreign('customers_id')->references('id')->on('customers')->onDelete('cascade');
         //     $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
         //     $table->string('booking_status');
         //     $table->timestamps();
         // });
 
-        Schema::create('booking_payments', function (Blueprint $table) {
-            $table->id();
-            $table->string('OR_number');
-            $table->string('payment_type');
-            $table->decimal('amount_due');
-            $table->decimal('amount_payed');
-            $table->decimal('balance');
-            $table->string('payment_status');
-            $table->string('booking_number');
-            $table->timestamps();
-        });
+        // Schema::create('booking_payments', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('OR_number');
+        //     $table->string('payment_type');
+        //     $table->decimal('amount_due');
+        //     $table->decimal('amount_payed');
+        //     $table->decimal('balance');
+        //     $table->string('payment_status');
+        //     $table->string('booking_number');
+        //     $table->timestamps();
+        // });
     }
 
     /**

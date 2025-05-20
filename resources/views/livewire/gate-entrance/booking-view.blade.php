@@ -2,19 +2,27 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4"><b>View Booking Details</b></h2>
     <div class="table-responsive">
-        <div class="mb-4 p-4 border border-gray-300 rounded">
+        <div class="mb-4 p-4 border border-gray-300 rounded text-center row">
             <h2>Customer Details</h2>
-            <p><strong>Name:</strong>
-                {{ $customer_booking->customer->customer_fname . ' ' . $customer_booking->customer->customer_lname }}
-            </p>
-            <p>
+            @if ($customer_booking->customer_id != 0)
+                <div class="col-6">
+                    <strong>Name:</strong>
+                    {{ $customer_booking->customer->customer_fname . ' ' . $customer_booking->customer->customer_lname }}
+                </div>
+            @endif
+            <div class="col-6">
+                <strong>Customer Type: <span class="text-success">*** Walk In ***</span></strong>
+            </div>
+
+
+            <div class="col-6">
                 <strong>Booking No:</strong> {{ $customer_booking->booking_number }}
                 @if ($customer_booking->booking_status == 'Active')
                     <button wire:click="CheckOut" class="btn btn-warning">Check Out</button>
                 @endif
-            </p>
+            </div>
         </div>
-
+        {{-- booking Details --}}
         <div class="mb-4 p-4 border border-gray-300 rounded">
             <h2 class="p-2">Booking Details</h2>
             <table class="table table-striped table-bordered">
@@ -42,7 +50,7 @@
                 </tbody>
             </table>
         </div>
-
+        {{-- Availed Services --}}
         <div class="mb-4 p-4 border border-gray-300 rounded">
             <h2 class="p-2">Availed Services</h2>
             <table class="table table-striped table-bordered">
@@ -52,6 +60,7 @@
                         <th>Amount</th>
                         <th>Quantity</th>
                         <th>Total</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -61,14 +70,103 @@
                             <td>{{ $availed->amount }}</td>
                             <td>{{ $availed->quantity }}</td>
                             <td>{{ $availed->total_amount }}</td>
+                            <td><button class="btn-danger">X</button></td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
+        @if ($customer_booking->booking_status == 'Active')
+
+            <div class="mb-4 p-4 border border-gray-300 rounded">
+                <span>
+                    <h1>Add New Service</h1>
+                </span>
+                <span class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ServiceModal">Add Services</span>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Service</th>
+                            <th>Amount</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($availed_services as $index => $availed_service)
+                            <tr>
+                                <td>{{ $availed_service['name'] }}</td>
+                                <td>{{ $availed_service['amount'].' per'.$availed_service['unit']  }}</td>
+                                <td>
+                                    <input wire:model.live='availed_services.{{ $index }}.quantity'
+                                        size="1" value="0" min="0" type="Number"
+                                        class="border border-gray-400 text-center">
+                                </td>
+                                <td><button wire:click='removeService({{ $index }})'
+                                        class="btn btn-danger ">remove</button></td>
+
+                                <td>
+                                    ₱
+                                    {{ ($availed_service['amount'] * $availed_service['quantity']) }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                            <td>
+                                ₱ {{ $total_service_payment }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Payment:</strong></td>
+                            <td>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"></span>
+                                    <input type="number" wire:model.live='total_payment' value="{{ $total_payment }}"
+                                        min='0.0' max="{{ $total_service_payment }}" class="form-control"
+                                        placeholder="Amount">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Balance:</strong></td>
+                            <td>
+                                ₱ {{ $balance }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                @if (session()->has('message'))
+                                    <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded mb-4">
+                                        {{ session('message') }}
+                                    </div>
+                                @endif
+                                @if (session()->has('error'))
+                                    <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
+
+                            </td>
+                            <td class="d-flex justify-content-center align-items-center" colspan="3">
+                                <button class="btn btn-success" wire:click='Submit'>Submit</button>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+
+            </div>
+
+
+        @endif
+        {{-- Payment History --}}
         <div class="mb-4 p-4 border border-gray-300 rounded">
-            <h2 class="p-2">Payment Details</h2>
+            <h2 class="p-2">Payment History</h2>
             <table class="table table-striped table-bordered">
                 <thead class="table-dark">
                     <tr>
@@ -95,132 +193,76 @@
             </table>
         </div>
 
-        @if ($customer_booking->booking_status == 'Active')
+        <!-- Services Modal -->
+        <div class="modal fade" id="ServiceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
 
-            <div class="mb-4 p-4 border border-gray-300 rounded">
-                <span>
-                    <h1>Add New Service</h1>
-                </span>
-                <span class="btn btn-success" data-bs-toggle="modal" data-bs-target="#ServiceModal">Add Services</span>
-                <table class="table table-striped table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Service</th>
-                            <th>Amount</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($availed_services as $index => $availed_service)
-                            <tr>
-                                <td>{{ $availed_service['name'] }}</td>
-                                <td>{{ $availed_service['amount'] }}</td>
-                                <td>
-                                    <input wire:model.live='availed_services.{{ $index }}.quantity'
-                                        size="1" value="0" min="0" type="Number"
-                                        class="border border-gray-400 text-center">
-                                </td>
-                                <td>
-                                    ₱
-                                    {{ $availed_service['amount'] * $availed_service['quantity'] }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" class="text-right"><strong>Total:</strong></td>
-                            <td>
-                                ₱ {{ $total_service_payment }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="text-right"><strong>Payment:</strong></td>
-                            <td>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text"></span>
-                                    <input type="number" wire:model.live='total_payment' value="{{$total_payment}}" min='0.0' max="{{$total_service_payment}}" class="form-control"
-                                        placeholder="Amount" >
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="text-right"><strong>Balance:</strong></td>
-                            <td>
-                                ₱ {{ $balance }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                @if (session()->has('message'))
-                                    <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded mb-4">
-                                        {{ session('message') }}
-                                    </div>
-                                @endif
-                                @if (session()->has('error'))
-                                    <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
-
-                            </td>
-                            <td class="d-flex justify-content-center align-items-center" colspan="3">
-                                <button class="btn btn-success" wire:click='Submit'>Submit</button>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-
-
-            </div>
-
-            <!-- Services Modal -->
-            <div class="modal fade" id="ServiceModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">List of Services</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Services Name</th>
-                                        <th>Amount</th>
-                                        <th>Action</th>
-                                    </tr>
-
-                                </thead>
-                                <tbody>
-                                    @foreach ($services as $service)
-                                        <tr>
-                                            <td>{{ $service->name }}</td>
-                                            <td>{{ $service->amount }}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                                    wire:click='addService({{ $service->id }})'>Add</button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">List of Services</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
                     </div>
+
+                    <div class="modal-body">
+                        Add Service: <button type="button" class="btn btn-success m-2"  data-bs-toggle="modal" data-bs-target="#AddService">+</button>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Services Name</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @foreach ($services as $service)
+                                    <tr>
+                                        <td>{{ $service->name }}</td>
+                                        <td>{{ $service->amount }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                                wire:click='addService({{ $service->id }})'>Add</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+
                 </div>
             </div>
-        @endif
+        </div>
+
+         <!-- Services Modal -->
+         <div class="modal fade" id="AddService" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Service</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    </div>
+
+                    <div class="modal-body">
+                        <livewire:gate-entrance.customer.customers-list />
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
 
     </div>

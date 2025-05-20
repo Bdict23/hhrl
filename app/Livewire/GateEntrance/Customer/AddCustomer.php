@@ -4,28 +4,26 @@ namespace App\Livewire\GateEntrance\Customer;
 
 use Livewire\Component;
 use App\Models\Customer;
+use Carbon\Carbon;
 
 class AddCustomer extends Component
 {
-     public $fname;
+
     public $lname;
     public $mname;
+    public $fname;
+
     public $gender;
-    public $contact_person;
-    public $relation;
-    public $email;
-    public $suffix;
-    public $contact_no_1;
-    public $contact_no_2;
-    public $address;
     public $branch_id;
     public $bday;
+    public $type;
 
 
     public function mount()
     {
         $this->branch_id = 1; // Set a default branch ID
         $this->gender = 'MALE'; // Set a default branch ID
+        $this->type = 0;
 
     }
     public function submit()
@@ -34,26 +32,35 @@ class AddCustomer extends Component
             // Here you can handle the form submission, e.g., save to the database
             // For demonstration, we'll just flash a message
             // You can also use the Customer model to save the data
-            Customer::create([
-                'customer_fname' => $this->fname,
-                'customer_lname' => $this->lname,
-                'customer_mname' => $this->mname,
-                'contact_person' => $this->contact_person,
-                'contact_person_relation' => $this->relation,
-                'gender'  => $this->gender,
-                'contact_no_1'  => $this->contact_no_1,
-                'contact_no_2'  => $this->contact_no_2,
-                'customer_address'  => $this->address,
-                'email'  => $this->email,
-                'tin' => '',
-                'branch_id'=> $this->branch_id,
-                'birthday'=> $this->bday,
+            if ($this->type == 1) {
+                $this->validate([
+                    'fname' => 'required',
+                    'lname' => 'required',
+                    'gender' => 'required',
+                    'bday' => 'required|date',
 
-            ]);
+                ]);
+                $age = Carbon::parse($this->bday)->age;
+                if ($age < 18) {
+                    session()->flash('date_error', 'Customer must be at least 18 years old.');
+                    return;
+                }
 
-                 $this->reset();
+                $cust = Customer::create([
+                    'customer_fname' => $this->fname,
+                    'customer_lname' => $this->lname,
+                    'customer_mname' => $this->mname,
+                    'gender' => $this->gender,
+                    'branch_id' => $this->branch_id,
+                    'birthday' => $this->bday,
+                ]);
+            }
+                $id = $this->type==1? $cust->id:0;
 
-            session()->flash('message', 'Form submitted successfully!');
+                redirect()->route('book.service.page',['id' => $id]);
+
+                // session()->flash('message', 'Customer added successfully.');
+
         }catch(\Exception $e) {
             session()->flash('message', 'An error occurred: ' . $e->getMessage());
         }

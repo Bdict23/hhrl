@@ -73,6 +73,7 @@ class BookingView extends Component
                 'leisure_id' => $service->id,
                 'amount' => $service->amount,
                 'quantity' => 0,
+                'unit' => $service->unit,
                 'booking_records_id' => 0,
                 'booking_payment_id' => 0,
             ];
@@ -91,21 +92,23 @@ class BookingView extends Component
     {
         unset($this->availed_services[$index]);
         $this->availed_services = array_values($this->availed_services);
+        $this->updatedAvailedServices();
     }
 
     public function saveBookingPayment()
     {
         try {
+            $status = $this->total_payment >= $this->total_service_payment ? 'Paid' : 'Partial';
 
             $this->booking_payment = BookingPayments::create([
                 'booking_records_id' => $this->customer_booking->id,
                 'amount_due' => (double)$this->total_service_payment,
                 'amount_payed' => (double)$this->total_payment,
                 'balance' => (double)$this->balance,
-                'OR_number' => '',
+                'OR_number' => 'OR-'.date('YmdHis'),
                 'booking_number' => $this->customer_booking->booking_number,
                 'payment_type' => 'Cash',
-                'payment_status' => 'Paid',
+                'payment_status' => $status,
             ]);
 
             $this->message .= "\n Payment Saved";

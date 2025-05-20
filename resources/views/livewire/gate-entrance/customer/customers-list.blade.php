@@ -18,11 +18,11 @@
         <tbody>
             @foreach ($customers as $customer)
                 <tr>
-                    <td class="border  border-gray-300 "> 
+                    <td class="border  border-gray-300 ">
                         {{ $customer->customer_lname . ' ' . $customer->customer_fname }}
                     </td>
                     <td class="border  border-gray-300">{{ $customer->gender }}</td>
-                    <td class="border  border-gray-300">{{ $customer->birthday->age }}</td>
+                    <td class="border  border-gray-300">{{ $customer->birthday->age ?? '' }}</td>
 
                     <td class="border  border-gray-300">
                         {{ $customer->bookingrecords->isNotEmpty() ? 'Active' : 'Not active' }}</td>
