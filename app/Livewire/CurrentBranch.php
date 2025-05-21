@@ -25,7 +25,7 @@ class CurrentBranch extends Component
     public function fetchdata()
     {
         $this->branches = AssignedBranch::with('branch')
-            ->where('employee_id', auth()->user()->id)
+            ->where('employee_id', auth()->user()->emp_id)
             ->get();
         $this->currentBranch = auth()->user()->branch->branch_name;
     }
@@ -48,6 +48,10 @@ class CurrentBranch extends Component
         // $employee->update(['branch_id' => $this->currentSwitch]);
 
         //update usre table
+        if ($this->currentSwitch == '') {
+            session()->flash('error', 'Please select a branch to switch.');
+            return;
+        }
         $user = auth()->user();
         $user->update(['branch_id' => $this->currentSwitch]);
         // dd($employee);

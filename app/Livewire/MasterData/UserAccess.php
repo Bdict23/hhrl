@@ -225,6 +225,7 @@ class UserAccess extends Component
         // save branch access
         if($this->branchAccessChanged) {
             foreach ($this->accountAccess as $branchId => $value) {
+                // dd('employee id', $this->employeeId, 'branch id', $branchId, 'value', $value['value']);
                 $currentBranch = AssignedBranch::where([
                     ['employee_id', $this->employeeId],
                     ['branch_id', $branchId]

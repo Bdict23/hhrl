@@ -204,24 +204,24 @@
                         <table class="table table-striped table-hover table-sm table-responsive">
                             <thead class="table-dark sticky-top">
                                 <tr>
-                                    <th>ITEM CODE</th>
-                                    <th>ITEM DESCRIPTION</th>
-                                    <th>INV. COUNT</th>
-                                    <th>AVAILABLE</th>
-                                    <th>COST</th>
-                                    <th>STATUS</th>
-                                    <th>ACTION</th>
+                                    <th style="font-size: 10px;">ITEM CODE</th>
+                                    <th style="font-size: 10px;" >ITEM DESCRIPTION</th>
+                                    <th style="font-size: 10px;" >INV. COUNT</th>
+                                    <th style="font-size: 10px;">AVAILABLE</th>
+                                    <th style="font-size: 10px;" >COST</th>
+                                    <th style="font-size: 10px;">STATUS</th>
+                                    <th style="font-size: 10px;">ACTION</th>
                                 </tr>
                             </thead>
                             <tbody id="itemsTableBody">
                                 @foreach ($items as $item)
                                     <tr>
-                                        <td>{{ $item->item_code }}</td>
-                                        <td>{{ $item->item_description }}</td>
-                                        <td>{{ $cardexBalance[$item->id] ?? 0 }}</td>
-                                        <td>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
-                                        <td>{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
-                                        <td>{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
+                                        <td style="font-size: 10px;">{{ $item->item_code }}</td>
+                                        <td style="font-size: 10px;">{{ $item->item_description }}</td>
+                                        <td style="font-size: 10px;">{{ $cardexBalance[$item->id] ?? 0 }}</td>
+                                        <td style="font-size: 10px;">{{ $cardexAvailable[$item->id] ?? 0 }}</td>
+                                        <td style="font-size: 10px;">{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
+                                        <td style="font-size: 10px;">{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
                                         </td>

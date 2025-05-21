@@ -120,7 +120,7 @@
         <div class="col-md-5">
             <div class="card mt-2">
                 <header class="card-header">
-                    <h1>Purchase Order Information</h1>
+                    <h5>Purchase Order Information</h5>
                 </header>
                 <div class="card-body">
     
