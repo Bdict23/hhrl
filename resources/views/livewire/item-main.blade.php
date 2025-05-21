@@ -147,7 +147,7 @@
                             <label for="uom_id" class="form-label">Unit Symbol <span
                                     style="color: red;">*</span></label>
                             <div class="input-group">
-                                <select class="form-control" id="uom_id" wire:model="uom_id"
+                                <select class="form-control" id="uom_id" wire:model.live="uom_id"
                                     style="font-size: x-small;" data-live-search="true">
                                     <option value="">Select</option>
                                     @forelse ($uoms as $uom)
@@ -156,7 +156,7 @@
                                             ( {{ $uom->unit_symbol }} )
                                         </option>
                                     @empty
-                                        <option value="">No Symbol</option>
+                                        <option value="" disabled>No Symbol</option>
                                     @endforelse
                                 </select>
                                 {{-- <script>
@@ -241,7 +241,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div>
                     <label for="item_description" class="form-label">Name <span
                             style="color: red;">*</span></label>
@@ -250,14 +249,25 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <div>
-                    <label for="item_barcode" class="form-label">Barcode Value <span
-                            style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
-                    <input type="text" class="form-control" id="item_barcode" wire:model="item_barcode"
-                        rows="3" />
-                    @error('item_barcode')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="item_barcode" class="form-label">Barcode Value <span
+                                style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
+                        <input type="text" class="form-control" id="item_barcode" wire:model="item_barcode"
+                            rows="3" />
+                        @error('item_barcode')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="reorder-point" class="form-label">Re-order Point<span
+                                style="color: red;"> *</span></label>   
+                        <input type="number" class="form-control" id="reorder-point" wire:model="orderPoint" step="0.01"
+                            placeholder="0.00">
+                        @error('orderPoint')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
                 <div class="row">
                     <div class=" col-md-6">
@@ -327,12 +337,11 @@
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
                             <select class="form-control" id="brand_id" wire:model="brand_id" data-live-search="true">
-                                <option value="">Select</option>
                                 @forelse ($brands as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
                                     </option>
                                 @empty
-                                    <option value="">No Brand</option>
+                                    <option value=""  disabled>No Brand</option>
                                 @endforelse
                             </select>
                             <button class="input-group-text" type="button"
@@ -384,7 +393,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="row mt-1">
+                <div class="row">
                     <div class=" col-md-6">
                         <label for="classification_id" class="form-label">Classification<span
                                 style="color: red;">*</span></label>
@@ -396,7 +405,7 @@
                                         {{ $classification->classification_name }}
                                     </option>
                                 @empty
-                                    <option value="">No Classification</option>
+                                    <option value="" disabled>No Classification</option>
                                 @endforelse
                             </select>
                             <button class="input-group-text" type="button"
@@ -446,9 +455,8 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="mb-3 col-md-6">
-                        <div>
-                        <label for="sub_classification_id" class="form-label">Sub-Class
+                    <div class="col-md-6">
+                        <label for="sub_classification_id" class="form-label">Sub-Class</label>
                             <div class="input-group">
                                 <select class="form-control" id="sub_classification_id"
                                     wire:model="sub_classification_id" data-live-search="true">
@@ -458,17 +466,15 @@
                                             {{ $subClassification->classification_name }}
                                         </option>
                                     @empty
-                                        <option value="">No Sub-Class</option>
+                                        <option value="" disabled>No Sub-Class</option>
                                     @endforelse
                                 </select>
                                 <button class="input-group-text" type="button"
                                     style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addSubClassification"  >+</button>
                             </div>
-                        </div>
                         @error('sub_classification_id')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
-
                          <!-- Modal -->
                          <div class="modal fade" id="addSubClassification" tabindex="-1" aria-labelledby="addSubClassificationModal" aria-hidden="true" wire:ignore.self>
                             <div class="modal-dialog">
@@ -481,13 +487,13 @@
                                         <label for="parent_classification_id" class="form-label">Classification<span style="color: red;">*</span></label>
                                         <div class="input-group">
                                             <select class="form-control" id="parent_classification_id" wire:model="parent_classification_id">
-                                                <option value="">Select</option>
+                                                <option value="" >Select</option>
                                                 @forelse ($classifications as $classification)
                                                     <option value="{{ $classification->id }}">
                                                         {{ $classification->classification_name }}
                                                     </option>
                                                 @empty
-                                                    <option value="">No Classification</option>
+                                                    <option value="" disabled>No Classification</option>
                                                 @endforelse
                                             </select>
                                         </div>
@@ -595,14 +601,25 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <div>
-                    <label for="item_barcode-update" class="form-label">Barcode Value <span
-                            style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
-                    <input type="text" class="form-control" id="item_barcode-update" wire:model="item_barcode"
-                        rows="3" />
-                    @error('item_barcode')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="item_barcode-update" class="form-label">Barcode Value <span
+                                style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
+                        <input type="text" class="form-control" id="item_barcode-update" wire:model="item_barcode"
+                            rows="3" />
+                        @error('item_barcode')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="order-point-update" class="form-label">Re-order Point<span
+                                style="color: red;"> *</span></label>
+                        <input type="number" class="form-control" id="order-point-update" wire:model="orderPoint" step="0.01"
+                            placeholder="0.00">
+                        @error('cost')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
                 <div class="row">
                     <div class=" col-md-6">
@@ -711,6 +728,7 @@
             document.getElementById('classification_id').value = '';
             document.getElementById('sub_classification_id').value = '';
             document.getElementById('item_barcode').value = '';
+            document.getElementById('order-point').value = '';
         });
 
             window.addEventListener('updated', event => {
@@ -722,10 +740,11 @@
             document.getElementById('classification_id-update').value = '';
             document.getElementById('sub_classification_id-update').value = '';
             document.getElementById('item_barcode-update').value = '';
+            document.getElementById('order-point-update').value = '';
         });
 
         function updateItem(item) {
-            console.log(item.category_id);
+            console.log(item.orderpoint);
             document.getElementById('item_code-update').value = item.item_code;
             document.getElementById('uom_id-update').value = item.uom_id;
             document.getElementById('item_description-update').value = item.item_description;
@@ -734,6 +753,7 @@
             document.getElementById('classification_id-update').value = item.classification_id ?? '';
             document.getElementById('sub_classification_id-update').value = item.sub_class_id ?? '';
             document.getElementById('item_barcode-update').value = item.item_barcode;
+            document.getElementById('order-point-update').value = item.orderpoint;
         }
     </script>
    

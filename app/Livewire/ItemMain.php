@@ -23,6 +23,7 @@ class ItemMain extends Component
     public $classifications;
     public $brands;
     public $sub_classifications;
+    public $orderPoint;
 
     public $item_code;
     public $item_description;
@@ -69,7 +70,8 @@ class ItemMain extends Component
         'brand_id' => 'nullable|exists:brands,id',
         'classification_id' => 'required|exists:classifications,id',
         'sub_classification_id' => 'nullable|exists:classifications,id', // Corrected validation rule
-        'cost' => 'nullable|numeric'
+        'cost' => 'nullable|numeric',
+        'orderPoint' => 'required|numeric',
     ];
 
     public function mount()
@@ -96,6 +98,7 @@ class ItemMain extends Component
             $item->item_description = $this->item_description;
             $item->item_barcode = $this->item_barcode;
             $item->uom_id = $this->uom_id;
+            $item->orderpoint = $this->orderPoint;
             $item->category_id = $this->category_id;
             $item->brand_id = $this->brand_id ? $this->brand_id : null;
             $item->classification_id = $this->classification_id;
@@ -134,6 +137,7 @@ class ItemMain extends Component
         $this->uom_id = $this->item->uom_id;
         $this->category_id = $this->item->category_id;
         $this->brand_id = $this->item->brand_id;
+        $this->orderPoint = $this->item->orderpoint;
         $this->classification_id = $this->item->classification_id;
         $this->sub_classification_id = $this->item->sub_class_id;
     }
@@ -148,6 +152,7 @@ class ItemMain extends Component
         $this->item->category_id = $this->category_id;
         $this->item->brand_id = $this->brand_id ? $this->brand_id : null;
         $this->item->classification_id = $this->classification_id;
+        $this->item->orderpoint = $this->orderPoint;
         $this->item->sub_class_id = $this->sub_classification_id ?  $this->sub_classification_id : null ;
         $this->item->company_id = auth()->user()->branch->company_id;
         $this->item->updated_by = auth()->user()->emp_id;

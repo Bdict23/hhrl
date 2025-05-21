@@ -23,6 +23,7 @@ class Item extends Model
         'brand_id',
         'category_id',
         'uom_id',
+        'orderpoint',
         'created_by',
     ];
 

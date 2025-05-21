@@ -24,10 +24,10 @@ return new class extends Migration
 
 
                 // Insert data into the table
-                DB::table('stf_types')->insert([
-                    ['type_name' => 'REQUEST', 'type_description' => 'Requisition items'],
-                    ['type_name' => 'SALES DRIVE', 'type_description' => 'Sales drive items'],
-                ]);
+                // DB::table('stf_types')->insert([
+                //     ['type_name' => 'REQUEST', 'type_description' => 'Requisition items'],
+                //     ['type_name' => 'SALES DRIVE', 'type_description' => 'Sales drive items'],
+                // ]);
             }
 
 

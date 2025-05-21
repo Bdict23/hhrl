@@ -42,15 +42,15 @@ return new class extends Migration
         });
 
          // Insert data into the table
-         DB::table('item_types')->insert([
-            ['type_name' => 'CONSUMABLE', 'type_description' => 'Consumable items are goods that are intended to be consumed. This category includes goods such as food, beverages, and other items that are used up quickly.', 'status' => 'ACTIVE'],
-            ['type_name' => 'FIXED ASSET', 'type_description' => 'As per company policy, all assets with a useful life of over one year and a cost greater than Php10,000 should be capitalized as fixed assets. Fixed assets are recorded on the balance sheet and then depreciated over the useful life of the asset.', 'status' => 'ACTIVE'],
-            ['type_name' => 'RAW MATERIAL', 'type_description' => 'Raw materials are materials or substances used in the primary production or manufacturing of goods. Raw materials are often referred to as commodities, which are bought and sold on commodities exchanges worldwide.', 'status' => 'ACTIVE'],
-            ['type_name' => 'SERVICE', 'type_description' => 'A type of economic activity that is intangible, is not stored, and does not result in ownership. A service is consumed at the point of sale.', 'status' => 'ACTIVE'],
-            ['type_name' => 'WORK IN PROGRESS', 'type_description' => 'Work in progress (WIP) refers to a component of a company\'s inventory that is partially completed. The value of that partially completed inventory is sometimes also called goods in process on the balance sheet.', 'status' => 'ACTIVE'],
-            ['type_name' => 'FINISHED GOODS', 'type_description' => 'Finished goods are goods that have completed the manufacturing process but have not yet been sold or distributed to the end user.', 'status' => 'ACTIVE'],
-            ['type_name' => 'OTHERS', 'type_description' => 'Other types of items that do not fall under the other categories.', 'status' => 'ACTIVE'],
-        ]);
+        //  DB::table('item_types')->insert([
+        //     ['type_name' => 'CONSUMABLE', 'type_description' => 'Consumable items are goods that are intended to be consumed. This category includes goods such as food, beverages, and other items that are used up quickly.', 'status' => 'ACTIVE'],
+        //     ['type_name' => 'FIXED ASSET', 'type_description' => 'As per company policy, all assets with a useful life of over one year and a cost greater than Php10,000 should be capitalized as fixed assets. Fixed assets are recorded on the balance sheet and then depreciated over the useful life of the asset.', 'status' => 'ACTIVE'],
+        //     ['type_name' => 'RAW MATERIAL', 'type_description' => 'Raw materials are materials or substances used in the primary production or manufacturing of goods. Raw materials are often referred to as commodities, which are bought and sold on commodities exchanges worldwide.', 'status' => 'ACTIVE'],
+        //     ['type_name' => 'SERVICE', 'type_description' => 'A type of economic activity that is intangible, is not stored, and does not result in ownership. A service is consumed at the point of sale.', 'status' => 'ACTIVE'],
+        //     ['type_name' => 'WORK IN PROGRESS', 'type_description' => 'Work in progress (WIP) refers to a component of a company\'s inventory that is partially completed. The value of that partially completed inventory is sometimes also called goods in process on the balance sheet.', 'status' => 'ACTIVE'],
+        //     ['type_name' => 'FINISHED GOODS', 'type_description' => 'Finished goods are goods that have completed the manufacturing process but have not yet been sold or distributed to the end user.', 'status' => 'ACTIVE'],
+        //     ['type_name' => 'OTHERS', 'type_description' => 'Other types of items that do not fall under the other categories.', 'status' => 'ACTIVE'],
+        // ]);
         }
 
         if (!Schema::hasTable('statuses')) {
@@ -66,14 +66,14 @@ return new class extends Migration
 
         });
               // Insert data into the table
-              DB::table('statuses')->insert([
-                ['status_name' => 'ACTIVE', 'status_description' => 'Active status which means it can be visible and used'],
-                ['status_name' => 'INACTIVE', 'status_description' => 'Inactive status which means it cannot be used'],
-                ['status_name' => 'REJECTED', 'status_description' => 'Rejected status which means it has been rejected and cannot be used'],
-                ['status_name' => 'FOR APPROVAL', 'status_description' => 'For approval status which means it is waiting for approval'],
-                ['status_name' => 'FOR REVIEW', 'status_description' => 'For review status which means it is waiting for review'],
+            //   DB::table('statuses')->insert([
+            //     ['status_name' => 'ACTIVE', 'status_description' => 'Active status which means it can be visible and used'],
+            //     ['status_name' => 'INACTIVE', 'status_description' => 'Inactive status which means it cannot be used'],
+            //     ['status_name' => 'REJECTED', 'status_description' => 'Rejected status which means it has been rejected and cannot be used'],
+            //     ['status_name' => 'FOR APPROVAL', 'status_description' => 'For approval status which means it is waiting for approval'],
+            //     ['status_name' => 'FOR REVIEW', 'status_description' => 'For review status which means it is waiting for review'],
 
-            ]);
+            // ]);
 
 
         }
@@ -136,6 +136,7 @@ return new class extends Migration
             $table->unsignedBigInteger('classification_id')->nullable();
             $table->unsignedBigInteger('sub_class_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->decimal('orderpoint', 4, 2)->nullable();
             $table->enum('item_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->unsignedBigInteger('updated_by')->nullable();

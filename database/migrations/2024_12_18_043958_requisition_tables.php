@@ -27,35 +27,35 @@ return new class extends Migration
         });
 
         // Insert data into the table
-    DB::table('terms')->insert([
+    // DB::table('terms')->insert([
     
-        [
-            'term_name' => '30 Days',
-            'term_description' => 'Payment due in 30 days',
-            'payment_days' => 30,
-            'term_status' => 'ACTIVE',
-            'company_id' => null,
-            'created_by' => null,
-        ],
-        [
-            'term_name' => '60 Days',
-            'term_description' => 'Payment due in 60 days',
-            'payment_days' => 60,
-            'term_status' => 'ACTIVE',
-            'company_id' => null,
-            'created_by' => null,
-        ],
-        [
-            'term_name' => '90 Days',
-            'term_description' => 'Payment due in 90 days',
-            'payment_days' => 90,
-            'term_status' => 'ACTIVE',
-            'company_id' => null,
-            'created_by' => null,
-        ],
+    //     [
+    //         'term_name' => '30 Days',
+    //         'term_description' => 'Payment due in 30 days',
+    //         'payment_days' => 30,
+    //         'term_status' => 'ACTIVE',
+    //         'company_id' => null,
+    //         'created_by' => null,
+    //     ],
+    //     [
+    //         'term_name' => '60 Days',
+    //         'term_description' => 'Payment due in 60 days',
+    //         'payment_days' => 60,
+    //         'term_status' => 'ACTIVE',
+    //         'company_id' => null,
+    //         'created_by' => null,
+    //     ],
+    //     [
+    //         'term_name' => '90 Days',
+    //         'term_description' => 'Payment due in 90 days',
+    //         'payment_days' => 90,
+    //         'term_status' => 'ACTIVE',
+    //         'company_id' => null,
+    //         'created_by' => null,
+    //     ],
     
 
-    ]);
+    // ]);
 
         }
 

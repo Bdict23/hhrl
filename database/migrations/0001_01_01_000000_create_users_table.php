@@ -69,15 +69,15 @@ return new class extends Migration
                     $table->timestamps();
                 });
 
-                DB::table('employee_positions')->insert([
-                    [
-                        'position_name' => 'Developer',
-                        'position_description' => 'Responsible for developing and maintaining software applications.',
-                        'position_status' => 'ACTIVE',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
-                ]);
+                // DB::table('employee_positions')->insert([
+                //     [
+                //         'position_name' => 'Developer',
+                //         'position_description' => 'Responsible for developing and maintaining software applications.',
+                //         'position_status' => 'ACTIVE',
+                //         'created_at' => now(),
+                //         'updated_at' => now(),
+                //     ],
+                // ]);
             }
 
             
@@ -161,10 +161,10 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
         });
-        DB::table('modules')->insert([
-            ['module_name' => 'Purchase Order', 'module_description' => 'Description for Module 1'],
-            ['module_name' => 'Item Withdrawal', 'module_description' => 'Description for Module 2'],
-        ]);
+        // DB::table('modules')->insert([
+        //     ['module_name' => 'Purchase Order', 'module_description' => 'Description for Module 1'],
+        //     ['module_name' => 'Item Withdrawal', 'module_description' => 'Description for Module 2'],
+        // ]);
 
         
         Schema::create('module_permissions', function (Blueprint $table) {

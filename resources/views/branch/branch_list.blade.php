@@ -95,7 +95,7 @@
                             <div class="col-md-6">
                                 <label for="branch_name_update" class="form-label">Branch Name</label>
                                 <input type="text" class="form-control" id="branch_name_update" name="branch_name">
-                                <li type="hidden" class="form-control" id="branch_id_update" name="branch_id"></li>
+                                <li type="text" class="form-control" id="branch_id_update" ></li>
                             </div>
                             <div class="col-md-6">
                                 <label for="branch_code_update" class="form-label">Branch Code</label>
@@ -124,7 +124,7 @@
                             </div>
 
                         </div>
-                        <input id="branch_id" name='branch_id' type="hidden">
+                        <input id="branch_id" type="hidden">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

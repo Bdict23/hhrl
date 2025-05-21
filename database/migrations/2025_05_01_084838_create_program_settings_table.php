@@ -20,10 +20,10 @@ return new class extends Migration
             
         });
 
-        DB::table('program_settings')->insert([
-            ['setting_name' => 'Allow Reviewer on Purchase Order', 'description' => 'Enable reviewer functionality for purchase orders', 'created_at' => now(), 'updated_at' => now()],
-            ['setting_name' => 'Allow Reviewer on Withdrawal', 'description' => 'Enable reviewer functionality for withdrawals', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        // DB::table('program_settings')->insert([
+        //     ['setting_name' => 'Allow Reviewer on Purchase Order', 'description' => 'Enable reviewer functionality for purchase orders', 'created_at' => now(), 'updated_at' => now()],
+        //     ['setting_name' => 'Allow Reviewer on Withdrawal', 'description' => 'Enable reviewer functionality for withdrawals', 'created_at' => now(), 'updated_at' => now()],
+        // ]);
     }
 
     /**
