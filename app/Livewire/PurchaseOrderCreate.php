@@ -35,6 +35,7 @@ class PurchaseOrderCreate extends Component
     public $cardexBalance = [];
     public $module;
     public $hasReviewer = false;
+    public $isROP = false;
 
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
@@ -169,6 +170,26 @@ class PurchaseOrderCreate extends Component
         $this->purchaseRequest[] = ['id' => $item->id, 'qty' => 1, 'cost' => $item->costPrice->id];
     }
 
+    public function filterByROP()
+    {
+        if ($this->isROP) {
+            $this->isROP = false;
+            $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->get();
+            return;
+        } else {
+            $this->isROP = true;
+        }
+        // Filter items whose orderpoint is less than or equal to their available quantity
+        $this->items = Item::with('costPrice')
+            ->where('item_status', 'ACTIVE')
+            ->where('company_id', auth()->user()->branch->company_id)
+            ->get()
+            ->filter(function ($item) {
+                $availableQty = $this->cardexAvailable[$item->id] ?? 0;
+                return $item->orderpoint >= $availableQty;
+            })
+            ->values();
+    }
 
     public function fetchdata()
     {

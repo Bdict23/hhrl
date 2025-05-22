@@ -144,7 +144,19 @@ class ItemMain extends Component
 
     public function update(){
 
-        $this->validate();
+        $this->validate(
+            [
+                'item_code' => 'required|string|max:80|unique:items,item_code,'.$this->item->id,
+                'item_description' => 'required|string|max:255',
+                'item_barcode' => 'nullable|string|max:100',
+                'uom_id' => 'required|exists:unit_of_measures,id',
+                'category_id' => 'required|exists:categories,id',
+                'brand_id' => 'nullable|exists:brands,id',
+                'classification_id' => 'required|exists:classifications,id',
+                'sub_classification_id' => 'nullable|exists:classifications,id', // Corrected validation rule
+                'orderPoint' => 'required|numeric',
+            ]
+        );
         $this->item->item_code = $this->item_code;
         $this->item->item_description = $this->item_description;
         $this->item->item_barcode = $this->item_barcode;

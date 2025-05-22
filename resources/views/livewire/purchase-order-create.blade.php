@@ -7,6 +7,11 @@
         </div>
         @endif
     </div>
+    <div wire:offline.class.remove="d-none" class="d-none">
+        <div class="alert alert-danger" id="error-message">
+            Network Problem
+        </div>
+    </div>
     <div class="container">
         <div class="row">
             <div class=" mt-3 col-md-7">
@@ -196,7 +201,17 @@
                 <div class="modal-body container">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <input type="text" class="form-control" id="searchItemsInput" placeholder="Search items..." style="font-size: x-small" onkeyup="filterItems()">
+                            <input type="text" class="form-control" id="searchItemsInput" placeholder="Search items..." style="font-size: x-small" onkeyup="searchingItems()">
+                        </div>
+                        <div class="col-md-6">
+                             <div class="form-check mt-2 float-end">
+                                <input wire:click="filterByROP()"  class="form-check-input" type="checkbox" id="filterReorderPoint" 
+                                {{-- onchange="filterByROP()" --}}
+                                >
+                                <label class="form-check-label" for="filterReorderPoint" >
+                                    Filter by ROP
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <!-- Table for Item Selection -->
@@ -208,18 +223,20 @@
                                     <th style="font-size: 10px;" >ITEM DESCRIPTION</th>
                                     <th style="font-size: 10px;" >INV. COUNT</th>
                                     <th style="font-size: 10px;">AVAILABLE</th>
+                                    <th style="font-size: 10px;">ROP</th>
                                     <th style="font-size: 10px;" >COST</th>
                                     <th style="font-size: 10px;">STATUS</th>
                                     <th style="font-size: 10px;">ACTION</th>
                                 </tr>
                             </thead>
-                            <tbody id="itemsTableBody">
+                            <tbody id="itemsTableBody" >
                                 @foreach ($items as $item)
                                     <tr>
                                         <td style="font-size: 10px;">{{ $item->item_code }}</td>
                                         <td style="font-size: 10px;">{{ $item->item_description }}</td>
                                         <td style="font-size: 10px;">{{ $cardexBalance[$item->id] ?? 0 }}</td>
                                         <td style="font-size: 10px;">{{ $cardexAvailable[$item->id] ?? 0 }}</td>
+                                        <td style="font-size: 10px;">{{ $item->orderpoint }}</td>
                                         <td style="font-size: 10px;">{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
                                         <td style="font-size: 10px;">{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                         <td>
@@ -260,7 +277,7 @@
             });
         });
 
-        function filterItems() {
+        function searchingItems() {
             const input = document.getElementById('searchItemsInput').value.toLowerCase();
             const rows = document.querySelectorAll('#itemsTableBody tr');
             rows.forEach(row => {
@@ -273,5 +290,42 @@
                 }
             });
         }
+
+        // function filterByROP() {
+        //     const checked = document.getElementById('filterReorderPoint').checked;
+        //     const rows = document.querySelectorAll('#itemsTableBody tr');
+        //     rows.forEach(row => {
+        //         // Parse available, ROP, and status columns
+        //         const available = parseFloat(row.cells[3].textContent) || 0;
+        //         const rop = parseFloat(row.cells[4].textContent) || 0;
+        //         const status = row.cells[6].textContent.trim().toLowerCase();
+        //         if (checked) {
+        //             // Show only if available <= ROP and status is 'active'
+        //             if (available <= rop && status === 'active') {
+        //                 row.style.display = '';
+        //             } else {
+        //                 row.style.display = 'none';
+        //             }
+        //         } else {
+        //             row.style.display = '';
+        //         }
+        //     });
+
+        // }
+
+        // let filterROP = document.getElementById('filterReorderPoint');
+        //     filterROP.addEventListener('click', function() {
+        //         filterByROP();
+        //     });
+
+        //     // On item select, do not reset input
+        //     document.querySelectorAll('.data-item').forEach(item => {
+        //         item.addEventListener('click', function(e) {
+        //             // Do your selection logic here — BUT don't touch searchInput.value
+        //             console.log("Selected: " + this.textContent);
+        //         });
+        //     });
+
+
     </script>
     </div>
