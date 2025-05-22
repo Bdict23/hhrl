@@ -222,6 +222,7 @@
     <x-slot name="header">
         @livewire('current-branch')
     </x-slot>
+     @livewire('messages.network-problem')
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

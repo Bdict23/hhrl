@@ -7,11 +7,6 @@
         </div>
         @endif
     </div>
-    <div wire:offline.class.remove="d-none" class="d-none">
-        <div class="alert alert-danger" id="error-message">
-            Network Problem
-        </div>
-    </div>
     <div class="container">
         <div class="row">
             <div class=" mt-3 col-md-7">
