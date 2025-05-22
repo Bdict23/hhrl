@@ -168,7 +168,7 @@
                                 <h5 class="card-title">Information</h5>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="reference" class="form-label" style="font-size: 12px">REFERENCE<span style="color: red;">&nbsp;*</span></label>
+                                        <label for="reference" class="form-label" style="font-size: 12px;">REFERENCE<span style="color: red;">&nbsp;*</span></label>
                                     </div>
                                     <div class="col-md-7">
                                         <input wire:model="reference" type="text" class="form-control" id="reference_number" >

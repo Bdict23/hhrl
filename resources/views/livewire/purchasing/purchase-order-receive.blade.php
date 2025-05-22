@@ -86,8 +86,8 @@
                                     </td>
                                     <td style="font-size: small">
                                         {{-- RECEIVED --}}
-                                        <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0" class="form-control"
-                                        max="{{ $reqdetail->qty - ( $finalStatus  ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0)) }}" step="1" {{ $finalStatus  ? 'disabled' : ''}}>
+                                        <input wire:model="qtyAndPrice.{{$index}}.qty" oninput="updateTotalPrice(this)" type="number" min="0.01" class="form-control"
+                                        max="{{ $reqdetail->qty - ( $finalStatus  ? 0 : ($cardexSum[$reqdetail->items->id] ?? 0)) }}" step="0.01" {{ $finalStatus  ? 'disabled' : ''}}>
                                     </td>
                                     <td style="font-size: small">{{ $reqdetail->cost->amount ?? '0.00' }}</td>
                                     <td style="font-size: small">

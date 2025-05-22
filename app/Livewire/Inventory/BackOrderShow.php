@@ -20,6 +20,14 @@ class BackOrderShow extends Component
     public $totalRegCost= 0;
     public $receivingCount =0;
     public $totalToReceiveCost;
+    public $showModal = false;
+
+
+     public function openReceivingNumber($receivingNo,$requisitionId)
+    {
+      //redirect to receiving page with the selected receing id request
+      return redirect()->to('/receive_stock?receiving-number=' . $receivingNo . '&requisition-id=' . $requisitionId);
+    }
 
     public function render()
     {

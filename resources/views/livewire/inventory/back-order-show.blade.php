@@ -91,14 +91,56 @@
                     <strong style="float: right">Total QTY: {{ $requestInfo && $requestInfo->requisitionDetails ? $requestInfo->requisitionDetails->sum('qty') : 'N/A' }}</strong> --}}
                 </div>
 
+            </div>
+            <div class="card mt-2 mb-2">
+                <div class="card-header">
+                    <h5>RECEIVING LIST</h5>
+                </div>
+                <div class="card-body table-responsive-sm" style="display: height: 300px; overflow-x: auto;" wire:ignore.self>
+                    <table class="table table-sm">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Receiving Number</th>
+                                        <th>Transaction Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($receivingList as $receiving)
+                                        <tr>
+                                            <td>  
+                                                <button 
+                                                    wire:click="openReceivingNumber('{{ $receiving->RECEIVING_NUMBER }}',{{ $receiving->requisition->id }})"
+                                                    class="btn btn-link btn-sm">
+                                                    <strong>{{ $receiving->RECEIVING_NUMBER }}</strong>
+                                                </button>
+                                            </td>
+                                            <td>{{ $receiving->created_at->format('d-M-Y') }}</td>
+                                            <td>{{ $receiving->RECEIVING_STATUS}}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                </div>
+            </div>
+            {{-- @if($showModal)
+                <div class="fixed flex inset-0 items-center justify-center bg-black bg-opacity-50">
+                    <div class="bg-white p-6 rounded shadow-lg w-1/2xl">
+                        <h2 class="text-lg font-bold mb-4">This is a Livewire Modal</h2>
+                        <p class="mb-4">Your modal content goes here.</p>
+                        <button wire:click="closeModal" class="px-4 py-2 bg-red-500 text-white rounded">Close</button>
+                    </div>
+                </div>
+            @endif --}}
         </div>
-        </div>
+
+        
       
         <!-- Right Dashboard -->
         <div class="col-md-5 mt-2">
             <div class="card">
                 <header class="card-header">
-                    <h1>Purchase Order Information</h1>
+                    <h4>Purchase Order Information</h4>
                 </header>
                 <div class="card-body">
     
@@ -126,7 +168,6 @@
                                     <div class="input-group">
                                         <input  type="text" class="form-control text-center" id="receiving_no"
                                         style="width: 100; font-size: 12px" value={{ $receivingCount }} disabled>
-                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#showReceivingList">View</button>
                                     </div>       
                                 </div>
                         </div>
@@ -144,7 +185,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="invoice_no" class="form-label" style="width: 100; font-size: 13px">TERMS</label>
-                                <input wire:model="invoice_no" type="text" class="form-control" style="width: 100; font-size: 13px" value="{{ $requestInfo->term->term_name ?? 'N/A'}}" disabled>
+                                <input  type="text" class="form-control" style="width: 100; font-size: 13px" value="{{ $requestInfo->term->term_name ?? 'N/A'}}" disabled>
     
                             </div>
                         </div>
@@ -178,43 +219,6 @@
         </div>
     </div>
 
-    {{-- show receiving lists modal --}}
-    <div class="modal fade" id="showReceivingList" tabindex="-1" aria-labelledby="showReceivingListLabel" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="showReceivingListLabel">Receiving Lists</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Receiving Number</th>
-                                        <th>Transaction Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($receivingList as $receiving)
-                                        <tr>
-                                            <td>{{ $receiving->RECEIVING_NUMBER }}</td>
-                                            <td>{{ $receiving->created_at->format('d-M-Y') }}</td>
-                                            <td>{{ $receiving->RECEIVING_STATUS}}</td>
-
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <x-primary-button class="float-end" data-bs-dismiss="modal" aria-label="Close"> CLOSE </x-primary-button>
-
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
     
