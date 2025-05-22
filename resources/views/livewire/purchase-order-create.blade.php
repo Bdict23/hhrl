@@ -211,7 +211,7 @@
                     </div>
                     <!-- Table for Item Selection -->
                     <div style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-striped table-hover table-sm table-responsive">
+                        <table class="table  table-hover table-sm table-responsive">
                             <thead class="table-dark sticky-top">
                                 <tr>
                                     <th style="font-size: 10px;">ITEM CODE</th>
@@ -226,14 +226,32 @@
                             </thead>
                             <tbody id="itemsTableBody" >
                                 @foreach ($items as $item)
-                                    <tr>
-                                        <td style="font-size: 10px;">{{ $item->item_code }}</td>
-                                        <td style="font-size: 10px;">{{ $item->item_description }}</td>
-                                        <td style="font-size: 10px;">{{ $cardexBalance[$item->id] ?? 0 }}</td>
-                                        <td style="font-size: 10px;">{{ $cardexAvailable[$item->id] ?? 0 }}</td>
-                                        <td style="font-size: 10px;">{{ $item->orderpoint }}</td>
-                                        <td style="font-size: 10px;">{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
-                                        <td style="font-size: 10px;">{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
+                                    <tr
+                                    {{-- @if ($cardexAvailable[$item->id]  <=  $item->orderpoint ?? 0) --}}
+                                        style="background-color: #F7CFD8;"
+                                    {{-- @endif --}}
+                                    >
+                                        <td style="font-size: 12px;">{{ $item->item_code }}</td>
+                                        <td style="font-size: 12px;">{{ $item->item_description }}</td>
+                                        <td style="font-size: 12px;">{{ $cardexBalance[$item->id] ?? 0 }}</td>
+                                        <td  
+                                        @if ($cardexAvailable[$item->id]  <=  $item->orderpoint ?? 0)
+                                             style="color: #CF0F47; font-size: 12px;"
+                                        @elseif($item->orderpoint == 0)
+                                            style="font-size: 12px;"
+                                        @else
+                                            style="font-size: 12px;"
+                                        @endif>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
+                                        <td 
+                                        @if ($cardexAvailable[$item->id]  <=  $item->orderpoint ?? 0)
+                                            style="color: #CF0F47; font-size: 12px;"
+                                        @elseif($item->orderpoint == 0)
+                                            style="font-size: 12px;"
+                                        @else
+                                            style="font-size: 12px;"
+                                        @endif>{{ $item->orderpoint }}</td>
+                                        <td style="font-size: 12px;">{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
+                                        <td style="font-size: 12px;">{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
                                         </td>

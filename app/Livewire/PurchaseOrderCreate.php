@@ -67,6 +67,7 @@ class PurchaseOrderCreate extends Component
         }else {
             $this->validate([
                 'supplierId' => 'required|exists:suppliers,id',
+                'purchaseRequest.*.qty' => 'required|numeric|min:0.01',
                 'mPoNumber' => 'nullable|string|max:25',
                 'term_id' => 'required',
                 'remarks' => 'nullable|string|max:55',

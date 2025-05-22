@@ -47,7 +47,7 @@
                                 <th>Unit</th>
                                 <th>Req. Qty</th>
                                 <th>Received</th>
-                                <th>Lacking</th>
+                                <th>BO Qty</th>
                                 <th>Cost</th>
                                 <th>Rec. Attempt</th>
                                 <th>Status</th>

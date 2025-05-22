@@ -36,7 +36,7 @@ return new class extends Migration
             Schema::create('requisition_details', function (Blueprint $table) {
                 $table->id(); // Primary key
                 $table->foreignId('item_id')->constrained('items')->onDelete('cascade')->onUpdate('cascade'); // Foreign key to items table
-                $table->smallInteger('qty')->unsigned(); // Quantity
+                $table->decimal('qty',4,2)->unsigned(); // Quantity
                 $table->foreignId('price_level_id')->nullable()->constrained('price_levels')->onDelete('cascade')->onUpdate('cascade'); // Foreign key to price_levels
                 $table->foreignId('requisition_info_id')->constrained('requisition_infos')->onDelete('cascade')->onUpdate('cascade'); // Foreign key to requisition_infos
                 $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp

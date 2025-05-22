@@ -12,7 +12,7 @@
                 <div class=" col-md-8 card mt-2">
                     <div class=" card-body">
                         <header>
-                            <h1> Item Withdrawal</h1>
+                            <h4> Item Withdrawal</h4>
                             <div class="me-3">
                                 @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
@@ -168,7 +168,7 @@
                                 <h5 class="card-title">Information</h5>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="reference" class="form-label">REFERENCE<span style="color: red;">&nbsp;*</span></label>
+                                        <label for="reference" class="form-label" style="font-size: 12px">REFERENCE<span style="color: red;">&nbsp;*</span></label>
                                     </div>
                                     <div class="col-md-7">
                                         <input wire:model="reference" type="text" class="form-control" id="reference_number" >
@@ -195,7 +195,7 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Will use on</label> <span style="color: red;">*</span>
+                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Expected Date</label> <span style="color: red;">*</span>
                                         <input wire:model='useDate' type="date" class="form-control" id="usage_date"
                                             >
                                         @error('useDate')
