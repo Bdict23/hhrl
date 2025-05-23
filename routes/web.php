@@ -313,3 +313,8 @@ Route::get('/item_withdrawal', function(){ return view('inventory.item_withdrawa
 Route::get('/withdrawal-show', function() {
     return view('inventory.withdrawal_show'); // Ensure the view is returned
 })->middleware(['auth', 'verified'])->name('withdrawal.show'); // Route to show the withdrawal details
+
+//Route for Item Location Blade
+Route::get('/item-location', function () {
+    return view('inventory.item-location');
+})->middleware(['auth', 'verified'])->name('item_location');

@@ -149,6 +149,11 @@
                                     {{ __('Merchnadise Inventory') }}
                                 </x-dropdown-link>
                             @endif
+                            @if (auth()->user()->employee->getModulePermission('Item Location') != 2 )
+                                <x-dropdown-link :href="url('/item-location')" class="no-underline">
+                                    {{ __('Item Location') }}
+                                </x-dropdown-link>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -478,6 +483,11 @@
                          @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') != 2 )
                             <x-responsive-nav-link :href="url('/Merchandise-Inventory')" class="no-underline">
                                 {{ __('Merchandise Inventory') }}
+                            </x-responsive-nav-link>
+                        @endif
+                        @if (auth()->user()->employee->getModulePermission('Item Location') != 2 )
+                            <x-responsive-nav-link :href="url('/item-location')" class="no-underline">
+                                    {{ __('Item-Location') }}
                             </x-responsive-nav-link>
                         @endif
                     </div>
