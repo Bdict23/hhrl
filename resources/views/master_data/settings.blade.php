@@ -15,6 +15,7 @@
                 <option value="price-levels-tables">Retail</option>
                 <option value="items-cost">Cost</option>
                 <option value="employee-management">Employees</option>
+                <option value="transfer-employee">Transfer Employee</option>
                 <option value="program-settings">Program Settings</option>
             </select>
         </div>
@@ -104,6 +105,13 @@
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
                         </ul>
                     @endif
+                    <ul class="nav flex-column">
+                            {{-- <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link">Department</a></li>
+                            --}}
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('transfer-employee', this)">Transfer Employee</a></li>
+                        </ul>
                     {{-- program settings --}}
                     @if (auth()->user()->employee->getModulePermission('Program Settings') !=2)
                         <ul class="nav flex-column">
@@ -242,7 +250,9 @@
                 <div>
                     @livewire('settings.program-settings')
                 </div>
-
+                <div>
+                    @livewire('settings.transfer-employee')
+                </div>
             </div>
         </div>
     </div>
