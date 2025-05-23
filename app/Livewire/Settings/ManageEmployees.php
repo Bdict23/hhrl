@@ -59,7 +59,7 @@ class ManageEmployees extends Component
                 ->get(['id', 'branch_name']);
             
             $this->branch_name = auth()->user()->employee->branch->branch_name;
-            $this->departments = Department::orderBy('department_name')->get(['id', 'department_name']);
+            $this->departments = Department::orderBy('department_name')->where([['department_status','active'],['branch_id', auth()->user()->employee->branch->id]])->get(['id', 'department_name']);
             $this->positions = Position::orderBy('position_name')->get(['id', 'position_name']);
         } catch (\Exception $e) {
             Log::error("Failed to mount component: {$e->getMessage()}");

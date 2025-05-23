@@ -174,7 +174,8 @@ class ItemCost extends Component
                 ];
             });
 
-        $suppliers = Supplier::orderBy('supp_name')->get(['id', 'supp_name']);
+        // modified by bdict
+        $suppliers = Supplier::orderBy('supp_name')->where([['supplier_status','active'],['company_id', auth()->user()->branch->company_id]])->get(['id', 'supp_name']);
 
         return view('livewire.item-cost', [
             'priceLevels' => $items,
