@@ -61,10 +61,12 @@
                         <tr>
                             <th>NAME</th>
                             <th>POSITION</th>
-                            <th class="text-end">STATUS</th>
-                            <th class="text-end">COMPANY</th>
-                            <th class="text-end">BRANCH</th>
-                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Item Categories') != 1 ) style="display: none;"  @endif>ACTIONS</th>
+                            <th class="text-center">STATUS</th>
+                            <th class="text-center">COMPANY</th>
+                            <th class="text-center">BRANCH</th>
+                             @if (auth()->user()->employee->getModulePermission('Transfer Employee') == 1 )
+                                <th class="text-end" >ACTIONS</th>
+                             @endif
                         </tr>
                     </thead>
                     <tbody id="employee-table">
@@ -72,14 +74,14 @@
                             <tr>
                                 <td>{{ ($employee->name ?? '') . ($employee->middle_name ?? '') . ' ' . ($employee->last_name ?? '') }}</td>
                                 <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $employee->position->position_name ?? 'N/A' }}</td>
-                                <td class="text-end">{{ $employee->status }}</td>
-                                <td class="text-end">
+                                <td class="text-center">{{ $employee->status }}</td>
+                                <td class="text-center">
                                     {{ optional($employee->branch->company)->company_name ?? 'No Company' }}
                                 </td>
-                                <td class="text-end">
+                                <td class="text-center">
                                     {{ optional($employee->branch)->branch_name ?? 'No Branch' }}
                                 </td>
-                                @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                                @if (auth()->user()->employee->getModulePermission('Transfer Employee') == 1 )
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#transferEmployeeModal" onclick="updateCategory({{ json_encode($employee) }})" wire:click="selectEmployee({{ $employee->id }})">Transfer</button>
                                     </td>

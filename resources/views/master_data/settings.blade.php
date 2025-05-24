@@ -105,13 +105,12 @@
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
                         </ul>
                     @endif
-                    <ul class="nav flex-column">
-                            {{-- <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Branch</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Department</a></li>
-                            --}}
+                    @if (auth()->user()->employee->getModulePermission('Transfer Employee') !=2)
+                        <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('transfer-employee', this)">Transfer Employee</a></li>
                         </ul>
+                    @endif
+                    
                     {{-- program settings --}}
                     @if (auth()->user()->employee->getModulePermission('Program Settings') !=2)
                         <ul class="nav flex-column">
