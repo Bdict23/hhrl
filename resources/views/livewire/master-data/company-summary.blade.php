@@ -58,7 +58,7 @@
 
             <div class="card-body">
                 <div class="overflow-x-auto">
-                    <table class="table min-w-full" id="companyTable" style="height:400px;">
+                    <table class="table table-sm min-w-full" id="companyTable">
                         <thead class="table-dark table-sm ">
                             <tr>
                                 <th>Company Name</th>

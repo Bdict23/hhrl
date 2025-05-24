@@ -21,7 +21,7 @@ class WithdrawalShow extends Component
     public $avlBal = false;
     public $avlQty = true;
     public $code = true;
-    public $location = false;
+    // public $location = false;
     public $uom = true;
     public $brand = false;
     public $status = false;
@@ -48,6 +48,7 @@ class WithdrawalShow extends Component
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
     public $hasReviewer = false; // check if reviewer is required
+    
 
     public $withdrawalID = null; // withdrawal id for update
     
@@ -125,7 +126,7 @@ class WithdrawalShow extends Component
                     'category' => $item->item->category->category_name,
                     'classification' => $item->item->classification->classification_name ?? 'N/A',
                     'barcode' => $item->item->item_barcode ?? 'N/A',
-                    'location' => $item->item->location->location_name ?? 'N/A',
+                    // 'location' => $item->item->location->location_name ?? 'N/A',
                     'uom' => $item->item->uom->unit_name ?? 'N/A',
                     'brand' => $item->item->brand->brand_name ?? 'N/A',
                     'status' => $item->item->item_status,

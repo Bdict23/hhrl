@@ -113,7 +113,7 @@
                     <strong style="float: right">Total QTY: {{ $requestInfo && $requestInfo->requisitionDetails ? $requestInfo->requisitionDetails->sum('qty') : 'N/A' }}</strong>
                 </div>
 
-        </div>
+            </div>
         </div>
       
         <!-- Right Dashboard -->
@@ -257,53 +257,49 @@
     </div>
 
     {{-- MODAL --}}
-    <div class="modal fade modal-lg" id="getPONumberModal" tabindex="-1" aria-labelledby="getPONumberModalLabel"
-        aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
+    <div class="modal fade" id="getPONumberModal" tabindex="-1" aria-labelledby="getPONumberModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="getPONumberModalLabel">To RECEIVE PURCHASE ORDER</h5>
+                    <h5 class="modal-title" id="getPONumberModalLabel">TO RECEIVE PURCHASE ORDER</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                   
-                   
-                            <table class=" table-striped table-hover table-responsive-lg">
-                                <thead class="table-dark table-sm">
+                   <div class="modal-body">
+                        <div class="">
+                            <table class="table table-striped table-hover table-sm table-responsive-sm">
+                                <thead class="table-dark">
                                     <tr style="font-size: x-small">
                                         <th>PO Number</th>
                                         <th>Supplier</th>
                                         <th>Created At</th>
                                         <th>Status</th>
-                                        <TH>Action</TH>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="poNumberTableBody">
-                                     
-                                          @forelse ($toReceiveRequests as $request)
-                                              <tr>
-                                                  <td style="font-size: small"><strong>{{ $request->requisition_number }}</strong></td>
-                                                  <td style="font-size: x-small">{{ $request->supplier->supp_name }}</td>
-                                                  <td style="font-size: x-small">{{ $request->trans_date }}</td>
-                                                  <td style="font-size: x-small">{{ $request->requisition_status }}</td>
+                                    
+                                        @forelse ($toReceiveRequests as $request)
+                                            <tr>
+                                                <td style="font-size: small"><strong>{{ $request->requisition_number }}</strong></td>
+                                                <td style="font-size: x-small">{{ $request->supplier->supp_name }}</td>
+                                                <td style="font-size: x-small">{{ $request->trans_date }}</td>
+                                                <td style="font-size: x-small">{{ $request->requisition_status }}</td>
                                                     <td>
                                                         <button wire:click="selectPO({{ $request->id }})" type="button" class="btn btn-primary btn-sm" onclick="closeModal()">
                                                             Select
                                                         </button>
                                                     </td>
-                                              </tr>
-                                          @empty
-                                          <tr><td colspan="5" class="text-center">No PO Found</td></tr>
-                                      @endforelse
-                                    </tr>
+                                            </tr>
+                                        @empty
+                                        <tr><td colspan="5" class="text-center">No PO Found</td></tr>
+                                    @endforelse
                                 </tbody>
                             </table>
-
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
             </div>
         </div>
     </div>

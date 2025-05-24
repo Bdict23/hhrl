@@ -20,7 +20,7 @@ class Withdrawal extends Component
     public $avlBal = false;
     public $avlQty = true;
     public $code = true;
-    public $location = false;
+    // public $location = false;
     public $uom = true;
     public $brand = false;
     public $status = false;
@@ -132,7 +132,7 @@ class Withdrawal extends Component
                 'classification' => $selected->classification->classification_name ?? 'N/A',
                 'barcode' => $selected->item_barcode ?? 'N/A',
                 'requested_qty' => 0,
-                'location' => $selected->location->location_name ?? 'N/A',
+                // 'location' => $selected->location->location_name ?? 'N/A',
                 'uom' => $selected->uom->unit_name ?? 'N/A',
                 'brand' => $selected->brand->brand_name ?? 'N/A',
                 'status' => $selected->item_status,
