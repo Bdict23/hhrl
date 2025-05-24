@@ -16,9 +16,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade')->onUpdate('cascade');
-            $table->enum('status', ['OPEN', 'CLOSED', 'CANCELLED'])->default('OPEN')->comment('Status of the onaccount');
-            $table->enum('payment_scheme', ['DAILY', 'WEEKLY', 'BI-MONTHLY', 'MONTHLY'])->nullable()->comment('Payment scheme for the onaccount');
-            $table->integer('terms')->default(0)->comment('Number of terms for the onaccount');
+            $table->enum('status', ['OPEN', 'CLOSED', 'CANCELLED'])->default('OPEN')->index('status')->comment('Status of the onaccount');
+            $table->enum('payment_scheme', ['DAILY', 'WEEKLY', 'BI-MONTHLY', 'MONTHLY'])->nullable()->index('payment_scheme')->comment('Payment scheme for the onaccount');
+            $table->integer('terms')->default(0)->index('terms')->comment('Number of terms for the onaccount');
             $table->decimal('amount_due', 10, 2)->default(0.00)->comment('Amount due for the onaccount');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');

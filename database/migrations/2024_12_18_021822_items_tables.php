@@ -15,16 +15,16 @@ return new class extends Migration
 
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('category_name', 55)->nullable();
+            $table->string('category_name', 55)->index('category_name');
             $table->string('category_description', 155)->nullable();
-            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
-            $table->enum('category_type', ['ITEM', 'MENU'])->default('ITEM');
-            $table->index('category_type');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('status');
+            $table->enum('category_type', ['ITEM', 'MENU'])->default('ITEM')->index('category_type');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
 
         }); }
 
@@ -81,9 +81,9 @@ return new class extends Migration
         if (!Schema::hasTable('classifications')) {
         Schema::create('classifications', function (Blueprint $table) {
             $table->id();
-            $table->string('classification_name', 255)->nullable();
+            $table->string('classification_name', 255)->nullable()->index('classification_name');
             $table->string('classification_description', 255)->nullable();
-            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('status');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('class_parent')->nullable()->constrained('classifications')->onDelete('no action')->onUpdate('no action');
@@ -106,15 +106,19 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
+            $table->index('brand_name');
+            $table->index('status');
+
+
         });}
 
         if (!Schema::hasTable('unit_of_measures')) {
         Schema::create('unit_of_measures', function (Blueprint $table) {
             $table->id();
-            $table->string('unit_name')->nullable()->comment('ex. kilogram,meter,Liter');
+            $table->string('unit_name')->nullable();
             $table->text('unit_description')->nullable();
             $table->string('unit_symbol', 25)->nullable()->comment('ex. kl,m,L');
-            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('status');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
@@ -128,16 +132,16 @@ return new class extends Migration
 
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('item_code', 20)->nullable();
-            $table->text('item_description')->nullable();
-            $table->string('item_barcode', 100)->nullable();
+            $table->string('item_code', 20)->nullable()->index('item_code');
+            $table->text('item_description')->nullable()->index('item_description');
+            $table->string('item_barcode', 100)->nullable()->index('item_barcode');
             $table->unsignedBigInteger('uom_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();
             $table->unsignedBigInteger('classification_id')->nullable();
             $table->unsignedBigInteger('sub_class_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
-            $table->decimal('orderpoint', 4, 2)->nullable();
-            $table->enum('item_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->decimal('orderpoint', 4, 2)->nullable()->index('orderpoint');
+            $table->enum('item_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('item_status');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
@@ -169,7 +173,7 @@ if (!Schema::hasTable('menus')) {
         $table->datetime('reviewed_date')->nullable()->default(null);
         $table->datetime('approved_date')->nullable()->default(null);
         $table->datetime('rejected_date')->nullable()->default(null);
-        $table->enum('status', ['AVAILABLE', 'UNAVAILABLE', 'PENDING', 'INACTIVE', 'REJECTED', 'FOR APPROVAL','FOR REVIEW'])->default('PENDING');
+        $table->enum('status', ['AVAILABLE', 'UNAVAILABLE', 'PENDING', 'INACTIVE', 'REJECTED', 'FOR APPROVAL','FOR REVIEW'])->default('PENDING')->index('status');
         $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
         $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
         $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');

@@ -16,13 +16,15 @@ return new class extends Migration
 
             Schema::create('companies', function (Blueprint $table) {
                 $table->id();
-                $table->timestamps();
-                $table->string('company_name', 100);
-                $table->string('company_code',50)->nullable();
+                $table->string('company_name', 100)->index('company_name');
+                $table->string('company_code',50)->nullable()->index('company_code');
                 $table->string('company_tin',50)->nullable();
                 $table->string('company_type',80)->nullable();
                 $table->string('company_description', 255)->nullable();
-                $table->enum('company_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+                $table->enum('company_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('company_status');
+
+                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
             });
         }
@@ -32,7 +34,6 @@ return new class extends Migration
 
             Schema::create('branches', function (Blueprint $table) {
                 $table->id();
-                $table->timestamps();
                 $table->string('branch_name',100);
                 $table->string('branch_address',150)->nullable();
                 $table->string('branch_code',50)->nullable();
@@ -41,6 +42,14 @@ return new class extends Migration
                 $table->string('branch_email',80)->nullable();
                 $table->string('branch_cell',25);
                 $table->enum('branch_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+
+                $table->index('branch_type');
+                $table->index('branch_name');
+                $table->index('branch_code');
+                $table->index('branch_status');
+
 
             });}
 
@@ -48,9 +57,9 @@ return new class extends Migration
 
                 Schema::create('departments', function (Blueprint $table) {
                     $table->id();
-                    $table->string('department_name');
+                    $table->string('department_name')->index('department_name');
                     $table->string('department_description')->nullable();
-                    $table->enum('department_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+                    $table->enum('department_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('department_status');
                     $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                     $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action')->nullable();
                     $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
@@ -65,8 +74,9 @@ return new class extends Migration
                     $table->id();
                     $table->string('position_name', 100);
                     $table->string('position_description', 255)->nullable();
-                    $table->enum('position_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
-                    $table->timestamps();
+                    $table->enum('position_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('position_status');
+                    $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                    $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
                 });
 
                 // DB::table('employee_positions')->insert([
@@ -87,23 +97,23 @@ return new class extends Migration
 
             Schema::create('employees', function (Blueprint $table) {
                 $table->id(); // PK, INT(11), not null, unique
-                $table->string('corporate_id', 50)->nullable(); // VARCHAR(50)
+                $table->string('corporate_id', 50)->nullable()->index('corporate_id'); // VARCHAR(50)
                 $table->string('name', 50); // VARCHAR(50)
                 $table->string('middle_name', 255)->nullable(); // VARCHAR(255)
                 $table->string('last_name', 255); // VARCHAR(255)
                 $table->string('contact_number', 255)->nullable(); // VARCHAR(255)
                 $table->foreignId('position_id')->nullable()->constrained('employee_positions')->onDelete('no action')->onUpdate('no action');
-                $table->string('religion', 255)->nullable(); // VARCHAR(255)
-                $table->date('birth_date')->nullable(); // DATE
+                $table->string('religion', 255)->nullable()->index('religion'); // VARCHAR(255)
+                $table->date('birth_date')->nullable()->index('birth_date'); // DATE
                 $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('no action')->onUpdate('no action');
-                $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+                $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('status'); 
+                $table->enum('gender', ['MALE', 'FEMALE'])->nullable()->index('gender');
+                $table->string('address', 255)->nullable()->index('address'); // VARCHAR(255)
 
+                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
-                // Foreign key (optional)
-                // $table->foreign('branch_id')->references('id')->on('branches');
-
-                $table->timestamps(); // created_at and updated_at
             });}
 
             // create assigned branch table
@@ -156,7 +166,7 @@ return new class extends Migration
             $table->string('module_name')->unique();
             $table->string('module_description')->nullable();
             $table->boolean('has_signatory')->default(false);
-            $table->string('group_name')->nullable();
+            $table->string('group_name')->nullable()->index('group_name');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
@@ -181,8 +191,8 @@ return new class extends Migration
             Schema::create('signatories', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('employee_id')->constrained('employees')->onDelete('no action')->onUpdate('no action');
-                $table->ENUM('status', ['ACTIVE', 'INACTIVE'])->notNullable()->default('active');
-                $table->string('signatory_type');
+                $table->ENUM('status', ['ACTIVE', 'INACTIVE'])->notNullable()->default('active')->index('status');
+                $table->string('signatory_type')->index('signatory_type'); // approver, reviewer, etc.
                 $table->foreignId('module_id')->constrained('modules')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action');

@@ -62,19 +62,19 @@ return new class extends Migration
         Schema::create('receivings', function (Blueprint $table) {
             $table->id('id');
             $table->foreignId('REQUISITION_ID')->nullable()->constrained('requisition_infos')->onDelete('no action')->onUpdate('no action');
-            $table->enum('RECEIVING_TYPE', ['STF', 'PO'])->nullable();
-            $table->string('RECEIVING_NUMBER', 100)->nullable();
+            $table->enum('RECEIVING_TYPE', ['STF', 'PO'])->nullable()->index('receiving_type_index')->comment('Type of receiving, either STF (Stock Transfer) or PO (Purchase Order)');
+            $table->string('RECEIVING_NUMBER', 100)->nullable()->index('receiving_number_index')->comment('Unique identifier for the receiving transaction');
             $table->string('WAYBILL_NUMBER', 30)->nullable();
             $table->string('DELIVERY_NUMBER', 30)->nullable();
             $table->string('INVOICE_NUMBER', 30)->nullable();
-            $table->enum('RECEIVING_STATUS', ['FINAL', 'DRAFT'])->default('DRAFT');
+            $table->enum('RECEIVING_STATUS', ['FINAL', 'DRAFT'])->default('DRAFT')->index('receiving_status_index')->comment('Status of the receiving, either final or draft');
             $table->text('remarks')->nullable();
             $table->foreignId('PREPARED_BY')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->string('DELIVERED_BY', 100)->nullable();
             $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
-            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('created_at')->useCurrent()->index('created_at_index'); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
         });

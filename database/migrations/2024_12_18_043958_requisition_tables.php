@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('term_name', 55)->nullable();
             $table->string('term_description', 255)->nullable();
             $table->integer('payment_days')->nullable();
-            $table->enum('term_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->enum('term_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('term_status')->comment('Status of the term, active or inactive');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
@@ -65,17 +65,17 @@ return new class extends Migration
         if (!Schema::hasTable('requisition_infos')) {
             Schema::create('requisition_infos', function (Blueprint $table) {
                 $table->id(); // Primary key
-                $table->string('requisition_number', 155); // Set as Primary Key
+                $table->string('requisition_number', 155)->index('requisition_number'); // Set as Primary Key
                 $table->unsignedBigInteger('from_branch_id'); // Foreign key to branches table
                 $table->unsignedBigInteger('to_branch_id')->nullable(); // Nullable foreign key
-                $table->date('trans_date')->nullable(); // Transaction date
-                $table->string('merchandise_po_number', 55)->nullable(); // Merchandise PO number
+                $table->date('trans_date')->nullable()->index('trans_date'); // Transaction date
+                $table->string('merchandise_po_number', 55)->nullable()->index('merchandise_po_number'); // Merchandise PO number
                 $table->foreignId('prepared_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('reviewed_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-                $table->enum('category', ['PO', 'PR']); // Category
+                $table->enum('category', ['PO', 'PR'])->index('category'); // Category
                 $table->foreignId('term_id')->nullable()->constrained('terms')->onDelete('no action')->onUpdate('no action');
-                $table->enum('requisition_status', ['TO RECEIVE','PARTIALLY FULFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING'); // Status
+                $table->enum('requisition_status', ['TO RECEIVE','PARTIALLY FULFILLED', 'FOR APPROVAL', 'FOR REVIEW','REJECTED', 'PREPARING', 'COMPLETED', 'CANCELLED'])->default('PREPARING')->index('requisition_status'); // Status
                 $table->text('remarks')->nullable(); // Remarks
                 $table->date('approved_date')->nullable(); // Approved date
                 $table->date('rejected_date')->nullable(); // Rejected date
@@ -87,7 +87,7 @@ return new class extends Migration
                 $table->foreign('to_branch_id')->references('id')->on('branches');
                 $table->foreign('supplier_id')->references('id')->on('suppliers');
 
-                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
             });
         }

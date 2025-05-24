@@ -17,7 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('setting_id');
             $table->tinyInteger('value')->nullable();
             $table->foreign('setting_id')->references('id')->on('program_settings')->onDelete('cascade');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
         });
     }
 

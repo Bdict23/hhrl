@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade')->onUpdate('cascade');
             $table->decimal('debit', 10, 2)->default(0.00);
             $table->decimal('credit', 10, 2)->default(0.00);
-            $table->enum('type', ['PAYMENT', 'DMCM'])->default('PAYMENT')->comment('Ledger type, payment or dmcm');
+            $table->enum('type', ['PAYMENT', 'DMCM'])->index('type')->default('PAYMENT')->comment('Ledger type, payment or dmcm');
             $table->foreignId('payment_id')->constrained('payments')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+            $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
         });}

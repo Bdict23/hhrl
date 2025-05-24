@@ -17,7 +17,7 @@ return new class extends Migration
             Schema::create('withdrawals', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('source_branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
-                $table->string('reference_number')->nullable()->index();
+                $table->string('reference_number')->nullable()->index('reference_number');
                 $table->date('usage_date')->useCurrent()->index('usage_date');
                 $table->date('useful_date')->nullable()->index('useful_date');
                 $table->foreignId('prepared_by')->constrained('employees')->onDelete('no action')->onUpdate('cascade')->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
                 $table->date('approved_date')->nullable();
                 $table->date('reviewed_date')->nullable();
                 $table->date('rejected_date')->nullable();
-                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
                 
@@ -43,9 +43,9 @@ return new class extends Migration
                 $table->decimal('qty_in', 10, 2)->nullable()->default(0);
                 $table->decimal('qty_out', 10, 2)->nullable()->default(0);
                 $table->date('expiration_date')->nullable()->index('expiration_date');
-                $table->date('manufactured_date')->nullable();
+                $table->date('manufactured_date')->nullable()->index('manufactured_date');
                 $table->foreignId('item_id')->constrained('items')->onDelete('no action')->onUpdate('no action');
-                $table->enum('status', ['TEMP', 'RESERVED', 'FINAL', 'CANCELLED'])->default('TEMP');
+                $table->enum('status', ['TEMP', 'RESERVED', 'FINAL', 'CANCELLED'])->default('TEMP')->index('status');
                 $table->enum('transaction_type', ['STF', 'RECEVING', 'ADJUSTMENT', 'SALES', 'SALES-RETURN','WITHDRAWAL'])->index('transaction_type');
                 $table->foreignId('price_level_id')->nullable()->default(null)->constrained('price_levels')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('invoice_id')->nullable()->default(null)->constrained('invoices')->onDelete('no action')->onUpdate('no action');
@@ -53,14 +53,10 @@ return new class extends Migration
                 $table->foreignId('stf_id')->nullable()->default(null)->constrained('stocktransfer_infos')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('receiving_id')->nullable()->default(null)->constrained('receivings')->onDelete('no action')->onUpdate('no action');
                 $table->foreignId('requisition_id')->nullable()->default(null)->constrained('requisition_infos')->onDelete('no action')->onUpdate('no action');
-                $table->timestamp('final_date')->nullable();
-                $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
+                $table->timestamp('final_date')->nullable()->index('final_date');
+                $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
 
-                $table->index('expiration_date');
-                $table->index('manufactured_date');
-                $table->index('status');
-                $table->index('transaction_type');
             });
         }
     }

@@ -29,10 +29,10 @@ return new class extends Migration
             $table->string('customer_name')->nullable();
             $table->foreignId('table_id')->nullable()->constrained('tables')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('sales_rep_id')->constrained('employees')->onDelete('no action')->onUpdate('no action');
-            $table->enum('order_status', ['PENDING', 'CANCELLED','SERVING', 'SERVED', 'COMPLETED','FOR ALLOCATION'])->default('FOR ALLOCATION');
+            $table->enum('order_status', ['PENDING', 'CANCELLED','SERVING', 'SERVED', 'COMPLETED','FOR ALLOCATION'])->default('FOR ALLOCATION')->index('order_status');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('no action')->onUpdate('no action');
-            $table->enum('payment_status', ['PAID', 'UNPAID'])->default('UNPAID');
-            $table->enum('order_type', ['FOOD ORDER', 'PRODUCT ORDER'])->default('FOOD ORDER');
+            $table->enum('payment_status', ['PAID', 'UNPAID'])->default('UNPAID')->index('payment_status');
+            $table->enum('order_type', ['FOOD ORDER', 'PRODUCT ORDER'])->default('FOOD ORDER')->index('order_type');
             $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action');
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
