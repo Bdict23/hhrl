@@ -26,7 +26,8 @@
                             <thead class="table-dark">
                                 <tr style="font-size: x-small">
                                     <th>ITEM CODE</th>
-                                    <th>ITEM DESCRIPTION</th>
+                                    <th>ITEM NAME</th>
+                                    <th>UNIT</th>
                                     <th>REQUEST QTY.</th>
                                     <th>COST</th>
                                     <th>SUB-TOTAL</th>
@@ -39,6 +40,9 @@
                                     <tr>
                                         <td style="font-size: 80%">{{ $item->item_code }}</td>
                                         <td style="font-size: 80%">{{ $item->item_description }}</td>
+                                        <td style="font-size: 80%">
+                                            {{ $item->uom ? $item->uom->unit_symbol : 'N/A' }}
+                                        </td>
                                         <td>
                                             <input wire:model="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="1" onchange="updateTotalPrice(this)">
                                         </td>
@@ -215,7 +219,8 @@
                             <thead class="table-dark sticky-top">
                                 <tr>
                                     <th style="font-size: 10px;">ITEM CODE</th>
-                                    <th style="font-size: 10px;" >ITEM DESCRIPTION</th>
+                                    <th style="font-size: 10px;" >ITEM NAME</th>
+                                    <th style="font-size: 10px;">UNIT</th>
                                     <th style="font-size: 10px;" >INV. COUNT</th>
                                     <th style="font-size: 10px;">AVAILABLE</th>
                                     <th style="font-size: 10px;">ROP</th>
@@ -233,6 +238,7 @@
                                     >
                                         <td style="font-size: 12px;">{{ $item->item_code }}</td>
                                         <td style="font-size: 12px;">{{ $item->item_description }}</td>
+                                        <td style="font-size: 12px;">{{ $item->uom ? $item->uom->unit_symbol : 'N/A' }}</td>
                                         <td style="font-size: 12px;">{{ $cardexBalance[$item->id] ?? 0 }}</td>
                                         <td  
                                         @if ($cardexAvailable[$item->id] ?? 0.00  <  $item->orderpoint ?? 0.00)
