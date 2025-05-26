@@ -235,21 +235,23 @@
                                         <td style="font-size: 12px;">{{ $item->item_description }}</td>
                                         <td style="font-size: 12px;">{{ $cardexBalance[$item->id] ?? 0 }}</td>
                                         <td  
-                                        @if ($cardexAvailable[$item->id]  <=  $item->orderpoint ?? 0)
+                                        @if ($cardexAvailable[$item->id] ?? 0.00  <  $item->orderpoint ?? 0.00)
                                              style="color: #CF0F47; font-size: 12px;"
                                         @elseif($item->orderpoint == 0)
                                             style="font-size: 12px;"
                                         @else
                                             style="font-size: 12px;"
-                                        @endif>{{ $cardexAvailable[$item->id] ?? 0 }}</td>
+                                        @endif
+                                        >{{ $cardexAvailable[$item->id] ?? 0 }}</td>
                                         <td 
-                                        @if ($cardexAvailable[$item->id]  <=  $item->orderpoint ?? 0)
+                                        {{-- @if (($cardexAvailable[$item->id]  <=  $item->orderpoint ?? 0) ?? 0 )
                                             style="color: #CF0F47; font-size: 12px;"
                                         @elseif($item->orderpoint == 0)
                                             style="font-size: 12px;"
                                         @else
                                             style="font-size: 12px;"
-                                        @endif>{{ $item->orderpoint }}</td>
+                                        @endif --}}
+                                        >{{ $item->orderpoint }}</td>
                                         <td style="font-size: 12px;">{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
                                         <td style="font-size: 12px;">{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                         <td>
