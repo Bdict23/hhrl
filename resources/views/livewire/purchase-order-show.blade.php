@@ -69,8 +69,8 @@
                                         <td style="font-size: small">{{ $reqdetail->items->uom->unit_symbol }}</td>
                                         <td style="font-size: small"> {{ $reqdetail->qty }}</td>
                                         <td style="font-size: small">{{ $totalReceived[$reqdetail->item_id] ?? 0 }}</td>
-                                        <td style="font-size: small">{{ $reqdetail->items->costPrice->amount }}</td>
-                                        <td style="font-size: small">{{ ($totalReceived[$reqdetail->item_id] ?? 0) * ($reqdetail->items->costPrice->amount ?? 0) }}</td>
+                                        <td style="font-size: small">{{ $reqdetail->cost->amount }}</td>
+                                        <td style="font-size: small">{{ ($totalReceived[$reqdetail->item_id] ?? 0) * ($reqdetail->cost->amount ?? 0) }}</td>
                                         <td style="font-size: small">{{ $reqdetail->items->costPrice->supplier->supplier_code ?? 'N/A' }}</td>
                                     </tr>
                                 @empty
@@ -161,7 +161,7 @@
                         <div class="col-md-6">
                             <label for="" class="form-label" style="width: 100; font-size: 13px">Total Request Amount</label>
                             <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"
-                                value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) { return $detail->qty * ($detail->items->costPrice->amount ?? 0); }), 2) }}"
+                                value="₱{{ number_format($requestInfo->requisitionDetails->sum(function($detail) { return $detail->qty * ($detail->cost->amount ?? 0); }), 2) }}"
                                 readonly>
                         </div>
                         <div class="col-md-6">

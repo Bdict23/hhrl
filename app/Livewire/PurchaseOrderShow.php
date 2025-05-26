@@ -42,7 +42,7 @@ class PurchaseOrderShow extends Component
     public function loadRequisitionInfo($id)
     {
         $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
-        $this->requisitionDetails = RequisitionDetail::where('requisition_info_id', $id)->get();
+        $this->requisitionDetails = RequisitionDetail::with('cost')->where('requisition_info_id', $id)->get();
         $this->totalReceived = Cardex::select('item_id', DB::raw('SUM(qty_in) as received_qty'))
             ->where(function($query) use ($id) {
                 $query->whereIn('status', ['TEMP', 'FINAL'])
