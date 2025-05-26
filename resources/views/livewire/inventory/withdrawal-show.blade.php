@@ -44,9 +44,9 @@
                                     @if ($category)
                                         <th>CATEGORY</th>
                                     @endif
-                                    @if ($location)
+                                    {{-- @if ($location)
                                         <th>LOCATION</th>
-                                    @endif
+                                    @endif --}}
                                     @if ($brand)
                                         <th>BRAND</th>
                                     @endif
@@ -97,9 +97,9 @@
                                         @if ($category)
                                             <td>{{ $item['category'] }}</td>
                                         @endif
-                                        @if ($location)
+                                        {{-- @if ($location)
                                             <td>{{ $item['location'] }}</td>
-                                        @endif
+                                        @endif --}}
                                         @if ($brand)
                                             <td>{{ $item['brand'] }}</td>
                                         @endif
