@@ -33,6 +33,7 @@ class CardexController extends Controller
 
     public function getCardexData($itemCode)
     {
+        dd($itemCode);
         $item = Item::where('item_code', $itemCode)->first();
         if (!$item) {
             return response()->json(['error' => 'Item not found'], 404);

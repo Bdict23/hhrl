@@ -30,7 +30,7 @@
         </div>
 
         <div class="col-md-2">
-            <label for="price" class="form-label">Price</label>
+            <label for="price" class="form-label">Retail Price</label>
             <input type="text" class="form-control" id="price" name="price" readonly value="{{ $price }}">
         </div>
 

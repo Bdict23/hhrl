@@ -70,10 +70,7 @@
                             <div class="card-body">
                                 <header class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
-                                        <x-primary-button type="button"
-                                            style="background-color: rgb(128, 215, 245);">New</x-primary-button>
                                         <x-primary-button type="submit">Save</x-primary-button>
-                                        <x-danger-button type="button" onclick="clearForm()">Clear</x-danger-button>
                                         <x-secondary-button onclick="showTab('price-levels-tables', this)"
                                             class="ms-2">Back</x-secondary-button>
                                     </div>

@@ -124,8 +124,9 @@ class ItemCost extends Component
                 'price_type' => 'COST',
                 'amount' => $this->newCost,
                 'supplier_id' => $this->supplierId,
-                'created_at' => $this->costDate ?? now(),
+                'created_at' => now(),
                 'company_id' => auth()->user()->branch->company_id,
+                'branch_id' => auth()->user()->branch_id,
             ]);
 
             session()->flash('success', 'Cost added successfully for ' . $this->selectedItemName);

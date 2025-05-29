@@ -31,8 +31,15 @@ class Cardex extends Component
         'getCardexData' => 'getCardexData',
     ];
     protected $rules = [
-        'itemCode' => 'string|exists:items,item_code',
+        'itemCode' => 'exists:items,item_code',
     ];
+    protected $messages = [
+        'itemCode.exists' => 'Invalid',
+        'itemCode.required' => 'Item code is required',
+    ];
+
+   
+
     public function mount($itemCode = null)
     {
         $this->itemCode = $itemCode;
@@ -50,20 +57,28 @@ class Cardex extends Component
 
     public function getCardexData($itemCode)
     {
-        $this->validate();
+        // dd($itemCode);
+        // $this->validate();
         $this->itemId = Item::where('item_code', $itemCode)->value('id');
         $this->locations = Location::where('branch_id', auth()->user()->branch_id)->where('item_id',$this->itemId)->first();
         $this->location = $this->locations ? $this->locations->location_name : null;
         $cardexData = CardexModel::with('item')->where('item_id', $this->itemId)->where('source_branch_id', auth()->user()->branch_id)->first();
-
         if (!$cardexData) {
-            $this->reset();
+            $this->locations = Location::where('branch_id', auth()->user()->branch_id)->where('item_id',$this->itemId)->first();
+            $this->location = $this->locations ? $this->locations->location_name : null;
+             $itemCost = PriceLevel::where('item_id', $this->itemId)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('price_type', 'SRP')
+            ->first();
+            $this->price = $itemCost ? $itemCost->amount : 0;
+            $this->addError('itemCode', 'Item has no history.');
             return;
         }
         // dd($cardexData);
         $this->itemDescription = $cardexData->item->item_description;
         $this->cardex = CardexModel::with('receiving', 'withdrawal')->where('item_id', $this->itemId)->where('source_branch_id', auth()->user()->branch_id)->orderBy('created_at', 'desc')->get();
-        $this->price = $cardexData->item->costPrice->amount;
+        $this->price = $cardexData->item->sellingPrice->amount ?? '0.00';
+       
         $this->totalBalance = intval($cardexData->totalBalanceByItem());
 
         //  running balance !
