@@ -318,3 +318,14 @@ Route::get('/withdrawal-show', function() {
 Route::get('/item-location', function () {
     return view('inventory.item-location');
 })->middleware(['auth', 'verified'])->name('item_location');
+
+
+//Route for Banquet Events Summary
+Route::get('/banquet-events-summary', function () {
+    return view('banquet.banquet-event-summary');
+})->middleware(['auth', 'verified'])->name('banquet_events.summary');
+
+//Route for Banquet Events Create
+Route::get('/banquet-events-create', function () {
+    return view('banquet.banquet-event-create');
+})->middleware(['auth', 'verified'])->name('banquet_events.create');
