@@ -66,11 +66,11 @@ class Cardex extends Component
         if (!$cardexData) {
             $this->locations = Location::where('branch_id', auth()->user()->branch_id)->where('item_id',$this->itemId)->first();
             $this->location = $this->locations ? $this->locations->location_name : null;
-             $itemCost = PriceLevel::where('item_id', $this->itemId)
+             $itemRetail = PriceLevel::where('item_id', $this->itemId)
             ->where('branch_id', auth()->user()->branch_id)
             ->where('price_type', 'SRP')
             ->first();
-            $this->price = $itemCost ? $itemCost->amount : 0;
+            $this->price = $itemRetail ? $itemRetail->amount : 0;
             $this->addError('itemCode', 'Item has no history.');
             return;
         }
