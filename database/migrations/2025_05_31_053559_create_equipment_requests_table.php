@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('reference_number')->unique()->nullable()->comment('Unique reference number for the equipment request');
             $table->string('document_number')->nullable()->comment('Document number for the equipment request');
-            $table->foreignId('banquet_procurement_id')->nullable()->constrained('banquet_procurements')->onDelete('set null')->onUpdate('cascade')->comment('Reference to the related banquet procurement');
+            $table->foreignId('event_id')->nullable()->constrained('banquet_events')->onDelete('set null')->onUpdate('cascade')->comment('Reference to the related banquet procurement');
             $table->foreignId('department_id')->constrained('departments')->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the department making the request');
             $table->date('event_date')->nullable()->comment('Date of the event for which the equipment is requested');
             $table->timestamp('from_time')->nullable()->comment('Start time when the equipment is intended to be used');
@@ -23,8 +23,9 @@ return new class extends Migration
             $table->foreignId('requested_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who requested the equipment');
             $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who approved the request');
             $table->foreignId('received_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who received the equipment');
-            $table->enum('status', ['PREPARING','PENDING', 'APPROVED', 'REJECTED'])->default('PENDING')->index('status')->comment('Status of the equipment request');
+            $table->enum('status', ['PREPARING','PENDING','RELEASED','REJECTED','RETURNED','FLAGGED'])->default('PREPARING')->index('status')->comment('Status of the equipment request');
             $table->text('notes')->nullable()->comment('Additional notes or comments regarding the equipment request');
+            $table->string('layout')->nullable()->comment('Image file name or path for the layout');
             $table->foreignId('branch_id')->constrained()->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this request belongs to');
             $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change

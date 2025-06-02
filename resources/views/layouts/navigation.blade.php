@@ -302,6 +302,12 @@
                                         {{ __('Events') }}
                                     </x-dropdown-link>
                                 @endif
+                                @if (auth()->user()->employee->getModulePermission('Equipment Requests') != 2 )
+                                    <x-dropdown-link :href="url('/equipment-requests-summary')" class="no-underline">
+                                        {{ __('Equipement Request') }}
+                                    </x-dropdown-link>
+                                @endif
+                                    
                             </x-slot>
                         </x-dropdown>
                     </div>

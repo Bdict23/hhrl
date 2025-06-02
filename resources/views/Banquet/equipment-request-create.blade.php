@@ -1,4 +1,6 @@
 @extends('layouts.master')
 @section('content')
-    @livewire('banquet.banquet-event-create')
+
+    @livewire('banquet.equipment-request-create')
+
 @endsection

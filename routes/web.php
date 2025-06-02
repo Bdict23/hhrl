@@ -329,3 +329,13 @@ Route::get('/banquet-events-summary', function () {
 Route::get('/banquet-events-create', function () {
     return view('banquet.banquet-event-create');
 })->middleware(['auth', 'verified'])->name('banquet_events.create');
+
+//Route for Banquet Equipment Requests summary
+Route::get('/equipment-requests-summary', function () {
+    return view('banquet.equipment-request-summary');
+})->middleware(['auth', 'verified'])->name('banquet_equipment_requests');
+
+//Route for Banquet Equipment Requests Create
+Route::get('/equipment-request.create', function () {
+    return view('banquet.equipment-request-create');
+})->middleware(['auth', 'verified'])->name('banquet.equipment-request.create');
