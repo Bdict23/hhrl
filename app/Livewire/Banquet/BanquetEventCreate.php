@@ -10,4 +10,9 @@ class BanquetEventCreate extends Component
     {
         return view('livewire.banquet.banquet-event-create');
     }
+
+    public function mount()
+    {
+        
+    }
 }
