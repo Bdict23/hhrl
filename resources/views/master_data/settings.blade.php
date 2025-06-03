@@ -6,27 +6,58 @@
         <div class="d-md-none text-end mb-3">
             <select class="form-select form-select-sm" onchange="navigateToTab(this.value)">
                 <option value="" selected disabled>Select Tab</option>
-                <option value="items-table">Item List</option>
-                <option value="category-table">Item Categories</option>
-                <option value="classification-table">Classification</option>
-                <option value="sub-classification-table">Sub Classifications</option>
-                <option value="unit-of-measures-table">Unit of Measures</option>
-                <option value="brand-table">Brands</option>
-                <option value="price-levels-tables">Retail</option>
-                <option value="items-cost">Cost</option>
-                <option value="venue-lists">Venue Lists</option>
-                <option value="employee-management">Employees</option>
-                <option value="transfer-employee">Transfer Employee</option>
-                <option value="program-settings">Program Settings</option>
+                @if(auth()->user()->employee->getModulePermission('Manage Item') !=2)
+                    <option value="items-table">Item List</option>
+                @endif
+                @if(auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2)
+                     @if (auth()->user()->employee->getModulePermission('Item Categories') !=2)
+                        <option value="category-table">Item Categories</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Classifications') !=2)
+                        <option value="classification-table">Classification</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') !=2)
+                        <option value="sub-classification-table">Sub Classifications</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Unit of Measures') !=2)
+                        <option value="unit-of-measures-table">Unit of Measures</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Brands') !=2)
+                        <option value="brand-table">Brands</option>
+                    @endif
+                @endif
+                @if (auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2)
+                    @if (auth()->user()->employee->getModulePermission('Item Retail Price') !=2)
+                        <option value="price-levels-tables">Retail</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Item Cost Price') !=2)
+                        <option value="items-cost">Cost</option>
+                    @endif
+                @endif
+                @if (auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
+                    @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
+                        <option value="venue-lists">Venues</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Services') !=2)
+                        <option value="service-lists">Services</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Employee') !=2)
+                        <option value="employee-management">Employees</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Transfer Employee') !=2)
+                        <option value="transfer-employee">Transfer Employee</option>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Program Settings') !=2)
+                        <option value="program-settings">Program Settings</option>
+                    @endif
+                @endif
             </select>
         </div>
 
         <div class="d-flex">
 
-            {{-- Page Title --}}
             <!-- Sidebar -->
             <div class="sidebar d-none d-md-block" style="overflow-y: auto; max-height: 500px;">
-
                 @if(auth()->user()->employee->getModulePermission('Manage Item') !=2)
                     <h5 class="text-muted">Item Management</h5>
                         <ul class="nav flex-column">
@@ -98,9 +129,14 @@
 
                 @if (auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
                     <h6 class="text-muted">Business</h6>
-                      @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
+                    @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
                         <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('venue-lists', this)">Venues</a></li>
+                        </ul>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Services') !=2)
+                        <ul class="nav flex-column">
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('service-lists', this)">Services</a></li>
                         </ul>
                     @endif
                     @if (auth()->user()->employee->getModulePermission('Employee') !=2)
@@ -185,9 +221,18 @@
                     @livewire('department')
                 </div> --}}
                 <!-- Employees Tab Content -->
+                @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
+                    <div>
+                        @livewire('settings.venue')
+                    </div>
+                @endif
+               
+                
+
                 <div>
-                    @livewire('settings.venue')
+                    @livewire('settings.service')
                 </div>
+
                 <div>
                     @livewire('settings.manage-employees')
                 </div>

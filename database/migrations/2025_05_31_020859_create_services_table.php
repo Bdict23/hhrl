@@ -18,6 +18,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('service_name')->nullable()->comment('Name of the service');
+            $table->string('service_code')->nullable()->index('service_code')->comment('Unique code for the service');
             $table->string('service_description')->nullable()->comment('Description of the service');
             $table->unsignedBigInteger('category_id')->comment('Foreign key to categories');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

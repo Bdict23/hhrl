@@ -12,15 +12,15 @@
          <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
      </div>
      @endif
-    <div id="venue-lists" class="tab-content card" style="display: none;" wire:ignore.self>
+    <div id="service-lists" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
-            <h5>Venue Lists</h5>
+            <h5>Services Lists</h5>
         </div>
         <div class="card-body">
             @if (auth()->user()->employee->getModulePermission('Business Venues') == 1 )
                 <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('venue-form', document.querySelector('.nav-link.active'))">+ ADD
-                Venue</x-primary-button>
+                onclick="showTab('service-form', document.querySelector('.nav-link.active'))">+ ADD
+                SERVICE</x-primary-button>
             @endif
                 <x-secondary-button type="button" class="mb-3 btn-sm"
                 wire:click="fetchVenues()">Refresh</x-secondary-button>
@@ -32,31 +32,14 @@
                             <th>Name</th>
                             <th>CODE</th>
                             <th>DESCRIPTION</th>
-                            <th>CAPACITY</th>
+                            <th>CATEGORY</th>
+                            <th>MULTIPLIER</th>
                             <th>PRICE</th>
                             <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Business Venues') != 1 ) style="display: none;"  @endif>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($venues as $venue)
-                            <tr>
-                                <td>{{ $venue->venue_name }}</td>
-                                <td>{{ $venue->venue_code }}</td>
-                                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $venue->description ?? 'N/A' }}</td>
-                                <th>{{ $venue->capacity}}</th>
-                                <td>{{ $venue->ratePrice ? '₱' . number_format($venue->ratePrice->amount, 2) : 'N/A' }}</td>
-                                @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
-                                    <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#UpdateVenue" onclick="updateVenue({{ json_encode($venue) }})" wire:click="editVenue({{ $venue->id }})">Edit</button>
-                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $venue->id }})">Delete</a>
-                                    </td>
-                                @endif
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center">No Venue found</td>
-                            </tr>
-                        @endforelse
+                       
                     </tbody>
                 </table>
             </div>
@@ -65,19 +48,19 @@
 
 
 
-    {{-- Update Modal --}}
+    {{-- Update Category Modal --}}
 <div class="modal fade" id="UpdateVenue" tabindex="-1" aria-labelledby="updateVenueModal" aria-hidden="true" wire:ignore.self>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" >Update Venue</h5>
+                <h5 class="modal-title" >Update Service</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="" wire:submit.prevent="updateVenue" id="UpdateVenueForm">
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label for="venue_name-update" class="form-label">Venue Name</label>
+                            <label for="venue_name-update" class="form-label">Service Name</label>
                             <input type="text" class="form-control" id="venue_name-update-input" wire:model="venue_name_input">
                             @error('venue_name_input')
                                 <span class="text-danger">{{ $message }}</span>
@@ -85,7 +68,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label for="venue_code-update" class="form-label">Venue Code</label>
+                                <label for="venue_code-update" class="form-label">Service Code</label>
                                 <input type="text" class="form-control" id="venue_code-update-input" wire:model="venue_code_input">
                                 @error('venue_code_input')
                                     <span class="text-danger">{{ $message }}</span>
@@ -99,7 +82,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="venue_rate-update" class="form-label">Rate <span class="text-danger">*</span></label>
+                                <label for="venue_rate-update" class="form-label">Rate Price<span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" class="form-control" id="venue_rate-update-input" wire:model="venue_rate_input">
                                 @error('venue_rate_input')
                                     <span class="text-danger">{{ $message }}</span>
@@ -124,44 +107,57 @@
 </div>
 
     {{-- Category Form --}}
-    <div id="venue-form" class="tab-content card" style="display: none;" wire:ignore.self>
+    <div id="service-form" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Add Venue</h5>
         </div>
         <div class="card-body">
             <x-secondary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('venue-lists', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
+                onclick="showTab('service-lists', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
             <form wire:submit.prevent="storeVenue" id="venueForm">
                 @csrf
-                <div class="mb-3">
-                    <label for="venue_name-input" class="form-label">Venue Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="venue_name-input-update" wire:model="venue_name_input" >
-                    @error('venue_name_input')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                <div class="mb-3 row">
+                    <div class="col-md-6">
+                        <label for="venue_name-input" class="form-label">Service Name <span style="color: red;">*</span></label>
+                        <input type="text" class="form-control" id="venue_name-input-update" wire:model="venue_name_input" >
+                        @error('venue_name_input')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label for="service-category" class="form-label">Category <span style="color: red;">*</span></label>
+                        <select name="" id="" class="form-control">
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
-                        <label for="venue_code-input" class="form-label">Venue Code <span style="color: red;">*</span></label>
+                        <label for="venue_code-input" class="form-label">Service Code <span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="venue_code-input-update" wire:model="venue_code_input" >
                         @error('venue_code_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+                    
                     <div class="col-md-4 mb-3">
-                        <label for="capacity-input" class="form-label">Capacity <span style="color: red;">*</span></label>
-                        <input type="number" class="form-control" id="capacity-input-update" wire:model="capacity_input" >
+                        <label for="venue_rate-update" class="form-label">Rate Price</label>
+                        <div class="input-group-text">
+                            <input type="number" step="0.01" class="form-control" id="venue_rate-update-input" wire:model="venue_rate_input">
+                            <input type="checkbox" class="form-check-input" id="service-multiplier-update" wire:model="multiplier_input" >
+
+                            @error('venue_rate_input')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="capacity-input" class="form-label">Multiplier <span style="color: red;">*</span></label>
+                        <input type="checkbox" class="form-check-input" id="service-multiplier-update" wire:model="multiplier_input" >
                         @error('capacity_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="col-md-4 mb-3">
-                                <label for="venue_rate-update" class="form-label">Rate Price</label>
-                                <input type="number" step="0.01" class="form-control" id="venue_rate-update-input" wire:model="venue_rate_input">
-                                @error('venue_rate_input')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
                 </div>
                 <div class="mb-3">
                     <label for="venue_description-input" class="form-label">Description <span style="color: red;">*</span></label>
