@@ -5,16 +5,16 @@
              <div class="card mb-3">
                  <div  class="card-header d-flex justify-content-between">         
                      <h5 class="col-md-6">Equipment Lists</h5>
-                     <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#equipmentModal" >Add Equipment</button> 
+                     <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#equipmentModal" >Add Equipment</button> 
                  </div>
                  <div class="card-body">
                      <table class="table table-sm">
                          <thead>
                              <tr>
-                                 <th>Equipment Name</th>
-                                 <th>Category</th>
-                                 <th>Quantity</th>
-                                 <th>Action</th>
+                                 <th class="text-xs">Equipment Name</th>
+                                 <th class="text-xs">Category</th>
+                                 <th class="text-xs">Quantity</th>
+                                 <th class="text-xs">Action</th>
                              </tr>
                          </thead>
                          <tbody>
@@ -26,16 +26,16 @@
              <div class="card">
                 <div  class="card-header d-flex justify-content-between">         
                      <h5 class="col-md-6">Handling Team</h5>
-                     <button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#employeetModal" >Add Employee</button> 
+                     <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#employeetModal" >Add Employee</button> 
                  </div>
                 <div class="card-body">
                     <table class="table table-sm">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Lastname</th>
-                                <th>Position</th>
-                                <th>Action</th>
+                                <th class="text-xs">Name</th>
+                                <th class="text-xs">Lastname</th>
+                                <th class="text-xs">Position</th>
+                                <th class="text-xs">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -51,16 +51,16 @@
                     <form wire:submit.prevent="submitRequest">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="referenceNumber" class="form-label">Reference Number</label>
+                                <label for="referenceNumber" class="form-label text-sm">Reference Number</label>
                                 <input type="text" class="form-control text-center" id="referenceNumber" disabled placeholder="<AUTO>">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="requestDate" class="form-label">Document Series No. <span class="text-danger">*</span></label>
+                                <label for="requestDate" class="form-label text-sm">Document Series No. <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="documentNumber" wire:model="referenceNumber" required>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="eventName" class="form-label">Event Name<span class="text-danger">*</span></label>
+                            <label for="eventName" class="form-label text-sm">Event Name<span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="eventName" wire:model="eventName" disabled>
                                   <button class="input-group-text" type="button"
@@ -69,41 +69,41 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                                <label for="department" class="form-label text-sm">Department <span class="text-danger">*</span></label>
                                 <select class="form-select" id="department" wire:model="department" required>
                                     <option value="">Select Department</option>
                                    
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="referenceNumber" class="form-label">Event Date</label>
+                                <label for="referenceNumber" class="form-label text-sm">Event Date</label>
                                 <input type="text" class="form-control" id="referenceNumber" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
                            <div class="col-md-6">
-                                <label for="eventNote" class="form-label">Event Note</label>
+                                <label for="eventNote" class="form-label text-sm">Event Note</label>
                                 <textarea name="" id="eventNote" class="form-control" disabled></textarea>
                             </div>
                             <div class="col-md-6">
-                                <label for="myNote" class="form-label">Leave a note <span class="text-muted text-xs">(optional)</span></label>
+                                <label for="myNote" class="form-label text-sm">Leave a note <span class="text-muted text-xs">(optional)</span></label>
                                 <textarea name="" id="myNote" class="form-control"></textarea>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="attachment" class="form-label" style="width: 100; ">Layout <span style="font-size: 13px" class="text-muted">(optional)</span></label>
+                            <label for="attachment" class="form-label text-sm" style="width: 100; ">Layout <span style="font-size: 13px" class="text-muted">(optional)</span></label>
                                         <input wire:model.live="attachments" type="file" class="form-control" id="attachments" style="width: 100; font-size: 13px" multiple>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="inchargedBy" class="form-label">Incharged By<span class="text-danger">*</span></label>
+                                <label for="inchargedBy" class="form-label text-sm">Incharged By<span class="text-danger">*</span></label>
                                 <select class="form-select" id="inchargedBy" wire:model="inchargedBy" required>
                                     <option value="">Select Incharged By</option>
                                     {{-- Add options here --}}
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="approvedBy" class="form-label">Approved By<span class="text-danger">*</span></label>
+                                <label for="approvedBy" class="form-label text-sm">Approved By<span class="text-danger">*</span></label>
                                 <select class="form-select" id="approvedBy" wire:model="approvedBy" required>
                                     <option value="">Select Approved By</option>
                                     {{-- Add options here --}}

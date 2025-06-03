@@ -1,165 +1,181 @@
 
-   <div class="row">
-    <div class="col-md-6">
-        <div class="container my-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                   <div  class="card-title row">
-                    <h6 class="col-md-6">Event Services</h6>
-                    <div class="col-md-6 d-flex justify-content-end">
-                        <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#servicesModal" >Add Services</button>
-                    </div>
-                   </div>
-                   <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="text-xs">Title</th>
-                                <th class="text-xs">Qty</th>
-                                <th class="text-xs">Rate</th>
-                                <th class="text-xs">Amount</th>
-                                <th class="text-xs">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                        </tbody>
-                    </table>
-                   </div>
-                </div>
-            </div>
-            <div class="card shadow-sm border-0 mt-4">
-                <div class="card-body">
-                    <div  class="card-title row">
-                        <h6 class="col-md-6">Event Menus</h6>
-                        <div class="col-md-6 d-flex justify-content-end">
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal">Add Menu</button>
-                        </div>
-                    </div>
+   <div>
+    {{-- upper dashboard --}}
+    <div class="row">
+        {{-- left dashboard --}}
+        <div class="col-md-6">
+            <div class="container my-2">
+                <div class="card shadow-sm border-0">
                     <div class="card-body">
+                            <h6 class="col-md-6">Acquired Services</h6>
+                       <div class="card-body">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-xs">Menu Name</th>
-                                    <th class="text-xs">Category</th>
-                                    <th class="text-xs">Price</th>
+                                    <th class="text-xs">Title</th>
                                     <th class="text-xs">Qty</th>
-                                    <th class="text-xs">Actions</th>
+                                    <th class="text-xs">Rate</th>
+                                    <th class="text-xs">Amount</th>
+                                    <th class="text-xs">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 
                             </tbody>
+                             <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end">Total</td>
+                                    <td>1500</td>
+                                </tr>
+                        </tfoot>
                         </table>
+                       </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-2">
+                    <div class="card-body">
+                        <div  class="card-title row">
+                            <h6 class="col-md-6">Withdrawn Items</h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-xs">Reference</th>
+                                        <th class="text-xs">Category</th>
+                                        <th class="text-xs">Price</th>
+                                        <th class="text-xs">Description</th>
+                                        <th class="text-xs">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>     
+                                </tbody>
+                                 <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end">Total</td>
+                                <td>1500</td>
+                            </tr>
+                        </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        {{-- right dashboard --}}
+        <div class="col-md-6 container">
+            <div class="container">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <form action="" method="POST">
+                            @csrf
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label for="cust_name" class="form-label text-sm">Customer Name</label>
+                                    <input type="text" class="form-control" id="event_name" name="event_name" disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="event_name" class="form-label text-sm">Event Name</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="event_name" name="event_name" disabled>
+                                        <button class="input-group-text" type="button"
+                                            style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#customerModal"><strong class="text-sm">Get</strong></button>
+                                    </div>  
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label for="event_date" class="form-label text-sm">Event Date</label>
+                                    <input type="date" class="form-control" id="event_date" name="event_date" required>
+                                </div>
+                                <div class="row col-md-6">
+                                    <div class="col-md-6">
+                                        <label for="event_time" class="form-label text-sm">Start Time</label>
+                                        <input type="time" class="form-control" id="event_time" name="event_time" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="event_time" class="form-label text-sm">End Time</label>
+                                        <input type="time" class="form-control" id="event_time" name="event_time" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                         <div class="card shadow-sm border-0 mt-2">
+                            <div class="card-body">
+                                <div  class="card-title row">
+                                    <h6 class="col-md-6">Event Requirements</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-xs">Reference</th>
+                                                <th class="text-xs">Department</th>
+                                                <th class="text-xs">Status</th>
+                                                <th class="text-xs">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>     
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+
+    {{-- lower dashboard --}}
+    <div>
+        <div class="container my-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Summary</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-xs">Item</th>
+                                <th class="text-xs">Quantity</th>
+                                <th class="text-xs">Rate</th>
+                                <th class="text-xs">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Example static rows, replace with dynamic data -->
+                            <tr>
+                                <td>Decoration</td>
+                                <td>1</td>
+                                <td>1000</td>
+                                <td>1000</td>
+                            </tr>
+                            <tr>
+                                <td>Sound System</td>
+                                <td>1</td>
+                                <td>500</td>
+                                <td>500</td>
+                            </tr>
+                            <!-- End static rows -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end">Total Amount</td>
+                                <td>1500</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-success" type="submit">Save Event</button>
+                        <button class="btn btn-secondary ms-2" type="reset">Reset</button>
+                        <button class="btn btn-danger ms-2" type="reset">Cancel</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 container">
-        <h5 class="mb-2 text-center">Create Banquet Event</h5>
-        <div class="container my-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <form action="" method="POST">
-                        @csrf
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="event_name" class="form-label text-sm">Event Name</label>
-                                <input type="text" class="form-control" id="event_name" name="event_name" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="event_name" class="form-label text-sm">Customer Name</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="customer_name" name="customer_name" disabled>
-                                    <button class="input-group-text" type="button"
-                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#customerModal">+</button>
-                                </div>  
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="event_date" class="form-label text-sm">Event Date</label>
-                                <input type="date" class="form-control" id="event_date" name="event_date" required>
-                            </div>
-                            <div class="row col-md-6">
-                                <div class="col-md-6">
-                                    <label for="event_time" class="form-label text-sm">Start Time</label>
-                                    <input type="time" class="form-control" id="event_time" name="event_time" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="event_time" class="form-label text-sm">End Time</label>
-                                    <input type="time" class="form-control" id="event_time" name="event_time" required>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="venue" class="form-label text-sm">Venue</label>
-                            <select name="" id="" class="form-select" required>
-                                <option value="">Select Venue</option>
-                                <option value="Venue 1">Venue 1</option>
-                                <option value="Venue 2">Venue 2</option>
-                                <option value="Venue 3">Venue 3</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="guest_count" class="form-label text-sm">Expected Guest Count</label>
-                            <input type="number" class="form-control" id="guest_count" name="guest_count" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="event-notes" class="form-label text-sm">Notes</label>
-                            <textarea class="form-control" id="event-notes" name="event-notes" rows="3"></textarea>
-                        </div>
-                    </div>
-                </div>    
-            </div>
-             {{-- lower dashboard --}}
-            <div>
-                <div class="container">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title">Summary</h5>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-xs text-start">Particular</th>
-                                        <th class="text-xs text-end">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Example static rows, replace with dynamic data -->
-                                    <tr>
-                                        <td class="text-start">Venue</td>
-                                        <td class="text-end">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-start">Services</td>
-                                        <td class="text-end"><i>1000</i></td>
-                                    </tr>
-                                    <tr >
-                                        <td class="text-start">Menus</td>
-                                        <td class="text-end"><i>500</i></td>
-                                    </tr>
-                                    <!-- End static rows -->
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="2" class="text-end">Total Amount : <strong>1500</strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <div class="d-flex justify-content-end">
-                                <button class="btn btn-success" type="submit">Save Event</button>
-                                <button class="btn btn-secondary ms-2" type="reset">Reset</button>
-                                <button class="btn btn-danger ms-2" type="reset">Cancel</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
     <!-- Services Modal -->
     <div class="modal fade" id="servicesModal" tabindex="-1" aria-labelledby="servicesModalLabel" aria-hidden="true">
@@ -283,7 +299,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="customerRegistrationForm">
-                        <div class="mb-3 row">
+                        <div class="mb-2 row">
                             <div class="col-md-4">
                                 <label for="customer_name" class="form-label">Customer Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="customer_name" name="customer_name" required>
@@ -298,7 +314,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col-md-6"> 
                                 <label for="customer_gender" class="form-label">Gender</label>
                                 <select class="form-select" id="customer_gender" name="customer_gender">
@@ -314,15 +330,15 @@
                             </div>
                         </div>
                        
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="customer_email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="customer_email" name="customer_email">
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="customer_phone" class="form-label">Phone</label>
                             <input type="text" class="form-control" id="customer_phone" name="customer_phone">
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="customer_address" class="form-label">Address</label>
                             <textarea class="form-control" id="customer_address" name="customer_address" rows="2"></textarea>
                         </div>

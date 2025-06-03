@@ -339,3 +339,13 @@ Route::get('/equipment-requests-summary', function () {
 Route::get('/equipment-request.create', function () {
     return view('banquet.equipment-request-create');
 })->middleware(['auth', 'verified'])->name('banquet.equipment-request.create');
+
+//Route for banquet procurement summary
+Route::get('/banquet-procurement-lists', function () {
+    return view('banquet.banquet-procurement-lists');
+})->middleware(['auth', 'verified'])->name('banquet.procurement.summary');
+
+//Route for banquet procurement create
+Route::get('/banquet-procurement-create', function () {
+    return view('banquet.banquet-procurement-create');
+})->middleware(['auth', 'verified'])->name('banquet.procurement.create');

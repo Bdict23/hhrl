@@ -307,6 +307,9 @@
                                         {{ __('Equipement Request') }}
                                     </x-dropdown-link>
                                 @endif
+                                 <x-dropdown-link :href="url('/banquet-procurement-lists')" class="no-underline">
+                                        {{ __('Procurement') }}
+                                    </x-dropdown-link>
                                     
                             </x-slot>
                         </x-dropdown>
