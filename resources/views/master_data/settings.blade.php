@@ -14,6 +14,7 @@
                 <option value="brand-table">Brands</option>
                 <option value="price-levels-tables">Retail</option>
                 <option value="items-cost">Cost</option>
+                <option value="venue-lists">Venue Lists</option>
                 <option value="employee-management">Employees</option>
                 <option value="transfer-employee">Transfer Employee</option>
                 <option value="program-settings">Program Settings</option>
@@ -94,8 +95,14 @@
                             Categories</a></li>
                 </ul>
                 <hr> --}}
+
                 @if (auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
                     <h6 class="text-muted">Business</h6>
+                      @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
+                        <ul class="nav flex-column">
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('venue-lists', this)">Venues</a></li>
+                        </ul>
+                    @endif
                     @if (auth()->user()->employee->getModulePermission('Employee') !=2)
                         <ul class="nav flex-column">
                             {{-- <li class="nav-item"><a href="#" class="nav-link active">Company</a></li>
@@ -178,6 +185,9 @@
                     @livewire('department')
                 </div> --}}
                 <!-- Employees Tab Content -->
+                <div>
+                    @livewire('settings.venue')
+                </div>
                 <div>
                     @livewire('settings.manage-employees')
                 </div>

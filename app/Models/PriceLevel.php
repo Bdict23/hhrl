@@ -12,6 +12,7 @@ class PriceLevel extends Model
     protected $fillable = [
         'item_id',
         'menu_id',
+        'venue_id',
         'price_type',
         'markup',
         'amount',

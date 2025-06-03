@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('venue_code')->unique()->nullable()->comment('Unique code for the venue');
             $table->string('capacity')->nullable()->comment('Seating capacity of the venue');
             $table->string('description')->nullable()->comment('Description of the venue');
+            $table->enum('status', ['active', 'inactive'])->default('active')->comment('Status of the venue');
             $table->foreignId('branch_id')->constrained()->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this venue belongs to');
             $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change;
