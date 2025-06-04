@@ -48,7 +48,7 @@
                                 @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#UpdateVenue" onclick="updateVenue({{ json_encode($venue) }})" wire:click="editVenue({{ $venue->id }})">Edit</button>
-                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $venue->id }})">Delete</a>
+                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $venue->id }})">remove</a>
                                     </td>
                                 @endif
                             </tr>
@@ -135,7 +135,7 @@
                 @csrf
                 <div class="mb-3">
                     <label for="venue_name-input" class="form-label">Venue Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="venue_name-input-update" wire:model="venue_name_input" >
+                    <input type="text" class="form-control" id="venue_name-input" wire:model="venue_name_input" >
                     @error('venue_name_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -143,21 +143,21 @@
                 <div class="row mb-3">
                     <div class="col-md-4 mb-3">
                         <label for="venue_code-input" class="form-label">Venue Code <span style="color: red;">*</span></label>
-                        <input type="text" class="form-control" id="venue_code-input-update" wire:model="venue_code_input" >
+                        <input type="text" class="form-control" id="venue_code-input" wire:model="venue_code_input" >
                         @error('venue_code_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="capacity-input" class="form-label">Capacity <span style="color: red;">*</span></label>
-                        <input type="number" class="form-control" id="capacity-input-update" wire:model="capacity_input" >
+                        <input type="number" class="form-control" id="capacity-input" wire:model="capacity_input" >
                         @error('capacity_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="col-md-4 mb-3">
-                                <label for="venue_rate-update" class="form-label">Rate Price</label>
-                                <input type="number" step="0.01" class="form-control" id="venue_rate-update-input" wire:model="venue_rate_input">
+                                <label for="venue_rate" class="form-label">Rate Price</label>
+                                <input type="number" step="0.01" class="form-control" id="venue_rate-input" wire:model="venue_rate_input">
                                 @error('venue_rate_input')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -182,11 +182,7 @@
             // Listen wire:success event
             window.addEventListener('clearForm', event => {
                 // Clear the form fields
-        document.getElementById('venue_name-input').value = '';
-        document.getElementById('venue_description-input').value = '';
-        document.getElementById('venue_code-input').value = '';
-        document.getElementById('capacity-input').value = '';
-        document.getElementById('venue_rate-update-input').value = '';
+        document.getElementById('venueForm').reset();
             });
 
             // Show the venue lists tab by default

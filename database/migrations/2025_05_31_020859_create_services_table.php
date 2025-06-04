@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('service_description')->nullable()->comment('Description of the service');
             $table->unsignedBigInteger('category_id')->comment('Foreign key to categories');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->boolean('has_multiplier')->default(false)->comment('Indicates if the service has a multiplier');
+            $table->boolean('has_multiplier')->nullable()->default(false)->comment('Indicates if the service has a multiplier');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->comment('Service status');
             $table->unsignedBigInteger('branch_id')->comment('Foreign key to branches');
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->unsignedBigInteger('created_by')->nullable()->comment('Foreign key to employees who created the service');

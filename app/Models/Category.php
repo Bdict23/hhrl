@@ -12,7 +12,12 @@ class Category extends Model
 
 
     protected $fillable = [
-        'name',
+        'category_name',
+        'category_description',
+        'category_type',
+        'created_by',
+        'updated_by',
+        'company_id',
     ];
 
     public function company()

@@ -24,6 +24,7 @@ class PriceLevel extends Model
         'branch_id',
         'created_at',
         'updated_at',
+        'service_id',
     ];
     public function item()
     {

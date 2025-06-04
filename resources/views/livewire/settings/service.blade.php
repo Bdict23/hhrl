@@ -1,168 +1,233 @@
 <div>
      {{-- return flash message --}}
      @if (session()->has('success'))
-     <div class="alert alert-success" id="success-message">
-         {{ session('success') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
      @endif
      @if (session()->has('error'))
-     <div class="alert alert-danger" id="success-message">
-         {{ session('error') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
+        <div class="alert alert-danger" id="success-message">
+            {{ session('error') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
      @endif
     <div id="service-lists" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Services Lists</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Business Venues') == 1 )
+            @if (auth()->user()->employee->getModulePermission('Services') == 1 )
                 <x-primary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('service-form', document.querySelector('.nav-link.active'))">+ ADD
                 SERVICE</x-primary-button>
             @endif
                 <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchVenues()">Refresh</x-secondary-button>
+                wire:click="fetchData()">Refresh</x-secondary-button>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
                     <thead class="table-dark sticky-top">
                         <tr>
-                            <th>Name</th>
-                            <th>CODE</th>
-                            <th>DESCRIPTION</th>
-                            <th>CATEGORY</th>
-                            <th>MULTIPLIER</th>
-                            <th>PRICE</th>
-                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Business Venues') != 1 ) style="display: none;"  @endif>ACTIONS</th>
+                            <th class="text-xs">NAME</th>
+                            <th class="text-xs">CODE</th>
+                            <th class="text-xs">DESCRIPTION</th>
+                            <th class="text-xs">CATEGORY</th>
+                            <th class="text-xs">MULTIPLIER</th>
+                            <th class="text-xs">PRICE</th>
+                            <th class="text-end text-xs"  @if (auth()->user()->employee->getModulePermission('Services') != 1 ) style="display: none;"  @endif>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                       
+                       @forelse ($services as $service)
+                        <tr>
+                            <td class="text-xs">{{ $service->service_name }}</td>
+                            <td class="text-xs">{{ $service->service_code }}</td>
+                            <td class="text-xs">{{ $service->service_description }}</td>
+                            <td class="text-xs">{{ $service->category ? $service->category->category_name : 'N/A' }}</td>
+                            <td class="text-xs">
+                                @if ($service->has_multiplier)
+                                    <span class="badge bg-success">Yes</span>
+                                @else
+                                    <span class="badge bg-info">No</span>
+                                @endif
+                            </td>
+                            <td class="text-xs">
+                                @if ($service->ratePrice)
+                                    {{ $service->ratePrice->amount }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td class="text-end text-xs" @if (auth()->user()->employee->getModulePermission('Services') != 1 ) style="display: none;"  @endif>
+                                <x-secondary-button class="btn-sm" wire:click="editService({{ $service->id }})" onclick="updateService({{ json_encode($service) }})"
+                                    data-bs-toggle="modal" data-bs-target="#UpdateService">Edit</x-secondary-button>
+                                <x-danger-button class="btn-sm" wire:click="deactivateService({{ $service->id }})">remove</x-danger-button>
+                            </td>
+                        </tr>
+                       @empty
+                            {{-- If no services found --}}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No services found.</td>
+                            </tr>
+                       @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-
-
     {{-- Update Category Modal --}}
-<div class="modal fade" id="UpdateVenue" tabindex="-1" aria-labelledby="updateVenueModal" aria-hidden="true" wire:ignore.self>
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" >Update Service</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="" wire:submit.prevent="updateVenue" id="UpdateVenueForm">
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label for="venue_name-update" class="form-label">Service Name</label>
-                            <input type="text" class="form-control" id="venue_name-update-input" wire:model="venue_name_input">
-                            @error('venue_name_input')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
+    <div class="modal fade" id="UpdateService" tabindex="-1" aria-labelledby="updateServiceModal" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Update Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" wire:submit.prevent="updateService" id="UpdateServiceForm">
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="venue_code-update" class="form-label">Service Code</label>
-                                <input type="text" class="form-control" id="venue_code-update-input" wire:model="venue_code_input">
-                                @error('venue_code_input')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                           <div class="row col-md-12 mb-3">
+                                <div class="col-md-6">
+                                    <label for="service_name-update" class="form-label">Service Name</label>
+                                    <input type="text" class="form-control" id="service_name-update-input" wire:model="service_name_input">
+                                    @error('service_name_input')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="catgory-update" class="form-label">Category</label>
+                                    <div class="input-group">
+                                        <select name="" id="selectServiceCategoryUpdate" class="form-control" wire:model="selectedCategoryId">
+                                            <option value="">Select</option>
+                                            @forelse ($categories as $category)
+                                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                            @empty
+                                                
+                                            @endforelse
+                                        </select>
+                                        <button type="button"  style="background-color: rgb(190, 243, 217);" class="input-group-text" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                           </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="service_code-update" class="form-label">Service Code</label>
+                                    <input type="text" class="form-control" id="service_code-update-input" wire:model="service_code_input">
+                                    @error('service_code_input')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                
+                               <div class="col-md-6 mb-3">
+                                    <label for="service_rate-input-update" class="form-label">Rate Price <span style="color: red;">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" class="form-control" id="service_rate-input-update" wire:model="service_rate_input">
+                                        <div class="input-group-text" style="background-color: rgb(230, 225, 225)">
+                                            <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="service-multiplier-update" wire:model="service_multiplier_input">
+                                                    <label class="form-check-label text-xs" for="service-multiplier-update"><strong>Multiplier</strong></label>
+                                            </div>
+                                        </div>
+                                        @error('service_rate_input')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                        @error('service_multiplier_input')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="capacity-update" class="form-label">Capacity</label>
-                                <input type="number" class="form-control" id="capacity-update-input" wire:model="capacity_input">
-                                @error('capacity_input')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="venue_rate-update" class="form-label">Rate Price<span class="text-danger">*</span></label>
-                                <input type="number" step="0.01" class="form-control" id="venue_rate-update-input" wire:model="venue_rate_input">
-                                @error('venue_rate_input')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
+                            
                         </div>
-                        
-                    </div>
-                        <div class=" mb-3">
-                            <label for="venue_description-update" class="form-label">Description</label>
-                            <textarea class="form-control" id="venue_description-update-input" wire:model="venue_description_input" rows="3"></textarea>
-                            @error('category_description_input')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
+                            <div class=" mb-3">
+                                <label for="service_description-update" class="form-label">Description</label>
+                                <textarea class="form-control" id="service_description-update-input" wire:model="service_description_input" rows="3"></textarea>
+                                @error('category_description_input')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                        <x-primary-button type="submit">Update</x-primary-button>
-                    </form>
+                            <x-primary-button type="submit">Update</x-primary-button>
+                        </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-    {{-- Category Form --}}
+    {{-- Service Form --}}
     <div id="service-form" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
-            <h5>Add Venue</h5>
+            <h5>Add Service</h5>
         </div>
         <div class="card-body">
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('service-lists', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
-            <form wire:submit.prevent="storeVenue" id="venueForm">
+            <form wire:submit.prevent="storeService" id="serviceForm">
                 @csrf
                 <div class="mb-3 row">
                     <div class="col-md-6">
-                        <label for="venue_name-input" class="form-label">Service Name <span style="color: red;">*</span></label>
-                        <input type="text" class="form-control" id="venue_name-input-update" wire:model="venue_name_input" >
-                        @error('venue_name_input')
+                        <label for="service_name-input" class="form-label">Service Name <span style="color: red;">*</span></label>
+                        <input type="text" class="form-control" id="service_name-input" wire:model="service_name_input" >
+                        @error('service_name_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="service-category" class="form-label">Category <span style="color: red;">*</span></label>
-                        <select name="" id="" class="form-control">
-                            <option value="">Select Category</option>
-                        </select>
+                        <div class="input-group">
+                            <select name="" id="" class="form-control" wire:model="selectedCategoryId">
+                                <option value="">Select Category</option>
+                                @forelse ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                @empty
+                                    
+                                @endforelse
+                            </select>
+                                <button type="button"  style="background-color: rgb(190, 243, 217);" class="input-group-text" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                   Add
+                                </button>
+                        </div>
+                        @error('selectedCategoryId')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-4 mb-3">
-                        <label for="venue_code-input" class="form-label">Service Code <span style="color: red;">*</span></label>
-                        <input type="text" class="form-control" id="venue_code-input-update" wire:model="venue_code_input" >
-                        @error('venue_code_input')
+                    <div class="col-md-4 mb-6">
+                        <label for="service_code-input" class="form-label">Service Code <span style="color: red;">*</span></label>
+                        <input type="text" class="form-control" id="service_code-input" wire:model="service_code_input" >
+                        @error('service_code_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     
-                    <div class="col-md-4 mb-3">
-                        <label for="venue_rate-update" class="form-label">Rate Price</label>
-                        <div class="input-group-text">
-                            <input type="number" step="0.01" class="form-control" id="venue_rate-update-input" wire:model="venue_rate_input">
-                            <input type="checkbox" class="form-check-input" id="service-multiplier-update" wire:model="multiplier_input" >
-
-                            @error('venue_rate_input')
+                    <div class="col-md-4 mb-6">
+                        <label for="service_rate" class="form-label">Rate Price <span style="color: red;">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" class="form-control" id="service_rate" wire:model="service_rate_input">
+                            <div class="input-group-text" style="background-color: rgb(230, 225, 225)">
+                               <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service-multiplier" wire:model="service_multiplier_input">
+                                    <label class="form-check-label text-xs" for="service-multiplier"><strong>Multiplier</strong></label>
+                               </div>
+                            </div>
+                            @error('service_rate_input')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                            @error('service_multiplier_input')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="capacity-input" class="form-label">Multiplier <span style="color: red;">*</span></label>
-                        <input type="checkbox" class="form-check-input" id="service-multiplier-update" wire:model="multiplier_input" >
-                        @error('capacity_input')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
                 </div>
                 <div class="mb-3">
-                    <label for="venue_description-input" class="form-label">Description <span style="color: red;">*</span></label>
-                    <textarea class="form-control" id="venue_description-input-update" wire:model="venue_description_input" rows="3" ></textarea>
-                    @error('venue_description_input')
+                    <label for="service_description-input" class="form-label">Description <span style="color: red;">*</span></label>
+                    <textarea class="form-control" id="service_description-input" wire:model="service_description_input" rows="3" ></textarea>
+                    @error('service_description_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
@@ -171,46 +236,55 @@
         </div>
     </div>
 
+    {{-- modal --}}
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryModalLabel">Add Service Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form wire:submit.prevent="storeServiceCategory" id="addCategoryForm">
+                            <div class="mb-3">
+                                <label for="service_category_input" class="form-label">Category Name <span style="color: red;">*</span></label>
+                                <input type="text" class="form-control" id="service_category_input" wire:model="service_category_add_input">
+                                @error('service_category_add_input')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="service_category_description_input" class="form-label">Description</label>
+                                <textarea class="form-control" id="service_category_description_input" wire:model="service_category_description_input" rows="3"></textarea>
+                                @error('service_category_description_input')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <x-primary-button type="submit">Add Category</x-primary-button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <script>
         // Listen for the DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', function() {
             // Listen wire:success event
             window.addEventListener('clearForm', event => {
-                // Clear the form fields
-        document.getElementById('venue_name-input').value = '';
-        document.getElementById('venue_description-input').value = '';
-        document.getElementById('venue_code-input').value = '';
-        document.getElementById('capacity-input').value = '';
-        document.getElementById('venue_rate-update-input').value = '';
+                document.getElementById('serviceForm').reset();
             });
 
             // Show the venue lists tab by default
             // showTab('venue-lists', document.querySelector('.nav-link.active'));
-
-            // Listen for the success event
-            window.addEventListener('success', event => {
-                // Show the success message
-                document.getElementById('success-message').style.display = 'block';
-                document.getElementById('success-message').innerHTML = event.detail.message;
-
-        // Hide the success message after 1 second
-                setTimeout(function() {
-        document.getElementById('success-message').style.display = 'none';
-                            }, 1500);
-        });
         });
 
         // HIDE UPDATEcATEGORY MODAL
-        window.addEventListener('hideUpdateVenueModal', event => {
-            // Clear the form fields
-        document.getElementById('venue_name-update-input').value = '';
-        document.getElementById('venue_description-update-input').value = '';
-        document.getElementById('venue_code-update-input').value = '';
-        document.getElementById('capacity-update-input').value = '';
-        document.getElementById('venue_rate-update-input').value = '';
+        window.addEventListener('hideUpdateServiceModal', event => {
+            // Reset the form
+            document.getElementById('UpdateServiceForm').reset();
             // Hide the modal
-            var modal = bootstrap.Modal.getInstance(document.getElementById('UpdateVenue'));
+            var modal = bootstrap.Modal.getInstance(document.getElementById('UpdateService'));
             modal.hide();
 
             // Hide the success message after 1 second
@@ -219,16 +293,35 @@
             }, 1500);
         });
 
-        function updateVenue($data) {
+        window.addEventListener('clearCategoryForm', event => {
+            // Reset the form
+            document.getElementById('addCategoryForm').reset();
+            //hide the modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+            modal.hide();
+            // Hide the success message after 1 second
+            setTimeout(function() {
+                document.getElementById('success-message').style.display = 'none';
+            }, 1500);
+        });
+
+        function updateService($data) {
             // Set the values of the input fields
             console.log($data);
-            document.getElementById('venue_name-update-input').value = $data.venue_name;
-            document.getElementById('venue_description-update-input').value = $data.description;
-            document.getElementById('venue_code-update-input').value = $data.venue_code;
-            document.getElementById('capacity-update-input').value = $data.capacity;
-            document.getElementById('venue_rate-update-input').value = $data.rate_price ? $data.rate_price.amount : '';
+            // console.log($data.rate_price.amount);
+            document.getElementById('service_name-update-input').value = $data.service_name;
+            document.getElementById('service_code-update-input').value = $data.service_code;
+            document.getElementById('service_description-update-input').value = $data.service_description;
+            if($data.rate_price){
+                document.getElementById('service_rate-input-update').value = $data.rate_price.amount;
+            } else {
+                document.getElementById('service_rate-input-update').value = '0.00';
+            }
+            document.getElementById('service-multiplier-update').checked = $data.has_multiplier;
+            // Set the selected category
+            var selectElement = document.getElementById('selectServiceCategoryUpdate');
+            selectElement.value = $data.category ? $data.category.id : '';
         
-
         }
 
     </script>
