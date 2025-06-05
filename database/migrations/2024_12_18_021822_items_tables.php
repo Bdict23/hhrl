@@ -167,15 +167,15 @@ if (!Schema::hasTable('menus')) {
         $table->string('menu_name', 255)->nullable();
         $table->text('menu_description')->nullable();
         $table->string('menu_code', 50)->nullable()->unique();
-        $table->foreignId('category_id')->constrained('categories')->onDelete('no action')->onUpdate('no action');
-        $table->foreignId('reviewer_id')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-        $table->foreignId('approver_id')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+        $table->foreignId('category_id')->constrained('categories')->references('id')->on('categories')->onDelete('no action')->onUpdate('no action');
+        $table->foreignId('reviewer_id')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('no action')->onUpdate('no action');
+        $table->foreignId('approver_id')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('no action')->onUpdate('no action');
         $table->datetime('reviewed_date')->nullable()->default(null);
         $table->datetime('approved_date')->nullable()->default(null);
         $table->datetime('rejected_date')->nullable()->default(null);
         $table->enum('status', ['AVAILABLE', 'UNAVAILABLE', 'PENDING', 'INACTIVE', 'REJECTED', 'FOR APPROVAL','FOR REVIEW'])->default('PENDING')->index('status');
-        $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
-        $table->foreignId('updated_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+        $table->foreignId('created_by')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('no action')->onUpdate('no action');
+        $table->foreignId('updated_by')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('no action')->onUpdate('no action');
         $table->foreignId('company_id')->constrained('companies')->onDelete('no action')->onUpdate('no action');
         $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
         $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change

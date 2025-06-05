@@ -22,7 +22,7 @@
 
                 <div class="dashboard">
                     <header>
-                        <h2>Food Menu Approval Request</h2>
+                        <h3>Recipe Approval Request</h3>
 
                     </header>
                     <table class="table table-striped table-hover">

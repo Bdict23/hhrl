@@ -43,10 +43,13 @@ class Menu extends Model
         return $this->belongsTo(Employee::class, 'created_by');
     }
 
-
-
     public function recipes(){
         return $this->hasMany(Recipe::class, 'menu_id');
+    }
+
+    public function mySRP(){
+        return $this->hasOne(PriceLevel::class, 'menu_id')->where([['branch_id', auth()->user()->branch_id], ['price_type', 'SRP']])
+            ->latest('created_at');
     }
 
     public function price_levels(){

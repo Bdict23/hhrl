@@ -8,12 +8,13 @@ use App\Models\PriceLevel; // Assuming PriceLevel model exists in App\Models nam
 use App\Models\Service; // Assuming Service model exists in App\Models namespace
 use App\Models\Menu; // Assuming Menu model exists in App\Models namespace
 use App\Models\Customer;
+use App\Models\BranchMenu; 
 
 class BanquetEventCreate extends Component
 {
     public $venues = [];
     public $services = [];
-    public $menus = [];
+    public $menus;
     public $customers = [];
 
     public $venue_id;
@@ -36,10 +37,20 @@ class BanquetEventCreate extends Component
         $this->services = Service::where([['status', 'active'], ['branch_id', auth()->user()->branch_id]])
             ->with('ratePrice')
             ->get();
-        $this->menus = Menu::where([['status', 'active'], ['company_id', auth()->user()->branch->company_id]])
-            ->with('categories')
+        $company_menus = Menu::where('recipe_type', 'Banquet')
+            ->where('company_id', auth()->user()->branch->company_id)
+            ->pluck('id')
+            ->toArray();
+        $this->menus = BranchMenu::whereIn('menu_id', $company_menus)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->with([
+                'menu' => function ($query) {
+                    $query->where('recipe_type', 'Banquet')->with('mySRP');
+                }
+            ])
             ->get();
-            $this->customers = Customer::where('branch_id', auth()->user()->branch_id)->get();
-        
+            // dd($this->menus);
+        $this->customers = Customer::where('branch_id', auth()->user()->branch_id)->get();
+
     }
 }

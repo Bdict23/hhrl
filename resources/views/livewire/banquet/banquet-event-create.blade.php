@@ -230,12 +230,12 @@
                             <tbody>
                                 @forelse ($menus as $menu)
                                     <tr>
-                                        <td>{{ $menu->menu_name }}</td>
-                                        <td>{{ $menu->category ? $menu->category->name : 'N/A' }}</td>
-                                        <td>{{ $menu->ratePrice && $menu->ratePrice->amount ? '₱' . $menu->ratePrice->amount : 'FREE' }}</td>
-                                        <td class="text-wrap">{{ $menu->description }}</td>
+                                        <td>{{ $menu->menu->menu_name }}</td>
+                                        <td>{{ $menu->menu->categories ? $menu->menu->categories->category_name : 'N/A' }}</td>
+                                        <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
+                                        <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-success select-menu-btn" data-name="{{ $menu->menu_name }}">ADD</button>
+                                            <button class="btn btn-sm btn-success select-menu-btn" data-name="{{ $menu->menu->menu_name }}">ADD</button>
                                         </td>
                                     </tr>
                                 @empty

@@ -16,13 +16,13 @@ return new class extends Migration
             $table->id();
             $table->string('reference_number')->unique()->comment('Unique reference number for the equipment return');
             $table->string('document_number')->nullable()->comment('Document number associated with the equipment return');
-            $table->foreignId('equipment_request_id')->constrained('equipment_requests')->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the equipment request this return is associated with');
-            $table->foreignId('branch_id')->constrained()->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this return belongs to');
+            $table->foreignId('equipment_request_id')->constrained('equipment_requests')->references('id')->on('equipment_requests')->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the equipment request this return is associated with');
+            $table->foreignId('branch_id')->constrained()->references('id')->on('branches')->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this return belongs to');
             $table->enum('status', ['DRAFT', 'FINAL'])->default('DRAFT')->comment('Status of the equipment return');
             $table->text('notes')->nullable()->comment('Additional notes or comments regarding the equipment return');
-            $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who created the equipment return');
-            $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who approved the equipment return');
-            $table->foreignId('received_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who received the equipment return');
+            $table->foreignId('created_by')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who created the equipment return');
+            $table->foreignId('approved_by')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who approved the equipment return');
+            $table->foreignId('received_by')->nullable()->constrained('employees')->references('id')->on('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who received the equipment return');
             $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
         }); 
