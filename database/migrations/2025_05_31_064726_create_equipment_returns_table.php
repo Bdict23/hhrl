@@ -23,8 +23,9 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who created the equipment return');
             $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who approved the equipment return');
             $table->foreignId('received_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who received the equipment return');
-            $table->timestamps();
-        });
+            $table->timestamp('created_at')->useCurrent()->index('created_at'); // Set default value to current timestamp
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
+        }); 
 
         Schema::table('department_cardex', function (Blueprint $table) {
             $table->enum('status', ['TEMP', 'FINAL'])->default('TEMP')->comment('Status of the department cardex entry');

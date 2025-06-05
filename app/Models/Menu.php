@@ -12,8 +12,19 @@ use App\Models\Employee;
 
 class Menu extends Model
 {
+
     use HasFactory;
     protected $table = 'menus';
+    protected $fillable = [
+        'menu_name',
+        'menu_image',
+        'category_id',
+        'status',
+        'created_by',
+        'reviewer_id',
+        'approver_id',
+        'company_id'
+    ];
 
 
     public function categories(){

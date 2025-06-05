@@ -98,9 +98,11 @@
                             <label for="venue" class="form-label text-sm">Venue</label>
                             <select name="" id="" class="form-select" required>
                                 <option value="">Select Venue</option>
-                                <option value="Venue 1">Venue 1</option>
-                                <option value="Venue 2">Venue 2</option>
-                                <option value="Venue 3">Venue 3</option>
+                                @forelse ($venues as $venue)
+                                    <option value="{{ $venue->id }}">{{ $venue->venue_name }} &nbsp; ({{ $venue->ratePrice && $venue->ratePrice->amount ? '₱' . $venue->ratePrice->amount : 'FREE' }})</option>
+                                @empty
+                                    
+                                @endforelse
                             </select>
                         </div>
                         <div class="mb-3">
@@ -152,7 +154,6 @@
                             <div class="d-flex justify-content-end">
                                 <button class="btn btn-success" type="submit">Save Event</button>
                                 <button class="btn btn-secondary ms-2" type="reset">Reset</button>
-                                <button class="btn btn-danger ms-2" type="reset">Cancel</button>
                                 </form>
                             </div>
                         </div>
@@ -174,40 +175,34 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Service Name</th>
-                                    <th>Rate</th>
-                                    <th>Description</th>
-                                    <th>Action</th>
+                                    <th class="text-xs">Service Name</th>
+                                    <th class="text-xs">Rate</th>
+                                    <th class="text-xs">Description</th>
+                                    <th class="text-xs">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Example static rows, replace with  for dynamic data -->
-                                <tr>
-                                    <td>Decoration</td>
-                                    <td>1000</td>
-                                    <td>Basic hall decoration</td>
-                                    <td><button class="btn btn-sm btn-success">Add</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Sound System</td>
-                                    <td>500</td>
-                                    <td>Standard sound setup</td>
-                                    <td><button class="btn btn-sm btn-success">Add</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Lighting</td>
-                                    <td>700</td>
-                                    <td>Event lighting package</td>
-                                    <td><button class="btn btn-sm btn-success">Add</button></td>
-                                </tr>
-                                <!-- End static rows -->
+                                @forelse ($services as $service)
+                                    <tr>
+                                        <td>{{ $service->service_name }}</td>
+                                        <td>{{ $service->ratePrice && $service->ratePrice->amount ? '₱' . $service->ratePrice->amount : 'FREE' }}</td>
+                                        <td class="text-wrap">{{ $service->service_description }}</td>     
+                                        <td>
+                                            <button class="btn btn-sm btn-success select-service-btn" data-name="{{ $service->service_name }}">ADD</button>
+                                        </td>
+                                    </tr>
+                                    
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No services available</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="addSelectedServices">Add Selected Services</button>
                 </div>
             </div>
         </div>
@@ -225,50 +220,35 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Menu Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>Description</th>
-                                    <th>Action</th>
+                                    <th class="text-xs">Menu Name</th>
+                                    <th class="text-xs">Category</th>
+                                    <th class="text-xs">Price</th>
+                                    <th class="text-xs">Description</th>
+                                    <th class="text-xs">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Example static rows, replace with  for dynamic data -->
-                                <tr>
-                                    <td>Buffet Lunch</td>
-                                    <td>Lunch</td>
-                                    <td>1200</td>
-                                    <td>Includes 3 main courses, dessert, and drinks</td>
-                                     <td>
-                                        <button class="btn btn-sm btn-success select-customer-btn" data-name="Jane Smith">Select</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>High Tea</td>
-                                    <td>Snacks</td>
-                                    <td>800</td>
-                                    <td>Assorted snacks and tea/coffee</td>
-                                     <td>
-                                        <button class="btn btn-sm btn-success select-customer-btn" data-name="Jane Smith">Select</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dinner Deluxe</td>
-                                    <td>Dinner</td>
-                                    <td>1500</td>
-                                    <td>Multi-course dinner with starters and dessert</td> 
-                                    <td>
-                                        <button class="btn btn-sm btn-success select-customer-btn" data-name="Jane Smith">Select</button>
-                                    </td>
-                                </tr>
-                                <!-- End static rows -->
+                                @forelse ($menus as $menu)
+                                    <tr>
+                                        <td>{{ $menu->menu_name }}</td>
+                                        <td>{{ $menu->category ? $menu->category->name : 'N/A' }}</td>
+                                        <td>{{ $menu->ratePrice && $menu->ratePrice->amount ? '₱' . $menu->ratePrice->amount : 'FREE' }}</td>
+                                        <td class="text-wrap">{{ $menu->description }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success select-menu-btn" data-name="{{ $menu->menu_name }}">ADD</button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No menus available</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="addSelectedMenus">Add Selected Menus</button>
                 </div>
             </div>
         </div>
@@ -350,28 +330,29 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>Gender</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Example static rows, replace with dynamic data -->
+                            @forelse ($customers as $customer)
+                               <tr>
+                                    <td>{{ $customer->customer_fname . ' ' . $customer->customer_mname . ' ' . $customer->customer_lname }}</td>
+                                    <td>{{ $customer->email }}</td>
+                                    <td>{{ $customer->contact_no_1 }}</td>
+                                    <td>{{ $customer->gender }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success select-customer-btn" data-name="{{ $customer->customer_fname . ' ' . $customer->customer_mname . ' ' . $customer->customer_lname }}">Select</button>
+                                    </td>
+
+                               </tr>
+                            @empty
+
                             <tr>
-                                <td>John Doe</td>
-                                <td>john@example.com</td>
-                                <td>1234567890</td>
-                                <td>
-                                    <button class="btn btn-sm btn-success select-customer-btn" data-name="John Doe">Select</button>
-                                </td>
+                                <td colspan="6" class="text-center">No Data Found</td>
                             </tr>
-                            <tr>
-                                <td>Jane Smith</td>
-                                <td>jane@example.com</td>
-                                <td>9876543210</td>
-                                <td>
-                                    <button class="btn btn-sm btn-success select-customer-btn" data-name="Jane Smith">Select</button>
-                                </td>
-                            </tr>
-                            <!-- End static rows -->
+                                
+                            @endforelse
                         </tbody>
                     </table>
                     <!-- Customer List Modal Footer -->

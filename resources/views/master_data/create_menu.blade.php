@@ -9,11 +9,12 @@
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h2>Create New Food Menu</h2>
+                            <h4>Create New Recipe</h4>
                             <div class="me-3">
                                 <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                     data-bs-target="#AddItemModal">+
-                                    Add Recipe</button>
+                                    Add Ingredients</button>
+                                <a class="btn btn-info" type="button" href="/recipe-lists">Recipe Summary</a>
                                 <button onclick="history.back()" class="btn btn-primary" type="button"> Back </button>
                             </div>
                         </header>
@@ -27,13 +28,13 @@
                             <table class="table table-striped table-hover me-3">
                                 <thead class="thead-dark me-3">
                                     <TR style="font-size: smaller;">
-                                        <th>CODE</th>
-                                        <th>DESCRIPTION</th>
-                                        <th>QTY</th>
-                                        <th>MEASURE</th>
-                                        <th>COST</th>
-                                        <th>TOTAL COST</th>
-                                        <th>Action</th>
+                                        <th class="text-xs">CODE</th>
+                                        <th class="text-xs">DESCRIPTION</th>
+                                        <th class="text-xs">QTY</th>
+                                        <th class="text-xs">MEASURE</th>
+                                        <th class="text-xs">COST</th>
+                                        <th class="text-xs">TOTAL COST</th>
+                                        <th class="text-xs">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="itemTableBody">
@@ -57,29 +58,34 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-
                     <div class="container">
-
                         <form>
                             @csrf
                             <div class="form-group">
                                 <img id="imagePreview" src="{{ asset('images/sample_image.jpg') }}" alt="Image Preview"
-                                    style="width: 90%; height: 150px; object-fit: cover;" name="image">
+                                    style="width: 90%; height: 120px; object-fit: cover;" name="image">
                             </div>
                             <div class="form-group mt-1">
-                                <label for="menu_name" style="font-size: 13px;">Menu Name:</label>
-                                <input type="text" class="form-control" id="menu_name" name="menu_name" required>
+                                <label for="recipe_name" style="font-size: 13px;">Recipe Name:</label>
+                                <input type="text" class="form-control" id="recipe_name" name="menu_name" required>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label for="recipe_type" style="font-size: 13px;">Type</label>
+                                <select name="menu_type" id="recipe_type" class="form-select" aria-label="Default select example">
+                                    <option value="APPETIZER">Ala Cart</option>
+                                    <option value="MAIN_COURSE">Bangquet</option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="menu_description" style="font-size: 13px;">Description:</label>
-                                <textarea class="form-control" id="menu_description" name="menu_description" rows="3" required
-                                    style="height: 70%; width:100%"></textarea>
+                                <label for="recipe_description" style="font-size: 13px;">Description:</label>
+                                <textarea class="form-control" id="recipe_description" name="menu_description" rows="3" required
+                                    style="height: 30px; width:100%"></textarea>
                             </div>
                             <div class="form-group mt-2">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="menu_price" style="font-size: 13px;">CODE:</label>
-                                        <input type="text" class="form-control" id="menu_code" name="menu_code" required
+                                        <label for="recipe_price" style="font-size: 13px;">CODE:</label>
+                                        <input type="text" class="form-control" id="recipe_code" name="menu_code" required
                                             placeholder="ex. CY23">
                                     </div>
                                     <div class="col-md-6">
@@ -120,7 +126,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="menu_image" style="font-size: 13px">Upload Image:</label>
-                                <input type="file" class="form-control-file" id="menu_image" name="menu_image" required
+                                <input class="form-control text-sm" type="file" id="menu_image" name="menu_image" required
                                     onchange="previewImage(event)">
                             </div>
 

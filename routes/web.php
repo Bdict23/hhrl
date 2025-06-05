@@ -349,3 +349,9 @@ Route::get('/banquet-procurement-lists', function () {
 Route::get('/banquet-procurement-create', function () {
     return view('banquet.banquet-procurement-create');
 })->middleware(['auth', 'verified'])->name('banquet.procurement.create');
+
+
+//Route for Recipe Lists
+Route::get('/recipe-lists', function () {
+    return view('restaurant.recipe-lists');
+})->middleware(['auth', 'verified'])->name('Restaurant.RecipeLists');

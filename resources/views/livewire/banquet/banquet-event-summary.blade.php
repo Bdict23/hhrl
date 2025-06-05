@@ -27,9 +27,7 @@
         <!-- Spacer -->
         @if (auth()->user()->employee->getModulePermission('Banquet Events') == 1)
             <div class="ms-auto">
-               <x-primary-button style="text-decoration: none;">
-                                <a href="{{ route('banquet_events.create') }}" style="text-decoration: none; color: inherit;">+ Create New Event</a>
-                </x-primary-button>
+                <a href="{{ route('banquet_events.create') }}" style="text-decoration: none;" class="btn btn-primary">+ Create New Event</a>
             </div>
         @endif
         

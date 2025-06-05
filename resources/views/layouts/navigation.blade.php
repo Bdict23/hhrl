@@ -159,33 +159,12 @@
                 </div>
 
                 <!-- Dropdown Menu for Sales Order -->
-                {{-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
-                     <x-dropdown>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                    <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <div>{{ __('Sales') }}</div>
-                                <div class="ms-1">
-
-                                </div>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <x-dropdown-link :href="url('/sales_order')" class="no-underline">
-                                {{ __('Sales Order') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/order_menu')" class="no-underline">
-                                {{ __('Order Menu') }}
-                            </x-dropdown-link>
-                        </x-slot>
-                    </x-dropdown> --}}
-
-                    {{-- <x-dropdown>
-                        <x-slot name="trigger">
-                            <button
-                                class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <div>{{ __('Service') }}</div>
+                                <div>{{ __('Front Desk') }}</div>
                                 <div class="ms-1">
 
                                 </div>
@@ -199,36 +178,35 @@
                             <x-dropdown-link :href="url('/allocate_order')" class="no-underline">
                                 {{ __('Allocate Order') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
-                                {{ __('Orders') }}
-                            </x-dropdown-link>
                         </x-slot>
-                    </x-dropdown> --}}
+                    </x-dropdown>
 
-
-
-
-                    {{-- <x-dropdown>
+                    <x-dropdown>
                         <x-slot name="trigger">
                             <button
                                 class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <div>{{ __('Transaction') }}</div>
                                 <div class="ms-1">
-
                                 </div>
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="url('/sales_order')" class="no-underline">
+                                {{ __('Sales Order') }}
+                            </x-dropdown-link>
                             <x-dropdown-link :href="url('/invoicing')" class="no-underline">
                                 {{ __('Sales Invoice') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="url('/daily_sales_report')" class="no-underline">
                                 {{ __('Daily Sales') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
+                                {{ __('Menu Orders') }}
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown> 
-                </div> --}}
+                </div>
 
                 <!-- Dropdown Menu for Validation -->
                 @if(auth()->user()->employee->getGroupedModulePermissions('Validations') !=2)
@@ -255,12 +233,11 @@
                                         {{ __('P.O - Review') }}
                                     </x-dropdown-link>
                                 @endif
-                            @if (auth()->user()->employee->getModulePermission('PO Approval') == 1 )
-                                    <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                    {{ __('P.O - Approval') }}
-                                    </x-dropdown-link>
-                            @endif
-                                
+                                @if (auth()->user()->employee->getModulePermission('PO Approval') == 1 )
+                                        <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                                        {{ __('P.O - Approval') }}
+                                        </x-dropdown-link>
+                                @endif
                                 
                                 @if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1 )
                                     <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
@@ -272,6 +249,12 @@
                                         {{ __('Withdrawal - Approval') }}
                                     </x-dropdown-link>                               
                                 @endif
+                                 <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                                    Payment
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
+                                    Menu Approval
+                                </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -316,6 +299,39 @@
                     </div>
                 @endif
 
+                {{-- Dropdown for Restaurants --}}
+             
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                            <x-dropdown>
+                                <x-slot name="trigger">
+                                    <button
+                                        class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                        <div>{{ __('Restaurants') }}</div>
+                                        <div class="ms-1">
+                                            {{-- <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                                                    clip-rule="evenodd" />
+                                            </svg> --}}
+                                        </div>
+                                    </button>
+                                </x-slot>
+                            
+                                <x-slot name="content">
+                                    <x-dropdown-link :href="url('/recipe-lists')" class="no-underline">
+                                        {{ __('Recipe Lists') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="url('/menu-management')" class="no-underline">
+                                        {{ __('Menu Control') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="url('/order_menu')" class="no-underline">
+                                        {{ __('Menu') }}
+                                    </x-dropdown-link>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+              
 
                     {{-- Ken Entrance module --}}
                         @if (auth()->user()->employee->getGroupedModulePermissions('Entrance') !=2)
@@ -345,12 +361,7 @@
                                     </x-dropdown-link>
                                 @endif
                                 
-                                {{-- <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
-                                    Payment
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
-                                Records
-                                </x-dropdown-link> --}}
+                               
                                 @if (auth()->user()->employee->getModulePermission('Leisures') !=2)
                                     <x-dropdown-link :href="route('leisures.page')" class="no-underline">
                                         Leisures
@@ -572,12 +583,12 @@
                 </div>
             
                 
-                {{-- <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
+                <x-responsive-nav-link :href="route('menus.create')" class="no-underline" :active="request()->routeIs('menus.create')">
                     {{ __('Create Menu') }}
-                </x-responsive-nav-link> --}}
-                {{-- <x-responsive-nav-link :href="url('/menu_lists')" class="no-underline">
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="url('/menu_lists')" class="no-underline">
                     {{ __('Menu Lists') }}
-                </x-responsive-nav-link> --}}
+                </x-responsive-nav-link>
 
             
 

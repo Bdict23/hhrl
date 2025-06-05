@@ -8,7 +8,6 @@ use App\Models\RequisitionDetail;
 use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
-use App\Models\RequisitionType;
 use App\Models\Item;
 use App\Models\priceLevel;
 use Illuminate\Support\Facades\DB;
@@ -26,23 +25,23 @@ use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use Livewire\WithPagination;
 use Livewire\Livewire;
+use App\Models\Module;
 
 
 class MenusController extends Controller
 {
     public function createMenu(){
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
-        $types =  RequisitionType::all();
         // $activeStatus = Status::where('status_name', 'ACTIVE')->first();
         $items = Item::with('priceLevel', 'units') // Added unitOfMeasures here
             ->where('item_status', 'ACTIVE')
             ->where('company_id', Auth::user()->branch->company_id)
             ->get();
         $categories = Category::where([['status', 'ACTIVE'], ['company_id', Auth::user()->branch->company_id], ['category_type', 'MENU']])->get();
-        $approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE','CREATE_MENU'], ['branch_id', Auth::user()->branch_id]])->get();
-        $reviewers = Signatory::where([['signatory_type', 'REVIEWER'], ['status', 'ACTIVE'], ['MODULE','CREATE_MENU'], ['branch_id', Auth::user()->branch_id]])->get();
-
-        return view('master_data.create_menu', compact('suppliers', 'types', 'items', 'approvers', 'reviewers','categories'));
+        $module = Module::where('module_name', 'Create Recipe')->first();
+        $approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id ], ['branch_id', Auth::user()->branch_id]])->get();
+        $reviewers = Signatory::where([['signatory_type', 'REVIEWER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id], ['branch_id', Auth::user()->branch_id]])->get();
+        return view('master_data.create_menu', compact('suppliers', 'items', 'approvers', 'reviewers','categories'));
     }
 
 
@@ -64,7 +63,7 @@ class MenusController extends Controller
             $menu->menu_description = $request->menu_description;
             $menu->category_id = $request->category_id;
             $menu->approver_id = $request->approver_id;
-            $menu->reviewer_id = $request->reviewer_id;
+            $menu->reviewer_id = $request->reviewer_id ?? null;
             $menu->created_by = Auth::user()->emp_id;
             $menu->company_id = Auth::user()->branch->company_id;
             $menu->save();
