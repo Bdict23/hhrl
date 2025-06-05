@@ -12,6 +12,7 @@ class Customer extends Model
         'customer_fname',
         'customer_lname',
         'customer_mname',
+        'suffix',
         'contact_person',
         'contact_person_relation',
         'gender',

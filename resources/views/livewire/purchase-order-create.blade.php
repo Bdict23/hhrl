@@ -312,28 +312,7 @@
             });
         }
 
-        // function filterByROP() {
-        //     const checked = document.getElementById('filterReorderPoint').checked;
-        //     const rows = document.querySelectorAll('#itemsTableBody tr');
-        //     rows.forEach(row => {
-        //         // Parse available, ROP, and status columns
-        //         const available = parseFloat(row.cells[3].textContent) || 0;
-        //         const rop = parseFloat(row.cells[4].textContent) || 0;
-        //         const status = row.cells[6].textContent.trim().toLowerCase();
-        //         if (checked) {
-        //             // Show only if available <= ROP and status is 'active'
-        //             if (available <= rop && status === 'active') {
-        //                 row.style.display = '';
-        //             } else {
-        //                 row.style.display = 'none';
-        //             }
-        //         } else {
-        //             row.style.display = '';
-        //         }
-        //     });
-
-        // }
-
+        
         // let filterROP = document.getElementById('filterReorderPoint');
         //     filterROP.addEventListener('click', function() {
         //         filterByROP();

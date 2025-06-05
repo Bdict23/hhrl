@@ -54,7 +54,7 @@
 
         function updateTotalPrice(input) {
             const row = input.closest('tr');
-            const priceCell = row.querySelector('td:nth-child(4)');
+            const priceCell = row.querySelector('td:nth-child(5)');
             const totalPriceCell = row.querySelector('.total-price');
 
             // Ensure price and quantity are parsed correctly
