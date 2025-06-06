@@ -17,4 +17,13 @@ class BanquetEvent extends Model
         'notes',
         'customer_id',
     ];
+
+    public function venue()
+    {
+        return $this->belongsTo(Venue::class, 'venue_id');
+    }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
 }

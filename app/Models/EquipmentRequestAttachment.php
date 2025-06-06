@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EquipmentHandler extends Model
+class EquipmentRequestAttachment extends Model
 {
     //
-    protected $table = 'equipment_handlers';
+    protected $table = 'equipment_request_attachments';
     protected $fillable = [
-        'employee_id',
         'equipment_request_id',
+        'file_path',
     ];
 }
