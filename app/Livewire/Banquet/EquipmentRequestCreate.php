@@ -15,6 +15,7 @@ use App\Models\Module;
 use App\Models\Signatory;
 use App\Models\EquipmentRequestAttachment;
 use Livewire\WithFileUploads;
+use Illuminate\Http\Request;
 
 
 
@@ -55,6 +56,7 @@ class EquipmentRequestCreate extends Component
     public $eventStartTime = null;
     public $eventEndTime = null;
     public $eventNote = null;
+    public $isNewRequest = true;
 
     // request details
      public $attachments = [];
@@ -62,6 +64,7 @@ class EquipmentRequestCreate extends Component
     public $requestDocumentNumber = null;
     public $departmentId = null;
     public $saveAs = null;
+    public $requestReferenceNumber = null;
 
     protected $rules = [
         'inchargedBy' => 'required',
@@ -81,9 +84,17 @@ class EquipmentRequestCreate extends Component
         return view('livewire.banquet.equipment-request-create');
     }
 
-    public function mount()
+    public function mount(Request $request)
     {
-      $this->fetchData();
+        // if (auth()->user()->employee->getModulePermission('Create Equipment Request') == 2) {
+        //     return redirect()->to('dashboard');
+        // }
+        if ($request->has('equipment-request-number')) {
+                $this->isNewRequest = false;
+                $this->editEquipmentRequest($request->query('equipment-request-number'));
+        } else {
+            $this->fetchData();
+        }
     }
 
     public function fetchData()
@@ -99,11 +110,13 @@ class EquipmentRequestCreate extends Component
 
     public function loadDepartmentEmployees($departments_id)
     {
+       
         $this->departmentId = $departments_id;
         $this->departmentEmployees = Employee::with('position')->where('department_id', $departments_id)
             ->where('status', 'active')
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
+      if($this->isNewRequest){
         //empty the handling team
         $this->handlingTeam = [];
         $this->handlingTeam = $this->departmentEmployees->map(function ($employee) {
@@ -115,6 +128,7 @@ class EquipmentRequestCreate extends Component
 
             ];
         })->toArray();
+        } 
     }
 
     public function removeHandlingTeamMember($memberId)
@@ -244,6 +258,64 @@ class EquipmentRequestCreate extends Component
         }
 
         return redirect()->route('banquet.equipment-request.create')->with('success', 'Equipment request created successfully.');
+    }
+
+
+    public function editEquipmentRequest($referenceNumber)
+    {
+        $this->fetchData();
+        $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers'])
+            ->where('reference_number', $referenceNumber)
+            ->firstOrFail();
+        // dd($equipmentRequest);
+
+        // Load the data into the component properties
+        $this->requestDocumentNumber = $equipmentRequest->document_number;
+        $this->requestReferenceNumber = $equipmentRequest->reference_number;
+        $this->departmentId = $equipmentRequest->department_id;
+        $this->eventId = $equipmentRequest->event_id;
+        $this->eventName = $equipmentRequest->event ? $equipmentRequest->event->event_name : null;
+        $this->eventDate = $equipmentRequest->event_date;
+        $this->eventStartTime = $equipmentRequest->from_time;
+        $this->eventEndTime = $equipmentRequest->to_time;
+        $this->eventNote = $equipmentRequest->event ? $equipmentRequest->event->notes : null;
+        $this->myNote = $equipmentRequest->notes;
+        $this->inchargedBy = $equipmentRequest->received_by;
+        $this->approver = $equipmentRequest->approved_by;
+        $this->saveAs = $equipmentRequest->status === 'PREPARING' ? 'DRAFT' : 'FINAL';
+
+        // Load selected equipments
+        foreach ($equipmentRequest->departmentCardex as $cardex) {
+            if ($cardex->item) {
+                $this->selectedEquipments[] = $cardex->item;
+                $this->equipmentQty[] = ['id' => $cardex->item_id, 'qty' => $cardex->qty_out];
+            }
+        }
+
+
+        // Load handling team
+        foreach ($equipmentRequest->equipmentHandlers as $handler) {
+            if ($handler->employee) {
+                $this->handlingTeam[] = [
+                    'id' => $handler->employee_id,
+                    'first_name' => $handler->employee->name,
+                    'last_name' => $handler->employee->last_name,
+                    'position' => optional($handler->employee)->position->position_name ?  : null,
+                ];
+            }
+        }
+
+        // load department employees
+        $this->loadDepartmentEmployees($equipmentRequest->department_id);
+
+        // Load attachments
+        foreach ($equipmentRequest->attachments as $attachment) {
+            if ($attachment) {
+                $this->attachments[] = [
+                    'file_path' => asset('storage/' . $attachment['file_path']),
+                ];
+            }
+        }
     }
 
 }

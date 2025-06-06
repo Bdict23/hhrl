@@ -94,11 +94,11 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="referenceNumber" class="form-label text-sm">Reference Number</label>
-                                <input type="text" class="form-control text-center" id="referenceNumber" disabled placeholder="<AUTO>">
+                                <input type="text" class="form-control text-center" id="referenceNumber" disabled placeholder="<AUTO>" value="{{ $requestReferenceNumber }}">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="requestDate" class="form-label text-sm">Document Series No. <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="documentNumber" wire:model="requestDocumentNumber">
+                                <input type="text" class="form-control" id="documentNumber" wire:model="requestDocumentNumber" value="{{ $requestDocumentNumber }}" >
                                 @error('requestDocumentNumber')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror

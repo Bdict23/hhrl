@@ -12,4 +12,9 @@ class EquipmentHandler extends Model
         'employee_id',
         'equipment_request_id',
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
 }
