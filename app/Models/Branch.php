@@ -70,4 +70,9 @@ class Branch extends Model
         }
         
     }
+
+    public function banquetEvents()
+    {
+        return $this->hasMany(BanquetEvent::class, 'branch_id');
+    }
 }

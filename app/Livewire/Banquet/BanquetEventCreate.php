@@ -9,6 +9,9 @@ use App\Models\Service; // Assuming Service model exists in App\Models namespace
 use App\Models\Menu; // Assuming Menu model exists in App\Models namespace
 use App\Models\Customer;
 use App\Models\BranchMenu; 
+use App\Models\BanquetEvent; // Assuming BanquetEvent model exists in App\Models namespace
+use App\Models\EventService;
+use App\Models\EventMenu;
 
 class BanquetEventCreate extends Component
 {
@@ -41,8 +44,24 @@ class BanquetEventCreate extends Component
     public $customerAddress;
     public $customerBirthdate;
 
-
+    // banquet event details
+    public $event_name;
+    public $event_date;
+    public $event_start_time;
+    public $event_end_time;
     public $venue_id;
+    public $guest_count;
+    public $event_notes;
+
+    protected $rules = [
+        'event_name' => 'required|string|max:255',
+        'event_date' => 'required|date',
+        'event_start_time' => 'required|date_format:H:i',
+        'event_end_time' => 'required|date_format:H:i|after:event_start_time',
+        'venue_id' => 'required|exists:venues,id',
+        'guest_count' => 'required|integer|min:1',
+        'event_notes' => 'nullable|string|max:500',
+    ];
     public function render()
     {
         return view('livewire.banquet.banquet-event-create');
@@ -128,7 +147,8 @@ class BanquetEventCreate extends Component
     public function resetForm()
     {
         $this->reset();
-        $this->fethData();
+        $this->dispatch('refresh');
+        $this->fetchData();
     }
 
 
@@ -194,5 +214,52 @@ class BanquetEventCreate extends Component
         unset($this->menusAdded[$index]);
         $this->selectedMenus = array_values($this->selectedMenus);
         $this->menusAdded = array_values($this->menusAdded);
+    }
+
+
+    public function createEvent()
+    {
+        $this->validate();
+
+        // Create the banquet event
+        $event = auth()->user()->branch->banquetEvents()->create([
+            'event_name' => $this->event_name,
+            'event_date' => $this->event_date,
+            'start_time' => $this->event_start_time,
+            'end_time' => $this->event_end_time,
+            'venue_id' => $this->venue_id,
+            'guest_count' => $this->guest_count,
+            'notes' => $this->event_notes,
+            'customer_id' => $this->selectedCustID,
+            'branch_id' => auth()->user()->branch_id,
+            'created_by' => auth()->user()->id,
+        ]);
+
+        // insert services on event_services table
+        if (count($this->servicesAdded) > 0) {
+            foreach($this->servicesAdded as $service) {
+                EventService::create([
+                    'event_id' => $event->id,
+                    'service_id' => $service['id'],
+                    'qty' => $service['qty'],
+                    'price_id' => $service['rate'],
+                ]);
+            }
+        }
+        // insert event menu
+        if (count($this->menusAdded) > 0) {
+            foreach($this->menusAdded as $menu) {
+                EventMenu::create([
+                    'event_id' => $event->id,
+                    'menu_id' => $menu['id'],
+                    'qty' => $menu['qty'],
+                    'price_id' => $menu['rate'],
+                ]);
+            }
+        }
+        $this->reset();
+        session()->flash('success','Event successfully added!');
+        $this->fetchData();
+        $this->dispatch('refresh');
     }
 }

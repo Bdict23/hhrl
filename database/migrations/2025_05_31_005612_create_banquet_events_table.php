@@ -20,7 +20,7 @@ return new class extends Migration
             $table->time('start_time')->nullable()->index('start_time')->comment('Start time of the banquet event');
             $table->time('end_time')->nullable()->index('end_time')->comment('End time of the banquet event');
             $table->integer('guest_count')->nullable()->comment('Number of guests expected at the event');
-            $table->enum('status', ['PREPARING','PENDING', 'CONFIRMED','UNATTENDED', 'CANCELLED'])->default('PENDING')->index('status')->comment('Status of the banquet event');
+            $table->enum('status', ['PENDING', 'CONFIRMED','UNATTENDED', 'CANCELLED'])->default('PENDING')->index('status')->comment('Status of the banquet event');
             $table->text('notes')->nullable()->comment('Additional notes or special requests for the event');
             $table->foreignId('branch_id')->constrained()->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this event belongs to');
             $table->foreignId('created_by')->nullable()->constrained('employees')->onDelete('set null')->onUpdate('cascade')->comment('Employee who created the event');

@@ -116,7 +116,7 @@
         <div class="container my-4">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <form action="" method="POST">
+                    <form action="" method="POST" wire:submit.prevent="createEvent">
                         @csrf
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -127,7 +127,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="event_name" class="form-label text-sm">Customer Name</label>
+                                <label for="customer_name" class="form-label text-sm">Customer Name</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="customer_name" name="customer_name" disabled value="{{ $selectedCustName }}">
                                     <button class="input-group-text" type="button"
@@ -382,7 +382,7 @@
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
-                                    <option value="Other">Neutral</option>
+                                    <option value="Neutral">Neutral</option>
                                 </select>
                                 @error('customerGender')
                                     <span class="text-danger">{{ $message }}</span>
@@ -525,6 +525,14 @@
         </div>
 
     <script>
+        window.addEventListener('refresh', event => {
+            // Reset all forms on the page
+            document.querySelectorAll('form').forEach(form => form.reset());
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(function() {
+                document.getElementById('success-message').style.display = 'none';
+            }, 1500);
+        });
         window.addEventListener('hideCustomerRegistrationModal', event => {
             // reset form
                  document.getElementById('customerRegistrationForm').reset();
