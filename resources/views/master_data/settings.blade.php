@@ -113,10 +113,12 @@
                     <hr>
                 @endif
 
-                <h5 class="text-muted">Menu Management</h5>
+                <h5 class="text-muted">Restaurant Management</h5>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-category-lists', this)">Menu
                             Categories</a>
+                    </li>
+                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('table-lists', this)">Table Management</a>
                     </li>
                 </ul>
                 <hr>
@@ -214,6 +216,10 @@
                 <div>
                     @livewire('settings.menu-category')
                 </div>
+                <!-- Table Management Tab Content -->
+                <div>
+                    @livewire('settings.table-management')
+                </div>
 
                 <!-- Brand Tab Content -->
                 <div>
@@ -241,71 +247,7 @@
                 <div>
                     @livewire('settings.manage-employees')
                 </div>
-                <!-- Menu Categories Tab Content -->
-                <div id="menu-categories-table" class="tab-content dashboard" style="display: none;">
-                    <x-primary-button type="button" class="mb-3 btn-sm"
-                        onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
-                        BRAND</x-primary-button>
-                    <table class="table table-striped table-sm small">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>DESCRIPTION</th>
-                                <th class="text-end">STATUS</th>
-                                <th class="text-end">REG. COMPANY</th>
-                                <th class="text-end">ACTIONS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($MenuCategories as $category)
-                                <tr>
-                                    <td>{{ $category->category_name ?? 'Not Registered' }}</td>
-                                    <td> {{ $category->category_description }}</td>
-                                    <td class="text-end">{{ $category->status }}</td>
-                                    <td class="text-end">{{ $category->company->company_name ?? 'Not Registered' }}</td>
-                                    <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-primary btn-sm">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-danger btn-sm">Delete</a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center">No menu category found</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Menu Categories form -->
-                <div id="menu-categories-form" class="tab-content dashboard" style="display: none;">
-                    <x-secondary-button type="button" class="mb-3"
-                        onclick="showTab('menu-categories-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
-                    <form>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Category Name <span style="color: red;">*</span></label>
-                            <input type="text" class="form-control" id="name" name="category_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description <span
-                                    style="color: red;">*</span></label>
-                            <textarea class="form-control" id="description" name="category_description" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Belong to Company <span
-                                    style="color: red;">*</span></label>
-                            <select class="form-control" id="status" name="category_status" required>
-                                @forelse ($companies as $company)
-                                    <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                                @empty
-                                    <option value="no_company">No Company Available</option>
-                                @endforelse
-                            </select>
-                        </div>
-                        <x-primary-button type="submit">Save</x-primary-button>
-                    </form>
-                </div>
-
+               
                 <div>
                     @livewire('settings.program-settings')
                 </div>
@@ -397,21 +339,6 @@
             });
         });
 
-        // document.getElementById('searchDepartment').addEventListener('input', function() {
-        //     const searchValue = this.value.toLowerCase();
-        //     const rows = document.querySelectorAll('#departmentTableBody tr');
-        //     rows.forEach(row => {
-        //         const departmentName = row.cells[0].textContent.toLowerCase();
-        //         const branchName = row.cells[1].textContent.toLowerCase();
-        //         const status = row.cells[2].textContent.toLowerCase();
-        //         if (departmentName.includes(searchValue) || branchName.includes(searchValue) || status
-        //             .includes(searchValue)) {
-        //             row.style.display = '';
-        //         } else {
-        //             row.style.display = 'none';
-        //         }
-        //     });
-        // });
 
         // Show success or error modal based on the session status
         @if (session('status') === 'success')
