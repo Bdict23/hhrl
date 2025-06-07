@@ -98,7 +98,7 @@
                 @endif
 
                 @if (auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2)
-                    <h5>Price Level</h5>
+                    <h5 class="text-muted">Price Level</h5>
                     <ul class="nav flex-column">
                         @if (auth()->user()->employee->getModulePermission('Item Retail Price') !=2)
                             <li class="nav-item"><a href="#" class="nav-link btn-sm"
@@ -112,13 +112,14 @@
                     </ul>                                                               
                     <hr>
                 @endif
-            
-                {{-- <h5 class="text-muted">Menu Management</h5>
+
+                <h5 class="text-muted">Menu Management</h5>
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menus-table', this)">Menu
-                            List</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-category-lists', this)">Menu
+                            Categories</a>
+                    </li>
                 </ul>
-                <hr> --}}
+                <hr>
                 {{-- <h5 class="text-muted">Menu Properties</h5>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a href="#" class="nav-link btn-sm"
@@ -209,6 +210,10 @@
                     @livewire('item-cost')
                 </div>
 
+                <!-- Menu Categories Tab Content -->
+                <div>
+                    @livewire('settings.menu-category')
+                </div>
 
                 <!-- Brand Tab Content -->
                 <div>
