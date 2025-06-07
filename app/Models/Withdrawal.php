@@ -41,10 +41,19 @@ class Withdrawal extends Model
         return $this->belongsTo(Employee::class, 'prepared_by');
     }
 
-
     public function cardex()
     {
         return $this->hasMany(Cardex::class, 'withdrawal_id');
     }
-
+    public function event()
+    {
+        return $this->belongsTo(BanquetEvent::class, 'event_id');
+    }
+    public function getTotalPriceLevelAmountAttribute()
+    {
+        return $this->cardex->sum(function ($cardex) {
+            return optional($cardex->priceLevel)->amount ?? 0;
+        });
+    }
+  
 }

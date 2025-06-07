@@ -46,6 +46,12 @@ class Withdrawal extends Component
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
     public $hasReviewer = false; // check if reviewer is required
+    public $events = []; // display events on ui
+    public $eventId = null; // selected event from user
+    public $eventName = null; // selected event name from user
+
+
+
     protected $rules = [
         'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
@@ -86,6 +92,7 @@ class Withdrawal extends Component
         $module = Module::where('module_name', 'Item Withdrawal')->first();
 
         // Calculate total balance for each item using the Cardex model
+        $this->events = auth()->user()->branch->banquetEvents()->where('status', 'pending')->get();
         $this->myCardexItems = $myItems->map(function ($item) {
             $totalIn = Cardex::where('status', 'final')->where('item_id', $item->id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_in');
             $totalOut = Cardex::where('status', 'final')->where('item_id', $item->id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');
@@ -165,6 +172,7 @@ class Withdrawal extends Component
 
         $withdrawal = new WithdrawalModel();
         $withdrawal->reference_number = $this->reference;
+        $withdrawal->event_id = $this->eventId ?? null; // Ensure event_id is nullable
         $withdrawal->department_id = $this->selectedDepartment;
         $withdrawal->prepared_by = auth()->user()->emp_id;
         $withdrawal->reviewed_by = $this->reviewer;
@@ -227,6 +235,18 @@ class Withdrawal extends Component
         if ($value) {
             $this->useDate = now();
         }
+    }
+
+    public function selectedEvent($eventId)
+    {
+        $this->eventId = $eventId;
+        $event = auth()->user()->branch->banquetEvents()->find($eventId);
+        if ($event) {
+            $this->eventName = $event->event_name . '  ( ' . \Carbon\Carbon::parse($event->event_date)->format('M-d-Y') . ' )';
+        } else {
+            $this->eventName = null;
+        }
+        $this->dispatch('closeEventModal'); // Close the modal after selection
     }
 
     public function render()

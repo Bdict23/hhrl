@@ -90,7 +90,12 @@
                     <h5 class="card-title">Equipment Request Form</h5>
                 </div>
                 <div class="card-body">
-                    <form wire:submit.prevent="createRequest">
+                    <form 
+                        @if ($isNewRequest)
+                        wire:submit.prevent="createRequest"
+                        @else
+                        wire:submit.prevent="updateRequest"
+                        @endif>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="referenceNumber" class="form-label text-sm">Reference Number</label>
@@ -199,12 +204,38 @@
                                         <option value="DRAFT">Draft</option>
                                         <option value="FINAL">Final</option>
                                     </select>
-                                    <button type="submit" class="btn btn-success ">Save</button>
-                                    <button type="button" class="btn btn-danger input-group-text" wire:click="resetForm">Reset</button>
+                                    @if ($isNewRequest)
+                                        <button type="submit" class="btn btn-success ">Save</button>
+                                        <button type="button" class="btn btn-danger input-group-text" wire:click="resetForm">Reset</button>
+                                    @elseif ($saveAs === 'DRAFT')
+                                        <button type="submit" class="btn btn-success ">Update</button>
+                                    @endif
                                     <a type="button" href="{{ route('banquet_equipment_requests') }}" class="btn btn-secondary input-group-text" wire:click="openEventModal">Summary</a>
                                 </div>
                             </div>
                         </div>
+                        @if ($attachments)
+                        <strong for="" class="form-label">Attachments</strong>
+                           <div class="list-group list-group-horizontal table-responsive-sm">
+                                @foreach ($attachments as $attachment)
+                                    @php
+                                        $isUploadedFile = is_object($attachment) && method_exists($attachment, 'temporaryUrl');
+                                    @endphp
+                                    @if ($isUploadedFile)
+                                        <img class="img-thumbnail" src="{{ $attachment->temporaryUrl() }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                    @else
+                                        <div>
+                                            <a href="{{ asset('storage/' . $attachment) }}" target="_blank" class="text-decoration-none">
+                                                <img class="img-thumbnail" src="{{ asset('storage/' . $attachment) }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                            </a>
+                                        </div>
+                                    @endif
+                                @endforeach
+                           </div>
+                           @error('attachments.*')
+                                <span class="text-danger">{{ $message }}</span>
+                           @enderror
+                        @endif
                     </form>
                 </div>
             </div>

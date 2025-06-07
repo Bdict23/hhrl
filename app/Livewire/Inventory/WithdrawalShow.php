@@ -48,10 +48,10 @@ class WithdrawalShow extends Component
     public $remarks = null; // remarks from user
     public $overallTotal = 0; // overall total of selected items
     public $hasReviewer = false; // check if reviewer is required
-    
-
+    public $eventName = null; // event name for banquet procurement
     public $withdrawalID = null; // withdrawal id for update
-    
+    public $eventId = null; // event id for banquet procurement
+    public $events = []; // display events on ui
     protected $rules = [
         'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
@@ -106,6 +106,16 @@ class WithdrawalShow extends Component
         $this->finalStatus = $this->isAlreadyFinal;
         $this->haveSpan = $withdrawal->useful_date != null ? true : false;
         $this->selectedItems = [];
+        
+
+        if ($withdrawal->event_id != null) {
+            $this->eventId = $withdrawal->event_id;
+            $event = $withdrawal->event;
+            $this->eventName = $event->event_name . '  ( ' . \Carbon\Carbon::parse($event->event_date)->format('M-d-Y') . ' )';
+        } else {
+            $this->eventId = null;
+            $this->eventName = null;
+        }
 
         foreach ($withdrawal->cardex as $item) {
             $totalIn = Cardex::where('status', 'final')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_in');
@@ -143,6 +153,7 @@ class WithdrawalShow extends Component
     public function fetchData(){
 
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
+        $this->events = auth()->user()->branch->banquetEvents()->where('status', 'pending')->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();
         $module = Module::where('module_name', 'Item Withdrawal')->first();
 
@@ -248,6 +259,7 @@ class WithdrawalShow extends Component
         $withdrawal->source_branch_id = auth()->user()->branch_id;
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
+        $withdrawal->event_id = $this->eventId ?? null; // Set the event ID if available
         $withdrawal->save();
         $withdrawalId = $this->withdrawalID; // Ensure the ID is retrieved after saving
 
@@ -306,7 +318,17 @@ class WithdrawalShow extends Component
         }
     }
 
-
+    public function selectedEvent($eventId)
+    {
+        $this->eventId = $eventId;
+        $event = auth()->user()->branch->banquetEvents()->find($eventId);
+        if ($event) {
+            $this->eventName = $event->event_name . '  ( ' . \Carbon\Carbon::parse($event->event_date)->format('M-d-Y') . ' )';
+        } else {
+            $this->eventName = null;
+        }
+        $this->dispatch('closeEventModal'); // Close the modal after selection
+    }
 
    
     public function render()

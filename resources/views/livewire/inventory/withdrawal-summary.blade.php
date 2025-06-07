@@ -45,7 +45,11 @@
                         <td>{{ $withdrawal->approvedBy->name ?? 'N/A' }}</td>
                         <td>{{ $withdrawal->reviewedBy->name ?? 'N/A' }}</td>
                         <td>{{ $withdrawal->preparedBy->name ?? 'N/A' }}</td>
-                        <td>{{ $withdrawal->withdrawal_status }}</td>
+                        <td>
+                            <span class="badge bg-{{ $withdrawal->withdrawal_status == 'APPROVED' ? 'success' : ($withdrawal->withdrawal_status == 'PREPARING' ? 'secondary' : 'info') }}">
+                                {{ ucfirst($withdrawal->withdrawal_status) }}
+                            </span>
+                        </td>
                         <td>
                             <a wire:click="viewWithdrawal({{$withdrawal->id}})" class="btn btn-info btn-sm"
                                 id="viewAndEdit">View</a>

@@ -16,16 +16,34 @@
                                     <th class="text-xs">Qty</th>
                                     <th class="text-xs">Rate</th>
                                     <th class="text-xs">Amount</th>
-                                    <th class="text-xs">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                
+                                @forelse ($selectedEvent->eventServices ?? [] as $services)
+                                    <tr>
+                                        <td>{{ $services->service->service_name }}</td>
+                                        <td>{{ $services->qty ? $services->qty : '-' }}</td>
+                                        <td>{{ $services->price->amount }}</td>
+                                        <td>{{ $services->price->amount * ($services->qty ? $services->qty : 1) }}</td>
+
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">No services found.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                              <tfoot>
                                 <tr>
-                                    <td colspan="4" class="text-end">Total</td>
-                                    <td>1500</td>
+                                    <td colspan="3" class="text-end">Total</td>
+                                    <td>
+                                        {{ isset($selectedEvent) && $selectedEvent->eventServices
+                                            ? $selectedEvent->eventServices->sum(function($service) {
+                                                return $service->price->amount * ($service->qty ? $service->qty : 1);
+                                            })
+                                            : 0
+                                        }}
+                                    </td>
                                 </tr>
                         </tfoot>
                         </table>
@@ -42,18 +60,43 @@
                                 <thead>
                                     <tr>
                                         <th class="text-xs">Reference</th>
-                                        <th class="text-xs">Category</th>
-                                        <th class="text-xs">Price</th>
-                                        <th class="text-xs">Description</th>
+                                        <th class="text-xs">Status</th>
+                                        <th class="text-xs">Department</th>
+                                        <th class="text-xs">Amount</th>
                                         <th class="text-xs">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>     
+                                <tbody>  
+                                    @forelse ($selectedEvent->withdrawals ?? [] as $withdrawal)
+                                        <tr>
+                                            <td>{{ $withdrawal->reference_number }}</td>
+                                            <td>
+                                                <span class="badge badge-pill bg-{{ $withdrawal->withdrawal_status == 'APPROVED' ? 'success' : ($withdrawal->withdrawal_status == 'PREPARING' ? 'secondary' : ($withdrawal->withdrawal_status == 'REJECTED' ? 'danger' : 'info') ) }}">
+                                                    {{ ucfirst($withdrawal->withdrawal_status) }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $withdrawal->department->department_name ?? '-' }}</td>
+                                            <td>{{ $withdrawal->getTotalPriceLevelAmountAttribute() }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-link" wire:click="viewWithdrawal({{ $withdrawal->id }})">View</button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center">No withdrawn items found.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                                  <tfoot>
                             <tr>
                                 <td colspan="4" class="text-end">Total</td>
-                                <td>1500</td>
+                                <td>
+                                    {{ isset($selectedEvent) && $selectedEvent->withdrawals
+                                        ? $selectedEvent->withdrawals->where('withdrawal_status', 'APPROVED')->sum(function($withdrawal) {
+                                            return $withdrawal->getTotalPriceLevelAmountAttribute();
+                                        })
+                                        : 0
+                                    }}     </td>
                             </tr>
                         </tfoot>
                             </table>
@@ -73,30 +116,30 @@
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <label for="cust_name" class="form-label text-sm">Customer Name</label>
-                                    <input type="text" class="form-control" id="event_name" name="event_name" disabled>
+                                    <input type="text" class="form-control" id="event_name" name="event_name" disabled value="{{ isset($selectedEvent->customer) ? $selectedEvent->customer->customer_fname . ' ' . $selectedEvent->customer->customer_lname : '' }}">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="event_name" class="form-label text-sm">Event Name</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="event_name" name="event_name" disabled>
+                                        <input type="text" class="form-control" id="event_name" name="event_name" disabled value="{{ isset($selectedEvent) ? $selectedEvent->event_name : '' }}">
                                         <button class="input-group-text" type="button"
-                                            style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#customerModal"><strong class="text-sm">Get</strong></button>
+                                            style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
                                     </div>  
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <label for="event_date" class="form-label text-sm">Event Date</label>
-                                    <input type="date" class="form-control" id="event_date" name="event_date" required>
+                                    <input type="date" class="form-control" id="event_date" name="event_date" value="{{ isset($selectedEvent) ? $selectedEvent->event_date : '' }}" required>
                                 </div>
                                 <div class="row col-md-6">
                                     <div class="col-md-6">
                                         <label for="event_time" class="form-label text-sm">Start Time</label>
-                                        <input type="time" class="form-control" id="event_time" name="event_time" required>
+                                        <input type="time" class="form-control" id="event_time" name="event_time" value="{{ isset($selectedEvent) ? $selectedEvent->start_time : '' }}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="event_time" class="form-label text-sm">End Time</label>
-                                        <input type="time" class="form-control" id="event_time" name="event_time" required>
+                                        <input type="time" class="form-control" id="event_time" name="event_time" value="{{ isset($selectedEvent) ? $selectedEvent->end_time : '' }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -117,7 +160,26 @@
                                                 <th class="text-xs">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>     
+                                        <tbody> 
+                                            @forelse ($selectedEvent->equipmentRequests ?? [] as $request)
+                                                <tr>
+                                                    <td>{{ $request->reference_number }}</td>
+                                                    <td>{{ $request->department->department_name }}</td>
+                                                    <td>
+                                                        <span class="badge badge-pill bg-{{ $request->status == 'PENDING' ? 'success' : ($request->status == 'PREPARING' ? 'secondary' : 'info') }}">
+                                                            {{ ucfirst($request->status) }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-link" wire:click="viewRequest({{ $request->id }})">View</button>
+                                                    </td>
+                                                </tr>
+
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No equipment requests found.</td>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>
@@ -289,62 +351,45 @@
             </div>
         </div>
     </div>
-    <!-- Customer Registration Modal -->
-    <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+     <!-- Get Event Modal -->
+    <div class="modal fade" id="getEventModal" tabindex="-1" aria-labelledby="getEventModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="customerModalLabel">Register New Customer</h5>
+                    <h5 class="modal-title" id="getEventModalLabel">Select Event</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="customerRegistrationForm">
-                        <div class="mb-2 row">
-                            <div class="col-md-4">
-                                <label for="customer_name" class="form-label">Customer Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="customer_name" name="customer_name" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="customer_midname" class="form-label">Middle Name</label>
-                                <input type="text" class="form-control" id="customer_midname" name="customer_midname">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="customer_lastname" class="form-label">Last Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="customer_lastname" name="customer_lastname" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-2">
-                            <div class="col-md-6"> 
-                                <label for="customer_gender" class="form-label">Gender</label>
-                                <select class="form-select" id="customer_gender" name="customer_gender">
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div >
-                            <div class="col-md-6">
-                                <label for="customer_dob" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="customer_dob" name="customer_dob">
-                            </div>
-                        </div>
-                       
-                        <div class="mb-2">
-                            <label for="customer_email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="customer_email" name="customer_email">
-                        </div>
-                        <div class="mb-2">
-                            <label for="customer_phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="customer_phone" name="customer_phone">
-                        </div>
-                        <div class="mb-2">
-                            <label for="customer_address" class="form-label">Address</label>
-                            <textarea class="form-control" id="customer_address" name="customer_address" rows="2"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                        <button type="button" class="btn btn-link ms-2" data-bs-toggle="modal" data-bs-target="#customerListModal">Already Exist?</button>
-                    </form>
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Event Date</th>
+                                <th>Customer Name</th>
+                                <th>Guest Count</th>
+                                <th>Venue</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($events as $event)
+                                <tr>
+                                    <td>{{ $event->event_name }}</td>
+                                    <td>{{ $event->event_date }}</td>
+                                    <td>{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
+                                    <td>{{ $event->guest_count }}</td>
+                                    <td>{{ $event->venue->venue_name }}</td>
+                                    <td>
+                                        <button wire:click="loadEventDetails({{ $event->id }})" class="btn btn-sm btn-primary">Select</button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">No events found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

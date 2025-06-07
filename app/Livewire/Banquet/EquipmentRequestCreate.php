@@ -57,6 +57,7 @@ class EquipmentRequestCreate extends Component
     public $eventEndTime = null;
     public $eventNote = null;
     public $isNewRequest = true;
+    public $isNewAttachment = true;
 
     // request details
      public $attachments = [];
@@ -101,7 +102,7 @@ class EquipmentRequestCreate extends Component
     {
         $this->equipments = Item::with('category')->where('item_status', 'active')->get();
         $this->categories  = Category::where('status', 'active')->where('company_id', auth()->user()->branch->company_id)->where('category_type', 'ITEM')->get();
-        $this->events = BanquetEvent::with('customer','venue')->where('status', 'pending')->get();
+        $this->events = BanquetEvent::with('customer','venue')->where('status', 'pending')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
         $this->departments = Department::where('department_status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
         $this->employees = Employee::with('position')->where('status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
         $module = Module::where('module_name', 'Create Recipe')->first();
@@ -264,7 +265,8 @@ class EquipmentRequestCreate extends Component
     public function editEquipmentRequest($referenceNumber)
     {
         $this->fetchData();
-        $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers'])
+        $this->isNewRequest = false;
+        $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers','departmentCardex'])
             ->where('reference_number', $referenceNumber)
             ->firstOrFail();
         // dd($equipmentRequest);
@@ -307,15 +309,82 @@ class EquipmentRequestCreate extends Component
 
         // load department employees
         $this->loadDepartmentEmployees($equipmentRequest->department_id);
-
         // Load attachments
-        foreach ($equipmentRequest->attachments as $attachment) {
-            if ($attachment) {
-                $this->attachments[] = [
-                    'file_path' => asset('storage/' . $attachment['file_path']),
-                ];
+        $imagePaths = EquipmentRequestAttachment::where('equipment_request_id', $equipmentRequest->id)->get('file_path')->toArray();
+        $this->attachments = [];
+        foreach ($imagePaths as $imagePath) {
+            $filePath = storage_path('app/public/' . $imagePath['file_path']);
+            // dd($filePath);
+            if (file_exists($filePath)) {
+                $this->attachments[] = $imagePath['file_path'];
             }
         }
     }
 
+    public function updateRequest()
+    {
+        $this->validate(
+            [
+                'inchargedBy' => 'required',
+                'approver' => 'required',
+                'eventName' => 'required',
+                'myNote' => 'nullable|string|max:500',
+                'requestDocumentNumber' => 'required|string|max:50',
+                'departmentId' => 'required|exists:departments,id',
+                'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf|max:5048', // max 5MB for each attachment
+                'saveAs' => 'required|in:DRAFT,FINAL',
+            ]
+        );
+        $equipmentRequest = EquipmentRequest::where('reference_number', $this->requestReferenceNumber)->firstOrFail();
+
+        // Update the equipment request
+        $equipmentRequest->update([
+            'document_number' => $this->requestDocumentNumber,
+            'department_id' => $this->departmentId,
+            'event_date' => $this->eventDate,
+            'from_time' => $this->eventStartTime,
+            'to_time' => $this->eventEndTime,
+            'received_by' => $this->inchargedBy,
+            'approved_by' => $this->approver,
+            'event_id' => $this->eventId,
+            'notes' => $this->myNote,
+            'status' => $this->saveAs === 'DRAFT' ? 'PREPARING' : 'PENDING',
+        ]);
+
+        // Handle attachments
+        if ($this->attachments) {
+            EquipmentRequestAttachment::where('equipment_request_id', $equipmentRequest->id)->delete();
+            foreach ($this->attachments as $attachment) {
+                EquipmentRequestAttachment::create([
+                    'equipment_request_id' => $equipmentRequest->id,
+                    'file_path' => $attachment->store('attachments', 'public'),
+                ]);
+            }
+        }
+
+        // Update selected equipments
+        DepartmentCardex::where('equipment_request_id', $equipmentRequest->id)->delete();
+        foreach ($this->selectedEquipments as $index => $item) {
+            DepartmentCardex::create([
+                'department_id' => $this->departmentId,
+                'branch_id' => auth()->user()->branch_id,
+                'item_id' => $item->id,
+                'qty_out' => $this->equipmentQty[$index]['qty'] ?? 0,
+                'equipment_request_id' => $equipmentRequest->id,
+                'status' => $this->saveAs === 'DRAFT' ? 'TEMP' : 'FINAL',
+            ]);
+        }
+
+        // Update handling team
+        EquipmentHandler::where('equipment_request_id', $equipmentRequest->id)->delete();
+        foreach ($this->handlingTeam as $member) {
+            EquipmentHandler::create([
+                'equipment_request_id' => $equipmentRequest->id,
+                'employee_id' => $member['id'],
+            ]);
+        }
+
+        return redirect()->route('banquet.equipment-request.create')->with('success', 'Equipment request updated successfully.');
+
+    }
 }

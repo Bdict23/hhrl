@@ -14,4 +14,17 @@ class EventService extends Model
         'price_id',
         'qty',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(BanquetEvent::class, 'event_id');
+    }
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
+    }
+    public function price()
+    {
+        return $this->belongsTo(PriceLevel::class, 'price_id');
+    }
 }

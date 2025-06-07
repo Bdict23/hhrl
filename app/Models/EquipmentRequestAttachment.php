@@ -12,4 +12,9 @@ class EquipmentRequestAttachment extends Model
         'equipment_request_id',
         'file_path',
     ];
+
+    public function equipmentRequest()
+    {
+        return $this->belongsTo(EquipmentRequest::class, 'equipment_request_id');
+    }
 }

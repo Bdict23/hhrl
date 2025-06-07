@@ -1,18 +1,16 @@
 <div>
     <div>
-       <div>
-            @if (session()->has('success'))
-                <div class="alert alert-success mt-1">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>  
-            @endif
-       </div>
+        @if (session()->has('success'))
+            <div class="alert alert-success mt-1">
+                {{ session('success') }}
+                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>  
+        @endif
             <div class="row me-3 w-100">
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h1> Item Withdrawal</h1>
+                            <h4> Item Withdrawal</h4>
                             <div class="me-3" wire:ignore>
                                 @if(!$isAlreadyFinal)
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
@@ -24,8 +22,6 @@
                        
                       
                         <table class="table table-striped table-hover me-3">
-                           
-                           
                             <thead class="table-light me-3">
                                 <tr style="font-size: x-small;">
                                     @if ($avlBal)
@@ -63,7 +59,10 @@
                                     <th>COST</th>
                                     <th>TOTAL</th>
                                     <th>
-                                        ACTION
+                                        @if (!$isAlreadyFinal)
+                                            ACTION
+                                        @endif
+                                        
                                         <button type="button"
                                         class="btn btn-sm float-end"
                                         style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
@@ -116,8 +115,12 @@
                                                 min="1" max="{{ $item['total_available'] }}"></td>
                                         <td>{{ $item['cost'] }}</td>
                                         <td>{{ $item['total'] }}</td>
-                                        <td><button type="button" class="btn btn-danger btn-sm"
-                                                wire:click="removeItem({{ $index }})">Remove</button></td>
+                                        <td>
+                                             @if (!$isAlreadyFinal)
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                wire:click="removeItem({{ $index }})">Remove</button>
+                                             @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -159,7 +162,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="col-md-4">
                     <div class="card">
@@ -177,11 +179,22 @@
                                         @enderror
                                     </div>
                                 </div>
+                                 <div>
+                                    <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" id="event"
+                                            style="font-size: 13px" disabled value="{{ $eventName }}">
+                                        @if (!$isAlreadyFinal)
+                                            <button class="input-group-text" type="button"
+                                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
+                                            @endif
+                                    </div>
+                                </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label for="deptartment" class="form-label"
                                             style="width: 100; font-size: 13px">Department</label><span
-                                            style="color: red;">*</span>
+                                            style="color: red;"> *</span>
                                         <select wire:model="selectedDepartment" id="department"  class="form-select"
                                             aria-label="Default select example" style="width: 100; font-size: 13px">
                                             <option value="">Select Department</option>
@@ -296,138 +309,197 @@
                         </div>
                     </div>
         
-    </div>
-    <!-- Custom  Columns Modal -->
-    <div class="modal fade" id="customCol" tabindex="-1" aria-lablledby="CustomModalLabel" aria-hidden="true"  wire:ignore.self>
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="CustomModalLabel">Custom Columns</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="form-check">
-                        <input wire:model.live="avlBal" class="form-check-input" type="checkbox" value="" id="checkAvlBal">
-                        <label class="form-check-label" for="checkAvlBal">
-                            Inventory Balance (BAL)
-                        </label>
+            </div>
+            <div>
+                @if ($isAlreadyFinal)
+                    <div class="alert alert-info mt-3" role="alert">
+                        <strong>Note:</strong> This withdrawal is already finalized and cannot be modified.
                     </div>
-                    <div class="form-check">
-                        <input wire:model.live="avlQty" class="form-check-input" type="checkbox" value="" id="checkAvlQty">
-                        <label class="form-check-label" for="checkAvlQty">
-                            Available Quantity (AVAIL.)
-                        </label>
+                @endif
+            </div>
+        </div>
+        <!-- Custom  Columns Modal -->
+        <div class="modal fade" id="customCol" tabindex="-1" aria-labelledby="CustomModalLabel" aria-hidden="true"  wire:ignore.self>
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="CustomModalLabel">Custom Columns</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="form-check">
-                        <input wire:model.live="code" class="form-check-input" type="checkbox" value="" id="checkCode">
-                        <label class="form-check-label" for="checkCode">
-                            SKU/CODE (SKU)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="uom" class="form-check-input" type="checkbox" value="" id="checkUom">
-                        <label class="form-check-label" for="checkUom">
-                            Unit of Measure (UNIT)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="category" class="form-check-input" type="checkbox" value="" id="checkCategory">
-                        <label class="form-check-label" for="checkCategory">
-                            Category (CATEGORY)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="location" class="form-check-input" type="checkbox" value="" id="checkLocation">
-                        <label class="form-check-label" for="checkLocation">
-                            Location (LOCATION)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="brand" class="form-check-input" type="checkbox" value="" id="checkBrand">
-                        <label class="form-check-label" for="checkBrand">
-                            Brand (BRAND)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="status" class="form-check-input" type="checkbox" value="" id="checkStatus">
-                        <label class="form-check-label" for="checkStatus">
-                            Status (STATUS)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="classification" class="form-check-input" type="checkbox" value="" id="checkClassification">
-                        <label class="form-check-label" for="checkClassification">
-                            Classification (CLASSIFICATION)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input wire:model.live="barcode" class="form-check-input" type="checkbox" value="" id="checkBarcode">
-                        <label class="form-check-label" for="checkBarcode">
-                            Barcode (BARCODE)
-                        </label>
+                    <div class="modal-body">
+                        <div class="form-check">
+                            <input wire:model.live="avlBal" class="form-check-input" type="checkbox" value="" id="checkAvlBal">
+                            <label class="form-check-label" for="checkAvlBal">
+                                Inventory Balance (BAL)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="avlQty" class="form-check-input" type="checkbox" value="" id="checkAvlQty">
+                            <label class="form-check-label" for="checkAvlQty">
+                                Available Quantity (AVAIL.)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="code" class="form-check-input" type="checkbox" value="" id="checkCode">
+                            <label class="form-check-label" for="checkCode">
+                                SKU/CODE (SKU)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="uom" class="form-check-input" type="checkbox" value="" id="checkUom">
+                            <label class="form-check-label" for="checkUom">
+                                Unit of Measure (UNIT)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="category" class="form-check-input" type="checkbox" value="" id="checkCategory">
+                            <label class="form-check-label" for="checkCategory">
+                                Category (CATEGORY)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="location" class="form-check-input" type="checkbox" value="" id="checkLocation">
+                            <label class="form-check-label" for="checkLocation">
+                                Location (LOCATION)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="brand" class="form-check-input" type="checkbox" value="" id="checkBrand">
+                            <label class="form-check-label" for="checkBrand">
+                                Brand (BRAND)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="status" class="form-check-input" type="checkbox" value="" id="checkStatus">
+                            <label class="form-check-label" for="checkStatus">
+                                Status (STATUS)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="classification" class="form-check-input" type="checkbox" value="" id="checkClassification">
+                            <label class="form-check-label" for="checkClassification">
+                                Classification (CLASSIFICATION)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="barcode" class="form-check-input" type="checkbox" value="" id="checkBarcode">
+                            <label class="form-check-label" for="checkBarcode">
+                                Barcode (BARCODE)
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Add Item Modal -->
-    <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true"  wire:ignore>
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="AddItemModalLabel">Select Items</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex justify-content-between mb-3">
-                        <select id="categoryFilter" class="form-select w-25">
-                            <option value="">All Categories</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->category_name }}">{{ $category->category_name }}</option>
-                            @endforeach
-                        </select>
-                        <input type="text" id="searchItemInput" class="form-control w-25"
-                            placeholder="Search items..." onkeyup="applyFilters()">
+        <!-- Get Event Modal -->
+        <div class="modal fade" id="getEventModal" tabindex="-1" aria-labelledby="getEventModalLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="getEventModalLabel">Select Event</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <!-- Table for Item Selection -->
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>CODE</th>
-                                <th>NAME</th>
-                                <th>INVENTORY BALANCE</th>
-                                <th>AVAILABLE QTY.</th>
-                                <th>COST PRICE</th>
-                                <th>CATEGORY</th>
-                                <th>STATUS</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemTable">
-                            @foreach ($myCardexItems as $index => $item)
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <input type="text" id="searchEventInput" class="form-control w-25"
+                                placeholder="Search events..." onkeyup="applyEventFilters()">
+                        </div>
+                        <!-- Table for Event Selection -->
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
                                 <tr>
-                                    <td>{{ $item->item_code }}</td>
-                                    <td>{{ $item->item_description }}</td>
-                                    <td>{{ $item->total_balance }}</td>
-                                    <td>{{ $item->total_available}}</td>
-                                    <td>{{ $item->costPrice->amount ?? 0 }}</td>
-                                    <td>{{ $item->category->category_name ?? 'N/A' }}</td>
-                                    <td>{{ $item->item_status }}</td>
-                                    <td>
-                                        <button wire:click="addItem({{ $item->id }}, {{ $item->total_balance }} , {{ $item->total_available }} )" type="button" class="btn btn-primary btn-sm"> Add </button>
-                                    </td>
+                                    <th>EVENT NAME</th>
+                                    <th>CUSTOMER</th>
+                                    <th>DATE</th>
+                                    <th>ACTION</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>
-
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </thead>
+                            <tbody id="eventTable">
+                                @foreach ($events as $event)
+                                    <tr>
+                                        <td>{{ $event->event_name }}</td>
+                                        <td>{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
+                                        <td>{{ $event->event_date }}</td>
+                                        <td>
+                                            <button wire:click="selectedEvent({{ $event->id }})" type="button" class="btn btn-primary btn-sm"> Select </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        <!-- Add Item Modal -->
+        <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true"  wire:ignore>
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="AddItemModalLabel">Select Items</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <select id="categoryFilter" class="form-select w-25">
+                                <option value="">All Categories</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->category_name }}">{{ $category->category_name }}</option>
+                                @endforeach
+                            </select>
+                            <input type="text" id="searchItemInput" class="form-control w-25"
+                                placeholder="Search items..." onkeyup="applyFilters()">
+                        </div>
+                        <!-- Table for Item Selection -->
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>CODE</th>
+                                    <th>NAME</th>
+                                    <th>INVENTORY BALANCE</th>
+                                    <th>AVAILABLE QTY.</th>
+                                    <th>COST PRICE</th>
+                                    <th>CATEGORY</th>
+                                    <th>STATUS</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemTable">
+                                @foreach ($myCardexItems as $index => $item)
+                                    <tr>
+                                        <td>{{ $item->item_code }}</td>
+                                        <td>{{ $item->item_description }}</td>
+                                        <td>{{ $item->total_balance }}</td>
+                                        <td>{{ $item->total_available}}</td>
+                                        <td>{{ $item->costPrice->amount ?? 0 }}</td>
+                                        <td>{{ $item->category->category_name ?? 'N/A' }}</td>
+                                        <td>{{ $item->item_status }}</td>
+                                        <td>
+                                            <button wire:click="addItem({{ $item->id }}, {{ $item->total_balance }} , {{ $item->total_available }} )" type="button" class="btn btn-primary btn-sm"> Add </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+         document.addEventListener('closeEventModal', function () {
+            var modal = bootstrap.Modal.getInstance(document.getElementById('getEventModal'));
+            modal.hide();
+        });
+    </script>
 </div>

@@ -26,4 +26,21 @@ class BanquetEvent extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
+    public function equipmentRequests()
+    {
+        return $this->hasMany(EquipmentRequest::class, 'event_id');
+    }
+    public function eventServices()
+    {
+        return $this->hasMany(EventService::class, 'event_id');
+    }
+    public function eventMenus()
+    {
+        return $this->hasMany(EventMenu::class, 'event_id');
+    }
+    public function withdrawals()
+    {
+        return $this->hasMany(Withdrawal::class, 'event_id');
+    }
+
 }
