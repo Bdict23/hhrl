@@ -56,7 +56,10 @@ class Menu extends Model
         return $this->hasMany(PriceLevel::class);
     }
 
-
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 
 
 }

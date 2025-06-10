@@ -537,7 +537,6 @@
 
 
         {{-- view  requirements details modal--}}
-
     <div class="modal fade" id="viewEquipmentInfoModal" tabindex="-1" aria-labelledby="viewRequestModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -547,129 +546,129 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-        <div class="col-md-6 mt-3 mb-3">
-             <div class="card mb-3">
-                 <div  class="card-header d-flex justify-content-between">         
-                     <h5 class="col-md-6">Equipment Lists</h5>
-                 </div>
-                 <div class="card-body overflow-auto" style="max-height: 280px;">
-                     <table class="table table-sm table-striped">
-                         <thead>
-                             <tr>
-                                 <th class="text-xs">Equipment Name</th>
-                                 <th class="text-xs">Category</th>
-                                 <th class="text-xs">Quantity</th>
-                             </tr>
-                         </thead>
-                         <tbody>
-                            @forelse ($selectedEquipments as $index => $item)
-                                <tr>
-                                    <td>{{ $item->item_description }}</td>
-                                    <td>{{ $item->category->category_name ?? 'N/A' }}</td>
-                                    <td>
-                                        <input type="number" class="form-control form-control-sm" wire:model="equipmentQty.{{ $index }}.qty" min="1">
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">No equipment selected</td>
-                                </tr>
-                            @endforelse
-                         </tbody>
-                     </table>
-                 </div>
-             </div>
-             <div class="card">
-                <div  class="card-header d-flex justify-content-between">         
-                     <h5 class="col-md-6">Handling Team</h5>
-                 </div>
-                <div class="card-body overflow-auto" style="max-height: 210px;">
-                    <table class="table table-sm table-striped">
-                        <thead>
-                            <tr>
-                                <th class="text-xs">Name</th>
-                                <th class="text-xs">Lastname</th>
-                                <th class="text-xs">Position</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($handlingTeam as $member)
-                                <tr>
-                                    <td>{{ $member['first_name'] }}</td>
-                                    <td>{{ $member['last_name'] }}</td>
-                                    <td>{{ $member['position'] }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">No team members selected</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-             </div>
-        </div>
-        <div class="col-md-6 mt-3 mb-3">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Equipment Request Form</h5>
-                </div>
-                <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="referenceNumber" class="form-label text-sm">Reference Number</label>
-                                <input type="text" class="form-control text-center" id="referenceNumber" disabled placeholder="<AUTO>" value="{{ $requestReferenceNumber }}">
+                        <div class="col-md-6 mt-3 mb-3">
+                            <div class="card mb-3">
+                                <div  class="card-header d-flex justify-content-between">         
+                                    <h5 class="col-md-6">Equipment Lists</h5>
+                                </div>
+                                <div class="card-body overflow-auto" style="max-height: 280px;">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-xs">Equipment Name</th>
+                                                <th class="text-xs">Category</th>
+                                                <th class="text-xs">Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($selectedEquipments as $index => $item)
+                                                <tr>
+                                                    <td>{{ $item->item_description }}</td>
+                                                    <td>{{ $item->category->category_name ?? 'N/A' }}</td>
+                                                    <td>
+                                                        <input type="number" class="form-control form-control-sm" wire:model="equipmentQty.{{ $index }}.qty" min="1">
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">No equipment selected</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="requestDate" class="form-label text-sm">Document Series No.</label>
-                                <input type="text" class="form-control" id="documentNumber" value="{{ $requestDocumentNumber ?? '' }}" disabled>
+                            <div class="card">
+                                <div  class="card-header d-flex justify-content-between">         
+                                    <h5 class="col-md-6">Handling Team</h5>
+                                </div>
+                                <div class="card-body overflow-auto" style="max-height: 210px;">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-xs">Name</th>
+                                                <th class="text-xs">Lastname</th>
+                                                <th class="text-xs">Position</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($handlingTeam as $member)
+                                                <tr>
+                                                    <td>{{ $member['first_name'] }}</td>
+                                                    <td>{{ $member['last_name'] }}</td>
+                                                    <td>{{ $member['position'] }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">No team members selected</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="department" class="form-label text-sm">Department</label>
-                                <input type="text" class="form-control text-center" id="department" value="{{ $departmentName }}" disabled>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="myNote" class="form-label text-sm">Note</label>
-                                <textarea name="" id="myNote" class="form-control" disabled>{{ $myNote }}</textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="inchargedBy" class="form-label text-sm">Incharged By</label>
-                                <input type="text" class="form-control" id="inchargedBy" placeholder="Incharged By" disabled value="{{ $inchargedBy }}">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="approvedBy" class="form-label text-sm">Approved By</label>
-                                <input type="text" class="form-control" id="approvedBy" placeholder="Approved By" disabled value="{{ $approver }}">
-                            </div>
-                        </div>
-                        @if ($attachments)
-                        <strong for="" class="form-label">Attachments</strong>
-                           <div class="list-group list-group-horizontal table-responsive-sm">
-                                @foreach ($attachments as $attachment)
-                                    @php
-                                        $isUploadedFile = is_object($attachment) && method_exists($attachment, 'temporaryUrl');
-                                    @endphp
-                                    @if ($isUploadedFile)
-                                        <img class="img-thumbnail" src="{{ $attachment->temporaryUrl() }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
-                                    @else
-                                        <div>
-                                            <a href="{{ asset('storage/' . $attachment) }}" target="_blank" class="text-decoration-none">
-                                                <img class="img-thumbnail" src="{{ asset('storage/' . $attachment) }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
-                                            </a>
+                        <div class="col-md-6 mt-3 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Equipment Request Form</h5>
+                                </div>
+                                <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="referenceNumber" class="form-label text-sm">Reference Number</label>
+                                                <input type="text" class="form-control text-center" id="referenceNumber" disabled placeholder="<AUTO>" value="{{ $requestReferenceNumber }}">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="requestDate" class="form-label text-sm">Document Series No.</label>
+                                                <input type="text" class="form-control" id="documentNumber" value="{{ $requestDocumentNumber ?? '' }}" disabled>
+                                            </div>
                                         </div>
-                                    @endif
-                                @endforeach
-                           </div>
-                        @endif
-                </div>
-            </div>
-        </div>
-    </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <label for="department" class="form-label text-sm">Department</label>
+                                                <input type="text" class="form-control text-center" id="department" value="{{ $departmentName }}" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label for="myNote" class="form-label text-sm">Note</label>
+                                                <textarea name="" id="myNote" class="form-control" disabled>{{ $myNote }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="inchargedBy" class="form-label text-sm">Incharged By</label>
+                                                <input type="text" class="form-control" id="inchargedBy" placeholder="Incharged By" disabled value="{{ $inchargedBy }}">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="approvedBy" class="form-label text-sm">Approved By</label>
+                                                <input type="text" class="form-control" id="approvedBy" placeholder="Approved By" disabled value="{{ $approver }}">
+                                            </div>
+                                        </div>
+                                        @if ($attachments)
+                                        <strong for="" class="form-label">Attachments</strong>
+                                        <div class="list-group list-group-horizontal table-responsive-sm">
+                                                @foreach ($attachments as $attachment)
+                                                    @php
+                                                        $isUploadedFile = is_object($attachment) && method_exists($attachment, 'temporaryUrl');
+                                                    @endphp
+                                                    @if ($isUploadedFile)
+                                                        <img class="img-thumbnail" src="{{ $attachment->temporaryUrl() }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                                    @else
+                                                        <div>
+                                                            <a href="{{ asset('storage/' . $attachment) }}" target="_blank" class="text-decoration-none">
+                                                                <img class="img-thumbnail" src="{{ asset('storage/' . $attachment) }}" alt="Attachment" style="width: 100px; height: 100px; margin: 5px;">
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                        </div>
+                                        @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -25,7 +25,24 @@
                     <th>Action</th>
                 </tr>
                 <tbody>
-
+                    @forelse ($procurementLists as $procurement)
+                        <tr>
+                            <td>{{ $procurement->reference_number }}</td>
+                            <td>{{ $procurement->document_number }}</td>
+                            <td>{{ $procurement->created_at->format('Y-m-d') }}</td>
+                            <td>{{ $procurement->event_name }}</td>
+                            <td>{{ $procurement->status }}</td>
+                            <td>
+                                <a href="{{ route('banquet.procurement.edit', $procurement->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="{{ route('banquet.procurement.view', $procurement->id) }}" class="btn btn-sm btn-secondary">View</a>
+                                <button wire:click="delete({{ $procurement->id }})" class="btn btn-sm btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center">No procurement records found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

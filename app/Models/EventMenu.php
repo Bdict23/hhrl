@@ -14,4 +14,14 @@ class EventMenu extends Model
         'qty',
         'price_id',
     ];
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'menu_id');
+    }
+
+    public function price()
+    {
+        return $this->belongsTo(PriceLevel::class, 'price_id');
+    }
 }
