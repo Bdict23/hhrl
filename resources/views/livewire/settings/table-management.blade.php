@@ -14,12 +14,12 @@
      @endif
     <div id="table-lists" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
-            <h5>Menu Category Lists</h5>
+            <h5>Table Lists</h5>
         </div>
         <div class="card-body">
             {{-- @if (auth()->user()->employee->getModulePermission('Business Venues') == 1 ) --}}
                 <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('menu-category-form', document.querySelector('.nav-link.active'))">+ ADD
+                onclick="showTab('table-create-form', document.querySelector('.nav-link.active'))">+ ADD
                 New Table</x-primary-button>
             {{-- @endif --}}
                 <x-secondary-button type="button" class="mb-3 btn-sm"
@@ -38,8 +38,8 @@
                     <tbody>
                         @forelse ($tables as $table)
                             <tr>
-                                <td>{{ $table->name }}</td>
-                                <td>{{ $table->capacity }}</td>
+                                <td>{{ $table->table_name }}</td>
+                                <td>{{ $table->seating_capacity }}</td>
                                 <td>{{ $table->created_at->format('M-d-Y') }}</td>
                                 <td class="text-end">
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateTableModal" onclick="updateTable({{ json_encode($table) }})" wire:click="editTable({{ $table->id }})">Edit</button>
@@ -71,18 +71,18 @@
                     <form action="" wire:submit.prevent="updateTable" id="UpdateTableForm">
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label for="menu_category_name-update" class="form-label">Category Name</label>
-                                <input type="text" class="form-control" id="menu_category_name-update-input" wire:model="menu_category_name_input">
-                                @error('menu_category_name_input')
+                                <label for="table_name-update" class="form-label">Table Name</label>
+                                <input type="text" class="form-control" id="table_name-update-input" wire:model="table_name_input">
+                                @error('table_name_input')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                             
                         </div>
                             <div class=" mb-3">
-                                <label for="menu_category_description-update" class="form-label">Category Description</label>
-                                <textarea class="form-control" id="menu_category_description-update-input" wire:model="menu_category_description_input" rows="3"></textarea>
-                                @error('menu_category_description_input')
+                                <label for="table_capacity-update" class="form-label">Table Capacity</label>
+                                <input type="number" class="form-control" id="table_capacity-update-input" wire:model="table_capacity_input">
+                                @error('table_capacity_input')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -94,28 +94,28 @@
         </div>
     </div>
 
-    {{-- Category Form --}}
-    <div id="menu-category-form" class="tab-content card" style="display: none;" wire:ignore.self>
+    {{-- Table Form --}}
+    <div id="table-create-form" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Add New Table</h5>
         </div>
         <div class="card-body">
             <x-secondary-button type="button" class="mb-3 btn-sm"
                 onclick="showTab('table-lists', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
-            <form wire:submit.prevent="storeMenuCategory" id="menuCategoryForm">
+            <form wire:submit.prevent="storeTable" id="tableForm">
                 @csrf
                 <div class="mb-3">
-                    <label for="menu_category_name-input" class="form-label"> Category Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="menu_category_name-input" wire:model="menu_category_name_input" >
-                    @error('menu_category_name_input')
+                    <label for="table_name-input" class="form-label"> Table Name <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="table_name-input" wire:model="table_name_input" >
+                    @error('table_name_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label for="menu_category_description-input" class="form-label">Category Description <span class="text-muted text-small">(optional)</span></label>
-                    <textarea class="form-control" id="menu_category_description-input" wire:model="menu_category_description_input" rows="3"></textarea>
-                    @error('menu_category_description_input')
+                    <label for="table_description-input" class="form-label">Table Capacity</label>
+                    <input type="number" class="form-control" id="table_capacity-input" wire:model="table_capacity_input" >
+                    @error('table_capacity_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
@@ -128,18 +128,14 @@
     <script>
         // Listen for the DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', function() {
-            window.addEventListener('clearMenuCategoryForm', event => {
-                document.getElementById('menuCategoryForm').reset();
+            window.addEventListener('resetCreateTableForm', event => {
+                document.getElementById('tableForm').reset();
             });
 
-            
-            // Listen for the success event
             window.addEventListener('success', event => {
-                // Show the success message
                 document.getElementById('success-message').style.display = 'block';
                 document.getElementById('success-message').innerHTML = event.detail.message;
 
-        // Hide the success message after 1 second
                 setTimeout(function() {
         document.getElementById('success-message').style.display = 'none';
                             }, 1500);
@@ -147,25 +143,20 @@
         });
 
         // HIDE UPDATE CATEGORY MODAL
-        window.addEventListener('closeEditMenuCategoryModal', event => {
-            // Clear the form fields
-        document.getElementById('menu_category_name-update-input').value = '';
-        document.getElementById('menu_category_description-update-input').value = '';
-            // Hide the modal
-            var modal = bootstrap.Modal.getInstance(document.getElementById('updateMenuCategoryModal'));
+        window.addEventListener('closeUpdateTableModal', event => {
+            document.getElementById('UpdateTableForm').reset();
+            var modal = bootstrap.Modal.getInstance(document.getElementById('updateTableModal'));
             modal.hide();
 
-            // Hide the success message after 1 second
             setTimeout(function() {
                 document.getElementById('success-message').style.display = 'none';
             }, 1500);
         });
 
-        function updateMenuCategory($data) {
-            // Set the values of the input fields
+        function updateTable($data) {
             console.log($data);
-            document.getElementById('menu_category_name-update-input').value = $data.category_name;
-            document.getElementById('menu_category_description-update-input').value = $data.category_description;
+            document.getElementById('table_name-update-input').value = $data.table_name;
+            document.getElementById('table_capacity-update-input').value = $data.seating_capacity;
 
         }
 

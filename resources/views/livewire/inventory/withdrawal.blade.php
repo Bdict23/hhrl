@@ -197,8 +197,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Expected Date</label> <span style="color: red;">*</span>
-                                    <input wire:model='useDate' type="date" class="form-control" id="usage_date"
-                                        >
+                                    <input wire:model='useDate' type="date" class="form-control" id="usage_date">
                                     @error('useDate')
                                     <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                     @enderror
@@ -489,6 +488,8 @@
         }
 
         document.addEventListener('closeEventModal', function () {
+            document.getElementById('usage_date').value = @this.useDate;
+            console.log(@this.useDate);
             var modal = bootstrap.Modal.getInstance(document.getElementById('getEventModal'));
             modal.hide();
         });

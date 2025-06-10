@@ -175,14 +175,9 @@
                             <x-dropdown-link :href="url('/sales_order')" class="no-underline">
                                 {{ __('Sales Order') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="url('/invoicing')" class="no-underline">
-                                {{ __('Sales Invoice') }}
-                            </x-dropdown-link>
+                           
                             <x-dropdown-link :href="url('/daily_sales_report')" class="no-underline">
                                 {{ __('Daily Sales') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
-                                {{ __('Menu Orders') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-dropdown> 
@@ -304,13 +299,20 @@
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="url('/menu-management')" class="no-underline">
                                         {{ __('Menu Control') }}
-                                        <x-dropdown-link :href="url('/allocate_order')" class="no-underline">
-                                            {{ __('Allocate Order') }}
-                                        </x-dropdown-link>
                                     </x-dropdown-link>
-                                    <x-dropdown-link :href="url('/order_menu')" class="no-underline">
+                                      <x-dropdown-link :href="url('/order_menu')" class="no-underline">
                                         {{ __('Menu') }}
                                     </x-dropdown-link>
+                                    <x-dropdown-link :href="url('/allocate_order')" class="no-underline">
+                                        {{ __('Allocate Order') }}
+                                    </x-dropdown-link>        
+                                    <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
+                                        {{ __('Kitchen') }}
+                                    </x-dropdown-link>
+                                     <x-dropdown-link :href="url('/invoicing')" class="no-underline">
+                                        {{ __('Invoice') }}
+                                    </x-dropdown-link>
+                                  
                                 </x-slot>
                             </x-dropdown>
                         </div>

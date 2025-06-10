@@ -204,7 +204,7 @@ class MenusController extends Controller
     // allocate orders lists
     public function allocate_order_lists(){
         $orders = Order::with('order_details', 'tables')->where([['branch_id', Auth::user()->branch->id], ['order_status', '!=', 'PENDING']])->get();
-        $tables = Table::all();
+        $tables = Table::where([['branch_id', Auth::user()->branch->id], ['status', 'ACTIVE'], ['availability', 'VACANT']])->get();
         $totalPrice = 0;
 
         return view('sales.allocate_orders', compact('orders', 'tables'));

@@ -142,7 +142,7 @@ class WithdrawalShow extends Component
                     'status' => $item->item->item_status,
                     'cost' => $item->item->costPrice->amount,
                     'costId' => $item->item->costPrice->id,
-                    'total' => 0,
+                    'total' => $item['qty_out'] * ($item->item->costPrice->amount ?? 0),
                 ];
             }
             $this->overallTotal += (float) $item['qty_out'] * (float) $item->item->costPrice->amount;
