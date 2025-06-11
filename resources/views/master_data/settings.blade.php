@@ -120,6 +120,8 @@
                     </li>
                     <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('table-lists', this)">Table Management</a>
                     </li>
+                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-controller-list', this)">Menu Controller</a>
+                    </li>
                 </ul>
                 <hr>
                 {{-- <h5 class="text-muted">Menu Properties</h5>
@@ -225,6 +227,11 @@
                 <div>
                     @livewire('item-brand')
                 </div>
+
+                <!-- Menu Controller Tab Content -->
+             
+                    @livewire('settings.branch-menu-controller')
+               
 
 
                 <!-- Departments Tab Content -->
