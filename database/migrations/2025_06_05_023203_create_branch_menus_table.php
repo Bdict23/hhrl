@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('menus', function (Blueprint $table) {
-            $table->enum('recipe_type', ['Banquet', 'Ala cart'])->nullable()->default('Ala cart');
+            $table->enum('recipe_type', ['Banquet', 'Ala carte'])->nullable()->default('Ala carte');
         });
         Schema::create('branch_menus', function (Blueprint $table) {
             $table->id();

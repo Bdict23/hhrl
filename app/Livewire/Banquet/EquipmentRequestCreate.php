@@ -105,7 +105,7 @@ class EquipmentRequestCreate extends Component
         $this->events = BanquetEvent::with('customer','venue')->where('status', 'pending')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
         $this->departments = Department::where('department_status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
         $this->employees = Employee::with('position')->where('status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
-        $module = Module::where('module_name', 'Create Recipe')->first();
+        $module = Module::where('module_name', 'Recipe')->first();
         $this->approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id ], ['branch_id', auth()->user()->branch_id]])->get();
     }
 
@@ -175,6 +175,7 @@ class EquipmentRequestCreate extends Component
         $this->selectedEquipments[] = $equipment;
         // Initialize the requested quantity for the equipment
         $this->equipmentQty[] = ['id' => $equipment->id, 'qty' => 1];
+
     }
     public function removeEquipment($index)
     {

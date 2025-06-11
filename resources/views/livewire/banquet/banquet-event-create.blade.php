@@ -313,7 +313,7 @@
                                     <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
                                     <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
                                     <td>
-                                        <button wire:click="selectMenu({{ $menu->id }})" class="btn btn-sm btn-success select-menu-btn">ADD</button>
+                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-menu-btn">ADD</button>
                                     </td>
                                 </tr>
                             @empty

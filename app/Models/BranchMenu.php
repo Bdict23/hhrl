@@ -25,4 +25,8 @@ class BranchMenu extends Model
     {
         return $this->belongsTo(Menu::class, 'menu_id')->where('recipe_type', 'Banquet');
     }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 }

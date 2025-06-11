@@ -12,6 +12,7 @@ use App\Models\BranchMenu;
 use App\Models\BanquetEvent; // Assuming BanquetEvent model exists in App\Models namespace
 use App\Models\EventService;
 use App\Models\EventMenu;
+use App\Models\BranchMenuRecipe; // Assuming BranchMenuRecipe model exists in App\Models namespace
 
 class BanquetEventCreate extends Component
 {
@@ -81,19 +82,28 @@ class BanquetEventCreate extends Component
         $this->services = Service::where([['status', 'active'], ['branch_id', auth()->user()->branch_id]])
             ->with('ratePrice')
             ->get();
-        $company_menus = Menu::where('recipe_type', 'Banquet')
-            ->where('company_id', auth()->user()->branch->company_id)
-            ->pluck('id')
-            ->toArray();
-        $this->menus = BranchMenu::whereIn('menu_id', $company_menus)
-            ->where('branch_id', auth()->user()->branch_id)
-            ->with([
-                'menu' => function ($query) {
-                    $query->where('recipe_type', 'Banquet')->with('mySRP');
-                }
-            ])
-            ->get();
-            // dd($this->menus);
+       $this->menus = BranchMenuRecipe::with([
+        'branchMenu' => function ($q) {
+            $q->where('branch_id', auth()->user()->branch_id)
+              ->where('is_available', 1);
+        },
+        'menu' => function ($q) {
+            $q->where('recipe_type', 'Banquet')
+              ->where('status', 'available')
+              ->with('mySRP');
+        }
+    ])
+    ->whereHas('branchMenu', function ($q) {
+        $q->where('branch_id', auth()->user()->branch_id)
+          ->where('is_available', 1);
+    })
+    ->whereHas('menu', function ($q) {
+        $q->where('recipe_type', 'Banquet')
+          ->where('status', 'available');
+    })
+    ->get();
+    // dd($this->menus);
+
         $this->customers = Customer::where('branch_id', auth()->user()->branch_id)->get();
 
     }
@@ -187,7 +197,9 @@ class BanquetEventCreate extends Component
 
     public function selectMenu($id)
     {
+        // dd($id);
         $menu = Menu::with('mySRP')->find($id);
+        // dd($menu);
         if (!$menu) {
             return;
         }

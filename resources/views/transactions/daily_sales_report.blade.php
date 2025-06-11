@@ -18,57 +18,58 @@
             </div>
         </div>
     </div>
-    <div class="card">
+    
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <h4 class="col-md-6">Invoice List</h4>
-                    <div class="col-md-6">
-                        <div class="row g-2"> <!-- Add 'g-2' for spacing -->
-                            <div class="col-md-4 d-flex align-items-center">
-                                <label for="from_date" class="me-2">From:</label>
-                                <input type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
-                                    class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-4 d-flex align-items-center">
-                                <label for="to_date" class="me-2">To:</label>
-                                <input type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
-                                    class="form-control form-control-sm">
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-warning btn-sm w-9 h-8 "><svg xmlns="http://www.w3.org/2000/svg"
-                                        width="16" height="16" fill="currentColor"
-                                        class="bi bi-lightning-charge-fill" viewBox="0 0 16 16">
-                                        <path
-                                            d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z" />
-                                    </svg></button>
-                            </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <h4 class="col-md-6">Invoice List</h4>
+                <div class="col-md-6">
+                    <div class="row g-2"> <!-- Add 'g-2' for spacing -->
+                        <div class="col-md-4 d-flex align-items-center">
+                            <label for="from_date" class="me-2">From:</label>
+                            <input type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
+                                class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center">
+                            <label for="to_date" class="me-2">To:</label>
+                            <input type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
+                                class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-warning btn-sm w-9 h-8 "><svg xmlns="http://www.w3.org/2000/svg"
+                                    width="16" height="16" fill="currentColor"
+                                    class="bi bi-lightning-charge-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z" />
+                                </svg></button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-                <table>
-                    <thead>
+        </div>
+        <div class="card-body overflow-auto">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                    <thead class="table-dark">
                         <tr>
-                            <th style="position: sticky; top: 0;">Date</th>
-                            <th style="position: sticky; top: 0;">Invoice No</th>
-                            <th style="position: sticky; top: 0;">Customer Name</th>
-                            <th style="position: sticky; top: 0;">Amount</th>
-                            <th style="position: sticky; top: 0;">Actions</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Date</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Invoice No</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Customer Name</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Amount</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($invoices as $invoice)
                             <tr>
-                                <td style="font-size: smaller">{{ $invoice->created_at->format('m/d/Y') }}</td>
-                                <td style="font-size: smaller">{{ $invoice->invoice_number }}</td>
-                                <td style="font-size: smaller">
-                                    {{ $invoice->customer->customer_name ?? $invoice->customer_name }}</td>
-                                <td style="font-size: smaller">{{ $invoice->amount }}</td>
+                                <td style="font-size: small;">{{ $invoice->created_at->format('m/d/Y') }}</td>
+                                <td style="font-size: small;">{{ $invoice->invoice_number }}</td>
+                                <td style="font-size: small;">
+                                    {{ $invoice->customer->customer_name ?? $invoice->customer_name }}
+                                </td>
+                                <td style="font-size: small;">{{ number_format($invoice->amount, 2) }}</td>
                                 <td>
-
                                     @php
                                         $latestSrpPrice = [];
                                         foreach ($invoice->order->order_details as $detail) {
@@ -102,6 +103,7 @@
             </div>
         </div>
     </div>
+    
 
     @if ($errors->any())
         @foreach ($errors->all() as $error)

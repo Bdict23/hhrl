@@ -72,7 +72,7 @@
                             <div class="form-group mt-1">
                                 <label for="recipe_type" style="font-size: 13px;">Type</label>
                                 <select name="menu_type" id="recipe_type" class="form-select" aria-label="Default select example">
-                                    <option value="APPETIZER">Ala Cart</option>
+                                    <option value="APPETIZER">Ala Carte</option>
                                     <option value="MAIN_COURSE">Bangquet</option>
                                 </select>
                             </div>
@@ -166,7 +166,7 @@
                                                     ->priceLevel()
                                                     ->latest()
                                                     ->where('price_type', 'cost')
-                                                    ->first()->amount;
+                                                    ->first()->amount ?? 0;
                                                 $itemCode = $item->item_code;
                                                 $itemDescription = $item->item_description;
                                                 $itemUnit = $item->units->unit_symbol;
@@ -175,7 +175,7 @@
                                                     ->priceLevel()
                                                     ->latest()
                                                     ->where('price_type', 'cost')
-                                                    ->first()->id;
+                                                    ->first()->id ?? $item;
                                             @endphp
 
                                             <td>{{ $itemCode }}</td>

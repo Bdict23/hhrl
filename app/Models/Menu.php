@@ -48,7 +48,7 @@ class Menu extends Model
     }
 
     public function mySRP(){
-        return $this->hasOne(PriceLevel::class, 'menu_id')->where([['branch_id', auth()->user()->branch_id], ['price_type', 'SRP']])
+        return $this->hasOne(PriceLevel::class, 'menu_id')->where([['branch_id', auth()->user()->branch_id], ['price_type', 'RATE']])
             ->latest('created_at');
     }
 

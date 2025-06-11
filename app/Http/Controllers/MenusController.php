@@ -38,7 +38,7 @@ class MenusController extends Controller
             ->where('company_id', Auth::user()->branch->company_id)
             ->get();
         $categories = Category::where([['status', 'ACTIVE'], ['company_id', Auth::user()->branch->company_id], ['category_type', 'MENU']])->get();
-        $module = Module::where('module_name', 'Create Recipe')->first();
+        $module = Module::where('module_name', 'Recipe')->first();
         $approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id ], ['branch_id', Auth::user()->branch_id]])->get();
         $reviewers = Signatory::where([['signatory_type', 'REVIEWER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id], ['branch_id', Auth::user()->branch_id]])->get();
         return view('master_data.create_menu', compact('suppliers', 'items', 'approvers', 'reviewers','categories'));

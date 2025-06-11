@@ -78,9 +78,9 @@
                                 @if ($category)
                                     <th>CATEGORY</th>
                                 @endif
-                                @if ($location)
+                                {{-- @if ($location)
                                     <th>LOCATION</th>
-                                @endif
+                                @endif --}}
                                 @if ($brand)
                                     <th>BRAND</th>
                                 @endif
@@ -135,9 +135,9 @@
                                     @if ($category)
                                             <td>{{ $item->category->category_name ?? 'N/A' }}</td>
                                     @endif
-                                    @if ($location)
+                                    {{-- @if ($location)
                                         <td>{{ $item->location ?? 'N/A' }}</td>
-                                    @endif
+                                    @endif --}}
                                     @if ($brand)
                                         <td>{{ $item->brand->brand_name ?? 'N/A' }}</td>
                                     @endif
@@ -218,12 +218,12 @@
                             Category (CATEGORY)
                         </label>
                     </div>
-                    <div class="form-check">
+                    {{-- <div class="form-check">
                         <input wire:model.live="location" class="form-check-input" type="checkbox" value="" id="checkLocation">
                         <label class="form-check-label" for="checkLocation">
                             Location (LOCATION)
                         </label>
-                    </div>
+                    </div> --}}
                     <div class="form-check">
                         <input wire:model.live="brand" class="form-check-input" type="checkbox" value="" id="checkBrand">
                         <label class="form-check-label" for="checkBrand">
