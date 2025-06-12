@@ -31,6 +31,7 @@ use App\Models\Module;
 class MenusController extends Controller
 {
     public function createMenu(){
+        $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Recipe') == 1 ? true : false;
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
         // $activeStatus = Status::where('status_name', 'ACTIVE')->first();
         $items = Item::with('priceLevel', 'units') // Added unitOfMeasures here
@@ -41,7 +42,7 @@ class MenusController extends Controller
         $module = Module::where('module_name', 'Recipe')->first();
         $approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id ], ['branch_id', Auth::user()->branch_id]])->get();
         $reviewers = Signatory::where([['signatory_type', 'REVIEWER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id], ['branch_id', Auth::user()->branch_id]])->get();
-        return view('master_data.create_menu', compact('suppliers', 'items', 'approvers', 'reviewers','categories'));
+        return view('master_data.create_menu', compact('suppliers', 'items', 'approvers', 'reviewers','categories','hasReviewer'));
     }
 
 
@@ -49,6 +50,7 @@ class MenusController extends Controller
     public function store_menu(Request $request){
         //  dd($request->all());
         try {
+            $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Recipe') == 1 ? true : false;
             $validated = $request->validate([
                 'menu_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10048',
             ]);
@@ -59,11 +61,13 @@ class MenusController extends Controller
             $menu = new Menu();
             $menu->menu_image = $imageName;
             $menu->menu_code = $request->menu_code;
+            $menu->recipe_type = $request->menu_type;
             $menu->menu_name = $request->menu_name;
+            $menu->status = 'FOR APPROVAL';
             $menu->menu_description = $request->menu_description;
             $menu->category_id = $request->category_id;
             $menu->approver_id = $request->approver_id;
-            $menu->reviewer_id = $request->reviewer_id ?? null;
+            $menu->reviewer_id = $hasReviewer ? $request->reviewer_id : null;
             $menu->created_by = Auth::user()->emp_id;
             $menu->company_id = Auth::user()->branch->company_id;
             $menu->save();
@@ -158,7 +162,7 @@ class MenusController extends Controller
 
             $menu = Menu::findOrFail($id);
             if ($request->status === 'APPROVED') {
-                $menu->status = 'UNAVAILABLE';
+                $menu->status = 'AVAILABLE';
             } elseif ($request->status === 'REJECTED') {
                 $menu->status = 'REJECTED';
             }
@@ -173,8 +177,9 @@ class MenusController extends Controller
     //review show
     public function menuReviewShow($menuId) {
         $menus = Menu::with('categories', 'price_levels', 'approver', 'reviewer', 'preparer', 'recipes')->findOrFail($menuId);
+        $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Recipe') == 1 ? true : false;
         // dd($menus->recipes);
-        return view('master_data.menu_review_show', compact('menus'));
+        return view('master_data.menu_review_show', compact('menus','hasReviewer'));
     }
 
     // update review status

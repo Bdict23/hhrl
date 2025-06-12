@@ -29,6 +29,11 @@ class Recipe extends Model
     public function uom(){
         return $this->belongsTo(UOM::class, 'uom_id');
     }
-
+    public function latestItemCost()
+{
+    return $this->hasOne(PriceLevel::class, 'item_id', 'item_id')
+        ->where('price_type', 'cost')
+        ->latest('created_at');
+}
 
 }

@@ -23,7 +23,10 @@ class Menu extends Model
         'created_by',
         'reviewer_id',
         'approver_id',
-        'company_id'
+        'company_id',
+        'menu_code',
+        'recipe_type',
+        'menu_description',
     ];
 
 
@@ -46,6 +49,10 @@ class Menu extends Model
     public function recipes(){
         return $this->hasMany(Recipe::class, 'menu_id');
     }
+    public function ingredients(){
+        return $this->hasMany(Recipe::class, 'menu_id');
+    }
+    
 
     public function mySRP(){
         return $this->hasOne(PriceLevel::class, 'menu_id')->where([['branch_id', auth()->user()->branch_id], ['price_type', 'RATE']])

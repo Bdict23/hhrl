@@ -72,8 +72,8 @@
                             <div class="form-group mt-1">
                                 <label for="recipe_type" style="font-size: 13px;">Type</label>
                                 <select name="menu_type" id="recipe_type" class="form-select" aria-label="Default select example">
-                                    <option value="APPETIZER">Ala Carte</option>
-                                    <option value="MAIN_COURSE">Bangquet</option>
+                                    <option value="Ala carte">Ala Carte</option>
+                                    <option value="Banquet">Banquet</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -103,15 +103,18 @@
 
                             </div>
                             <div class="form-group">
-                                <label for="reviewer_select" style="font-size : 13px;">Reviewed By:</label>
-                                <select id="reviewer_select" class="form-select" aria-label="Default select example"
-                                    name="reviewer_id">
-                                    @foreach ($reviewers as $reviewer)
-                                        <option value="{{ $reviewer->employees->id }}">
-                                            {{ $reviewer->employees->name }} {{ $reviewer->employees->last_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                @if ($hasReviewer)
+                                    <label for="reviewer_select" style="font-size : 13px;">Reviewed By:</label>
+                                    <select id="reviewer_select" class="form-select" aria-label="Default select example"
+                                        name="reviewer_id">
+                                        @foreach ($reviewers as $reviewer)
+                                            <option value="{{ $reviewer->employees->id }}">
+                                                {{ $reviewer->employees->name }} {{ $reviewer->employees->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
+
                                 <label for="approver_select" style="font-size: 13px">Approve By:</label>
                                 <div class="col-md-12">
                                     <select id="approver_select" class="form-select" aria-label="Default select example"

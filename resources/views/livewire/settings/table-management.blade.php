@@ -41,10 +41,12 @@
                                 <td>{{ $table->table_name }}</td>
                                 <td>{{ $table->seating_capacity }}</td>
                                 <td>{{ $table->created_at->format('M-d-Y') }}</td>
+                                @if (auth()->user()->employee->getModulePermission('Business Venues') == 1 )
                                 <td class="text-end">
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateTableModal" onclick="updateTable({{ json_encode($table) }})" wire:click="editTable({{ $table->id }})">Edit</button>
                                     <a href="#" class="btn btn-sm btn-danger" wire:click="deactivateTable({{ $table->id }})">Remove</a>
                                 </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

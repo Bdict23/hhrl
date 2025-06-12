@@ -70,6 +70,7 @@
                 @if(auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2)
                     <h5 class="text-muted">Item Properties</h5>
                     <ul class="nav flex-column">
+                       
                         @if (auth()->user()->employee->getModulePermission('Item Categories') !=2)
                         <li class="nav-item"><a href="#" class="nav-link btn-sm"
                             onclick="showTab('category-table', this)">Item Categories</a></li>
@@ -87,14 +88,15 @@
                             <li class="nav-item"><a href="#" class="nav-link btn-sm"
                                 onclick="showTab('unit-of-measures-table', this)">Unit of
                                 measures</a></li>
+                             <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                            onclick="showTab('unit-conversion-lists', this)">Unit Conversion</a></li>
                     @endif
                         @if (auth()->user()->employee->getModulePermission('Item Brands') !=2)
                             <li class="nav-item"><a href="#" class="nav-link btn-sm"
                                 onclick="showTab('brand-table', this)">Brands</a></li>
-                            </li>
                         @endif
-                        <hr>
                     </ul>
+                    <hr>
                 @endif
 
                 @if (auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2)
@@ -121,6 +123,8 @@
                     <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('table-lists', this)">Table Management</a>
                     </li>
                     <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-controller-list', this)">Menu Controller</a>
+                    </li>
+                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('recipe-pricing-list', this)">Recipe Pricing</a>
                     </li>
                 </ul>
                 <hr>
@@ -204,9 +208,8 @@
                     @livewire('item-unit-measure')
                 </div>
 
-                <!-- Price Levels Tab Content -->
                 <div>
-                    @livewire('price-operation')
+                    @livewire('settings.unit-conversion')
                 </div>
 
                 <!-- Item Cost Tab Content --raldz-->
@@ -231,6 +234,7 @@
                 <!-- Menu Controller Tab Content -->
              
                     @livewire('settings.branch-menu-controller')
+                    @livewire('settings.menu-pricing')
                
 
 
