@@ -14,7 +14,7 @@
     @endif
    <div id="recipe-pricing-list" class="tab-content card" style="display: none;" wire:ignore.self>
        <div class="card-header">
-           <h5>Menu Price Lists</h5>
+           <h5>Recipe Price Lists</h5>
        </div>
        <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-2">
