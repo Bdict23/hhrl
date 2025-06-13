@@ -20,6 +20,10 @@ class Order extends Model
         'total_order',
         'total_price',
         'table_id',
+        'branch_id',
+        'sales_rep_id',
+        'customer_id',
+        'order_type',
     ];
 
     public function order_details(){

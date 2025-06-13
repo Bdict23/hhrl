@@ -249,8 +249,6 @@
                     </div>
                 @endif
                
-                
-
                 <div>
                     @livewire('settings.service')
                 </div>

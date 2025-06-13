@@ -58,6 +58,7 @@ class InvoicingController extends Controller
             $payment->prepared_by = Auth::user()->emp_id;
             $payment->status = 'FULL';
             $payment->save();
+            
 
         } catch (\Exception $e) {
             dd($e);

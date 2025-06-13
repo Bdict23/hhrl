@@ -11,10 +11,10 @@
                                     {{ $order->tables->table_name ?? 'N/A' }}</span>
                             </div>
                         </div>
-                        <span style="font-size: smaller;">Status : <span>
-                                <span style="position: relative; right: -5%; top: 1%; ">New</span>
+                        {{-- <span style="font-size: smaller;">Status : <span>
+                                <span style="position: relative; right: -5%; top: 1%; ">New</span> --}}
                     </div>
-                    <div style="text-align: right;position: absolute; right: 1%; top: 1%;">
+                    <div style="text-align: right;position: absolute; right: 1%; top: 1%;" wire:ignore>
                         <h6>Lapsed Time: <span class="lapsed-time" data-time="{{ $order->updated_at }}"></span></h6>
                     </div>
                     <div class="card-body" style="height: 250px; overflow-y: auto;">
@@ -44,9 +44,7 @@
                         </table>
 
                     </div>
-                    <div class="card-footer text-center">
-
-
+                    <div class="card-footer text-center" wire:poll.1s='refreshOrders'>
                         <x-danger-button class="{{ $order->order_status != 'PENDING' ? 'd-none' : '' }}"
                             wire:click="cancelOrder({{ $order->id }})">{{ __('Cancel') }}</x-danger-button>
                         <x-primary-button class="{{ $order->order_status != 'PENDING' ? 'd-none' : '' }}"

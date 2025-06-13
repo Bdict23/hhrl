@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\order;
 use App\Models\order_detail;
+use App\Models\Order as orderModel; // Renaming to avoid conflict with the Livewire component name
 
 class Orders extends Component
 {
@@ -13,9 +14,13 @@ class Orders extends Component
 
     protected $listeners = ['orderAdded' => 'refreshOrders'];
 
-    public function mount($orders)
+    public function mount()
     {
-        $this->orders = $orders;
+        $this->fetchData();
+    }
+    public function fetchData()
+    {
+        $this->orders = orderModel::where('order_status', '!=', 'FOR ALLOCATION')->where('branch_id', auth()->user()->branch->id)->whereDate('created_at', '>=', now())->get();
     }
 
     public function markItem($orderId, $markedAs)
@@ -65,7 +70,7 @@ class Orders extends Component
 
     public function refreshOrders()
     {
-        $this->orders = order::where('order_status', '!=', 'FOR ALLOCATION')->get();
+        $this->fetchData();
     }
 
     public function render()

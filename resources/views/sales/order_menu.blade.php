@@ -53,7 +53,7 @@
                                         {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}
                                     </p>
                                     <button class="btn btn-primary"
-                                        onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'SRP')->first()->amount ?? '0.00' }})">Add
+                                        onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }})">Add
                                         to Order</button>
                                 </div>
                             </div>
@@ -72,10 +72,6 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             Total Price
                             <span id="totalPrice">₱0.00</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Discount
-                            <span id="discount">₱0.00</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             Total

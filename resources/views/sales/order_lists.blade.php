@@ -52,17 +52,14 @@
                 <div class="row">
                     <div class="col-md-12">
                         {{-- livewire component to display orders --}}
-                        @livewire('orders', ['orders' => \App\Models\Order::where('order_status', '!=', 'FOR ALLOCATION')->get()])
+                        @livewire('orders')
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-@endsection
-
-@section('script')
-    <script>
+      <script>
         function updateLapsedTime() {
             const lapsedTimeElements = document.querySelectorAll('.lapsed-time');
             lapsedTimeElements.forEach(element => {
@@ -124,3 +121,5 @@
         }
     </script>
 @endsection
+
+  

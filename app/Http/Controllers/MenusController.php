@@ -127,6 +127,7 @@ class MenusController extends Controller
 
             $order = new Order();
             $order->order_number = $orderNumber + 1;
+            $order->created_at = Carbon::now();
             $order->sales_rep_id = Auth::user()->emp_id;
             $order->branch_id = Auth::user()->branch->id;
             $order->save();
@@ -214,14 +215,18 @@ class MenusController extends Controller
 
     // order lists
     public function orders_lists(){
-        $orders = Order::with('order_details', 'tables')->where([['branch_id', Auth::user()->branch->id], ['order_status', 'PENDING']])->get();
+        $orders = Order::with('order_details', 'tables')->where([['branch_id', Auth::user()->branch->id], ['order_status', 'PENDING']])->where('created_at', '>=', now())->get();
          //dd($orders);
         return view('sales.order_lists');
     }
 
     // allocate orders lists
     public function allocate_order_lists(){
-        $orders = Order::with('order_details', 'tables')->where([['branch_id', Auth::user()->branch->id], ['order_status', '!=', 'PENDING']])->get();
+        $orders = Order::with('order_details', 'tables')
+            ->where('branch_id', Auth::user()->branch->id)
+            ->where('order_status', '!=', 'PENDING')
+            ->whereDate('created_at', '>=', now()->toDateString())
+            ->get();
         $tables = Table::where([['branch_id', Auth::user()->branch->id], ['status', 'ACTIVE'], ['availability', 'VACANT']])->get();
         $totalPrice = 0;
 
@@ -236,6 +241,7 @@ class MenusController extends Controller
         if ($order) {
             $order->update([
                 'order_status' => 'PENDING',
+                'created_at' => Carbon::now(),
                 'table_id' => $request->tableid,
                 'customer_name' => $request->customerName
             ]);

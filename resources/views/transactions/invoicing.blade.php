@@ -1,6 +1,18 @@
 @extends('layouts.master')
 @section('content')
     <div>
+                @if (session()->has('success'))
+            <div class="alert alert-success" id="success-message">
+                {{ session('success') }}
+                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if (session()->has('error'))
+            <div class="alert alert-danger" id="success-message">
+                {{ session('error') }}
+                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
         <form id="poForm" method="POST" action="{{ route('store.payment') }}">
             @csrf
             <div class="row me-3 w-100">
@@ -237,7 +249,7 @@
                                                     $detail->menu
                                                         ->price_levels()
                                                         ->latest()
-                                                        ->where('price_type', 'SRP')
+                                                        ->where('price_type', 'RATE')
                                                         ->first()->amount ?? '0.00';
                                             }
                                         @endphp
