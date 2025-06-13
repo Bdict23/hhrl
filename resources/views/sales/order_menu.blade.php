@@ -50,7 +50,7 @@
                                             {{ $mrp_price ? '₱' . $mrp_price->amount : 'hidden' }}>₱
                                             {{ $menu->price_levels()->latest()->where('price_type', 'MRP')->first()->amount ?? '0.00' }}</span>
                                         ₱
-                                        {{ $menu->price_levels()->latest()->where('price_type', 'SRP')->first()->amount ?? '0.00' }}
+                                        {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}
                                     </p>
                                     <button class="btn btn-primary"
                                         onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'SRP')->first()->amount ?? '0.00' }})">Add

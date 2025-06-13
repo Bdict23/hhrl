@@ -297,9 +297,6 @@
                                     <x-dropdown-link :href="url('/recipe-lists')" class="no-underline">
                                         {{ __('Recipe Lists') }}
                                     </x-dropdown-link>
-                                    <x-dropdown-link :href="url('/menu-management')" class="no-underline">
-                                        {{ __('Menu Control') }}
-                                    </x-dropdown-link>
                                       <x-dropdown-link :href="url('/order_menu')" class="no-underline">
                                         {{ __('Menu') }}
                                     </x-dropdown-link>

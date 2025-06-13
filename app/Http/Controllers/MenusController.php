@@ -26,6 +26,8 @@ use Livewire\Attributes\Validate;
 use Livewire\WithPagination;
 use Livewire\Livewire;
 use App\Models\Module;
+use App\Models\BranchMenu;
+use App\Models\BranchMenuRecipe;
 
 
 class MenusController extends Controller
@@ -98,8 +100,19 @@ class MenusController extends Controller
 
     public function menu_list(){
         // $tables
-        $menus = Menu::with('categories', 'price_levels')->where('company_id', Auth::user()->branch->company_id)
-            ->whereIn('status', ['AVAILABLE'])->get();
+        $weekOfDay = strtolower(Carbon::now()->format('D'));
+        $branchMenuAvailable = BranchMenu::where('branch_id', Auth::user()->branch->id)
+            ->where('is_available', '1')->where($weekOfDay, '1')
+            ->pluck('id')
+            ->toArray();
+        $branchRecipeAvailable = BranchMenuRecipe::whereIn('branch_menu_id', $branchMenuAvailable)
+            ->pluck('menu_id')
+            ->toArray();
+        $menus = Menu::with('categories', 'price_levels', 'recipes')
+            ->where('company_id', Auth::user()->branch->company_id)
+            ->where('status', 'AVAILABLE')
+            ->whereIn('id', $branchRecipeAvailable)
+            ->get();
             // DD($menus, Auth::user()->branch->company_id);
         return view('sales.order_menu', compact('menus'));
     }
@@ -219,7 +232,6 @@ class MenusController extends Controller
     // allocate orders
     public function allocate_order(Request $request)
     {
-
         $order = Order::find($request->orderId);
         if ($order) {
             $order->update([

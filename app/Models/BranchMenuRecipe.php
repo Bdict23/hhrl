@@ -8,6 +8,10 @@ class BranchMenuRecipe extends Model
 {
     //
     protected $table = 'branch_menu_recipes';
+    protected $fillable = [
+        'branch_menu_id',
+        'menu_id',
+    ];
 
 
     public function menu()
