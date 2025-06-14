@@ -42,8 +42,7 @@
                            <th>Category</th>
                            <th>COST</th>
                            <th>SELLING RATE</th>
-                           <th>Action</th>
-                          
+                           <th>Action</th> 
                        </tr>
                    </thead>
                    <tbody>
@@ -57,23 +56,22 @@
                                 <td>{{ number_format($recipestWithTotalCost[$index]['total_cost'] ?? 0, 2) }}</td>
                                 <td>{{ number_format($recipe->mySRP->amount ?? 0, 2) }}</td>
                                 <td class="d-flex">
-                                    <button 
+                                <button 
                                     data-bs-toggle="modal"
                                     data-bs-target="#trendModal"
                                     class="btn btn-primary btn-sm text-smaller">
                                     Trend
                                 </button>
                                 <button wire:click="selectedMenuToUpdate({{ $recipe->id }})"
-                                class=" btn btn-outline-primary btn-sm"
-                                type="button"
-                                style="font-size: smaller;"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addMenuCostModal2">
-                                Update Cost
-                            </button>
+                                    class=" btn btn-outline-primary btn-sm"
+                                    type="button"
+                                    style="font-size: smaller;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addMenuCostModal2">
+                                    Update Cost
+                                </button>
                                 </td>
                             </tr>
-                          
                       @empty
                             <tr>
                                 <td colspan="7" class="text-center">No recipes found.</td>

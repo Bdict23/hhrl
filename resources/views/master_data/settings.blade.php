@@ -115,19 +115,28 @@
                     <hr>
                 @endif
 
-                <h5 class="text-muted">Restaurant Management</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-category-lists', this)">Menu
-                            Categories</a>
-                    </li>
-                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('table-lists', this)">Table Management</a>
-                    </li>
-                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-controller-list', this)">Menu Controller</a>
-                    </li>
-                    <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('recipe-pricing-list', this)">Recipe Pricing</a>
-                    </li>
-                </ul>
-                <hr>
+                @if (auth()->user()->employee->getGroupedModulePermissions('Restaurant Management') !=2)
+                    <h5 class="text-muted">Restaurant Management</h5>
+                    <ul class="nav flex-column">
+                        @if (auth()->user()->employee->getModulePermission('Menu Categories') !=2)
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm"
+                                onclick="showTab('menu-category-lists', this)">Menu Categories</a></li>
+                        @endif
+                        @if (auth()->user()->employee->getModulePermission('Table Management') !=2)
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('table-lists', this)">Table Management</a></li>
+                        @endif
+                        
+                        @if (auth()->user()->employee->getModulePermission('Menu Controller') !=2)
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('menu-controller-list', this)">Menu Controller</a></li>
+                        @endif
+                        @if (auth()->user()->employee->getModulePermission('Recipe Pricing') !=2)
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('recipe-pricing-list', this)">Recipe Pricing</a>
+                            </li>
+                        @endif
+                    </ul>
+                    <hr>
+                @endif
+                
                 {{-- <h5 class="text-muted">Menu Properties</h5>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a href="#" class="nav-link btn-sm"
