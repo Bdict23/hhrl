@@ -555,15 +555,16 @@
 
         function updateTotalMenuPrice(input) {
             const row = input.closest('tr');
-            const priceCell = row.querySelector('td:nth-child(3)');
+            const priceCell = parseFloat(row.querySelector('td:nth-child(3)').textContent);
+            const requestQty = parseInt(input.value) || 0;
             const totalPriceCell = row.querySelector('.total-price-menu');
 
             // Ensure price and quantity are parsed correctly
-            const price = parseFloat(priceCell.textContent) || 0;
-            const requestQty = parseInt(input.value) || 0;
+            // const price = parseFloat(priceCell.textContent) || 0;
 
             // Update the total price for the row
-            totalPriceCell.textContent = (price * requestQty).toFixed(2);
+            totalPriceCell.textContent = (priceCell * requestQty).toFixed(2);
+            console.log(totalPriceCell.textContent);
 
             // Update the total amount at the footer
             updateTotalAmount();

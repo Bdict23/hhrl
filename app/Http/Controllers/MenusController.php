@@ -102,7 +102,11 @@ class MenusController extends Controller
         // $tables
         $weekOfDay = strtolower(Carbon::now()->format('D'));
         $branchMenuAvailable = BranchMenu::where('branch_id', Auth::user()->branch->id)
-            ->where('is_available', '1')->where($weekOfDay, '1')
+            ->where('is_available', '1')->where($weekOfDay, '1')->where('start_date', '<=', Carbon::now())
+            ->where(function($query) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>=', Carbon::now());
+            })
             ->pluck('id')
             ->toArray();
         $branchRecipeAvailable = BranchMenuRecipe::whereIn('branch_menu_id', $branchMenuAvailable)
@@ -111,6 +115,7 @@ class MenusController extends Controller
         $menus = Menu::with('categories', 'price_levels', 'recipes')
             ->where('company_id', Auth::user()->branch->company_id)
             ->where('status', 'AVAILABLE')
+            ->where('recipe_type', 'Ala Carte')
             ->whereIn('id', $branchRecipeAvailable)
             ->get();
             // DD($menus, Auth::user()->branch->company_id);

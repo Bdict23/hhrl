@@ -306,7 +306,7 @@
 
         function updateTotalPrice(input) {
             const row = input.closest('tr');
-            const price = parseFloat(row.querySelector('td:nth-child(4)').textContent);
+            const price = parseFloat(row.querySelector('td:nth-child(5)').textContent);
             const requestQty = parseInt(input.value);
             const totalPriceCell = row.querySelector('.total-price');
             totalPriceCell.textContent = (price * requestQty).toFixed(2);

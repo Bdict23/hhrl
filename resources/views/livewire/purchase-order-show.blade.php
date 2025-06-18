@@ -69,7 +69,7 @@
                                         <td style="font-size: small">{{ $reqdetail->items->uom->unit_symbol }}</td>
                                         <td style="font-size: small"> {{ $reqdetail->qty }}</td>
                                         <td style="font-size: small">{{ $totalReceived[$reqdetail->item_id] ?? 0 }}</td>
-                                        <td style="font-size: small">{{ $reqdetail->cost->amount }}</td>
+                                        <td style="font-size: small">{{ $reqdetail->cost->amount ?? 0 }}</td>
                                         <td style="font-size: small">{{ ($totalReceived[$reqdetail->item_id] ?? 0) * ($reqdetail->cost->amount ?? 0) }}</td>
                                         <td style="font-size: small">{{ $reqdetail->items->costPrice->supplier->supplier_code ?? 'N/A' }}</td>
                                     </tr>
