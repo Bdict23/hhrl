@@ -12,7 +12,7 @@ use App\Models\Item;
 use App\Models\priceLevel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\SignatorY;
+use App\Models\Signatory;
 use App\Models\UnitConversion;
 use App\Models\Category;
 use App\Models\Menu;
