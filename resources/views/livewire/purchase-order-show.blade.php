@@ -57,7 +57,7 @@
                                     <th>Req. Qty.</th>
                                     <th>Rec. Qty.</th>
                                     <th>Cost</th>
-                                    <th>Sub-Total</th>
+                                    <th>Amount Rec.</th>
                                     <th>Cost. Ref.</th>
                                 </tr>
                             </thead>

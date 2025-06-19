@@ -175,7 +175,7 @@ class PurchaseOrderCreate extends Component
     {
         if ($this->isROP) {
             $this->isROP = false;
-            $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->get();
+            $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();
             return;
         } else {
             $this->isROP = true;
@@ -200,7 +200,7 @@ class PurchaseOrderCreate extends Component
     
     $purchasing = Module::where('module_name', 'Purchase order')->first();
 
-    $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->get();
+    $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();
     $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module_id', $purchasing->id  ],['branch_id', auth()->user()->branch_id]])->get();
     $this->reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module_id',$purchasing->id ],['branch_id', auth()->user()->branch_id]])->get();
     $this->cardexAvailable = Cardex::select('item_id', DB::raw('SUM(qty_in) - SUM(qty_out) as available_qty'))

@@ -32,7 +32,7 @@ class MenuPricing extends Component
         $this->categories = Category::where('category_type', 'MENU')
             ->where('status', 'ACTIVE')
             ->get();
-        $this->menus = Menu::with(['recipes','recipes.latestItemCost','mySRP'])->where('status', 'available')->get();
+        $this->menus = Menu::with(['recipes','recipes.latestItemCost','mySRP'])->where('status', 'available')->where('company_id', auth()->user()->branch->company_id)->get();
         // dd($this->menus);
         $this->recipestWithTotalCost = $this->menus->map(function ($menu) {
             $recipes = $menu->recipes ?? collect(); // Ensure recipes is a collection

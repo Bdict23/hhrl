@@ -220,6 +220,7 @@
                 <div>
                     @livewire('settings.unit-conversion')
                 </div>
+                @livewire('price-operation')
 
                 <!-- Item Cost Tab Content --raldz-->
                 <div>

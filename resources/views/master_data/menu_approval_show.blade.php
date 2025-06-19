@@ -51,13 +51,18 @@
                                                     ->first();
                                                 $price = $ingredient->price_level->amount;
                                                 $qty = $ingredient->qty;
-                                                $cost = number_format($price / $factor->conversion_factor, 3);
-                                                $total_cost = number_format(
-                                                    ($price / $factor->conversion_factor) * $qty,
-                                                    3,
-                                                    '.',
-                                                    ',',
-                                                );
+                                                if ($factor && $factor->conversion_factor != 0) {
+                                                    $cost = number_format($price / $factor->conversion_factor, 3);
+                                                    $total_cost = number_format(
+                                                        ($price / $factor->conversion_factor) * $qty,
+                                                        3,
+                                                        '.',
+                                                        ',',
+                                                    );
+                                                } else {
+                                                    $cost = 'N/A';
+                                                    $total_cost = 'N/A';
+                                                }
                                             @endphp
                                             {{ number_format((float) $qty, 2, '.', ',') }}
                                         </td>

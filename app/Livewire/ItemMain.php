@@ -113,6 +113,7 @@ class ItemMain extends Component
                 $priceLevel->price_type = 'COST';
                 $priceLevel->amount = $this->cost;
                 $priceLevel->company_id = auth()->user()->branch->company_id;
+                $priceLevel->branch_id = auth()->user()->branch_id;
                 $priceLevel->save();
             }
 

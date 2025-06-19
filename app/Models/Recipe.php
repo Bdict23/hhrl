@@ -33,6 +33,7 @@ class Recipe extends Model
 {
     return $this->hasOne(PriceLevel::class, 'item_id', 'item_id')
         ->where('price_type', 'cost')
+        ->where('branch_id', auth()->user()->branch_id)
         ->latest('created_at');
 }
 
