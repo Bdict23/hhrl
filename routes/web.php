@@ -322,7 +322,7 @@ Route::get('/item-location', function () {
 
 //Route for Banquet Events Summary
 Route::get('/banquet-events-summary', function () {
-    return view('Banquet.banquet-event-summary');
+    return view('banquet.banquet-event-summary');
 })->middleware(['auth', 'verified'])->name('banquet_events.summary');
 
 //Route for Banquet Events Create
