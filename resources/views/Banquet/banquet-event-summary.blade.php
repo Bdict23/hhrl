@@ -26,6 +26,8 @@
       background-color: #28a745;
     }
   </style>
-  @livewire('banquet.banquet-event-summary')
+  <div>
+    @livewire('banquet.banquet-event-summary')
+  </div>
 
 @endsection

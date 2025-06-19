@@ -107,11 +107,7 @@
                                         {{ __('PO Summary') }}
                                     </x-dropdown-link>
                                 @endif
-                            @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
-                                    <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
-                                        {{ __('Receiving') }}
-                                    </x-dropdown-link>
-                                @endif
+                          
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -134,6 +130,11 @@
                                 data-bs-target="#cardexModal" >
                                 {{ __('Cardex') }}
                             </x-dropdown-link>
+                              @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )
+                                    <x-dropdown-link :href="url('/receive_stock')" class="no-underline">
+                                        {{ __('Receiving') }}
+                                    </x-dropdown-link>
+                                @endif
                             @if(auth()->user()->employee->getModulePermission('Back Orders') != 2 )
                                 <x-dropdown-link :href="url('/back-orders')" class="no-underline">
                                     {{ __('Back Orders') }}
@@ -443,7 +444,7 @@
                 || auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
                 <div x-data="{ open: false }">
                     <button @click="open = !open" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition duration-150 ease-in-out">
-                        {{ __('Master Data') }}
+                        {{ __('Tools') }}
                     </button>
                     <div x-show="open" class="space-y-1 pl-4">
                         @if(auth()->user()->employee->getModulePermission('Suppliers') !=2)
