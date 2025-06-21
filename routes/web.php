@@ -162,7 +162,6 @@ Route::get('/reservations_lists', function(){
     return view('sales.reservations_lists');
 });
 
-Route::get('/order_menu', [MenusController::class, 'menu_list'])->middleware(['auth', 'verified'])->name('menus.list'); // Route to show the menu list
 
 // Route for CREATE MENU
 Route::get('/create_menu', [MenusController::class, 'createMenu'])->middleware(['auth', 'verified'])->name('menus.create'); // Route to create a new purchase order
@@ -266,6 +265,10 @@ Route::get('/customers_list', CustomersList::class)->middleware(['auth', 'verifi
 Route::get('/customers-records/{id}', CustomerRecords::class)->middleware(['auth', 'verified'])->name('customers.records');
 
 
+Route::get('/api/recipe1', [MenusController::class, 'index']);
+
+
+
 
 
 
@@ -355,3 +358,15 @@ Route::get('/banquet-procurement-create', function () {
 Route::get('/recipe-lists', function () {
     return view('restaurant.recipe-lists');
 })->middleware(['auth', 'verified'])->name('Restaurant.RecipeLists');
+
+
+Route::get('/order_menu', function () {
+    return view('restaurant.table-selection');
+})->middleware(['auth', 'verified'])->name('Restaurant.TableSelection');
+//old 
+// Route::get('/order_menu', [MenusController::class, 'menu_list'])->middleware(['auth', 'verified'])->name('menus.list'); // Route to show the menu list
+
+//route to menu selection
+Route::get('/my-menu', function () {
+    return view('restaurant.my-menu');
+})->middleware(['auth', 'verified'])->name('Restaurant.MenuSelection');

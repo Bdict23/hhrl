@@ -36,7 +36,7 @@
                                             <th>Item</th>
                                             <th>Supplier</th>
                                             <th>Cost</th>
-                                            <th class="text-center">Action</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>

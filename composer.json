@@ -1,4 +1,6 @@
 {
+   
+
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
@@ -64,6 +66,14 @@
             "php-http/discovery": true
         }
     },
+    
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [ "App\\Providers\\RouteServiceProvider"]
+        }
+    }
 }
+
+

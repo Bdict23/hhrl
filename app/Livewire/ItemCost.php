@@ -157,6 +157,7 @@ class ItemCost extends Component
             ->where('item_description', 'like', '%' . $this->search . '%')
             ->with(['priceLevels' => function ($query) {
                 $query->where('price_type', 'COST')
+                      ->where('branch_id', auth()->user()->branch_id)
                       ->orderBy('created_at', 'desc')
                       ->take(1)
                       ->with('supplier');

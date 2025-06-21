@@ -68,7 +68,7 @@
                                     style="font-size: smaller;"
                                     data-bs-toggle="modal"
                                     data-bs-target="#addMenuCostModal2">
-                                    Update Cost
+                                    Update Selling Price
                                 </button>
                                 </td>
                             </tr>

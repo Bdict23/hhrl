@@ -1,9 +1,8 @@
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Restaurant\MenusController;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/example-test', function () {
-    return response()->json(['message' => 'Hello, API!']);
-});
+Route::get('/recipes', [MenusController::class, 'index']);
