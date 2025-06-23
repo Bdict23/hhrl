@@ -51,9 +51,12 @@
         </div>
 
         <div class="flex items-center gap-4">
+            @if (auth()->user()->employee->getModulePermission('Profile') == '1')
+                 <x-primary-button>{{ __('Save') }}</x-primary-button>
+                
+            @endif
+           
             
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
             @if (session('status') === 'profile-updated')
                 <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-gray-600">{{ __('Saved.') }}</p>

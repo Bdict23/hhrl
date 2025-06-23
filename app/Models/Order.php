@@ -24,6 +24,8 @@ class Order extends Model
         'sales_rep_id',
         'customer_id',
         'order_type',
+        'created_at',
+        'updated_at',
     ];
 
     public function order_details(){

@@ -132,14 +132,19 @@ class MenusController extends Controller
 
             $order = new Order();
             $order->order_number = $orderNumber + 1;
-            $order->created_at = Carbon::now();
+            $order->created_at = Carbon::now('Asia/Manila');
+            $order->updated_at = Carbon::now('Asia/Manila');
             $order->sales_rep_id = Auth::user()->emp_id;
             $order->branch_id = Auth::user()->branch->id;
+            $order->order_status = 'PENDING';
+            $order->table_id = $request->tableID;
             $order->save();
+            Table::where('id', $request->tableID)
+                ->update(['availability' => 'OCCUPIED']);
 
             $menu_id = $request->input('menu_id', []);
             $qty = $request->input('order_qty', []);
-
+            
             foreach ($menu_id as $index => $value) {
                 $order_details = new Order_detail();
                 $order_details->order_id = $order->id;
@@ -247,6 +252,7 @@ class MenusController extends Controller
             $order->update([
                 'order_status' => 'PENDING',
                 'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now('Asia/Manila'),
                 'table_id' => $request->tableid,
                 'customer_name' => $request->customerName
             ]);

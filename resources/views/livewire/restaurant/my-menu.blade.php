@@ -55,6 +55,7 @@
             </div>
             <div class="col-md-3 card mt-4 p-6" style="height: 100%; position: sticky; top: 0; ">
                 <div class="card-body">
+                    <strong><span id="tableNumber">{{ $selectedTable->table_name }}</span></strong>
                     <h5 class="card-title mb-4 mt-4">Order Summary</h5>
                     <ul class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -94,6 +95,7 @@
                     <div class="modal-body">
                         <form action="{{ route('order.store') }}" method="POST">
                             @csrf
+                            <input type="text" name="tableID" value="{{ $selectedTable->id }}" hidden>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>

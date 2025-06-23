@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 
 class InvoicingController extends Controller
 {
-    //
+   
     public function index()
     {
         $orders = order::where([['branch_id', Auth::user()->branch->id],['order_status', 'SERVED']])->with('order_details','tables','order_details.menu.price_levels')->get();
@@ -36,7 +36,11 @@ class InvoicingController extends Controller
             $order->payment_status = 'PAID';
             $order->order_status = 'COMPLETED';
             $order->save();
-
+            if($order->table_id != null){
+                // Update the table availability to VACANT
+           Table::where('id', $order->table_id)
+            ->update(['availability' => 'VACANT']);
+            }
 
             $invoice = new invoice();
             $invoice->order_id = $order->id;
@@ -58,6 +62,8 @@ class InvoicingController extends Controller
             $payment->prepared_by = Auth::user()->emp_id;
             $payment->status = 'FULL';
             $payment->save();
+
+            
             
 
         } catch (\Exception $e) {

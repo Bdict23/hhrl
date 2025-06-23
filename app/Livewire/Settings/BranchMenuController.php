@@ -40,7 +40,7 @@ class BranchMenuController extends Component
     public function fetchData()
     {
         $this->menuItems = Menu::with('category')
-            ->where('company_id', auth()->user()->branch->company_id)->get();
+            ->where('company_id', auth()->user()->branch->company_id)->where('status', 'AVAILABLE')->get();
             $this->menuControls = BranchMenu::where('branch_id', auth()->user()->branch_id)->get();
 
     }

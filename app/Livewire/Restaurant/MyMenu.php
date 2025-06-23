@@ -9,6 +9,7 @@ use App\Models\BranchMenuRecipe;
 use App\Models\Menu;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\Table; // Assuming you have a Table model for restaurant tables
 use App\Models\Category; // Assuming you have a Category model for menu categories
 
 class MyMenu extends Component
@@ -16,6 +17,7 @@ class MyMenu extends Component
     public $tableId;
     public $menuCategories = []; // This can hold the categories for the selected table
     public $menuItems = []; // This can hold the menu items for the selected table
+    public $selectedTable = null; // This can hold the selected table ID
     public function render()
     {
         return view('livewire.restaurant.my-menu');
@@ -30,6 +32,7 @@ class MyMenu extends Component
     }
     public function fetchData()
     {
+        $this->selectedTable = Table::where('id', $this->tableId)->first(); // Default to the first table if none is selected
         $weekOfDay = strtolower(Carbon::now()->format('D'));
         $branchMenuAvailable = BranchMenu::where('branch_id', Auth::user()->branch->id)
             ->where('is_available', '1')->where($weekOfDay, '1')->where('start_date', '<=', Carbon::now())
