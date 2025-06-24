@@ -11,6 +11,9 @@ class Brand extends Model
         'brand_name',
         'brand_code',
         'status',
+        'company_id',
+        'created_by',
+        'updated_by',
     ];
 
     protected $table = 'brands';

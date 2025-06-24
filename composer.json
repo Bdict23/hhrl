@@ -12,7 +12,7 @@
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "*",
-        "maatwebsite/excel": "^1.1"
+        "maatwebsite/excel": "3.1.64"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -75,5 +75,3 @@
         }
     }
 }
-
-

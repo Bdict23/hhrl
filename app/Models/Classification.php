@@ -11,7 +11,11 @@ class Classification extends Model
 
     protected $fillable = [
         'name',
+        'classification_name',
+        'classification_description',
         'category_id',
+        'class_parent',
+        'company_id'
     ];
 
     public function sub_classifications()

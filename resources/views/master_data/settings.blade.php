@@ -50,6 +50,7 @@
                     @if (auth()->user()->employee->getModulePermission('Program Settings') !=2)
                         <option value="program-settings">Program Settings</option>
                     @endif
+                        <option value="item-import">Item Import</option>
                 @endif
             </select>
         </div>
@@ -178,7 +179,13 @@
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('program-settings', this)">Program Settings</a></li>
                         </ul>
                     @endif
+                        
+                      
                 @endif
+                 <h6 class="text-muted">Data Imports</h6>
+                        <ul class="nav flex-column">
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('item-import', this)">Item Import</a></li>
+                        </ul>
             </div>
 
             {{-- navs --}}
@@ -245,6 +252,7 @@
              
                     @livewire('settings.branch-menu-controller')
                     @livewire('settings.menu-pricing')
+                    @livewire('imports.item-import')
                
 
 
