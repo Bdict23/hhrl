@@ -12,14 +12,43 @@
             <h5>Classification</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Item Classifications') == 1 )
-                <x-primary-button type="button" class="mb-3"
-                    onclick="showTab('classification-form-create', document.querySelector('.nav-link.active'))">+ Add
-                    Classification</x-primary-button>
-            @endif
-            
-            <x-secondary-button type="button" class="mb-3"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class="row">
+               <div class="col-md-6">
+                 @if (auth()->user()->employee->getModulePermission('Item Classifications') == 1 )
+                     <x-primary-button type="button" class="mb-3"
+                         onclick="showTab('classification-form-create', document.querySelector('.nav-link.active'))">+ Add
+                         Classification</x-primary-button>
+                 @endif
+                 
+                 <x-secondary-button type="button" class="mb-3"
+                     wire:click="fetchData()">Refresh</x-secondary-button>
+               </div>
+               <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="classification-search" onkeyup="filterClassifications()">
+                        <script>
+                        function filterClassifications() {
+                            const input = document.getElementById('classification-search');
+                            const filter = input.value.toLowerCase();
+                            const table = document.querySelector('#classification-table table');
+                            const trs = table.querySelectorAll('tbody tr');
+
+                            trs.forEach(tr => {
+                                // Skip "No classification found" row
+                                if (tr.children.length < 2) return;
+                                let text = '';
+                                // Concatenate all cell text except actions
+                                for (let i = 0; i < tr.children.length - 1; i++) {
+                                    text += tr.children[i].textContent.toLowerCase() + ' ';
+                                }
+                                tr.style.display = text.includes(filter) ? '' : 'none';
+                            });
+                        }
+                        </script>
+                    </div>
+                </div>
+            </div>
             <div class="mb-3">
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">

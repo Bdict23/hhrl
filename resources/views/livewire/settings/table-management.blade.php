@@ -17,13 +17,44 @@
             <h5>Table Lists</h5>
         </div>
         <div class="card-body">
-            {{-- @if (auth()->user()->employee->getModulePermission('Business Venues') == 1 ) --}}
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('table-create-form', document.querySelector('.nav-link.active'))">+ ADD
-                New Table</x-primary-button>
-            {{-- @endif --}}
-                <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class="row">
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Table Management') == 1 )
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                        onclick="showTab('table-create-form', document.querySelector('.nav-link.active'))">+ ADD
+                        New Table</x-primary-button>
+                    @endif
+                        <x-secondary-button type="button" class="mb-3 btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-table"
+                            onkeyup="filterTables()">
+                    </div>
+                </div>
+            </div>
+            <script>
+                function filterTables() {
+                    const input = document.getElementById('search-table');
+                    const filter = input.value.toLowerCase();
+                    const table = document.querySelector('#table-lists table');
+                    const trs = table.querySelectorAll('tbody tr');
+
+                    trs.forEach(row => {
+                        // Skip "No Table found" row
+                        if (row.children.length < 2) return;
+                        const name = row.children[0].textContent.toLowerCase();
+                        const capacity = row.children[1].textContent.toLowerCase();
+                        if (name.includes(filter) || capacity.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">

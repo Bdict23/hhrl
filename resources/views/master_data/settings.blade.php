@@ -182,10 +182,12 @@
                         
                       
                 @endif
-                 <h6 class="text-muted">Data Imports</h6>
-                        <ul class="nav flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('item-import', this)">Item Import</a></li>
-                        </ul>
+                 @if (auth()->user()->employee->getModulePermission('Import Items') !=2)
+                    <h6 class="text-muted">Data Imports</h6>
+                            <ul class="nav flex-column">
+                                <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('item-import', this)">Import Items</a></li>
+                            </ul>
+                @endif
             </div>
 
             {{-- navs --}}
@@ -252,6 +254,8 @@
              
                     @livewire('settings.branch-menu-controller')
                     @livewire('settings.menu-pricing')
+
+
                     @livewire('imports.item-import')
                
 

@@ -17,15 +17,42 @@
             <h5>Menu Category Lists</h5>
         </div>
         <div class="card-body">
-            {{-- @if (auth()->user()->employee->getModulePermission('Business Venues') == 1 ) --}}
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('menu-category-form', document.querySelector('.nav-link.active'))">+ ADD
-                Category</x-primary-button>
-            {{-- @endif --}}
-                <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class="row">
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                        onclick="showTab('menu-category-form', document.querySelector('.nav-link.active'))">+ ADD
+                        Category</x-primary-button>
+                    @endif
+                    <x-secondary-button type="button" class="mb-3 btn-sm"
+                    wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-menu-category"
+                            onkeyup="filterMenuCategories()">
+                    </div>
+                </div>
+            </div>
+              <script>
+                    function filterMenuCategories() {
+                        const input = document.getElementById('search-menu-category');
+                        const filter = input.value.toLowerCase();
+                        const table = document.querySelector('#menu-category-lists table');
+                        const trs = table.querySelectorAll('tbody tr');
+                
+                        trs.forEach(tr => {
+                            const td = tr.querySelector('td');
+                            if (!td) return; // skip if no td (e.g. empty row)
+                            const text = td.textContent.toLowerCase();
+                            tr.style.display = text.includes(filter) ? '' : 'none';
+                        });
+                    }
+                </script>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
+               
                 <table class="table table-striped table-sm small">
                     <thead class="table-dark sticky-top">
                         <tr>

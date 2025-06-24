@@ -9,14 +9,47 @@
 
     <div id="unit-of-measures-table" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Unit of Measures') == 1 )
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('unit-of-measure-form', document.querySelector('.nav-link.active'))">+ ADD UNIT OF
-                MEASURE</x-primary-button>
-            @endif
-           
-            <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+           <div class="row">
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Unit of Measures') == 1 )
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                        onclick="showTab('unit-of-measure-form', document.querySelector('.nav-link.active'))">+ ADD UNIT OF
+                        MEASURE</x-primary-button>
+                    @endif
+                    
+                    <x-secondary-button type="button" class="mb-3 btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-unit-of-measure"
+                            onkeyup="filterUnitOfMeasures()">
+                    </div>
+                </div>
+            </div>
+            <script>
+                function filterUnitOfMeasures() {
+                    let input = document.getElementById('search-unit-of-measure');
+                    let filter = input.value.toLowerCase();
+                    let table = document.querySelector('#unit-of-measures-table table');
+                    let trs = table.getElementsByTagName('tr');
+
+                    // Skip the header row (index 0)
+                    for (let i = 1; i < trs.length; i++) {
+                        let tds = trs[i].getElementsByTagName('td');
+                        let rowText = '';
+                        for (let j = 0; j < tds.length; j++) {
+                            rowText += tds[j].textContent.toLowerCase() + ' ';
+                        }
+                        if (rowText.indexOf(filter) > -1) {
+                            trs[i].style.display = '';
+                        } else {
+                            trs[i].style.display = 'none';
+                        }
+                    }
+                }
+            </script>
             <div style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
                     <thead class="table-dark sticky-top">

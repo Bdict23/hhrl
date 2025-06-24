@@ -13,14 +13,42 @@
             <h5>Sub Classification Lists</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') == 1 )
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                    onclick="showTab('sub-classification-form', document.querySelector('.nav-link.active'))"
-                    wire:click="showAddSubClassification">+ Add Sub
-                    Classification</x-primary-button>
-            @endif
-            <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+           <div class="row">
+            <div class="col-md-6">
+                 @if (auth()->user()->employee->getModulePermission('Item Sub-Classifications') == 1 )
+                     <x-primary-button type="button" class="mb-3 btn-sm"
+                         onclick="showTab('sub-classification-form', document.querySelector('.nav-link.active'))"
+                         wire:click="showAddSubClassification">+ Add Sub
+                         Classification</x-primary-button>
+                 @endif
+                 <x-secondary-button type="button" class="mb-3 btn-sm"
+                     wire:click="fetchData()">Refresh</x-secondary-button>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Search</span>
+                    <input type="text" class="form-control" id="search-item-sub-classification"
+                        onkeyup="filterItemSubClassifications()">
+                </div>
+           </div>
+        <script>
+            function filterItemSubClassifications() {
+                const input = document.getElementById('search-item-sub-classification');
+                const filter = input.value.toLowerCase();
+                const table = document.querySelector('#sub-classification-table table');
+                const trs = table.getElementsByTagName('tr');
+
+                for (let i = 1; i < trs.length; i++) { // skip thead row
+                    let row = trs[i];
+                    let text = row.textContent.toLowerCase();
+                    if (text.includes(filter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+        </script>
 
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">

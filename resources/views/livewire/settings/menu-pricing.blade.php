@@ -17,20 +17,51 @@
            <h5>Recipe Price Lists</h5>
        </div>
        <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <select name="" id="" class="form-select" style="width: min-content">Category
-                <option value="">All</option>
-                @forelse ($categories as $category)
-                    <option value="{{ $category->id }}" @if ($category->id == $selectedCategory) selected @endif>
-                        {{ $category->category_name }}
-                    </option>
-                @empty      
-                    <option value="" disabled>No categories available</option>
-                @endforelse
-           </select>
-           <x-secondary-button type="button" class="mb-2 btn-sm"
-           wire:click="fetchData()">Refresh</x-secondary-button>
-        </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-start align-items-center mb-3">
+                        <select name="" id="" class="form-select" style="width: min-content">Category
+                            <option value="">All</option>
+                            @forelse ($categories as $category)
+                                <option value="{{ $category->id }}" @if ($category->id == $selectedCategory) selected @endif>
+                                    {{ $category->category_name }}
+                                </option>
+                            @empty      
+                                <option value="" disabled>No categories available</option>
+                            @endforelse
+                        </select>
+                        <x-secondary-button type="button" class="btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-recipe"
+                            onkeyup="filterRecipes()">
+                    </div>
+                </div>
+            </div>
+            <script>
+                function filterRecipes() {
+                    const input = document.getElementById('search-recipe');
+                    const filter = input.value.toLowerCase();
+                    const table = document.querySelector('#recipe-pricing-list table');
+                    const trs = table.querySelectorAll('tbody tr');
+
+                    trs.forEach(row => {
+                        // Skip "No recipes found" row
+                        if (row.children.length < 2) return;
+                        const name = row.children[0].textContent.toLowerCase();
+                        const code = row.children[1].textContent.toLowerCase();
+                        if (name.includes(filter) || code.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
            <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                style="max-height: 400px; overflow-y: auto;">
                <table class="table table-striped table-sm small">

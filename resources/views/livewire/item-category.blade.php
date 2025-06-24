@@ -11,13 +11,46 @@
             <h5>Item Category List</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('category-form', document.querySelector('.nav-link.active'))">+ ADD
-                CATEGORY</x-primary-button>
-            @endif
-                <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class='row'>
+               <div class="col-md-6">
+                 @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                     <x-primary-button type="button" class="mb-3 btn-sm"
+                     onclick="showTab('category-form', document.querySelector('.nav-link.active'))">+ ADD
+                     CATEGORY</x-primary-button>
+                 @endif
+                     <x-secondary-button type="button" class="mb-3 btn-sm"
+                     wire:click="fetchData()">Refresh</x-secondary-button>
+               </div>
+           
+               <div class="col-md-6">
+                 <div class="input-group mb-3">
+                     <span class="input-group-text">Search</span>
+                     <input type="text" class="form-control" id="search-item-category"
+                         onkeyup="filterItemCategories()">
+                 </div>
+               </div >
+            </div>
+
+                <script>
+                    function filterItemCategories() {
+                        const input = document.getElementById('search-item-category');
+                        const filter = input.value.toLowerCase();
+                        const table = document.querySelector('#category-table table');
+                        const trs = table.querySelectorAll('tbody tr');
+
+                        trs.forEach(row => {
+                            // Skip "No category found" row
+                            if (row.children.length < 2) return;
+                            const name = row.children[0].textContent.toLowerCase();
+                            const desc = row.children[1].textContent.toLowerCase();
+                            if (name.includes(filter) || desc.includes(filter)) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    }
+                </script>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">

@@ -17,13 +17,43 @@
             <h5>Services Lists</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Services') == 1 )
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('service-form', document.querySelector('.nav-link.active'))">+ ADD
-                SERVICE</x-primary-button>
-            @endif
-                <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class="row">
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Services') == 1 )
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                        onclick="showTab('service-form', document.querySelector('.nav-link.active'))">+ ADD
+                        SERVICE</x-primary-button>
+                    @endif
+                        <x-secondary-button type="button" class="mb-3 btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-service"
+                            onkeyup="filterServices()">
+                    </div>
+                </div>
+            </div>
+            <script>
+                function filterServices() {
+                    const input = document.getElementById('search-service');
+                    const filter = input.value.toLowerCase();
+                    const table = document.querySelector('#service-lists table');
+                    const trs = table.querySelectorAll('tbody tr');
+                    trs.forEach(row => {
+                        // Skip "No Service found" row
+                        if (row.children.length < 2) return;
+                        const name = row.children[0].textContent.toLowerCase();
+                        const code = row.children[1].textContent.toLowerCase();
+                        if (name.includes(filter) || code.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">

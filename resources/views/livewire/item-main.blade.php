@@ -65,17 +65,21 @@
         </div>
         <div class="card-body">
             <div class="row">
-                @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
-                    <div class="col-md-6 mb-2">
-                        <x-primary-button type="button"
-                        onclick="showTab('item-form', document.querySelector('.nav-link.active'))">+ Add
-                        Item</x-primary-button>   
-                    </div>   
-                @endif 
-                    <div class="col-md-6 mb-2">
-                        <input type="text" class="form-control" id="searchItems"
-                            placeholder="Search Item">
+                <div class="col-md-6 mb-2">
+                    @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
+                            <x-primary-button type="button"
+                            onclick="showTab('item-form', document.querySelector('.nav-link.active'))">+ Add
+                            Item</x-primary-button>
+                    @endif
+                    <x-secondary-button type="button" class="mb-2 btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchItems">
+                        <span class="input-group-text">Search</span>
                     </div>
+                </div>
             </div>
            
             <div class="table-responsive  mb-3 d-flex justify-content-center"
@@ -105,7 +109,7 @@
                                     {{ $item->sub_classification->classification_name ?? 'N/A' }}</td>
                                     @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
                                     <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-primary btn-sm"
+                                        <a href="#" class="btn btn-sm btn-link btn-sm"
                                             wire:click="edit({{ $item->id }})"
                                             onclick="showTab('item-update-form', document.querySelector('.nav-link.active')) , updateItem({{ json_encode($item) }})"
                                             >Edit</a>

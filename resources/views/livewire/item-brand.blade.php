@@ -12,13 +12,44 @@
             <h5>Brand List</h5>
         </div>
         <div class="card-body">
-            @if (auth()->user()->employee->getModulePermission('Item Brands'))
-                <x-primary-button type="button" class="mb-3 btn-sm"
-                onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
-                BRAND</x-primary-button>
-            @endif
-            <x-secondary-button type="button" class="mb-3 btn-sm"
-                wire:click="fetchData()">Refresh</x-secondary-button>
+            <div class="row">
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Item Brands'))
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                        onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
+                        BRAND</x-primary-button>
+                    @endif
+                    <x-secondary-button type="button" class="mb-3 btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-item-brand"
+                            onkeyup="filterItemBrands()">
+                    </div>
+                </div>
+            </div>
+            <script>
+                function filterItemBrands() {
+                    const input = document.getElementById('search-item-brand');
+                    const filter = input.value.toLowerCase();
+                    const table = document.querySelector('#brand-table table');
+                    const trs = table.querySelectorAll('tbody tr');
+
+                    trs.forEach(row => {
+                        // Skip "No brand found" row
+                        if (row.children.length < 2) return;
+                        const name = row.children[0].textContent.toLowerCase();
+                        const desc = row.children[1].textContent.toLowerCase();
+                        if (name.includes(filter) || desc.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
             <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
 

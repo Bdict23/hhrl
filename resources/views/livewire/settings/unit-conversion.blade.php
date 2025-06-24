@@ -13,12 +13,43 @@
            <h5>Unit Conversion Lists</h5>
        </div>
        <div class="card-body">
-           {{-- @if (auth()->user()->employee->getModulePermission('Item Unit Conversions') == 1 ) --}}
-               <x-primary-button type="button" class="mb-3 btn-sm"
-                   onclick="showTab('unit-conversion-form', document.querySelector('.nav-link.active'))">+ Add Unit Conversion</x-primary-button>
-           {{-- @endif --}}
-           <x-secondary-button type="button" class="mb-3 btn-sm"
-               wire:click="fetchData()">Refresh</x-secondary-button>
+           <div class="row">
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Unit Conversions') == 1 )
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                            onclick="showTab('unit-conversion-form', document.querySelector('.nav-link.active'))">+ Add Unit Conversion</x-primary-button>
+                    @endif
+                    <x-secondary-button type="button" class="mb-3 btn-sm"
+                        wire:click="fetchData()">Refresh</x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-unit-conversion"
+                            onkeyup="filterUnitConversions()">
+                    </div>
+               </div>
+            </div>
+              <script>
+                function filterUnitConversions() {
+                     const input = document.getElementById('search-unit-conversion');
+                     const filter = input.value.toLowerCase();
+                     const table = document.querySelector('#unit-conversion-lists table');
+                     const trs = table.querySelectorAll('tbody tr');
+    
+                     trs.forEach(row => {
+                          // Skip "No unit conversions found" row
+                          if (row.children.length < 4) return;
+                          const mainUnit = row.children[0].textContent.toLowerCase();
+                          const subUnit = row.children[1].textContent.toLowerCase();
+                          if (mainUnit.includes(filter) || subUnit.includes(filter)) {
+                            row.style.display = '';
+                          } else {
+                            row.style.display = 'none';
+                          }
+                     });
+                }
+            </script>
 
            <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
                style="max-height: 400px; overflow-y: auto;">
