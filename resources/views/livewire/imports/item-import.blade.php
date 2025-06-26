@@ -22,8 +22,11 @@
     <form wire:submit.prevent="import">
         <input type="file" class="form-control" wire:model="file">
         @error('file') <span class="text-danger">{{ $message }}</span> @enderror
-
-        <button type="submit" class="btn btn-primary mt-3">Import Items</button>
+        <button type="submit" class="btn btn-primary mt-3">Import Items</button>  
     </form>
+    <div class="mt-4 alert alert-info">
+        <p class="mt-3">Please ensure your file is in .xlsx format and follows the required structure.</p>
+        <p>Download the <a wire:click="downloadSample" href="#" >sample file</a> for reference.</p>
+    </div>
 </div>
 

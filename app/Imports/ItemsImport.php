@@ -80,7 +80,7 @@ class ItemsImport implements ToModel, WithHeadingRow
             'item_code'         => strtoupper(substr($row['item'], 0, 3)) . rand(100, 999),
             'item_description'  => '(' . $row['item'] . ') ' . $row['description'],
             'brand_id'          => $brand->id ?? null,
-            'barcode'           => $row['barcode'],
+            'item_barcode'           => $row['barcode'],
             'uom_id'            => $unit->id ?? null,
             'classification_id' => $classification->id ?? null,
             'sub_class_id'      => $subClassification->id ?? null,

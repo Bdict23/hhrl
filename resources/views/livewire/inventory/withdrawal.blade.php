@@ -419,47 +419,55 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="d-flex justify-content-between mb-3">
-                            <select id="categoryFilter" class="form-select w-25">
-                                <option value="">All Categories</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->category_name }}">{{ $category->category_name }}</option>
-                                @endforeach
-                            </select>
-                            <input type="text" id="searchItemInput" class="form-control w-25"
-                                placeholder="Search items..." onkeyup="applyFilters()">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <select id="categoryFilter" class="form-select">
+                                    <option value="">All Categories</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->category_name }}">{{ $category->category_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                           <div class="col-md-6">
+                               <div class="input-group">
+                                    <span class="input-group-text">Search</span>
+                                   <input type="text" id="searchItemInput" class="form-control w-25" onkeyup="applyFilters()">
+                               </div>
+                           </div>
                         </div>
                         <!-- Table for Item Selection -->
-                        <table class="table table-bordered table-hover">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>CODE</th>
-                                    <th>NAME</th>
-                                    <th>INVENTORY BALANCE</th>
-                                    <th>AVAILABLE QTY.</th>
-                                    <th>COST PRICE</th>
-                                    <th>CATEGORY</th>
-                                    <th>STATUS</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                            <tbody id="itemTable">
-                                @foreach ($myCardexItems as $index => $item)
-                                    <tr>
-                                        <td>{{ $item->item_code }}</td>
-                                        <td>{{ $item->item_description }}</td>
-                                        <td>{{ $item->total_balance }}</td>
-                                        <td>{{ $item->total_available}}</td>
-                                        <td>{{ $item->costPrice->amount ?? 0 }}</td>
-                                        <td>{{ $item->category->category_name ?? 'N/A' }}</td>
-                                        <td>{{ $item->item_status }}</td>
-                                        <td>
-                                            <button wire:click="addItem({{ $item->id }}, {{ $item->total_balance }} , {{ $item->total_available }} )" type="button" class="btn btn-primary btn-sm"> Add </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                       <div class="overflow-x-auto" style="height: 400px; overflow-x: auto;">
+                         <table class="table table-sm table-bordered table-hover">
+                             <thead class="table-dark">
+                                 <tr>
+                                     <th>CODE</th>
+                                     <th>NAME</th>
+                                     <th>INVENTORY BALANCE</th>
+                                     <th>AVAILABLE QTY.</th>
+                                     <th>COST PRICE</th>
+                                     <th>CATEGORY</th>
+                                     <th>STATUS</th>
+                                     <th>ACTION</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="itemTable">
+                                 @foreach ($myCardexItems as $index => $item)
+                                     <tr>
+                                         <td>{{ $item->item_code }}</td>
+                                         <td>{{ $item->item_description }}</td>
+                                         <td>{{ $item->total_balance }}</td>
+                                         <td>{{ $item->total_available}}</td>
+                                         <td>{{ $item->costPrice->amount ?? 0 }}</td>
+                                         <td>{{ $item->category->category_name ?? 'N/A' }}</td>
+                                         <td>{{ $item->item_status }}</td>
+                                         <td>
+                                             <button wire:click="addItem({{ $item->id }}, {{ $item->total_balance }} , {{ $item->total_available }} )" type="button" class="btn btn-primary btn-sm"> Add </button>
+                                         </td>
+                                     </tr>
+                                 @endforeach
+                             </tbody>
+                         </table>
+                       </div>
                     </div>
                     <div class="modal-footer">
                         <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>

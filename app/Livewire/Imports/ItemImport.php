@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ItemsImport;
+use App\Exports\ImportItemSample;
 
 class ItemImport extends Component
 {
@@ -28,5 +29,10 @@ class ItemImport extends Component
     public function render()
     {
         return view('livewire.imports.item-import');
+    }
+
+    public function downloadSample()
+    {
+        return Excel::download(new ImportItemSample, 'item_sample.xlsx');
     }
 }

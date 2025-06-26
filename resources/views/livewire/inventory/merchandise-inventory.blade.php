@@ -12,8 +12,8 @@
                   @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') == 1)
                      <div class=" row col-md-6">
                         <div class="col-md-6 mb-2">
-                                <x-primary-button style="text-decoration: none;" onclick="printInventory()">
-                                + Print Preview
+                                <x-primary-button style="text-decoration: none;" wire:click="exportInventory">
+                                Export 
                                 </x-primary-button>
                                 <span wire:loading class="spinner-border text-primary" role="status"></span>
                         </div>
@@ -22,7 +22,10 @@
                
 
                 <div class="col-md-6">
-                            <input type="text" class="form-control form-control-sm" placeholder="Search..." id="searchInput" onkeyup="filterTable()">
+                           <div class="input-group">
+                            <span class="input-group-text">Search</span>
+                             <input type="text" class="form-control form-control-sm" id="searchInput" onkeyup="filterTable()">
+                           </div>
                             <script>
                                 function filterTable() {
                                     const input = document.getElementById('searchInput');
@@ -93,8 +96,8 @@
                                 @if ($barcode)
                                     <th>BARCODE</th>
                                 @endif
-                                @if($cost)
-                                <th>COST</th>
+                                @if($sellingPrice)
+                                    <th>Sell Price</th>
                                 @endif
                                   @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') == 1)
                                     <th>
@@ -117,13 +120,13 @@
                             @forelse ($cardex as $index => $item)
                                 <tr style="font-size: x-small;">
                                     @if ($avlBal)
-                                        <td>{{ $item->total_balance }}</td>
+                                        <td>{{ $item->total_balance ?? 0 }}</td>
                                     @endif
                                     @if ($avlQty)
-                                        <td>{{ $item->total_available}}</td>
+                                        <td>{{ $item->total_available ?? 0 }}</td>
                                     @endif
                                     @if ($totalReserved)
-                                        <td>{{ $item->total_reserved }}</td>
+                                        <td>{{ $item->total_reserved ?? 0 }}</td>
                                     @endif
                                     @if ($code)
                                         <td>{{ $item->item_code }}</td>
@@ -150,8 +153,8 @@
                                     @if ($barcode)
                                         <td>{{ $item->item_barcode }}</td>
                                     @endif
-                                    @if ($cost)
-                                        <td>{{ $item->costPrice->amount ?? 0 }}</td>
+                                    @if ($sellingPrice)
+                                        <td>{{ $item->sellingPrice->amount ?? 0 }}</td>
                                     @endif
                                     @if (auth()->user()->employee->getModulePermission('Merchandise Inventory') == 1)
                                          <td class="w-10 h-5">
@@ -246,6 +249,12 @@
                         <input wire:model.live="barcode" class="form-check-input" type="checkbox" value="" id="checkBarcode">
                         <label class="form-check-label" for="checkBarcode">
                             Barcode (BARCODE)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input wire:model.live="sellingPrice" class="form-check-input" type="checkbox" value="" id="checkSellingPrice">
+                        <label class="form-check-label" for="checkSellingPrice">
+                            Price (Sell Price)
                         </label>
                     </div>
                 </div>
