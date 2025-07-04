@@ -107,7 +107,7 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="contact_no_1" class="form-label">M. PO NUMBER</label>
+                                <label for="contact_no_1" class="form-label text-sm">M. PO NUMBER</label>
                                 <input wire:model="mPoNumber" type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number" style="font-size: x-small">
                             </div>
                             <div class="col-md-6">
@@ -134,7 +134,13 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="row ">
-
+                                    <div class="col-md-6 input-group">
+                                        <input value="{{ $selectedEventName }}" type="text" class="form-control" id="event" style="font-size: x-small" disabled placeholder="(Optional)" readonly> 
+                                        <span type="button" class="input-group-text" style="font-size: x-small" data-bs-toggle="modal" data-bs-target="#eventModal">Event</span>
+                                        @error('event')
+                                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                     @if ($hasReviewer)
                                     <div class="col-md-6">
                                         <label for="" class="form-label">Reviewed To <span style="color: red; font-size: x-small;"> *</span></label>
@@ -186,7 +192,49 @@
             </div>
         </div>
 
-    <!-- Add Item Modal -->
+        <!-- Event Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content card">
+                    <div class="modal-header card-header">
+                        <h5 class="modal-title" id="eventModalLabel">Select Event</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="searchEventInput" class="form-control mb-2" placeholder="Search event..." style="font-size: x-small;">
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-hover table-sm">
+                                <thead class="table-dark sticky-top">
+                                    <tr>
+                                        <th style="font-size: 12px;">Event Name</th>
+                                        <th style="font-size: 12px;">Customer</th>
+                                        <th style="font-size: 12px;">Event Date</th>
+                                        <th style="font-size: 12px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eventTableBody">
+                                    @foreach ($events as $event)
+                                        <tr>
+                                            <td style="font-size: 12px;">{{ $event->event_name }}</td>
+                                            <td style="font-size: 12px;">{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
+                                            <td style="font-size: 12px;">{{ $event->event_date }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm" wire:click="selectEvent({{ $event->id }})">Select</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Item Modal -->
     <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl">
             <div class="modal-content card">
@@ -295,6 +343,15 @@
             window.addEventListener('success', function (event) {
                 // Clear fields
                 document.getElementById('poForm').reset();
+            });
+
+            window.addEventListener('closeEventModal', function (event) {
+                // Close the event modal
+                var eventModal = document.getElementById('eventModal');
+                var modal = bootstrap.Modal.getInstance(eventModal);
+                if (modal) {
+                    modal.hide();
+                }
             });
         });
 

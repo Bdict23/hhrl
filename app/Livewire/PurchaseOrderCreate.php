@@ -11,6 +11,7 @@ use App\Models\RequisitionInfo;
 use App\Models\RequisitionDetail;
 use App\Models\Cardex;
 use App\Models\Module;
+use App\Models\BanquetEvent;
 use Illuminate\Support\Facades\DB;
 
 
@@ -18,6 +19,9 @@ use Illuminate\Support\Facades\DB;
 class PurchaseOrderCreate extends Component
 {
     public $suppliers = [];
+    public $events = [];
+    public $selectedEventId = null;
+    public $selectedEventName = null;
     public $terms = [];
     public $items = [];
     public $approver = [];
@@ -73,6 +77,7 @@ class PurchaseOrderCreate extends Component
                 'remarks' => 'nullable|string|max:55',
                 'approver_id' => 'required|exists:employees,id',
                 'selectedItems' => 'required|array',
+                'selectedEventId' => 'nullable|exists:banquet_events,id',
             ]);
         }
        
@@ -100,6 +105,7 @@ class PurchaseOrderCreate extends Component
         $requisitionInfo->merchandise_po_number = $this->mPoNumber;
         $requisitionInfo->requisition_number = $this->requisitionNumber;
         $requisitionInfo->from_branch_id = $branchId;
+        $requisitionInfo->event_id = $this->selectedEventId ?? null;
         $requisitionInfo->save();
 
         // Process the selected items and their quantities
@@ -197,7 +203,7 @@ class PurchaseOrderCreate extends Component
     $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
-    
+    $this->events = BanquetEvent::with('customer')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
     $purchasing = Module::where('module_name', 'Purchase order')->first();
 
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();
@@ -218,9 +224,25 @@ class PurchaseOrderCreate extends Component
             ->pluck('inventory_qty', 'item_id');
 
     }
+    public function selectEvent($eventId)
+    {
+        $event = BanquetEvent::with('customer')->find($eventId);
+
+        if ($event) {
+            $this->selectedEventId = $event->id;
+            $this->selectedEventName = $event->event_name . ' - ' . $event->customer->customer_fname . ' ' . $event->customer->customer_lname;
+            $this->dispatch('closeEventModal');
+        }else{
+            session()->flash('error', 'Event not found.');
+            return;
+        }
+    }
 
     public function render()
     {
         return view('livewire.purchase-order-create');
     }
 }
+    
+
+    

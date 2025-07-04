@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Livewire\Banquet;
+namespace App\Livewire\Validations;
 
 use Livewire\Component;
 use App\Models\BanquetProcurement;
 
-class BanquetProcurementLists extends Component
+class BudgetProposalList extends Component
 {
-    public $procurementLists = [];
+        public $procurementLists = [];
     //custom columns properties
     public $documentNumber = true;
     public $referenceNumber = true;
@@ -22,11 +22,6 @@ class BanquetProcurementLists extends Component
     public $notes = false;
     public $customerName = true;
 
-    public function render()
-    {
-        return view('livewire.banquet.banquet-procurement-lists');
-    }
-
     public function mount()
     {
         $this->fetchData();
@@ -34,10 +29,14 @@ class BanquetProcurementLists extends Component
 
     public function fetchData()
     {
-        $this->procurementLists = BanquetProcurement::with('event')->where('branch_id', auth()->user()->branch_id)->get();
+        $this->procurementLists = BanquetProcurement::with('event')->where('branch_id', auth()->user()->branch_id)->where('status', 'PENDING')->get();
     }
     public function view($id)
     {
-        return redirect()->to('/banquet-procurement-create?proposal-id=' . $id);
+        return redirect()->to('/banquet-budget-show?proposal-id=' . $id);
+    }
+    public function render()
+    {
+        return view('livewire.validations.budget-proposal-list');
     }
 }

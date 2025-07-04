@@ -232,9 +232,12 @@
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Menu Approval') == 1 )
                                     <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
-                                        {{ __('Menu Approval') }}
+                                        {{ __('Menu - Approval') }}
                                     </x-dropdown-link>
                                 @endif
+                                    <x-dropdown-link :href="url('/budget-proposal-approval-lists')" class="no-underline">
+                                        {{ __('Budget Proposal - Approval') }}
+                                    </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -272,7 +275,7 @@
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Banquet Procurement') != 2 )
                                     <x-dropdown-link :href="url('/banquet-procurement-lists')" class="no-underline">
-                                        {{ __('Procurement') }}
+                                        {{ __('Budget Proposal') }}
                                     </x-dropdown-link>
                                 @endif
                                  

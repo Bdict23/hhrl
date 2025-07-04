@@ -11,9 +11,6 @@
         </div>
         <div class="card-tools">
            <div class="row mt-2 pl-3 pr-3">
-            <div class="col-md-6">
-                <a class="btn btn-primary" href="\banquet-procurement-create">Create New</a>
-            </div>
              <div class="col-md-6">
                 <input type="text" class="form-control" placeholder="Search" wire:model="searchTerm">
              </div>
@@ -128,7 +125,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No procurement records found.</td>
+                            <td colspan="8" class="text-center">No procurement records found.</td>
                         </tr>
                     @endforelse
                 </tbody>

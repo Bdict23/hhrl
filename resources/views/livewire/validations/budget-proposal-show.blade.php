@@ -1,4 +1,5 @@
 
+
    <div>
       @if (session()->has('success'))
         <div class="alert alert-success" id="success-message">
@@ -134,38 +135,7 @@
                                         </td>
                                     </tr>
                                 </tfoot>
-                                    {{-- @forelse ($selectedEvent->withdrawals ?? [] as $withdrawal)
-                                        <tr>
-                                            <td>{{ $withdrawal->reference_number }}</td>
-                                            <td>
-                                                <span class="badge badge-pill bg-{{ $withdrawal->withdrawal_status == 'APPROVED' ? 'success' : ($withdrawal->withdrawal_status == 'PREPARING' ? 'secondary' : ($withdrawal->withdrawal_status == 'REJECTED' ? 'danger' : 'info') ) }}">
-                                                    {{ ucfirst($withdrawal->withdrawal_status) }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $withdrawal->department->department_name ?? '-' }}</td>
-                                            <td>{{ $withdrawal->getTotalPriceLevelAmountAttribute() }}</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-link" wire:click="viewWithdrawal({{ $withdrawal->id }})" data-bs-toggle="modal" data-bs-target="#viewWithdrawalModal">View</button>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center">No withdrawn items found.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                                 <tfoot>
-                            <tr>
-                                <td colspan="4" class="text-end">Total</td>
-                                <td>
-                                    {{ isset($selectedEvent) && $selectedEvent->withdrawals
-                                        ? $selectedEvent->withdrawals->where('withdrawal_status', 'APPROVED')->sum(function($withdrawal) {
-                                            return $withdrawal->getTotalPriceLevelAmountAttribute();
-                                        })
-                                        : 0
-                                    }}     </td>
-                            </tr>
-                        </tfoot> --}}
+                                    
                             </table>
                         </div>
                     </div>
@@ -178,209 +148,145 @@
             <div>
                 <div class="card ">
                     <div class="card-body">
-                        <form id="banquetProcurementForm" action="" wire:submit.prevent='storeRequestBudget'>
+                        <form id="banquetProcurementForm" action="" wire:submit.prevent='updateRequest'>
                             @csrf
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="document_number" class="form-label text-xs">Document Number</label>
-                                    <input type="text" class="form-control text-xs" id="document_number" name="document_number" wire:model="documentNumber">
-                                    @error('documentNumber')
-                                        <div class="text-danger text-xs">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="reference_number" class="form-label text-xs">Reference Number</label>
-                                    <input type="text" class="form-control text-xs" id="reference_number" name="reference_number" placeholder="<AUTO>" value="{{ $requestReferenceNumber }}" disabled>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label for="cust_name" class="form-label text-xs">Customer Name</label>
-                                    <input type="text" class="form-control text-xs" id="event_name" name="event_name" disabled value="{{ isset($selectedEvent->customer) ? $selectedEvent->customer->customer_fname . ' ' . $selectedEvent->customer->customer_lname : '' }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="event_name" class="form-label text-xs">Event Name</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control text-xs" id="event_name" name="event_name" disabled value="{{ isset($selectedEvent) ? $selectedEvent->event_name : '' }}">
-                                        <button class="input-group-text" type="button"
-                                            style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
-                                    </div>
-                                    @error('selectedEventId')
-                                        <div class="text-danger text-xs">{{ $message }}</div>
-                                    @enderror  
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                         <label for="event_date" class="form-label text-xs">Event Date</label>
-                                        <input disabled type="date" class="form-control text-xs" id="event_date" name="event_date" value="{{ isset($selectedEvent) ? $selectedEvent->event_date : '' }}" required>
-                                 </div>
-                                <div class="row col-md-6">
+                                <div class="row">
                                     <div class="col-md-6">
-                                        <label for="event_time" class="form-label text-xs">Start Time</label>
-                                        <input disabled type="time" class="form-control" style="font-size: small" id="event_time" name="event_time" value="{{ isset($selectedEvent) ? $selectedEvent->start_time : '' }}" required>
+                                        <label for="document_number" class="form-label text-xs">Document Number</label>
+                                        <input type="text" class="form-control text-xs" id="document_number" name="document_number" wire:model="documentNumber" disabled>
+                                        @error('documentNumber')
+                                            <div class="text-danger text-xs">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="event_time" class="form-label text-xs">End Time</label>
-                                        <input disabled type="time" class="form-control" style="font-size: small" id="event_time" name="event_time" value="{{ isset($selectedEvent) ? $selectedEvent->end_time : '' }}" required>
+                                        <label for="reference_number" class="form-label text-xs">Reference Number</label>
+                                        <input type="text" class="form-control text-xs" id="reference_number" name="reference_number" placeholder="<AUTO>" value="{{ $requestReferenceNumber }}" disabled>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="event_location" class="form-label text-xs">Request Budget <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" wire:model='requestedBudget'>
-                                        @error('requestedBudget')
-                                            <div class="text-danger text-xs">{{ $message }}</div>
-                                        @enderror
+                                        <label for="cust_name" class="form-label text-xs">Customer Name</label>
+                                        <input type="text" class="form-control text-xs" id="event_name" name="event_name" disabled value="{{ isset($selectedEvent->customer) ? $selectedEvent->customer->customer_fname . ' ' . $selectedEvent->customer->customer_lname : '' }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="approved_budget" class="form-label text-xs">Approved Budget</label>
-                                        <input disabled type="number" class="form-control" id="approved_budget" name="approved_budget" value="{{ $approvedBudget ?? '' }}">
+                                        <label for="event_name" class="form-label text-xs">Event Name</label>
+                                            <input type="text" class="form-control text-xs" id="event_name" name="event_name" disabled value="{{ isset($selectedEvent) ? $selectedEvent->event_name : '' }}">
+                                        @error('selectedEventId')
+                                            <div class="text-danger text-xs">{{ $message }}</div>
+                                        @enderror  
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row mb-2">
                                     <div class="col-md-6">
-                                        <label for="event_description" class="form-label text-xs">Reviewed By</label>
-                                        <select name="reviewed_by" id="reviewed_by" class="form-select form-select-sm" wire:model='selectedReviewer'>
-                                            <option class="text-xs" value="">Select Reviewer</option>
-                                            @foreach ($reviewers as $reviewer)
-                                                <option class="text-xs" value="{{ $reviewer->employees->id }}" {{ (isset($selectedEvent) && $selectedEvent->reviewed_by == $reviewer->id) ? 'selected' : '' }}>
-                                                    {{ $reviewer->employees->name . ' ' . $reviewer->employees->last_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('selectedReviewer')
-                                            <div class="text-danger text-xs">{{ $message }}</div>
-                                        @enderror
+                                            <label for="event_date" class="form-label text-xs">Event Date</label>
+                                            <input disabled type="date" class="form-control text-xs" id="event_date" name="event_date" value="{{ isset($selectedEvent) ? $selectedEvent->event_date : '' }}" required>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="guest_count" class="form-label text-xs">Approved By</label>
-                                        <select name="approved_by" id="approved_by" class="form-select form-select-sm" wire:model='selectedApprover'>
-                                            <option class="text-xs" value="">Select Approver</option>
-                                            @foreach ($approvers as $approver)
-                                                <option class="text-xs" value="{{ $approver->employees->id }}" {{ (isset($selectedEvent) && $selectedEvent->approved_by == $approver->id) ? 'selected' : '' }}>
-                                                    {{ $approver->employees->name . ' ' . $approver->employees->last_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('selectedApprover')
-                                            <div class="text-danger text-xs">{{ $message }}</div>
-                                        @enderror
+                                    <div class="row col-md-6">
+                                        <div class="col-md-6">
+                                            <label for="event_time" class="form-label text-xs">Start Time</label>
+                                            <input disabled type="time" class="form-control" style="font-size: small" id="event_time" name="event_time" value="{{ isset($selectedEvent) ? $selectedEvent->start_time : '' }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="event_time" class="form-label text-xs">End Time</label>
+                                            <input disabled type="time" class="form-control" style="font-size: small" id="event_time" name="event_time" value="{{ isset($selectedEvent) ? $selectedEvent->end_time : '' }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label for="event_location" class="form-label text-xs">Request Budget</label>
+                                            <input type="text" class="form-control" wire:model='requestedBudget' disabled>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="event_capacity" class="form-label text-xs">Approved Budget <span class="text-danger">*</span></label>
+                                            <input wire:model='approveBudget' type="number" class="form-control" id="approved_budget" name="approved_budget" > 
+                                             @error('approveBudget')
+                                                <div class="text-danger text-xs">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="event_description" class="form-label text-xs">Reviewed By</label>
+                                            <input type="text" class="form-control text-xs" id="reviewed_by" name="reviewed_by" disabled value="{{ $selectedReviewer }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="guest_count" class="form-label text-xs">Approved By</label>
+                                            <input type="text" class="form-control text-xs" id="approved_by" name="approved_by" disabled value="{{ $selectedApprover }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            <textarea class="form-control" name="notes" id="" cols="30" rows="3" wire:model='notes'></textarea>
+                                            @error('notes')
+                                                <div class="text-danger text-xs">{{ $message }}</div>
+                                            @enderror
+                                        </div>    
                                     </div>
                                 </div>
-                                <div class="row mt-2">
-                                    <div class="col-md-12">
-                                        <textarea class="form-control" name="notes" id="" cols="30" rows="3" wire:model='notes'></textarea>
-                                         @error('notes')
-                                            <div class="text-danger text-xs">{{ $message }}</div>
-                                        @enderror
-                                    </div>    
-                                </div>
-                            </div>
                     
-                            <div class="card mt-2">
-                                <div class="card-body">
-                                    <div  class="card-title row">
-                                        <h6 class="col-md-6">Overview</h6>
-                                    </div>
+                                <div class="card mt-2">
                                     <div class="card-body">
-                                        <table class="table table-striped">
-                                            <tbody> 
-                                                
-                                                <tr>
-                                                    <td class="text-xs">Income on Service</td>
-                                                    <td class="text-xs">
-                                                        @php
-                                                            $internalTotal = isset($selectedEvent) && $selectedEvent->eventServices
-                                                                ? $selectedEvent->eventServices->where('service.service_type', 'INTERNAL')->sum(function($service) {
-                                                                    return $service->price->amount * ($service->qty ? $service->qty : 1);
-                                                                })
-                                                                : 0;
-
-                                                            $externalTotal = isset($selectedEvent) && $selectedEvent->eventServices
-                                                                ? $selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
-                                                                    return ($service->cost->amount ?? 0) * ($service->qty ? $service->qty : 1);
-                                                                })
-                                                                : 0;
-
-                                                            $totalIncome = $internalTotal + $externalTotal;
-                                                        @endphp
-                                                        {{ $totalIncome }}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-xs"><strong>Buffet Menu</strong></td>
-                                                    <td class="text-sm"><strong>
-                                                        {{ isset($selectedEvent) && $selectedEvent->eventMenus
-                                                            ? $selectedEvent->eventMenus->sum(function($menu) {
-                                                                return $menu->price->amount * ($menu->qty ? $menu->qty : 1);
-                                                            })
-                                                            : 0
-                                                        }}</strong><br>
-                                                    </td>
-                                                </tr>
-                                            </tbody>    
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- <div class="card mt-2">
-                                <div class="card-body">
-                                    <div  class="card-title row">
-                                        <h6 class="col-md-6">Event Requirements</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-xs">Reference</th>
-                                                    <th class="text-xs">Department</th>
-                                                    <th class="text-xs">Status</th>
-                                                    <th class="text-xs">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody> 
-                                                @forelse ($selectedEvent->equipmentRequests ?? [] as $request)
+                                        <div  class="card-title row">
+                                            <h6 class="col-md-6">Overview</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-striped">
+                                                <tbody> 
+                                                    
                                                     <tr>
-                                                        <td>{{ $request->reference_number }}</td>
-                                                        <td>{{ $request->department->department_name }}</td>
-                                                        <td>
-                                                            <span class="badge badge-pill bg-{{ $request->status == 'PENDING' ? 'success' : ($request->status == 'PREPARING' ? 'secondary' : 'info') }}">
-                                                                {{ ucfirst($request->status) }}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-sm btn-link" wire:click="viewEquipmentInfo('{{ $request->reference_number }}')" data-bs-toggle="modal" data-bs-target="#viewEquipmentInfoModal">View</button>
+                                                        <td class="text-xs">Income on Service</td>
+                                                        <td class="text-xs">
+                                                            @php
+                                                                $internalTotal = isset($selectedEvent) && $selectedEvent->eventServices
+                                                                    ? $selectedEvent->eventServices->where('service.service_type', 'INTERNAL')->sum(function($service) {
+                                                                        return $service->price->amount * ($service->qty ? $service->qty : 1);
+                                                                    })
+                                                                    : 0;
+
+                                                                $externalTotal = isset($selectedEvent) && $selectedEvent->eventServices
+                                                                    ? $selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
+                                                                        return ($service->cost->amount ?? 0) * ($service->qty ? $service->qty : 1);
+                                                                    })
+                                                                    : 0;
+
+                                                                $totalIncome = $internalTotal + $externalTotal;
+                                                            @endphp
+                                                            {{ $totalIncome }}
                                                         </td>
                                                     </tr>
-
-                                                @empty
                                                     <tr>
-                                                        <td colspan="4" class="text-center">No equipment requests found.</td>
+                                                        <td class="text-xs"><strong>Buffet Menu</strong></td>
+                                                        <td class="text-sm"><strong>
+                                                            {{ isset($selectedEvent) && $selectedEvent->eventMenus
+                                                                ? $selectedEvent->eventMenus->sum(function($menu) {
+                                                                    return $menu->price->amount * ($menu->qty ? $menu->qty : 1);
+                                                                })
+                                                                : 0
+                                                            }}</strong><br>
+                                                        </td>
                                                     </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
+                                                </tbody>    
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div> --}}
                             </div>
                             <div class="card-footer">
                                 <div class="input-group">
                                     <select name="" class="form-select" id="" class="" wire:model='isFinal'>
                                         <option value="">Save As</option>
-                                        <option value="PREPARING" @if ($isFinal == 'PREPARING') selected @endif>Draft</option>
-                                        <option value="PENDING" @if ($isFinal == 'PENDING') selected @endif>Final</option>
+                                        <option value="PREPARING" @if ($isFinal == 'PREPARING') selected @endif>Revise</option>
+                                        <option value="PENDING" @if ($isFinal == 'PENDING') selected @endif>Draft</option>
+                                        <option value="APPROVED" @if ($isFinal == 'APPROVED') selected @endif>Final</option>
+                                        <option value="REJECTED" @if ($isFinal == 'REJECTED') selected @endif>Rejected</option>
                                     </select>
-                                    @if ($isNewRequest)
                                         <button type="submit" class="btn btn-success ">Save</button>
-                                        <button type="button" class="btn btn-danger input-group-text" wire:click="resetForm">Reset</button>
-                                    @elseif ($isFinal == 'PREPARING')
-                                        <button type="button" wire:click="updateRequest" class="btn btn-success ">Update</button>
-                                    @endif
-                                    <a type="button" href="{{ route('banquet.procurement.summary') }}" class="btn btn-secondary input-group-text">Summary</a>
+                                        <a type="button" href="{{ route('banquet.budget-proposal-approval.lists') }}" class="btn btn-secondary input-group-text">Summary</a>
                                 </div>
+                                @error('isFinal')
+                                    <div class="text-danger text-xs">{{ $message }}</div>          
+                                @enderror
                             </div>
                      </form>
                 </div>    

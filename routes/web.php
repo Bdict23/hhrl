@@ -370,3 +370,15 @@ Route::get('/order_menu', function () {
 Route::get('/my-menu', function () {
     return view('restaurant.my-menu');
 })->middleware(['auth', 'verified'])->name('Restaurant.MenuSelection');
+
+
+//Route for budget proposal approval lists
+Route::get('/budget-proposal-approval-lists', function () {
+    return view('validations.budget-proposal-lists');
+})->middleware(['auth', 'verified'])->name('banquet.budget-proposal-approval.lists');
+
+
+//Route for budget proposal show
+Route::get('/banquet-budget-show', function () {
+    return view('validations.budget-proposal-show');
+})->middleware(['auth', 'verified'])->name('banquet.budget-proposal.show');

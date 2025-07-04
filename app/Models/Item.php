@@ -38,11 +38,11 @@ class Item extends Model
 
     public function costPrice()
     {
-        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->latest()->with('supplier');
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->where('branch_id', auth()->user()->branch_id)->latest()->with('supplier');
     }
     public function sellingPrice()
     {
-        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'SRP')->latest();
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'SRP')->where('branch_id', auth()->user()->branch_id)->latest();
     }
 
 

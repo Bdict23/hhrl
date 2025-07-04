@@ -61,6 +61,7 @@
                         <tr>
                             <th class="text-xs">NAME</th>
                             <th class="text-xs">CODE</th>
+                            <th class="text-xs">TYPE</th>
                             <th class="text-xs">DESCRIPTION</th>
                             <th class="text-xs">CATEGORY</th>
                             <th class="text-xs">MULTIPLIER</th>
@@ -73,6 +74,7 @@
                         <tr>
                             <td class="text-xs">{{ $service->service_name }}</td>
                             <td class="text-xs">{{ $service->service_code }}</td>
+                            <td class="text-xs">{{ $service->service_type }}</td>
                             <td class="text-xs">{{ $service->service_description }}</td>
                             <td class="text-xs">{{ $service->category ? $service->category->category_name : 'N/A' }}</td>
                             <td class="text-xs">
@@ -118,11 +120,25 @@
                 <div class="modal-body">
                     <form action="" wire:submit.prevent="updateService" id="UpdateServiceForm">
                         <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="service_name-update" class="form-label">Service Name</label>
+                                <input type="text" class="form-control" id="service_name-update-input" wire:model="service_name_input">
+                                @error('service_name_input')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="row">
                            <div class="row col-md-12 mb-3">
-                                <div class="col-md-6">
-                                    <label for="service_name-update" class="form-label">Service Name</label>
-                                    <input type="text" class="form-control" id="service_name-update-input" wire:model="service_name_input">
-                                    @error('service_name_input')
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="service_type-update" class="form-label">Service Type</label>
+                                    <select name="" id="selectServiceTypeUpdate" class="form-control" wire:model="service_type_input">
+                                        <option value="">Select</option>
+                                        <option value="INTERNAL">Internal</option>
+                                        <option value="EXTERNAL">External</option>
+                                    </select>
+                                    @error('service_type_input')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -171,7 +187,16 @@
                                     </div>
                                 </div>
                             </div>
-                            
+                            @if ($service_type_input == 'EXTERNAL')
+                                <div class="col-md-6 mb-3">
+                                    {{-- Show service cost input only for EXTERNAL service type --}}
+                                    <label for="service_cost-update" class="form-label">Service Cost</label>
+                                    <input type="number" step="0.01" class="form-control" id="service_cost-update-input" wire:model="service_cost_input">
+                                    @error('service_cost_input')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                             <div class=" mb-3">
                                 <label for="service_description-update" class="form-label">Description</label>
@@ -199,14 +224,14 @@
             <form wire:submit.prevent="storeService" id="serviceForm">
                 @csrf
                 <div class="mb-3 row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="service_name-input" class="form-label">Service Name <span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="service_name-input" wire:model="service_name_input" >
                         @error('service_name_input')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="service-category" class="form-label">Category <span style="color: red;">*</span></label>
                         <div class="input-group">
                             <select name="" id="" class="form-control" wire:model="selectedCategoryId">
@@ -225,6 +250,17 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+                    <div class="col-md-4">
+                        <label for="service_type-input" class="form-label">Service Type <span style="color: red;">*</span></label>
+                        <select name="" id="service_type-input" class="form-control" wire:model.live="service_type_input">
+                            <option value="">Select</option>
+                            <option value="INTERNAL">Internal</option>
+                            <option value="EXTERNAL">External</option>
+                        </select>
+                        @error('service_type_input')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 mb-6">
@@ -234,7 +270,6 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    
                     <div class="col-md-4 mb-6">
                         <label for="service_rate" class="form-label">Rate Price <span style="color: red;">*</span></label>
                         <div class="input-group">
@@ -253,7 +288,16 @@
                             @enderror
                         </div>
                     </div>
-                </div>
+                    @if ($service_type_input == 'EXTERNAL')
+                        <div class="col-md-4 mb-6">
+                            {{-- Show service cost input only for EXTERNAL service type --}}
+                            <label for="service_cost-input" class="form-label">Service Cost</label>
+                            <input type="number" step="0.01" class="form-control" id="service_cost-input" wire:model="service_cost_input">
+                            @error('service_cost_input')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        @endif
                 <div class="mb-3">
                     <label for="service_description-input" class="form-label">Description <span style="color: red;">*</span></label>
                     <textarea class="form-control" id="service_description-input" wire:model="service_description_input" rows="3" ></textarea>
@@ -261,7 +305,9 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <x-primary-button type="submit">Save</x-primary-button>
+               <div class="d-flex justify-content-end">
+                 <x-primary-button type="submit">Save</x-primary-button>
+               </div>
             </form>
         </div>
     </div>

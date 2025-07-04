@@ -27,4 +27,10 @@ class EventService extends Model
     {
         return $this->belongsTo(PriceLevel::class, 'price_id');
     }
+    public function cost()
+    {
+        return $this->hasOne(PriceLevel::class, 'service_id','service_id')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('price_type', 'COST')->latest('created_at');
+    }
 }

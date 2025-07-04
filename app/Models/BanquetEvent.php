@@ -42,5 +42,9 @@ class BanquetEvent extends Model
     {
         return $this->hasMany(Withdrawal::class, 'event_id');
     }
+    public function purchaseOrders()
+    {
+        return $this->hasMany(RequisitionInfo::class, 'event_id');
+    }
 
 }

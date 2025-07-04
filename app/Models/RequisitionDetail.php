@@ -28,5 +28,9 @@ class RequisitionDetail extends Model
     public function backOrder(){
         return $this->hasMany(Backorder::class,'item_id','item_id');
     }
+    public function totalAmount()
+    {
+        return $this->qty * $this->cost->amount;
+    }
 
 }

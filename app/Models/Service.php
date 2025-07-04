@@ -11,6 +11,7 @@ class Service extends Model
     // fillable attributes
     protected $fillable = [
         'service_name',
+        'service_type',
         'service_code',
         'service_description',
         'status',
@@ -27,7 +28,13 @@ class Service extends Model
     {
         return $this->hasOne(PriceLevel::class, 'service_id', 'id')
             ->where('price_type', 'RATE')
-            ->where('branch_id', auth()->user()->branch_id);
+            ->where('branch_id', auth()->user()->branch_id)->latest('created_at');
+    }
+    public function costPrice()
+    {
+        return $this->hasOne(PriceLevel::class, 'service_id', 'id')
+            ->where('price_type', 'COST')
+            ->where('branch_id', auth()->user()->branch_id)->latest('created_at');
     }
 
     // Define the relationship with Category

@@ -31,6 +31,7 @@ class RequisitionInfo extends Model
         'term_id',
         'requisition_status',
         'remarks',
+        'event_id',
     ];
 
     public function branches()
