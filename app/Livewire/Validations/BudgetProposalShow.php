@@ -67,7 +67,7 @@ class BudgetProposalShow extends Component
             $this->isNewRequest = false; // Set to false since we are editing an existing proposal
             $proposalId = $request->input('proposal-id');
             $this->proposedBudgetId = $proposalId; // Store the proposal ID for updates
-            $proposal = BanquetProcurement::with('notedBy', 'approver')->where('id', $proposalId)->first();
+            $proposal = BanquetProcurement::with('notedBy', 'approver')->where('id', $proposalId)->where('status', 'PENDING')->first();
             if ($proposal) {
                 $this->selectedEventId = $proposal->event_id;
                 $this->documentNumber = $proposal->document_number;
@@ -79,12 +79,12 @@ class BudgetProposalShow extends Component
                 $this->requestReferenceNumber = $proposal->reference_number;
                 $this->loadEventDetails($this->selectedEventId);
             } else {
-                session()->flash('error', 'Invalid event selected.');
-                return redirect()->to('/banquet-procurement-lists');
+                session()->flash('error', 'Invalid Action.');
+                return redirect()->to('/dashboard');
             }
         } else {
-           session()->flash('error', 'Invalid event selected.');
-            return redirect()->to('/banquet-procurement-lists');
+           session()->flash('error', 'Invalid Action.');
+            return redirect()->to('/dashboard');
         }
       
     }
@@ -106,17 +106,22 @@ class BudgetProposalShow extends Component
 
     public function updateRequest()
     {
-        if($this->isFinal != 'REJECTED'){
-             $this->validate([
-            'notes' => 'nullable|string|max:1000',
-            'approveBudget' => 'required|numeric|min:0',
-            'isFinal' => 'required|in:PREPARING,APPROVED,REJECTED,PENDING',
-            ]);
-        }else{
+        if ($this->isFinal == 'APPROVED') {
             $this->validate([
-            'notes' => 'nullable|string|max:1000',
-            'isFinal' => 'required|in:REJECTED',
-        ]);
+                'notes' => 'nullable|string|max:1000',
+                'approveBudget' => 'required|numeric|min:0',
+                'isFinal' => 'required|in:APPROVED',
+            ]);
+        } elseif ($this->isFinal == 'PREPARING') {
+            $this->validate([
+                'notes' => 'nullable|string|max:1000',
+                'isFinal' => 'required|in:PREPARING',
+            ]);
+        } elseif ($this->isFinal == 'REJECTED') {
+            $this->validate([
+                'notes' => 'nullable|string|max:1000',
+                'isFinal' => 'required|in:REJECTED',
+            ]);
         }
        
         $proposal = BanquetProcurement::find($this->proposedBudgetId);
@@ -124,9 +129,11 @@ class BudgetProposalShow extends Component
             $proposal->update([
                 'notes' => $this->notes,
                 'status' => $this->isFinal,
-                'approved_amount' => $this->approveBudget,
+                'approved_amount' => $this->approveBudget ? $this->approveBudget : NULL,
             ]);
             session()->flash('success', 'Budget proposal updated successfully.');
+            $this->reset();
+             $this->dispatch('viewTop');
         } else {
             session()->flash('error', 'Budget proposal not found.');
         }

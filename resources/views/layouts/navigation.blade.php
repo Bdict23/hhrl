@@ -210,33 +210,40 @@
                         
                             <x-slot name="content">
                                 @if (auth()->user()->employee->getModulePermission('PO Review') == 1 )
-                                    <x-dropdown-link :href="url('/review_request_list')" class="no-underline">
+                                    <x-dropdown-link :href="url('/review_request_list')" class="no-underline" style="font-size: smaller">
                                         {{ __('P.O - Review') }}
                                     </x-dropdown-link>
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('PO Approval') == 1 )
-                                        <x-dropdown-link :href="url('/approval_request_list')" class="no-underline">
+                                        <x-dropdown-link :href="url('/approval_request_list')" class="no-underline" style="font-size: smaller">
                                         {{ __('P.O - Approval') }}
                                         </x-dropdown-link>
+                                        <hr>
                                 @endif
                                 
                                 @if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1 )
-                                    <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline">
+                                    <x-dropdown-link :href="url('/withdrawal_review')" class="no-underline" style="font-size: smaller">
                                         {{ __('Withdrawal - Review') }}
                                 </x-dropdown-link>
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Approve Withdrawals') == 1 )
-                                    <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline">
+                                    <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline" style="font-size: smaller">
                                         {{ __('Withdrawal - Approval') }}
-                                    </x-dropdown-link>                               
+                                    </x-dropdown-link>           
+                                    <hr>                    
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Menu Approval') == 1 )
                                     <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
                                         {{ __('Menu - Approval') }}
                                     </x-dropdown-link>
+                                    <hr>
                                 @endif
-                                    <x-dropdown-link :href="url('/budget-proposal-approval-lists')" class="no-underline">
+                                    <x-dropdown-link :href="url('/budget-proposal-approval-lists')" class="no-underline" style="font-size: x-small">
                                         {{ __('Budget Proposal - Approval') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="url('/equipment-request-approval-lists')" class="no-underline" style="font-size: x-small">
+                                        {{ __('Equipment Request - Approval') }}
                                     </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>

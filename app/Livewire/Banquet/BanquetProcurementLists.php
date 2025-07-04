@@ -38,6 +38,6 @@ class BanquetProcurementLists extends Component
     }
     public function view($id)
     {
-        return redirect()->to('/banquet-procurement-create?proposal-id=' . $id);
+        return redirect()->to('/banquet-procurement-create?proposal-id=' . $id . '&reference='. BanquetProcurement::find($id)->reference_number);
     }
 }

@@ -84,6 +84,7 @@ class BanquetProcurementCreate extends Component
             $this->fetchData();
             $this->isNewRequest = false; // Set to false since we are editing an existing proposal
             $proposalId = $request->input('proposal-id');
+            $this->requestReferenceNumber = $request->input('reference');
             $proposal = BanquetProcurement::where('id', $proposalId)->first();
             if ($proposal) {
                 $this->selectedEventId = $proposal->event_id;
@@ -221,12 +222,11 @@ class BanquetProcurementCreate extends Component
 
     public function updateRequest()
     {
-        // dd($this->isFinal);
-        $banquetProcurement = BanquetProcurement::where('event_id', $this->selectedEventId)->first();
+        $banquetProcurement = BanquetProcurement::where('event_id', $this->selectedEventId)->where('reference_number', $this->requestReferenceNumber)->first();
         if ($banquetProcurement) {
             $this->validate(
             [
-                'documentNumber' => 'required|string|max:255|unique:banquet_procurements,document_number,' . ($banquetProcurement ? $banquetProcurement->id : 'NULL'),
+                'documentNumber' => 'required|string|max:255|unique:banquet_procurements,id,' . ($banquetProcurement ? $banquetProcurement->id : 'NULL'),
                 'selectedEventId' => 'required|exists:banquet_events,id',
                 'selectedApprover' => 'required|exists:employees,id',
                 'selectedReviewer' => 'required|exists:employees,id',
@@ -250,6 +250,11 @@ class BanquetProcurementCreate extends Component
         } else {
             session()->flash('error', 'Banquet Procurement not found.');
         }
+    }
+
+    public function printPreview()
+    {
+        redirect()->to('/budget-proposal-print-preview?reference=' . $this->requestReferenceNumber . '&budget-id=' . BanquetProcurement::where('reference_number', $this->requestReferenceNumber)->value('id') );
     }
 
 

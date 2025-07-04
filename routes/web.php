@@ -382,3 +382,18 @@ Route::get('/budget-proposal-approval-lists', function () {
 Route::get('/banquet-budget-show', function () {
     return view('validations.budget-proposal-show');
 })->middleware(['auth', 'verified'])->name('banquet.budget-proposal.show');
+
+//Route for equipment request approval lists
+Route::get('/equipment-request-approval-lists', function () {
+    return view('validations.equipment-request-approval-lists');
+})->middleware(['auth', 'verified'])->name('banquet.equipment-request-approval.lists');
+
+//Route for equipment request approval show
+Route::get('/equipment-request-approval-show', function () {
+    return view('validations.equipment-request-approval-show');
+})->middleware(['auth', 'verified'])->name('banquet.equipment-request-approval.show');
+
+//Route for budget proposal print preview
+Route::get('/budget-proposal-print-preview', function () {
+    return view('print_preview.budget-proposal');
+})->middleware(['auth', 'verified'])->name('banquet.budget-proposal.print-preview');

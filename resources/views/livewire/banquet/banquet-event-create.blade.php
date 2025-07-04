@@ -245,40 +245,75 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="text-xs">Service Name</th>
-                                <th class="text-xs">Rate</th>
-                                <th class="text-xs">Description</th>
-                                <th class="text-xs">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($services as $service)
+                    <div class="overflow-auto" style="max-height: 400px;">
+                        <div class="card-header">
+                           <div class="input-group mb-2">
+                                <span class="input-group-text">Search</span>
+                                <input type="text" class="form-control" id="search-services"
+                                    onkeyup="filterServices()">
+                            </div>
+                            <script>
+                                function filterServices() {
+                                    const searchInput = document.getElementById('search-services');
+                                    const filter = searchInput.value.toLowerCase();
+                                    const tableBody = document.getElementById('servicesTableBody');
+                                    const rows = tableBody.getElementsByTagName('tr');
+                        
+                                    for (let i = 0; i < rows.length; i++) {
+                                        const cells = rows[i].getElementsByTagName('td');
+                                        let match = false;
+                        
+                                        for (let j = 0; j < cells.length; j++) {
+                                            const cell = cells[j];
+                                            if (cell) {
+                                                const text = cell.textContent || cell.innerText;
+                                                if (text.toLowerCase().indexOf(filter) > -1) {
+                                                    match = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                        
+                                        rows[i].style.display = match ? '' : 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>{{ $service->service_name }}</td>
-                                    <td>{{ $service->ratePrice && $service->ratePrice->amount ? '₱' . $service->ratePrice->amount : 'FREE' }}</td>
-                                    <td class="text-wrap">{{ $service->service_description }}</td>     
-                                    <td>
-                                        <button wire:click="selectService({{ $service->id }})" class="btn btn-sm btn-success select-service-btn">ADD</button>
-                                    </td>
+                                    <th class="text-xs">Service Name</th>
+                                    <th class="text-xs">Rate</th>
+                                    <th class="text-xs">Description</th>
+                                    <th class="text-xs">Action</th>
                                 </tr>
-                                
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">No services available</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="servicesTableBody">
+                                @forelse ($services as $service)
+                                    <tr>
+                                        <td>{{ $service->service_name }}</td>
+                                        <td>{{ $service->ratePrice && $service->ratePrice->amount ? '₱' . $service->ratePrice->amount : 'FREE' }}</td>
+                                        <td class="text-wrap">{{ $service->service_description }}</td>     
+                                        <td>
+                                            <button wire:click="selectService({{ $service->id }})" class="btn btn-sm btn-success select-service-btn">ADD</button>
+                                        </td>
+                                    </tr>
+                                    
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No services available</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <span wire:loading wire:target="selectService" class="me-2 text-primary">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Adding...
                     </span>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
                 </div>
             </div>
         </div>
@@ -294,6 +329,39 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="card-header">
+                           <div class="input-group mb-2">
+                                <span class="input-group-text">Search</span>
+                                <input type="text" class="form-control" id="search-menus"
+                                    onkeyup="filterMenus()">
+                            </div>
+                            <script>
+                                function filterMenus() {
+                                    const searchInput = document.getElementById('search-menus');
+                                    const filter = searchInput.value.toLowerCase();
+                                    const tableBody = document.getElementById('menusTableBody');
+                                    const rows = tableBody.getElementsByTagName('tr');
+                        
+                                    for (let i = 0; i < rows.length; i++) {
+                                        const cells = rows[i].getElementsByTagName('td');
+                                        let match = false;
+                        
+                                        for (let j = 0; j < cells.length; j++) {
+                                            const cell = cells[j];
+                                            if (cell) {
+                                                const text = cell.textContent || cell.innerText;
+                                                if (text.toLowerCase().indexOf(filter) > -1) {
+                                                    match = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                        
+                                        rows[i].style.display = match ? '' : 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -304,7 +372,7 @@
                                 <th class="text-xs">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="menusTableBody">
                             @forelse ($menus as $menu)
                                 <tr>
                                     <td>{{ $menu->menu->menu_name }}</td>
@@ -329,7 +397,7 @@
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Adding...
                     </span>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
                 </div>
             </div>
         </div>
@@ -429,13 +497,46 @@
     <div class="modal fade" id="customerListModal" tabindex="-1" aria-labelledby="customerListModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="customerListModalLabel">Select Customer</h5>
-                    <div class="ms-auto">
-                        <input type="text" class="form-control" id="customerSearchInput" placeholder="Search customer...">
-                    </div>
+                <div class="modal-header row">
+                        <div class="col-md-6">
+                            <h5 class="modal-title" id="customerListModalLabel">Select Customer</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">Search</span>
+                                <input type="text" class="form-control" id="search-customers"
+                                    onkeyup="filterCustomers()">
+                            </div>
+                        </div>
+                  
+                    <script>
+                        function filterCustomers() {
+                            const searchInput = document.getElementById('search-customers');
+                            const filter = searchInput.value.toLowerCase();
+                            const tableBody = document.getElementById('customerListTable').getElementsByTagName('tbody')[0];
+                            const rows = tableBody.getElementsByTagName('tr');
+
+                            for (let i = 0; i < rows.length; i++) {
+                                const cells = rows[i].getElementsByTagName('td');
+                                let match = false;
+
+                                for (let j = 0; j < cells.length; j++) {
+                                    const cell = cells[j];
+                                    if (cell) {
+                                        const text = cell.textContent || cell.innerText;
+                                        if (text.toLowerCase().indexOf(filter) > -1) {
+                                            match = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                rows[i].style.display = match ? '' : 'none';
+                            }
+                        }
+                    </script>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body overflow-auto" style="max-height: 400px;">
                     <table class="table table-striped" id="customerListTable">
                         <thead>
                             <tr>

@@ -281,7 +281,7 @@
                             <div class="card mt-2">
                                 <div class="card-body">
                                     <div  class="card-title row">
-                                        <h6 class="col-md-6">Overview</h6>
+                                        <h6 class="col-md-6">Summary</h6>
                                     </div>
                                     <div class="card-body">
                                         <table class="table table-striped">
@@ -380,6 +380,7 @@
                                         <button type="button" wire:click="updateRequest" class="btn btn-success ">Update</button>
                                     @endif
                                     <a type="button" href="{{ route('banquet.procurement.summary') }}" class="btn btn-secondary input-group-text">Summary</a>
+                                    <button type="button" class="btn btn-info input-group-text" wire:click="printPreview">Print Preview</button>
                                 </div>
                             </div>
                      </form>
@@ -800,6 +801,7 @@
             });
             window.addEventListener('clearFields',function(){
                 document.getElementById('banquetProcurementForm').reset();
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
             })
         });
     </script>

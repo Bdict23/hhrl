@@ -308,32 +308,34 @@
                             <input type="text" class="form-control" style="width: 250px;" placeholder="Search equipment..." wire:model.debounce.300ms="equipmentSearch">
                         </div>
                     </div>
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Equipment Name</th>
-                                <th>Category</th>
-                                <th>Available Qty</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($equipments as $equipment)
+                    <div class="overflow-auto" style="max-height: 400px;">
+                        <table class="table table-bordered table-hover">
+                            <thead>
                                 <tr>
-                                    <td>{{ $equipment->item_description }}</td>
-                                    <td>{{ $equipment->category->category_name }}</td>
-                                    <td>{{ $equipment->available_qty }}</td>
-                                    <td>
-                                        <button wire:click="addEquipment({{ $equipment->id }})" class="btn btn-sm btn-primary">Select</button>
-                                    </td>
+                                    <th>Equipment Name</th>
+                                    <th>Category</th>
+                                    <th>Available Qty</th>
+                                    <th>Action</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">No equipment found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($equipments as $equipment)
+                                    <tr>
+                                        <td>{{ $equipment->item_description }}</td>
+                                        <td>{{ $equipment->category->category_name }}</td>
+                                        <td>{{ $equipment->available_qty }}</td>
+                                        <td>
+                                            <button wire:click="addEquipment({{ $equipment->id }})" class="btn btn-sm btn-primary">Select</button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">No equipment found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -148,7 +148,7 @@
             <div>
                 <div class="card ">
                     <div class="card-body">
-                        <form id="banquetProcurementForm" action="" wire:submit.prevent='updateRequest'>
+                        <form id="banquetProcurementForm" action="" wire:submit.prevent='updateRequest' >
                             @csrf
                                 <div class="row">
                                     <div class="col-md-6">
@@ -217,7 +217,8 @@
                                     </div>
                                     <div class="row mt-2">
                                         <div class="col-md-12">
-                                            <textarea class="form-control" name="notes" id="" cols="30" rows="3" wire:model='notes'></textarea>
+                                            <label for="notes" class="form-label text-xs">Notes <span style="font-size: x-small">(optional)</span></label>
+                                            <textarea class="form-control" name="notes" id="notes" cols="30" rows="3" wire:model='notes'></textarea>
                                             @error('notes')
                                                 <div class="text-danger text-xs">{{ $message }}</div>
                                             @enderror
@@ -707,6 +708,10 @@
             window.addEventListener('clearFields',function(){
                 document.getElementById('banquetProcurementForm').reset();
             })
+            window.addEventListener('viewTop', function () {
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                  document.getElementById('banquetProcurementForm').reset();
+            });
         });
     </script>
 </div>
