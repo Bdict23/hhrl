@@ -181,7 +181,7 @@
     </table>
 
     <!-- Signature Section -->
-    <table class="signature">
+    <table class="signature" style="page-break-before: never;">
         <tr>
             <td style="padding-right: 60px;">
                 <span style="font-size: x-small">Noted By:</span>

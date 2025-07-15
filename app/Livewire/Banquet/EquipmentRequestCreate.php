@@ -246,9 +246,8 @@ class EquipmentRequestCreate extends Component
                 'department_id' => $this->departmentId,
                 'branch_id' => auth()->user()->branch_id,
                 'item_id' => $item->id,
-                'qty_out' => $this->equipmentQty[$index]['qty'] ?? 0,
+                'qty_in' => $this->equipmentQty[$index]['qty'] ?? 0,
                 'equipment_request_id' => $equipmentRequest->id,
-                'status' => $this->saveAs === 'DRAFT' ? 'TEMP' : 'FINAL',
             ]);
         }
         // Save handling team
@@ -370,9 +369,8 @@ class EquipmentRequestCreate extends Component
                 'department_id' => $this->departmentId,
                 'branch_id' => auth()->user()->branch_id,
                 'item_id' => $item->id,
-                'qty_out' => $this->equipmentQty[$index]['qty'] ?? 0,
+                'qty_in' => $this->equipmentQty[$index]['qty'] ?? 0,
                 'equipment_request_id' => $equipmentRequest->id,
-                'status' => $this->saveAs === 'DRAFT' ? 'TEMP' : 'FINAL',
             ]);
         }
 

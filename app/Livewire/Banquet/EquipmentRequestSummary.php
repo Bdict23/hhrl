@@ -28,6 +28,6 @@ class EquipmentRequestSummary extends Component
 
     public function viewRequest($reference)
     {
-          return redirect()->to('/equipment-request.show?equipment-request-number=' . $reference);
+          return redirect()->to('/equipment-request.create?equipment-request-number=' . $reference);
     }
 }

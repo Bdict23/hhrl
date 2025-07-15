@@ -130,12 +130,7 @@
                     <h5 class="card-title">Equipment Request Form</h5>
                 </div>
                 <div class="card-body">
-                    <form 
-                        @if ($isNewRequest)
-                        wire:submit.prevent="createRequest"
-                        @else
-                        wire:submit.prevent="updateRequest"
-                        @endif>
+                    <form class="form-horizontal" id="equipmentRequestForm" wire:submit.prevent="updateRequest">
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <label for="referenceNumber" class="form-label text-xs">Reference Number</label>
@@ -230,20 +225,16 @@
                         </div>
                         <div class="row">
                             <div class="col-md-9">
-                                <div class="input-group">
-                                    <select name="" class="form-select" id="" class="" wire:model='saveAs'>
-                                        <option value="" disabled>Save As</option>
-                                        <option value="PENDING">Draft</option>
-                                        <option value="RELEASED">Approve</option>
-                                        <option value="PREPARING">Revise</option>
-                                    </select>
-                                    @if ($isNewRequest)
-                                        <button type="submit" class="btn btn-success ">Save</button>
-                                        <button type="button" class="btn btn-danger input-group-text" wire:click="resetForm">Reset</button>
-                                    @elseif ($saveAs === 'DRAFT')
-                                        <button type="submit" class="btn btn-success ">Update</button>
+                                <div class="input-group mt-3">
+                                     @if (!$isApproved)
+                                        <select name="" class="form-select" id="" class="" wire:model='saveAs'>
+                                            <option value="">Update As</option>
+                                            <option value="RELEASED">Approve</option>
+                                            <option value="REJECTED">Reject</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-success ">UPDATE</button>
                                     @endif
-                                    <a type="button" href="{{ route('banquet_equipment_requests') }}" class="btn btn-secondary input-group-text" wire:click="openEventModal">Summary</a>
+                                    <a type="button" href="{{ route('banquet.equipment-request-approval.lists') }}" class="btn btn-secondary input-group-text" wire:click="openEventModal">Summary</a>
                                 </div>
                             </div>
                         </div>

@@ -53,7 +53,7 @@ class EquipmentRequestApprovalShow extends Component
     public $eventStartTime = null;
     public $eventEndTime = null;
     public $eventNote = null;
-    public $isNewRequest = true;
+    public $isApproved = false;
     public $isNewAttachment = true;
 
     // request details
@@ -93,11 +93,13 @@ class EquipmentRequestApprovalShow extends Component
     public function editEquipmentRequest($referenceNumber)
     {
         $this->fetchData();
-        $this->isNewRequest = false;
         $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers','departmentCardex'])
             ->where('reference_number', $referenceNumber)
             ->firstOrFail();
         // dd($equipmentRequest);
+        if ($equipmentRequest->status === 'RELEASED') {
+            $this->isApproved = true;
+        }
 
         // Load the data into the component properties
         $this->requestDocumentNumber = $equipmentRequest->document_number;
@@ -149,27 +151,49 @@ class EquipmentRequestApprovalShow extends Component
         }
     }
 
-
-    public function loadDepartmentEmployees($departments_id)
+    public function loadDepartmentEmployees($departmentId)
     {
-       
-        $this->departmentId = $departments_id;
-        $this->departmentEmployees = Employee::with('position')->where('department_id', $departments_id)
+        $this->departmentEmployees = Employee::where('department_id', $departmentId)
             ->where('status', 'active')
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
-      if($this->isNewRequest){
-        //empty the handling team
-        $this->handlingTeam = [];
-        $this->handlingTeam = $this->departmentEmployees->map(function ($employee) {
-            return [
-                'id' => $employee->id,
-                'first_name' => $employee->name,
-                'last_name' => $employee->last_name,
-                'position' => $employee->position->position_name ?? null,
-
-            ];
-        })->toArray();
-        } 
     }
+
+
+    public function updateRequest(){
+        $this->validate([
+            'eventId' => 'required',
+            'eventDate' => 'required|date',
+            'eventStartTime' => 'required',
+            'eventEndTime' => 'required|after:eventStartTime',
+            'inchargedBy' => 'required',
+            'approver' => 'required',
+            'departmentId' => 'required',
+            'selectedEquipments.*.id' => 'required|exists:items,id',
+            'equipmentQty.*.qty' => 'required|numeric|min:1',
+            'saveAs' => 'required|in:RELEASED,REJECTED',
+        ]);
+        // dd($this->saveAs);
+        $equipmentRequest = EquipmentRequest::where('reference_number', $this->requestReferenceNumber)->firstOrFail();
+        $equipmentRequest->update([
+            'event_id' => $this->eventId,
+            'event_date' => $this->eventDate,
+            'from_time' => $this->eventStartTime,
+            'to_time' => $this->eventEndTime,
+            'received_by' => $this->inchargedBy,
+            'approved_by' => $this->approver,
+            'department_id' => $this->departmentId,
+            'notes' => $this->myNote,
+            'status' => $this->saveAs,
+        ]);
+
+        if ($this->saveAs === 'RELEASED') {
+            DepartmentCardex::where('equipment_request_id', $equipmentRequest->id)
+                ->update(['status' => 'FINAL']);
+        }
+    
+        session()->flash('success', 'Equipment request updated successfully.');
+        $this->reset();
+    }
+
 }
