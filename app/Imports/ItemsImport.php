@@ -4,6 +4,7 @@ namespace App\Imports;
 use App\Models\Item;
 use App\Models\Category;
 use App\Models\Classification;
+use App\Models\PriceLevel;
 use App\Models\Brand;
 use App\Models\UOM;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -67,8 +68,10 @@ class ItemsImport implements ToModel, WithHeadingRow
             );
         }
 
+        
+
         // Check if item already exists by item_code or item_description
-        $existingItem = Item::where('item_description', '(' . $row['item'] . ') ' . $row['description'])
+        $existingItem = Item::where('item_description', '' . $row['item'] . '' . $row['description'])
             ->where('company_id', $company_id)
             ->first();
 
@@ -76,11 +79,11 @@ class ItemsImport implements ToModel, WithHeadingRow
             return null; // Ignore insertion if item exists
         }
 
-        return new Item([
+        $item = new Item([
             'item_code'         => strtoupper(substr($row['item'], 0, 3)) . rand(100, 999),
-            'item_description'  => '(' . $row['item'] . ') ' . $row['description'],
+            'item_description'  => '' . $row['item'] . '' . $row['description'],
             'brand_id'          => $brand->id ?? null,
-            'item_barcode'           => $row['barcode'],
+            'item_barcode'      => $row['barcode'],
             'uom_id'            => $unit->id ?? null,
             'classification_id' => $classification->id ?? null,
             'sub_class_id'      => $subClassification->id ?? null,
@@ -91,5 +94,17 @@ class ItemsImport implements ToModel, WithHeadingRow
             'created_at'        => now(),
             'updated_at'        => now(),
         ]);
+        $item->save();
+
+        PriceLevel::create([
+            'item_id'     => $item->id,
+            'price_type'  => 'COST',
+            'amount'      => '1.00',
+            'branch_id'   => auth()->user()->branch->id,
+            'company_id'  => $company_id
+        ]);
+
+        return $item;
+
     }
 }
