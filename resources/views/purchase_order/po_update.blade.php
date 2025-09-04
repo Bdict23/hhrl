@@ -196,12 +196,12 @@
                                     <tr>
                                         <td>{{ $item->item_code ?? '' }}</td>
                                         <td>{{ $item->item_description ?? '' }}</td>
-                                        <td>{{ $item->uom->unit_symbol ?? '' }}</td>
+                                        <td>{{ $item->uom ? $item->uom->unit_symbol : '' }}</td>
                                         <td>{{ $item->on_hand_qty ?? '' }}</td>
                                         <td>{{ $item->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? '' }}</td>
                                         <td>{{ $item->statuses->status_name ?? '' }}</td>
                                         <td><button class="btn btn-primary btn-sm"
-                                                onclick="addToTable({{ $item }}, '{{ $item->uom->unit_symbol }}')">Add</button></td>
+                                                onclick="addToTable({{ $item }}, '{{ $item->uom ? $item->uom->unit_symbol : '' }}')">Add</button></td>
                                     </tr>
                                 @empty
                                     <tr>
