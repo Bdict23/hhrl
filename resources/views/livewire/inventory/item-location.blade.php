@@ -75,9 +75,9 @@
                         <tbody style="font-optical-sizing: auto" id="itemTable">
                             @forelse ($items as $item)
                                 <tr>
-                                    <td style="font-size: x-small">{{ $item->item_code }}</td>
-                                    <td style="font-size: x-small">{{ $item->item_description }}</td>
-                                    <td style="font-size: x-small">{{ $item->uom->unit_symbol }}</td>
+                                    <td style="font-size: x-small">{{ $item->item_code ?? '' }}</td>
+                                    <td style="font-size: x-small">{{ $item->item_description ?? '' }}</td>
+                                    <td style="font-size: x-small">{{ $item->uom->unit_symbol ?? 'N/A' }}</td>
                                     <td style="font-size: x-small">{{ $location[$item->id]['location_name'] ?? '' }}</td>
                                     <td style="font-size: x-small">{{ $location[$item->id]['group_location'] ?? '' }}</td>
                                     @if (auth()->user()->employee->getModulePermission('Item Location') == 1 )

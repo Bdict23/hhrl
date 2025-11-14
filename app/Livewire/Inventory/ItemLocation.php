@@ -41,7 +41,7 @@ class ItemLocation extends Component
     }
     public  function fetchData()
     {
-        $this->items = Item::with('location')->where('item_status', 'active')->where('company_id', auth()->user()->branch->company_id)->get();
+        $this->items = Item::with('location','uom')->where('item_status', 'active')->where('company_id', auth()->user()->branch->company_id)->get();
         $this->location = ItemLocationModel::select('item_id', 'location_name', 'location_group', 'id')
             ->where('branch_id', auth()->user()->branch_id)
             ->get()

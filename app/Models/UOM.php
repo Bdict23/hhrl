@@ -37,4 +37,8 @@ class UOM extends Model
     {
         return $this->belongsTo(Company::class);
     }
+    public function items()
+    {
+        return $this->hasOne(Item::class, 'uom_id');
+    }
 }

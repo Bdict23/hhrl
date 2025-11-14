@@ -133,7 +133,7 @@
                                     @endif
                                         <td>{{ $item->item_description }}</td>
                                     @if ($uom)
-                                        <td>{{ $item->uom->unit_symbol }}</td>
+                                        <td>{{ $item->uom->unit_symbol ?? 'N/A' }}</td>
                                     @endif
                                     @if ($category)
                                             <td>{{ $item->category->category_name ?? 'N/A' }}</td>
