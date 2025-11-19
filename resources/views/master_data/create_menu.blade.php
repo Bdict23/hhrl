@@ -172,8 +172,8 @@
                                                     ->first()->amount ?? 0;
                                                 $itemCode = $item->item_code;
                                                 $itemDescription = $item->item_description;
-                                                $itemUnit = $item->units->unit_symbol;
-                                                $uom_id = $item->uom_id;
+                                                $itemUnit = $item->units->unit_symbol ?? 'N/A';
+                                                $uom_id = $item->uom_id ;
                                                 $priceID = $item
                                                     ->priceLevel()
                                                     ->latest()
@@ -189,7 +189,7 @@
                                                 <!-- Assign a unique ID to the select element -->
                                                 <select name="sub_unit" id="sub_unit_{{ $item->id }}"
                                                     class="form-select" onchange="updateData(this, {{ $item->id }})">
-                                                    @foreach ($item->units->fromUnits as $unit)
+                                                    @foreach ($item->units->fromUnits ?? [] as $unit)
                                                         @php
                                                             $unitSymbol = $item->units
                                                                 ->where('id', $unit->to_uom_id)
