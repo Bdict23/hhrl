@@ -200,7 +200,6 @@
                                                     Edit
                                                 </button>
                                             @endif
-                                            @endif
                                         </div>
                                     </div>
                                 </div>
