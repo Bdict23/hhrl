@@ -164,7 +164,7 @@ Route::get('/reservations_lists', function(){
 
 
 // Route for CREATE MENU
-Route::get('/create_menu', [MenusController::class, 'createMenu'])->middleware(['auth', 'verified'])->name('menus.create'); // Route to create a new purchase order
+Route::get('/create_menu', [MenusController::class, 'createMenu'])->middleware(['auth', 'verified'])->name('menus.create'); 
 
 // Route for storing receiving data
 Route::post('/save_menu', [MenusController::class, 'store_menu'])->middleware(['auth', 'verified'])->name('menu.store');

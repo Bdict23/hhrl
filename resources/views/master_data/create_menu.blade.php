@@ -115,7 +115,7 @@
                                     </select>
                                 @endif
 
-                                <label for="approver_select" style="font-size: 13px">Approve By:</label>
+                                <label for="approver_select" style="font-size: 13px">Approved By:</label>
                                 <div class="col-md-12">
                                     <select id="approver_select" class="form-select" aria-label="Default select example"
                                         name="approver_id">
@@ -148,7 +148,10 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-header">
+                            <input type="text" class="form-control" id="modalSearch" placeholder="Search items..." onkeyup="filterModalTable()">
+                        </div>
+                        <div class="modal-body" style="max-height: 300px; overflow-y: auto; display: block;">
                             <!-- Table for Item Selection -->
                             <table class="table table-bordered table-hover">
                                 <thead class="thead-dark">
@@ -238,6 +241,24 @@
 
 @section('script')
     <script>
+
+        function filterModalTable() {
+            const searchInput = document.getElementById('modalSearch').value.toLowerCase();
+            const table = document.querySelector('#AddItemModal table tbody');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const itemCode = row.cells[0].textContent.toLowerCase();
+                const itemDescription = row.cells[1].textContent.toLowerCase();
+                
+                if (itemCode.includes(searchInput) || itemDescription.includes(searchInput)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
         function previewImage(event) {
             var reader = new FileReader();
             reader.onload = function() {
