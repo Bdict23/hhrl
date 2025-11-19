@@ -59,7 +59,7 @@
 
             // Ensure price and quantity are parsed correctly
             const price = parseFloat(priceCell.textContent) || 0;
-            const requestQty = parseInt(input.value) || 0;
+            const requestQty = parseFloat(input.value) || 0;
 
             // Update the total price for the row
             totalPriceCell.textContent = (price * requestQty).toFixed(2);

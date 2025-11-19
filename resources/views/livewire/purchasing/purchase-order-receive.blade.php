@@ -320,7 +320,7 @@
             const price = parseFloat(priceInput.value || 0);
             // Retrieve the quantity from the input field in the 5th column
             const qtyInput = row.querySelector('td:nth-child(6) input');
-            const requestQty = parseInt(qtyInput.value || 0); // Default to 0 if emptyy
+            const requestQty = parseFloat(qtyInput.value || 0); // Default to 0 if emptyy
             // Calculate the total price
             const totalPriceCell = row.querySelector('.total-price');
             totalPriceCell.textContent = (price * requestQty).toFixed(2);
