@@ -44,9 +44,6 @@
                         <div class="card-body">
                            <div class="d-flex justify-content-between">
                              <h5 class="card-title">{{ $event->event_name }}</h5>
-                                 @if (auth()->user()->employee->getModulePermission('Banquet Events') == 1)
-                                     <a href="" class="btn btn-link">Edit</a>
-                                 @endif
                            </div>
                             <p class="card-text">
                                 {{ $event->venue->venue_name }} &nbsp;({{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }} - 
@@ -193,6 +190,19 @@
                                             <textarea name="" id="myNote" class="form-control" disabled>{{ $eventDetails->note ?? '' }}</textarea>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            @if (auth()->user()->employee->getModulePermission('Banquet Events') == 1)
+                                                {{-- <a href="" wire:click="openToEdit({{ $eventDetails->id }})">Edit</a> --}}
+                                                <button class="btn btn-primary text-sm" 
+                                                        wire:click="openToEdit({{ $event->id }})" 
+                                                        @if($event->status == 'pending') disabled @endif>
+                                                    Edit
+                                                </button>
+                                            @endif
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -202,6 +212,7 @@
         </div>
     </div>
 
+   
         <script>
 
         function updateDaysLeft() {

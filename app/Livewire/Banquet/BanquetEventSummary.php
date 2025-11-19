@@ -3,7 +3,7 @@
 namespace App\Livewire\Banquet;
 
 use Livewire\Component;
-use App\Models\BanquetEvent; // Assuming you have a model for BanquetEvent
+use App\Models\BanquetEvent; 
 
 class BanquetEventSummary extends Component
 {
@@ -30,6 +30,7 @@ class BanquetEventSummary extends Component
     {
         $this->selectedEventId = $eventId;
         $this->eventDetails = BanquetEvent::with('customer', 'venue', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel', 'eventServices.service')->find($eventId);
+        // dd($this->eventDetails);
         $this->dispatch('modalOpened');
     }
 
@@ -49,4 +50,10 @@ class BanquetEventSummary extends Component
         $this->dispatch('modalOpened');
     }
 
+     public function openToEdit($eventId)
+    {
+        
+      //redirect to receiving page with the selected receing id request
+      return redirect()->to('/banquet-event-edit?event-id=' . $eventId );
+    }
 }

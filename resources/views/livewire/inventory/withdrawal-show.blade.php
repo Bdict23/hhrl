@@ -497,6 +497,30 @@
         </div>
 
     <script>
+
+         document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+         function applyFilters() {
+            const categoryFilter = document.getElementById('categoryFilter').value.toLowerCase();
+            const searchFilter = document.getElementById('searchItemInput').value.toLowerCase();
+            const table = document.getElementById('itemTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const categoryCell = cells[5]?.textContent.toLowerCase();
+                let matchCategory = categoryFilter === '' || categoryCell === categoryFilter;
+
+                let matchSearch = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchFilter)) {
+                        matchSearch = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = matchCategory && matchSearch ? '' : 'none';
+            }
+        }
          document.addEventListener('closeEventModal', function () {
             var modal = bootstrap.Modal.getInstance(document.getElementById('getEventModal'));
             modal.hide();

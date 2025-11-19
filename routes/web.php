@@ -333,6 +333,11 @@ Route::get('/banquet-events-create', function () {
     return view('banquet.banquet-event-create');
 })->middleware(['auth', 'verified'])->name('banquet_events.create');
 
+// Route for Banquet Events Edit
+Route::get('/banquet-event-edit', function () {
+    return view('banquet.banquet-event-edit');
+})->middleware(['auth', 'verified'])->name('banquet_events.edit');
+
 //Route for Banquet Equipment Requests summary
 Route::get('/equipment-requests-summary', function () {
     return view('banquet.equipment-request-summary');
@@ -397,3 +402,4 @@ Route::get('/equipment-request-approval-show', function () {
 Route::get('/budget-proposal-print-preview', function () {
     return view('print_preview.budget-proposal');
 })->middleware(['auth', 'verified'])->name('banquet.budget-proposal.print-preview');
+
