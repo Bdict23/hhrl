@@ -53,7 +53,7 @@ class Withdrawal extends Component
 
 
     protected $rules = [
-        'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
+        'reference' => 'string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
         'useDate' => 'required',
         'spanDate' => 'nullable|date|after_or_equal:useDate',
@@ -160,7 +160,7 @@ class Withdrawal extends Component
             $this->validate();
         }else{
             $this->validate([
-                'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
+                'reference' => 'string|max:25|unique:withdrawals,reference_number',
                 'selectedDepartment' => 'required',
                 'useDate' => 'required',
                 'spanDate' => 'nullable|date|after_or_equal:useDate',
@@ -171,7 +171,10 @@ class Withdrawal extends Component
         }
 
         $withdrawal = new WithdrawalModel();
-        $withdrawal->reference_number = $this->reference;
+         $yearlyCount = WithdrawalModel::where('source_branch_id', auth()->user()->branch_id)
+            ->whereYear('created_at', now()->year)
+            ->count() + 1;
+        $withdrawal->reference_number =  'IW-' .  auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
         $withdrawal->event_id = $this->eventId ?? null; // Ensure event_id is nullable
         $withdrawal->department_id = $this->selectedDepartment;
         $withdrawal->prepared_by = auth()->user()->emp_id;
