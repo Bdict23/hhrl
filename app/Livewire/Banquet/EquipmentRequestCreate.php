@@ -60,12 +60,13 @@ class EquipmentRequestCreate extends Component
     public $isNewAttachment = true;
 
     // request details
-     public $attachments = [];
+    public $attachments = [];
     public $myNote = null;
     public $requestDocumentNumber = null;
     public $departmentId = null;
     public $saveAs = null;
     public $requestReferenceNumber = null;
+    public $preparedBy = null;
 
     protected $rules = [
         'inchargedBy' => 'required',
@@ -105,8 +106,9 @@ class EquipmentRequestCreate extends Component
         $this->events = BanquetEvent::with('customer','venue')->where('status', 'pending')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
         $this->departments = Department::where('department_status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
         $this->employees = Employee::with('position')->where('status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
-        $module = Module::where('module_name', 'Recipe')->first();
+        $module = Module::where('module_name', 'Banquet Equipment Request')->first();
         $this->approvers = Signatory::where([['signatory_type', 'APPROVER'], ['status', 'ACTIVE'], ['MODULE_ID', $module->id ], ['branch_id', auth()->user()->branch_id]])->get();
+        $this->preparedBy = Employee::with('position')->where('id', auth()->user()->emp_id)->first();
     }
 
     public function loadDepartmentEmployees($departments_id)

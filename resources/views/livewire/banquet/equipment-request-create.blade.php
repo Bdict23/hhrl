@@ -168,7 +168,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="inchargedBy" class="form-label text-sm">Incharged To<span class="text-danger">*</span></label>
+                                <label for="inchargedBy" class="form-label text-sm">Incharged/Receiver<span class="text-danger">*</span></label>
                                 <select class="form-select" id="inchargedBy" wire:model="inchargedBy">
                                     <option value="" >Select Incharged</option>
                                     @forelse ($departmentEmployees as $employee)
@@ -194,6 +194,12 @@
                                 @error('approver')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="preparedBy" class="form-label text-sm">Prepared By</label>
+                                <input class="form-control" type="text" id="preparedBy" value="{{ $preparedBy->name ?? '' }} {{ $preparedBy->last_name ?? '' }}" readonly disabled>
                             </div>
                         </div>
                         <div class="row">
