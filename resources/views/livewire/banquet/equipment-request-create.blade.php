@@ -25,7 +25,9 @@
                                  <th class="text-xs">Equipment Name</th>
                                  <th class="text-xs">Category</th>
                                  <th class="text-xs">Quantity</th>
-                                 <th class="text-xs">Action</th>
+                                  @if ($saveAs === 'DRAFT')
+                                    <th class="text-xs">Action</th>
+                                 @endif
                              </tr>
                          </thead>
                          <tbody>
@@ -36,9 +38,11 @@
                                     <td>
                                         <input type="number" class="form-control form-control-sm" wire:model="equipmentQty.{{ $index }}.qty" min="1">
                                     </td>
-                                    <td>
-                                        <button class="btn btn-danger btn-sm" wire:click="removeEquipment({{ $index }})">x</button>
-                                    </td>
+                                     @if ($saveAs === 'DRAFT')
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" wire:click="removeEquipment({{ $index }})">x</button>
+                                        </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>
@@ -61,7 +65,9 @@
                                 <th class="text-xs">Name</th>
                                 <th class="text-xs">Lastname</th>
                                 <th class="text-xs">Position</th>
-                                <th class="text-xs">Action</th>
+                                 @if ($saveAs === 'DRAFT')
+                                    <th class="text-xs">Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -70,9 +76,11 @@
                                     <td>{{ $member['first_name'] }}</td>
                                     <td>{{ $member['last_name'] }}</td>
                                     <td>{{ $member['position'] }}</td>
-                                    <td>
-                                        <button class="btn btn-danger btn-sm" wire:click="removeHandlingTeamMember({{ $member['id'] }})">x</button>
-                                    </td>
+                                    @if ($saveAs === 'DRAFT')
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" wire:click="removeHandlingTeamMember({{ $member['id'] }})">x</button>
+                                        </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>

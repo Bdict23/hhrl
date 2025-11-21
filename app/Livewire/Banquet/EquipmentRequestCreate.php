@@ -268,7 +268,7 @@ class EquipmentRequestCreate extends Component
     {
         $this->fetchData();
         $this->isNewRequest = false;
-        $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers','departmentCardex'])
+        $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers','departmentCardex','requestedBy'])
             ->where('reference_number', $referenceNumber)
             ->firstOrFail();
         // dd($equipmentRequest);
@@ -287,6 +287,7 @@ class EquipmentRequestCreate extends Component
         $this->inchargedBy = $equipmentRequest->received_by;
         $this->approver = $equipmentRequest->approved_by;
         $this->saveAs = $equipmentRequest->status === 'PREPARING' ? 'DRAFT' : 'FINAL';
+        $this->preparedBy = $equipmentRequest->requestedBy;
 
         // Load selected equipments
         foreach ($equipmentRequest->departmentCardex as $cardex) {
