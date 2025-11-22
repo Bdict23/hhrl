@@ -44,6 +44,7 @@
                     @if (auth()->user()->employee->getModulePermission('Employee') !=2)
                         <option value="employee-management">Employees</option>
                     @endif
+                    <option value="employee-positions">Employees Positions</option>
                     @if (auth()->user()->employee->getModulePermission('Transfer Employee') !=2)
                         <option value="transfer-employee">Transfer Employee</option>
                     @endif
@@ -167,6 +168,9 @@
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
                         </ul>
                     @endif
+                    <ul class="nav flex-column">
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-positions', this)">Employees Positions</a></li>
+                        </ul>
                     @if (auth()->user()->employee->getModulePermission('Transfer Employee') !=2)
                         <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('transfer-employee', this)">Transfer Employee</a></li>

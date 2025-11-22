@@ -160,7 +160,7 @@
                                         <th>ITEM DESCRIPTION</th>
                                         <th>PRICE</th>
                                         <th>UNIT</th>
-                                        <th>SUB-UNIT</th>
+                                        <th>SCALE</th>
                                         <th>ACTION</th>
                                     </tr>
                                 </thead>

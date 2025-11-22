@@ -35,7 +35,6 @@ class MenusController extends Controller
     public function createMenu(){
         $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Recipe') == 1 ? true : false;
         $suppliers = Supplier::where('supplier_status', 'ACTIVE')->get();
-        // $activeStatus = Status::where('status_name', 'ACTIVE')->first();
         $items = Item::with('priceLevel', 'units') // Added unitOfMeasures here
             ->where('item_status', 'ACTIVE')
             ->where('company_id', Auth::user()->branch->company_id)
