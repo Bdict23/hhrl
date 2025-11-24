@@ -7,7 +7,7 @@ use Livewire\WithPagination;
 use App\Models\Employee;
 use App\Models\Branch;
 use App\Models\Department;
-use App\Models\Position;
+use App\Models\EmployeePosition;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +53,10 @@ class ManageEmployees extends Component
 
     public function mount()
     {
+        $this->fetchData();
+    }
+
+    public function fetchData(){
         try {
             $this->branches = Branch::orderBy('branch_name')
                 ->where('company_id', auth()->user()->employee->branch->company_id)
@@ -60,7 +64,7 @@ class ManageEmployees extends Component
             
             $this->branch_name = auth()->user()->employee->branch->branch_name;
             $this->departments = Department::orderBy('department_name')->where([['department_status','active'],['branch_id', auth()->user()->employee->branch->id]])->get(['id', 'department_name']);
-            $this->positions = Position::orderBy('position_name')->get(['id', 'position_name']);
+            $this->positions = EmployeePosition::orderBy('position_name')->where('position_status','ACTIVE')->where('branch_id',auth()->user()->branch_id)->get();
         } catch (\Exception $e) {
             Log::error("Failed to mount component: {$e->getMessage()}");
             session()->flash('error', 'Failed to load initial data.');
@@ -75,11 +79,12 @@ class ManageEmployees extends Component
 
     public function create()
     {
-        Log::info('Create button clicked');
+        // Log::info('Create button clicked');
         $this->resetForm();
         $this->editMode = false;
         $this->showForm = true;
         $this->dispatch('open-employee-modal');
+        $this->fetchData();
     }
 
     public function edit($id)

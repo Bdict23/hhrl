@@ -168,9 +168,11 @@
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-management', this)">Employees</a></li>
                         </ul>
                     @endif
-                    <ul class="nav flex-column">
+                    @if (auth()->user()->employee->getModulePermission('Employee Positions') !=2)
+                        <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('employee-positions', this)">Employees Positions</a></li>
                         </ul>
+                    @endif
                     @if (auth()->user()->employee->getModulePermission('Transfer Employee') !=2)
                         <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('transfer-employee', this)">Transfer Employee</a></li>
@@ -195,10 +197,6 @@
             </div>
 
             {{-- navs --}}
-
-
-
-            
 
             <!-- Main Content -->
             <div class="content overflow-auto" style="max-height: 600px;">
@@ -259,15 +257,9 @@
                     @livewire('settings.branch-menu-controller')
                     @livewire('settings.menu-pricing')
 
-
                     @livewire('imports.item-import')
                
 
-
-                <!-- Departments Tab Content -->
-                {{-- <div>
-                    @livewire('department')
-                </div> --}}
                 <!-- Employees Tab Content -->
                 @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
                     <div>
@@ -281,6 +273,10 @@
 
                 <div>
                     @livewire('settings.manage-employees')
+                </div>
+
+                 <div>
+                    @livewire('settings.employee-positions')
                 </div>
                
                 <div>

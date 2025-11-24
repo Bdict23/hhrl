@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\RequestType;
 use App\Models\Signatory;
 use App\Models\User;
+use App\Models\EmployeePosition;
 
 class Branch extends Model
 {
@@ -39,6 +40,9 @@ class Branch extends Model
         return $this->hasMany(RequisitionInfo::class, 'from_branch_id');
     }
 
+    public function employeePositions(){
+        return $this->hasMany(EmployeePosition::class, 'branch_id');
+    }
 
     public function users()
     {

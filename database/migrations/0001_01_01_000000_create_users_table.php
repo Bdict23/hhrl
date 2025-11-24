@@ -75,6 +75,7 @@ return new class extends Migration
                     $table->string('position_name', 100);
                     $table->string('position_description', 255)->nullable();
                     $table->enum('position_status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE')->index('position_status');
+                    $table->foreignId('branch_id')->constrained('branches')->onDelete('no action')->onUpdate('no action')->nullable();
                     $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
                     $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change
                 });
