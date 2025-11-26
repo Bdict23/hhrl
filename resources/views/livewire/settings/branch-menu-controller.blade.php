@@ -253,16 +253,20 @@
                                     <th>Menu Category</th>
                                     <th>Menu Item</th>
                                     <th>Price</th>
+                                    <th>Default Qty</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                               @forelse ($selectedRecipe as $recipe)
+                               @forelse ($selectedRecipe as $index => $recipe)
                                    <tr>
                                        <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
                                        <td>{{ $recipe->menu_name ?? 'N/A' }}</td>
                                        <td>{{ $recipe->price ?? 'N/A' }}</td>
                                        <td>
+                                            <input class="form-control form-control-sm" wire:model="defaultQtyInput.{{ $index }}" type="number"  min="1"  id="qty_{{ $index }}">
+                                       </td>
+                                        <td>
                                            <button type="button" class="btn btn-danger btn-sm" wire:click="removeMenuItem({{ $recipe->id }})">Remove</button>
                                        </td>
                                    </tr>

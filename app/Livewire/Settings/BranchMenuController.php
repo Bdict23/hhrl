@@ -28,6 +28,7 @@ class BranchMenuController extends Component
     public $effectiveDateInput;
     public $endDateInput;
     public $controlNameInput;
+    public $defaultQtyInput = [];
 
     public function render()
     {
@@ -90,6 +91,8 @@ class BranchMenuController extends Component
                 BranchMenuRecipe::create([
                     'branch_menu_id' => $branchMenu->id,
                     'menu_id' => $recipe->id,
+                    'default_qty'=> $this->defaultQtyInput[array_search($recipe, $this->selectedRecipe)] ?? 1,
+                    'bal_qty' => $this->defaultQtyInput[array_search($recipe, $this->selectedRecipe)] ?? 1,
                 ]);
             }
             session()->flash('success', 'Menu items saved successfully.');

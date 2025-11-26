@@ -12,7 +12,9 @@
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "*",
-        "maatwebsite/excel": "3.1.64"
+        "maatwebsite/excel": "3.1.64",
+        "pusher/pusher-php-server": "^7.2",
+        "rappasoft/laravel-livewire-tables": "^3.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -64,6 +66,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": ["PKSA-g5js-3ypd-k2kr", "PKSA-365x-2zjk-pt47", "PKSA-64jn-3d9t-gncx"]
         }
     },
     

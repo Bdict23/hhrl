@@ -11,6 +11,8 @@ class BranchMenuRecipe extends Model
     protected $fillable = [
         'branch_menu_id',
         'menu_id',
+        'default_qty',
+        'bal_qty',
     ];
 
 
