@@ -58,13 +58,12 @@ class MyMenu extends Component
             ->where('category_type', 'MENU')
             ->whereIn('id', $branchCategoryAvailable)
             ->get();
-        $this->menuItems = Menu::with('categories', 'price_levels', 'recipes')
+        $this->menuItems = Menu::with('categories', 'price_levels', 'recipes','recipeCount')
             ->where('company_id', Auth::user()->branch->company_id)
             ->where('status', 'AVAILABLE')
             ->where('recipe_type', 'Ala Carte')
             ->whereIn('id', $branchRecipeAvailable)
             ->get();
-        //    dd($menuItems);
     }
 
     public function selectedCategory($categoryId)
@@ -94,5 +93,89 @@ class MyMenu extends Component
             ->where('category_id', $categoryId) // Filter by selected category
             ->whereIn('id', $branchRecipeAvailable)
             ->get();
+    }
+
+    public function updateQTY($menuId)
+    {
+        $branchMenuRecipe = BranchMenuRecipe::where('menu_id', $menuId)
+            ->whereHas('branchMenu', function ($query) {
+                $weekOfDay = strtolower(Carbon::now()->format('D'));
+                $query->where('branch_id', Auth::user()->branch->id)
+                    ->where('is_available', '1')
+                    ->where($weekOfDay, '1')
+                    ->where('start_date', '<=', Carbon::now())
+                    ->where(function($q) {
+                        $q->whereNull('end_date')
+                          ->orWhere('end_date', '>=', Carbon::now());
+                    });
+            })
+            ->first();
+
+        if ($branchMenuRecipe) {
+            // Decrease the bal_qty by 1, ensuring it doesn't go below 0
+            $branchMenuRecipe->bal_qty = max(0, $branchMenuRecipe->bal_qty - 1);
+            $branchMenuRecipe->save();
+        }
+    }
+
+    public function rollbackQTY($menuId, $quantity)
+    {
+        $branchMenuRecipe = BranchMenuRecipe::where('menu_id', $menuId)
+            ->whereHas('branchMenu', function ($query) {
+                $weekOfDay = strtolower(Carbon::now()->format('D'));
+                $query->where('branch_id', Auth::user()->branch->id)
+                    ->where('is_available', '1')
+                    ->where($weekOfDay, '1')
+                    ->where('start_date', '<=', Carbon::now())
+                    ->where(function($q) {
+                        $q->whereNull('end_date')
+                          ->orWhere('end_date', '>=', Carbon::now());
+                    });
+            })
+            ->first();
+
+        if ($branchMenuRecipe) {
+            // Increase the bal_qty by the specified quantity
+            $branchMenuRecipe->bal_qty += $quantity;
+            $branchMenuRecipe->save();
+        }
+    }
+    public function upQuantity($menuId, $orderQuantity, $action)
+    {
+        // dd($menuId, $orderQuantity);
+        // Find the BranchMenuRecipe record for the given menu ID
+        $branchMenuRecipe = BranchMenuRecipe::where('menu_id', $menuId)
+            ->whereHas('branchMenu', function ($query) {
+                $weekOfDay = strtolower(Carbon::now()->format('D'));
+                $query->where('branch_id', Auth::user()->branch->id)
+                    ->where('is_available', '1')
+                    ->where($weekOfDay, '1')
+                    ->where('start_date', '<=', Carbon::now())
+                    ->where(function($q) {
+                        $q->whereNull('end_date')
+                          ->orWhere('end_date', '>=', Carbon::now());
+                    });
+            })
+            ->first();
+
+        if ($branchMenuRecipe) {
+            // Increase the bal_qty by the specified order quantity
+            if($action == 'decrease'){
+                $branchMenuRecipe->bal_qty = max(0, $branchMenuRecipe->bal_qty + 1);
+                $branchMenuRecipe->save();
+            } else {
+            $branchMenuRecipe->bal_qty = max(0, $branchMenuRecipe->bal_qty - 1);
+            $branchMenuRecipe->save();
+        }
+        
+    }
+    }
+
+    public function rollbackAllItems($orderItems)
+    {
+        // Rollback all items in the order
+        foreach ($orderItems as $item) {
+            $this->rollbackQTY($item['menu_id'], $item['quantity']);
+        }
     }
 }

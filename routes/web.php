@@ -403,3 +403,7 @@ Route::get('/budget-proposal-print-preview', function () {
     return view('print_preview.budget-proposal');
 })->middleware(['auth', 'verified'])->name('banquet.budget-proposal.print-preview');
 
+//route for daily recipe count
+Route::get('/daily-recipe-count', function () {
+    return view('restaurant.daily-recipe-count');
+})->middleware(['auth', 'verified'])->name('restaurant.daily-recipe-count');

@@ -20,6 +20,7 @@ class BranchMenuRecipe extends Model
     {
         return $this->belongsTo(Menu::class, 'menu_id');
     }
+
     public function branchMenu()
     {
         return $this->belongsTo(BranchMenu::class, 'branch_menu_id');

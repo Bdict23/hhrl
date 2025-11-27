@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Signatory;
 use App\Models\Recipe;
 use App\Models\PriceLevel;
+use App\Models\BranchMenuRecipe;
 use App\Models\Employee;
 
 class Menu extends Model
@@ -66,6 +67,11 @@ class Menu extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function recipeCount()
+    {
+        return $this->hasMany(BranchMenuRecipe::class, 'menu_id');
     }
 
 

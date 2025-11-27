@@ -15,7 +15,7 @@
 
             <div class="col-md-9">
                 <div class="row" id="menuContainer">
-                    @foreach($menuItems as $menu)
+                    @foreach($menuItems as $index => $menu)
                     
                         <div class="col-md-4 mb-4 menu-item" data-category="{{ $menu->categories->id }}">
                             <div class="card">
@@ -25,6 +25,16 @@
                                         <span class="unavailable-text">Unavailable</span>
                                     </div>
                                 @endif
+                                <div>
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span id="balQty-{{ $index }}" class="badge bg-success">AVAILABLE: {{ $menu->recipeCount->first()->bal_qty ?? 0 }}</span>
+                                    </div>
+                                    @if(($menu->recipeCount->first()->bal_qty ?? 0) == 0)
+                                        <div class="position-absolute top-50 start-50 translate-middle">
+                                            <span class="badge bg-secondary fs-4 opacity-75">UNAVAILABLE</span>
+                                        </div>
+                                    @endif
+                                </div>
                                 <img src="{{ asset('images/' . $menu->menu_image) }}" class="card-img-top"
                                     alt="{{ $menu->menu_image }}" style="width: 100%; height: 200px; object-fit: cover;">
                                 <div class="card-body">
@@ -44,16 +54,16 @@
                                         ₱
                                         {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}
                                     </p>
-                                    <button class="btn btn-primary"
-                                        onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }})">Add
-                                        to Order</button>
+                                    <button class="btn btn-primary" @if(($menu->recipeCount->first()->bal_qty ?? 0)==0) disabled @endif
+                                        onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}, {{ $menu->recipeCount->first()->bal_qty ?? 0 }}, {{ $index }})"
+                                        wire:click.prevent="updateQTY('{{ $menu->id }}')">Add to Order</button>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
-            <div class="col-md-3 card mt-4 p-6" style="height: 100%; position: sticky; top: 0; ">
+            <div class="col-md-3 card mt-4 p-6" style="height: 100%; position: sticky; top: 0; " wire:ignore>
                 <div class="card-body">
                     <strong><span id="tableNumber">{{ $selectedTable->table_name }}</span></strong>
                     <h5 class="card-title mb-4 mt-4">Order Summary</h5>
@@ -85,11 +95,11 @@
 
     <!-- Order Summary Modal -->
         <div class="modal fade" id="orderSummaryModal" tabindex="-1" aria-labelledby="orderSummaryModalLabel"
-            aria-hidden="true">
+            aria-hidden="true" wire:ignore>
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="orderSummaryModalLabel">Order Summary</h5>
+                        <h5 class="modal-title" id="orderSummaryModalLabel" >Order Summary</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -116,7 +126,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Place Order</button>
+                        <button type="submit" class="btn btn-primary" onclick="hasUnsavedChanges = false;">Place Order</button>
                     </div>
                     </form>
                 </div>
@@ -127,8 +137,46 @@
 
          <script>
         let order = [];
+        let hasUnsavedChanges = false;
+        const ORDER_STORAGE_KEY = 'unsaved_order_data';
 
-        function addToOrder(menu_id, name, price) {
+        // Load any existing unsaved order from localStorage on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedOrder = localStorage.getItem(ORDER_STORAGE_KEY);
+            if (savedOrder) {
+                // Clear localStorage since we're loading the page fresh
+                localStorage.removeItem(ORDER_STORAGE_KEY);
+            }
+        });
+
+        // Warn user before leaving page if there are unsaved orders
+        window.addEventListener('beforeunload', function (e) {
+            if (hasUnsavedChanges && order.length > 0) {
+                // Save order to localStorage before leaving
+                localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
+                
+                // Call rollback via Livewire
+                @this.call('rollbackAllItems', order);
+                
+                e.preventDefault();
+                e.returnValue = ''; 
+                return 'You have unsaved orders. Are you sure you want to leave?';
+            }
+        });
+
+        // Handle page unload (when user confirms leaving)
+        window.addEventListener('unload', function() {
+            if (hasUnsavedChanges && order.length > 0) {
+                // Use sendBeacon for reliable delivery during page unload
+                const formData = new FormData();
+                formData.append('orderItems', JSON.stringify(order));
+                
+                // Make synchronous call to rollback
+                @this.call('rollbackAllItems', order);
+            }
+        });
+
+        function addToOrder(menu_id, name, price,bal_qty,index) {
             const existingItem = order.find(item => item.name === name);
 
             if (existingItem) {
@@ -141,6 +189,7 @@
                     quantity: 1
                 });
             }
+            hasUnsavedChanges = true; // Mark as having unsaved changes
             updateOrderTable();
             updateOrderSummary();
             $('#orderSummaryModal').modal('show');
@@ -160,8 +209,12 @@
                 tr.innerHTML = `
                     <td>${item.name}</td>
                     <td>
-                        <input type="number" name="order_qty[]" value="${item.quantity}" min="1" class="form-control" onchange="updateQuantity('${item.name}', this.value)">
-                        <input type="hidden" name="menu_id[]" value="${item.menu_id}">
+                         <span class="input-group input-group-sm" style="width: 120px;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity - 1},'decrease')">-</button>
+                            <input type="number" name="order_qty[]" value="${item.quantity}" min="1" class="form-control text-center" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity + 1},'increase')">+</button>
+                            <input type="hidden" name="menu_id[]" value="${item.menu_id}">
+                        </span>
                     </td>
                     <td>₱${item.price.toFixed(2)}</td>
                     <td>₱${total.toFixed(2)}</td>
@@ -184,17 +237,24 @@
             document.getElementById('total').textContent = `₱${totalPrice.toFixed(2)}`;
         }
 
-        function updateQuantity(name, quantity) {
+        function updateQuantity(name, quantity, action) {
             const item = order.find(item => item.name === name);
             if (item) {
                 item.quantity = parseInt(quantity);
+                @this.call('upQuantity', item.menu_id, item.quantity, action);
+                hasUnsavedChanges = true; // Mark as having unsaved changes
                 updateOrderTable();
                 updateOrderSummary();
             }
         }
 
         function removeFromOrder(name) {
+            const item = order.find(item => item.name === name);
+            if (item) {
+                @this.call('rollbackQTY', item.menu_id, item.quantity);
+            }
             order = order.filter(item => item.name !== name);
+            hasUnsavedChanges = order.length > 0; // Update flag based on remaining items
             updateOrderTable();
             updateOrderSummary();
         }
@@ -202,6 +262,10 @@
         function placeOrder() {
             // Logic to place the order
             alert('Order placed successfully!');
+            // Clear unsaved changes flag when order is placed
+            hasUnsavedChanges = false;
+            order = [];
+            localStorage.removeItem(ORDER_STORAGE_KEY);
             $('#orderSummaryModal').modal('hide');
             Livewire.emit('orderAdded'); // Trigger the Livewire event
         }
