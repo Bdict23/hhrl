@@ -195,8 +195,9 @@
                                             @if (auth()->user()->employee->getModulePermission('Banquet Events') == 1)
                                                 {{-- <a href="" wire:click="openToEdit({{ $eventDetails->id }})">Edit</a> --}}
                                                 <button class="btn btn-primary text-sm" 
-                                                        wire:click="openToEdit({{ $event->id }})" 
-                                                        @if($event->status == 'pending') disabled @endif>
+                                                        {{-- wire:click="openToEdit({{ $event->id }})" 
+                                                        @if($event->status == 'pending') disabled @endif --}}
+                                                        >
                                                     Edit
                                                 </button>
                                             @endif
