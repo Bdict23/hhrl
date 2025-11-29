@@ -109,7 +109,7 @@ class BanquetProcurementCreate extends Component
 
     public function fetchData()
     {
-        $this->events = BanquetEvent::with('customer','venue','eventServices','eventMenus','purchaseOrders')->where('status', 'pending')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+        $this->events = BanquetEvent::with('customer','venue','eventServices','eventMenus','purchaseOrders')->where('status', 'CONFIRMED')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
         
         $moduleId = Module::where('module_name', 'Banquet Procurement')->value('id');
         $this->approvers = Signatory::with('employees')->where('signatory_type', 'APPROVER')

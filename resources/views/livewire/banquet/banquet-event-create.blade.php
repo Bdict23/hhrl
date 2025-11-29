@@ -135,7 +135,7 @@
                                 </div>  
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row mb-1">
                             <div class="col-md-6">
                                 <label for="event_date" class="form-label text-sm">Event Date</label>
                                 <input wire:model="event_date" type="date" class="form-control" id="event_date" name="event_date">
@@ -160,30 +160,66 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="venue" class="form-label text-sm">Venue</label>
-                            <select wire:model="venue_id" class="form-select">
-                                <option value="">Select Venue</option>
-                                @forelse ($venues as $venue)
-                                    <option value="{{ $venue->id }}">{{ $venue->venue_name }} &nbsp; ({{ $venue->ratePrice && $venue->ratePrice->amount ? '₱' . $venue->ratePrice->amount : 'FREE' }})</option>
-                                @empty
-                                    
-                                @endforelse
-                            </select>
-                            @error('venue_id')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
+                        <div class="row col-md-12 mb-1">
+                             <div class="col-md-6">
+                                    <div class="mb-1">
+                                    <label for="venue" class="form-label text-sm">Venue</label>
+                                    <select wire:model="venue_id" class="form-select">
+                                        <option value="">Select Venue</option>
+                                        @forelse ($venues as $venue)
+                                            <option value="{{ $venue->id }}">{{ $venue->venue_name }} &nbsp; ({{ $venue->ratePrice && $venue->ratePrice->amount ? '₱' . $venue->ratePrice->amount : 'FREE' }})</option>
+                                        @empty
+                                            
+                                        @endforelse
+                                    </select>
+                                @error('venue_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="guest_count" class="form-label text-sm">Expected Guest Count</label>
+                                    <input wire:model="guest_count" type="number" class="form-control" id="guest_count" name="guest_count" min="0" placeholder="Enter expected guest count">
+                                    @error('guest_count')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="event-notes" class="form-label text-sm">Notes</label>
+                            <textarea wire:model="event_notes" class="form-control" id="event-notes" name="event-notes" rows="4"></textarea>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="guest_count" class="form-label text-sm">Expected Guest Count</label>
-                            <input wire:model="guest_count" type="number" class="form-control" id="guest_count" name="guest_count" min="0" placeholder="Enter expected guest count">
-                            @error('guest_count')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="event-notes" class="form-label text-sm">Notes</label>
-                            <textarea wire:model="event_notes" class="form-control" id="event-notes" name="event-notes" rows="3"></textarea>
+                        
+                        <div class="mb-1">
+                            <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-xs text-start">Particular</th>
+                                            <th class="text-xs text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Example static rows, replace with dynamic data -->
+                                        <tr>
+                                            <td class="text-start">Venue</td>
+                                            <td class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-start">Services</td>
+                                            <td class="text-end"><i>1000</i></td>
+                                        </tr>
+                                        <tr >
+                                            <td class="text-start">Menus</td>
+                                            <td class="text-end"><i>500</i></td>
+                                        </tr>
+                                        <!-- End static rows -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2" class="text-end">Total Amount : <strong>1500</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
                         </div>
                     </div>
                 </div>    
@@ -193,39 +229,22 @@
                 <div class="container">
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
-                            <h5 class="card-title">Summary</h5>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-xs text-start">Particular</th>
-                                        <th class="text-xs text-end">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Example static rows, replace with dynamic data -->
-                                    <tr>
-                                        <td class="text-start">Venue</td>
-                                        <td class="text-end">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-start">Services</td>
-                                        <td class="text-end"><i>1000</i></td>
-                                    </tr>
-                                    <tr >
-                                        <td class="text-start">Menus</td>
-                                        <td class="text-end"><i>500</i></td>
-                                    </tr>
-                                    <!-- End static rows -->
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="2" class="text-end">Total Amount : <strong>1500</strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
                             <div class="d-flex justify-content-end">
-                                <button class="btn btn-success" type="submit">Save Event</button>
-                                <button wire:click="resetForm" class="btn btn-secondary ms-2" type="reset">Reset</button>
+                                <div class="input-group">
+                                    <select name="" class="form-select" id="" class="" wire:model='saveAs'>
+                                        <option value="">Save As</option>
+                                        <option value="DRAFT">Draft</option>
+                                        <option value="FINAL">Final</option>
+                                    </select>
+                                    @if (!$is_editing && $saveAs != 'FINAL')
+                                        <button type="submit" class="btn btn-success ">Save</button>
+                                        <button wire:click="resetForm" class="btn btn-danger ms-2" type="reset">Reset</button>
+
+                                    @elseif ($is_editing)
+                                        <button type="submit" class="btn btn-success ">Update</button>
+                                    @endif
+                                    <a type="button" href="{{ route('banquet_events.summary') }}" class="btn btn-secondary input-group-text">Summary</a>
+                                </div>
                                 </form>
                             </div>
                         </div>
@@ -373,7 +392,7 @@
                             </tr>
                         </thead>
                         <tbody id="menusTableBody">
-                            @forelse ($menus as $menu)
+                            @forelse ($menus ?? [] as $menu)
                                 <tr>
                                     <td>{{ $menu->menu->menu_name }}</td>
                                     <td>{{ $menu->menu->categories ? $menu->menu->categories->category_name : 'N/A' }}</td>

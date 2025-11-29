@@ -103,7 +103,7 @@ class EquipmentRequestCreate extends Component
     {
         $this->equipments = Item::with('category')->where('item_status', 'active')->get();
         $this->categories  = Category::where('status', 'active')->where('company_id', auth()->user()->branch->company_id)->where('category_type', 'ITEM')->get();
-        $this->events = BanquetEvent::with('customer','venue')->where('status', 'pending')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+        $this->events = BanquetEvent::with('customer','venue')->where('status', 'CONFIRMED')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
         $this->departments = Department::where('department_status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
         $this->employees = Employee::with('position')->where('status', 'active')->where('branch_id', auth()->user()->branch_id)->get();
         $module = Module::where('module_name', 'Banquet Equipment Request')->first();

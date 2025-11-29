@@ -203,7 +203,7 @@ class PurchaseOrderCreate extends Component
     $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
-    $this->events = BanquetEvent::with('customer')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+    $this->events = BanquetEvent::with('customer')->where('status', 'CONFIRMED')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
     $purchasing = Module::where('module_name', 'Purchase order')->first();
 
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();

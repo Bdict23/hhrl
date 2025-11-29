@@ -141,6 +141,19 @@
                                     </table>
                                 </div>
                             </div>
+                             <div class="mt-4 alert @if($selectedEventStatus == 'PENDING') alert-warning 
+                                                        @elseif($selectedEventStatus == 'CONFIRMED') alert-success 
+                                                        @elseif($selectedEventStatus == 'CANCELLED') alert-danger 
+                                                        @endif" role="alert">
+                                @if($selectedEventStatus == 'PENDING')
+                                    <strong>Status:</strong> Pending Confirmation
+                                @elseif($selectedEventStatus == 'CONFIRMED')
+                                    <strong>Status:</strong> Confirmed
+                                @elseif($selectedEventStatus == 'CANCELLED')
+                                    <strong>Status:</strong> Cancelled
+                                @endif
+                                <p class="mt-3" ></p>
+                            </div>
                         </div>
                         <div class="col-md-6 mt-3 mb-3">
                             <div class="card">
@@ -187,20 +200,34 @@
                                     <div class="row mb-3">
                                         <div class="col-md-12">
                                             <label for="myNote" class="form-label text-sm">Note</label>
-                                            <textarea name="" id="myNote" class="form-control" disabled>{{ $eventDetails->note ?? '' }}</textarea>
+                                            <textarea name="" id="myNote" class="form-control" disabled>{{ $eventDetails->notes ?? '' }}</textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-12">
                                             @if (auth()->user()->employee->getModulePermission('Banquet Events') == 1)
                                                 {{-- <a href="" wire:click="openToEdit({{ $eventDetails->id }})">Edit</a> --}}
-                                                <button class="btn btn-primary text-sm" 
-                                                        {{-- wire:click="openToEdit({{ $event->id }})" 
-                                                        @if($event->status == 'pending') disabled @endif --}}
-                                                        >
-                                                    Edit
+                                                <button class="btn btn-primary text-sm btn-sm" 
+                                                        wire:click="openEvent" 
+                                                        @if($selectedEventStatus == 'CONFIRMED') hidden @endif>
+                                                    UPDATE
                                                 </button>
+                                            @if($selectedEventStatus == 'PENDING')
+                                                    <button class="btn btn-success text-sm btn-sm" 
+                                                        wire:click="confirmEvent" 
+                                                @if($selectedEventStatus == 'CONFIRMED') disabled @endif>
+                                                        CONFIRM EVENT
+                                                    </button>
+                                                @endif
                                             @endif
+                                                @if($selectedEventStatus != 'CANCELLED' && $selectedEventStatus != 'CONFIRMED')
+                                                    <button class="btn btn-danger text-sm btn-sm" 
+                                                            wire:click="cancelEvent" 
+                                                            @if($selectedEventStatus == 'CANCELLED') disabled @endif>
+                                                        CANCEL EVENT
+                                                    </button>
+                                            @endif
+
                                         </div>
                                     </div>
                                 </div>

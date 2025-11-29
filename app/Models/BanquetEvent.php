@@ -14,6 +14,7 @@ class BanquetEvent extends Model
         'end_time',
         'venue_id',
         'guest_count',
+        'status',
         'notes',
         'customer_id',
     ];

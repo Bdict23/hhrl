@@ -12,6 +12,7 @@ use App\Models\BranchMenu;
 use App\Models\BanquetEvent; // Assuming BanquetEvent model exists in App\Models namespace
 use App\Models\EventService;
 use App\Models\EventMenu;
+use Illuminate\Http\Request;
 use App\Models\BranchMenuRecipe; // Assuming BranchMenuRecipe model exists in App\Models namespace
 
 class BanquetEventCreate extends Component
@@ -53,6 +54,8 @@ class BanquetEventCreate extends Component
     public $venue_id;
     public $guest_count;
     public $event_notes;
+    public $is_editing = false;
+    public $saveAs = 'DRAFT';
 
     protected $rules = [
         'event_name' => 'required|string|max:255',
@@ -68,11 +71,140 @@ class BanquetEventCreate extends Component
         return view('livewire.banquet.banquet-event-create');
     }
 
-    public function mount()
+    public function mount(Request $request = null)
     {
-        $this->fetchData();
+        if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 ){
+            if ($request->has('event-id')) {
+                //  dd($request->query('requisition-id'));
+                 $this->fetchData();
+                $this->editEvent($request->query('event-id'));
+            }
+           $this->fetchData();
+        }else{
+            return redirect()->to('dashboard');
+        }
+      
         
     }
+
+    public function editEvent($eventId)
+    {
+        $event = BanquetEvent::with('customer', 'venue', 'eventServices', 'eventMenus')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->find($eventId);
+        if (!$event) {
+            session()->flash('error', 'Event not found.');
+            return;
+        }
+        // Populate event details
+        if($event->status == 'PENDING'){
+            $this->is_editing = true;
+        }else{
+            $this->is_editing = false;
+        }
+        $this->event_name = $event->event_name;
+        $this->event_date = $event->event_date;
+        $this->event_start_time = $event->start_time;
+        $this->event_end_time = $event->end_time;
+        $this->venue_id = $event->venue_id;
+        $this->guest_count = $event->guest_count;
+        $this->event_notes = $event->notes;
+
+        // Populate selected customer
+        if ($event->customer) {
+            $this->selectedCustID = $event->customer->id;
+            $this->selectedCustName = $event->customer->customer_fname . ' ' . $event->customer->customer_mname . ' ' . $event->customer->customer_lname;
+        }
+
+        // Populate selected services
+        foreach ($event->eventServices as $eventService) {
+            $service = Service::with('ratePrice')->find($eventService->service_id);
+            if ($service) {
+                $this->selectedServices[] = $service;
+                $this->servicesAdded[] = [
+                    'id' => $service->id,
+                    'qty' => $eventService->qty,
+                    'rate' => $eventService->price_id,
+                ];
+            }
+        }
+
+        // Populate selected menus
+        foreach ($event->eventMenus as $eventMenu) {
+            $menu = Menu::with('mySRP')->find($eventMenu->menu_id);
+            if ($menu) {
+                $this->selectedMenus[] = $menu;
+                $this->menusAdded[] = [
+                    'id' => $menu->id,
+                    'qty' => $eventMenu->qty,
+                    'rate' => $eventMenu->price_id,
+                ];
+            }
+        }
+    }
+
+    public function updateEvent()
+    {
+        $this->validate();
+        // Find the banquet event
+        $event = BanquetEvent::where('branch_id', auth()->user()->branch_id)
+            ->where('event_name', $this->event_name)
+            ->where('event_date', $this->event_date)
+            ->first();
+
+        if (!$event) {
+            session()->flash('error', 'Event not found.');
+            return;
+        }
+
+        // Update the banquet event details
+        $event->update([
+            'event_name' => $this->event_name,
+            'event_date' => $this->event_date,
+            'start_time' => $this->event_start_time,
+            'end_time' => $this->event_end_time,
+            'venue_id' => $this->venue_id,
+            'guest_count' => $this->guest_count,
+            'status' => $this->saveAs == 'Final' ? 'PENDING' : 'CONFIRMED',
+            'notes' => $this->event_notes,
+            'customer_id' => $this->selectedCustID,
+        ]);
+        // Remove existing services and menus
+        EventService::where('event_id', $event->id)->delete();
+        EventMenu::where('event_id', $event->id)->delete();
+
+
+
+         // insert services on event_services table
+        if (count($this->servicesAdded) > 0) {
+            foreach($this->servicesAdded as $service) {
+                EventService::create([
+                    'event_id' => $event->id,
+                    'service_id' => $service['id'],
+                    'qty' => $service['qty'],
+                    'price_id' => $service['rate'],
+                ]);
+            }
+        }
+        // insert event menu
+        if (count($this->menusAdded) > 0) {
+            foreach($this->menusAdded as $menu) {
+                EventMenu::create([
+                    'event_id' => $event->id,
+                    'menu_id' => $menu['id'],
+                    'qty' => $menu['qty'],
+                    'price_id' => $menu['rate'],
+                ]);
+            }
+
+
+
+        session()->flash('success', 'Event successfully updated!');
+        $this->reset();
+        $this->dispatch('refresh');
+    }
+    }
+  
 
     public function fetchData()
     {
@@ -231,6 +363,10 @@ class BanquetEventCreate extends Component
 
     public function createEvent()
     {
+        if ( $this->is_editing ) {
+            $this->updateEvent();
+            return;
+        }
         $this->validate();
 
         // Create the banquet event
@@ -241,6 +377,7 @@ class BanquetEventCreate extends Component
             'end_time' => $this->event_end_time,
             'venue_id' => $this->venue_id,
             'guest_count' => $this->guest_count,
+            'status' => $this->saveAs == 'FINAL' ? 'CONFIRMED' : 'DRAFT',
             'notes' => $this->event_notes,
             'customer_id' => $this->selectedCustID,
             'branch_id' => auth()->user()->branch_id,
