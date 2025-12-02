@@ -330,6 +330,12 @@ class WithdrawalShow extends Component
         $this->dispatch('closeEventModal'); // Close the modal after selection
     }
 
+    public function printPreview()
+    {
+        // Redirect to the print preview route with the withdrawal ID as a query parameter
+        return redirect()->to('/withdrawal-print-preview?withdrawal-id=' . $this->withdrawalID);
+    }
+
    
     public function render()
     {

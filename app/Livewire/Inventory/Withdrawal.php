@@ -53,7 +53,6 @@ class Withdrawal extends Component
 
 
     protected $rules = [
-        'reference' => 'string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
         'useDate' => 'required',
         'spanDate' => 'nullable|date|after_or_equal:useDate',
@@ -63,7 +62,6 @@ class Withdrawal extends Component
         'approver' => 'required',
     ];
     protected $messages = [
-        'reference.required' => 'The reference number is required.',
         'selectedDepartment.required' => 'The department is required.',
         'selectedItems.required' => 'The item list cannot be empty.',
         'reviewer.required' => 'The reviewer is required.',
@@ -160,7 +158,6 @@ class Withdrawal extends Component
             $this->validate();
         }else{
             $this->validate([
-                'reference' => 'string|max:25|unique:withdrawals,reference_number',
                 'selectedDepartment' => 'required',
                 'useDate' => 'required',
                 'spanDate' => 'nullable|date|after_or_equal:useDate',

@@ -15,6 +15,7 @@
                                 @if(!$isAlreadyFinal)
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
                                 @endif
+                                <x-primary-button wire:click="printPreview" type="button"> Print Preview </x-primary-button>
                                 <x-secondary-button style="color: rgb(135, 235, 168);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary </x-secondary-button>
                                 <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                             </div>

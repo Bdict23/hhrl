@@ -407,3 +407,8 @@ Route::get('/budget-proposal-print-preview', function () {
 Route::get('/daily-recipe-count', function () {
     return view('restaurant.daily-recipe-count');
 })->middleware(['auth', 'verified'])->name('restaurant.daily-recipe-count');
+
+// route for withdrawal print preview
+Route::get('/withdrawal-print-preview', function () {
+    return view('print_preview.withdrawal');
+})->middleware(['auth', 'verified'])->name('withdrawal.print-preview');
