@@ -5,54 +5,53 @@
     </div>
 @endif
     <div class="card mt-3 mb-3">
-        <div class="card-header p-2 ">
-            <div class="row">
-                <div class=" row col-md-6">
-                    <div class="col-md-6">
+                <div class=" mb-2 mt-2 d-flex justify-content-start">
+                    <div class="col-md-12">
                         @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                            <x-primary-button style="text-decoration: none;">
-                                <a href="{{ route('po.create') }}" style="text-decoration: none; color: inherit;">+ Create Purchase Order</a>
-                            </x-primary-button>
+                                <a href="{{ route('po.create') }}" type="button" class="btn btn-success btn-sm ml-2">+New Purchase Order</a>
                         @endif
                     </div>
-                    <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
                         <span wire:loading class="spinner-border text-primary" role="status"></span>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                <div class="d-flex">
-                    <div class="input-group">
-                        <label for="PO-status" class="input-group-text">Status</label>
-                        <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
-                            <option value="All">All</option>
-                            @foreach ($statuses as $status)
-                                <option value="{{ $status }}">{{ $status }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="from_date" class="input-group-text">From:</label>
-                        <input wire:model="fromDate" type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
-                            class="form-control form-control-sm">
-                    </div>
-                    <div class="input-group">
-                        <label for="to_date" class="input-group-text">To:</label>
-                        <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
-                            class="form-control form-control-sm">
-                            <button wire:click="search" class="btn btn-primary input-group-text">search</button>
-                    </div>
-                    <div>
+            <div class="row d-flex justify-content-between mx-2">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <div class="input-group">
+                                <label for="PO-status" class="input-group-text">Status</label>
+                                <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
+                                    <option value="All">All</option>
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status }}">{{ $status }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="input-group">
+                                <label for="from_date" class="input-group-text">From:</label>
+                                <input wire:model="fromDate" type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
+                                    class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="input-group">
+                                <label for="to_date" class="input-group-text">To:</label>
+                                <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
+                                    class="form-control form-control-sm">
+                                <button wire:click="search" class="btn btn-primary input-group-text">search</button>  
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
-        </div>
 
 
         <div class="card-body ">
-                <div class="overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
-                    <table class="table min-w-full table-striped table-hover">
+                <div style="height: 500px; overflow-x: auto; display: block;">
+                    <table class="table table-striped table-hover table-sm " >
                         <thead class="table-dark">
                             <tr>
                                 <th>Order To</th>

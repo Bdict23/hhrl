@@ -92,7 +92,7 @@ class Withdrawal extends Component
         $module = Module::where('module_name', 'Item Withdrawal')->first();
 
         // Calculate total balance for each item using the Cardex model
-        $this->events = auth()->user()->branch->banquetEvents()->where('status', 'pending')->where('event_date', '>=', now())->get();
+        $this->events = auth()->user()->branch->banquetEvents()->where('status', 'CONFIRMED')->where('event_date', '>=', now())->get();
         $this->myCardexItems = $myItems->map(function ($item) {
             $totalIn = Cardex::where('status', 'final')->where('item_id', $item->id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_in');
             $totalOut = Cardex::where('status', 'final')->where('item_id', $item->id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');

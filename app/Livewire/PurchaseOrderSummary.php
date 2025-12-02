@@ -42,7 +42,10 @@ class PurchaseOrderSummary extends Component
         ->where('CATEGORY', 'PO')
         ->where('requisition_status', '!=', 'CANCELLED')
         ->where('from_branch_id', Auth::user()->branch_id)
+        ->where('created_at', '>=', now()->subMonths(1))
         ->get();
+        $this->fromDate = now()->startOfMonth()->format('Y-m-d');
+        $this->toDate = now()->format('Y-m-d');
     }
 
     public function redirectToShow($id)

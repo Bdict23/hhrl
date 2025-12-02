@@ -377,7 +377,7 @@ class BanquetEventCreate extends Component
             'end_time' => $this->event_end_time,
             'venue_id' => $this->venue_id,
             'guest_count' => $this->guest_count,
-            'status' => $this->saveAs == 'FINAL' ? 'CONFIRMED' : 'DRAFT',
+            'status' => $this->saveAs == 'FINAL' ? 'CONFIRMED' : 'PENDING',
             'notes' => $this->event_notes,
             'customer_id' => $this->selectedCustID,
             'branch_id' => auth()->user()->branch_id,

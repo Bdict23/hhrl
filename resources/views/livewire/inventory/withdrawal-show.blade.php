@@ -10,7 +10,7 @@
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h4> Item Withdrawal</h4>
+                            <h4> ITEM WITHDRAWAL</h4>
                             <div class="me-3" wire:ignore>
                                 @if(!$isAlreadyFinal)
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>

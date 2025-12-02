@@ -44,11 +44,11 @@
                                             {{ $item->uom ? $item->uom->unit_symbol : 'N/A' }}
                                         </td>
                                         <td>
-                                            <input wire:model="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="1" onchange="updateTotalPrice(this)">
+                                            <input wire:model.live="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="1">
                                         </td>
                                         <td style="font-size: 80%">{{ number_format($item->costPrice->amount, 2) }}</td>
                                         <td class="total-price" id="total-price{{ $index }}" style="font-size: 80%">
-                                            {{ number_format($item->costPrice->amount * $item->qty, 2) }}
+                                            {{ number_format($item->costPrice->amount * ($purchaseRequest[$index]['qty'] ?? 1), 2) }}
                                         </td>
                                         <td style="font-size: 80%">
                                             <button type="button" class="btn btn-danger btn-sm" wire:click="removeItem({{ $item->id }})">Remove</button>
@@ -57,7 +57,7 @@
                     
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">No items selected</td>
+                                        <td colspan="7" class="text-center">No items selected</td>
                                     </tr>
                     
                                 @endforelse
@@ -74,7 +74,15 @@
                         <div wire:loading>
                             Saving Please Wait...
                         </div>
-                        <strong style="float: right">Total Cost : <span id="totalAmount">0.00</span></strong>
+                        <strong style="float: right">Total Cost : ₱
+                            @php
+                                $totalCost = 0;
+                                foreach ($selectedItems as $index => $item) {
+                                    $totalCost += $item->costPrice->amount * ($purchaseRequest[$index]['qty'] ?? 1);
+                                }
+                                echo number_format($totalCost, 2);
+                            @endphp
+                        </strong>
                     </div>
                 </div>
             </div>

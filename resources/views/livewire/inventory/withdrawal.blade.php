@@ -10,7 +10,7 @@
             <div class=" col-md-8 card mt-2">
                 <div class=" card-body">
                     <header>
-                        <h4> Item Withdrawal</h4>
+                        <h4> ITEM WITHDRAWAL</h4>
                         <div class="me-3">
                             @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
                                 <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>

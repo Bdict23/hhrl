@@ -296,7 +296,7 @@
                 <td style="font-size: 13PX;">${unit.item_description}</td>         
           
                 <td>
-                    <input type="number" name="qty[]" class="form-control" value="1" min="1" onchange="updateTotalPrice(this)">
+                    <input type="number" name="qty[]" class="form-control" value="1" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
                     <input type="hidden" name="uom_id[]" value="${unit.id}">
                     <input type="hidden" name="item_id[]" value="${item}">
                     <input type="hidden" name="price_level_id[]" value="${unit.price_id}">
@@ -305,7 +305,7 @@
                 <td style="font-size: 13PX; text-align: center">${price}</td>
                 <td class="total-price">${price}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
                 </td>
             `;
 
@@ -339,6 +339,15 @@
                 updateData(this);
             }
         });
+
+        function handleEnterKey(event, input) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                updateTotalPrice(input); // Update the total price
+                input.blur(); // Remove focus from the input field
+                return false;
+            }
+        }
 
         function updateTotalPrice(input) {
             const row = input.closest('tr');
