@@ -25,5 +25,10 @@ class Category extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function menus()
+    {
+        return $this->hasMany(Menu::class, 'category_id');
+    }
+
 
 }

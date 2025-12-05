@@ -325,14 +325,14 @@
                                         {{ __('Menu') }}
                                         </x-dropdown-link>
                                     @endif
-                                   @if (auth()->user()->employee->getModulePermission('Allocate Order Menu') !=2)
+                                   {{-- @if (auth()->user()->employee->getModulePermission('Allocate Order Menu') !=2)
                                        <x-dropdown-link :href="url('/allocate_order')" class="no-underline">
                                            {{ __('Allocate Order') }}
                                        </x-dropdown-link>
-                                   @endif
-                                    @if (auth()->user()->employee->getModulePermission('Kitchen') !=2)
+                                   @endif --}}
+                                    @if (auth()->user()->employee->getModulePermission('Menu - Orders') !=2)
                                         <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
-                                            {{ __('Kitchen') }}
+                                            {{ __('Orders') }}
                                         </x-dropdown-link>
                                     @endif
                                     @if (auth()->user()->employee->getModulePermission('Menu Order Invoicing') !=2)

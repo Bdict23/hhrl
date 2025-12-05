@@ -6,57 +6,17 @@
         <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="invoice-tab" data-bs-toggle="tab" data-bs-target="#invoice" type="button"
-                    role="tab" aria-controls="invoice" aria-selected="true">Orders</button>
+                    role="tab" aria-controls="invoice" aria-selected="true">FLOOR</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="job-order-tab" data-bs-toggle="tab" data-bs-target="#job-order" type="button"
                     role="tab" aria-controls="job-order" aria-selected="false">
-                    Completed Orders</button>
+                    KITCHEN</button>
             </li>
         </ul>
-        <div class="tab-content alert-success" id="jobOrderTabContent">
-            <div class="tab-pane fade show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h3>Pending Orders</h3>
-                            </div>
-                            <ul class="col-md-2 text-right"></ul>
-
-                            {{-- @livewire('search-order-number') --}}
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="list-group list-group-horizontal justify-content-center mb-4"
-                                    style="position: sticky; top: 0; z-index: 1000; background-color: white;">
-                                    <a href="#" class="list-group-item list-group-item-action active"
-                                        onclick="filterOrders('all')">All</a>
-                                    <a href="#" class="list-group-item list-group-item-action"
-                                        onclick="filterOrders('Serving')">Serving</a>
-                                    <a href="#" class="list-group-item list-group-item-action"
-                                        onclick="filterOrders('Ready')">Ready</a>
-                                    <a href="#" class="list-group-item list-group-item-action"
-                                        onclick="filterOrders('Partially Prepared')">Partially Prepared</a>
-                                    <a href="#" class="list-group-item list-group-item-action"
-                                        onclick="filterOrders('Served')">Served</a>
-                                    <a href="#" class="list-group-item list-group-item-action"
-                                        onclick="filterOrders('New Orders')">New Orders</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        {{-- livewire component to display orders --}}
-                        @livewire('orders')
-                    </div>
-                </div>
-            </div>
-        </div>
+        
+            @livewire('orders')
+                    
     </div>
 
       <script>

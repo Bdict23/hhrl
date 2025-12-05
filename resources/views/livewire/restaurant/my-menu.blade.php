@@ -181,12 +181,14 @@
 
             if (existingItem) {
                 existingItem.quantity += 1;
+                existingItem.bal_qty = bal_qty;
             } else {
                 order.push({
                     menu_id,
                     name,
                     price,
-                    quantity: 1
+                    quantity: 1,
+                    bal_qty: bal_qty
                 });
             }
             hasUnsavedChanges = true; // Mark as having unsaved changes
@@ -206,13 +208,15 @@
                 totalAmount += total;
 
                 const tr = document.createElement('tr');
+                const canDecrease = item.quantity > 1;
+                const canIncrease = item.quantity < item.bal_qty;
                 tr.innerHTML = `
                     <td>${item.name}</td>
                     <td>
                          <span class="input-group input-group-sm" style="width: 120px;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity - 1},'decrease')">-</button>
-                            <input type="number" name="order_qty[]" value="${item.quantity}" min="1" class="form-control text-center" readonly>
-                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity + 1},'increase')">+</button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity - 1},'decrease')" ${!canDecrease ? 'disabled' : ''}>-</button>
+                            <input type="number" name="order_qty[]" value="${item.quantity}" min="1" max="${item.bal_qty}" class="form-control text-center" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity + 1},'increase')" ${!canIncrease ? 'disabled' : ''}>+</button>
                             <input type="hidden" name="menu_id[]" value="${item.menu_id}">
                         </span>
                     </td>
@@ -240,7 +244,12 @@
         function updateQuantity(name, quantity, action) {
             const item = order.find(item => item.name === name);
             if (item) {
-                item.quantity = parseInt(quantity);
+                const newQuantity = parseInt(quantity);
+                // Enforce minimum of 1 and maximum of available balance
+                if (newQuantity < 1 || newQuantity > item.bal_qty) {
+                    return;
+                }
+                item.quantity = newQuantity;
                 @this.call('upQuantity', item.menu_id, item.quantity, action);
                 hasUnsavedChanges = true; // Mark as having unsaved changes
                 updateOrderTable();

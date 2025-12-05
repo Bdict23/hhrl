@@ -57,6 +57,12 @@ class MyMenu extends Component
             ->where('status', 'ACTIVE')
             ->where('category_type', 'MENU')
             ->whereIn('id', $branchCategoryAvailable)
+            ->wherehas('menus', function ($query) use ($branchRecipeAvailable) {
+                $query->whereIn('id', $branchRecipeAvailable)
+                      ->where('status', 'AVAILABLE')
+                      ->where('recipe_type', 'Ala Carte');
+            })
+             ->orderBy('category_name', 'ASC')
             ->get();
         $this->menuItems = Menu::with('categories', 'price_levels', 'recipes','recipeCount')
             ->where('company_id', Auth::user()->branch->company_id)

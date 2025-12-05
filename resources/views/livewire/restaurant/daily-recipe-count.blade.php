@@ -1,4 +1,10 @@
 <div>
+     @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
     @if (session('status') == 'error')
         <div class="alert alert-danger">
             {{ session('message') ?? 'Something went wrong.' }}
@@ -12,8 +18,6 @@
                 <div class=" row col-md-6">
                     <div class="col-md-7">
                         <h5>Daily Recipe Count As of {{ date('Y-m-d') }}</h5>
-                    </div>
-                    <div class="col-md-6">
                         <span wire:loading class="spinner-border text-primary" role="status"></span>
                     </div>
                 </div>
@@ -52,7 +56,7 @@
                                     <td>{{ $recipe->default_qty }}</td>
                                     <td>{{ $recipe->bal_qty ?? 0}}</td>
                                     <td>
-                                        <a href="" class="btn btn-sm btn-link">Edit</a>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editQtyModal" wire:click="$set('selectedRecipeId', {{ $recipe->id }})">Edit</button>
                                     </td>
                                 </tr>
                             @empty
@@ -64,5 +68,41 @@
                         </tbody>
                 </table>
         </div>
+
+
+
+        <!-- Edit Quantity Modal -->
+        <div class="modal fade" id="editQtyModal" tabindex="-1" aria-labelledby="editQtyModalLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editQtyModalLabel">Edit Available Quantity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="availableQty" class="form-label">Available Quantity</label>
+                            <input type="number" class="form-control" id="availableQty" wire:model="availableQty" min="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" wire:click="updateQuantity">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            window.addEventListener('refresh', event => {
+            // Reset all forms on the page
+            var modal = bootstrap.Modal.getInstance(document.getElementById('editQtyModal'));
+            modal.hide();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(function() {
+                document.getElementById('success-message').style.display = 'none';
+            }, 1500);
+        });
+        </script>
     
 </div>

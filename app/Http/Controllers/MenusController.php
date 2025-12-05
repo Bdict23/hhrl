@@ -28,6 +28,7 @@ use Livewire\Livewire;
 use App\Models\Module;
 use App\Models\BranchMenu;
 use App\Models\BranchMenuRecipe;
+use App\Events\RemoteActionTriggered; 
 
 
 class MenusController extends Controller
@@ -124,7 +125,7 @@ class MenusController extends Controller
 
     public function order_store(Request $request){
         try {
-
+           
             $orderNumber = Order::whereDate('created_at', Carbon::today())
                 ->where('branch_id', Auth::user()->branch->id)
                 ->max('order_number') ?? 0;
@@ -151,8 +152,16 @@ class MenusController extends Controller
                 $order_details->qty = $qty[$index];
                 $order_details->save();
             }
+            
+             $payload = [
+                'action' => 'newOrder',
+                'branch_id' => Auth::user()->branch->id,
+            ];
+            \Log::info('About to trigger RemoteActionTriggered event', ['payload' => $payload]);
+            event(new RemoteActionTriggered($payload, Auth::user()->branch->id));
+            \Log::info('RemoteActionTriggered event dispatched');
 
-            return view('sales.thank_you_message', compact('order'));
+           return view('sales.thank_you_message', compact('order'));
         } catch (\Exception $e) {
             dd($e->getMessage());
             return redirect()->back()->withErrors([$e->getMessage()]);

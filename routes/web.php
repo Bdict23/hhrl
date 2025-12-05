@@ -412,3 +412,11 @@ Route::get('/daily-recipe-count', function () {
 Route::get('/withdrawal-print-preview', function () {
     return view('print_preview.withdrawal');
 })->middleware(['auth', 'verified'])->name('withdrawal.print-preview');
+
+// Test route for broadcasting
+Route::get('/test-broadcast', function () {
+    \Log::info('Test broadcast route hit');
+    $payload = ['test' => 'data', 'timestamp' => now()->toString()];
+    event(new \App\Events\RemoteActionTriggered($payload, auth()->id()));
+    return response()->json(['message' => 'Event dispatched', 'payload' => $payload]);
+})->middleware(['auth', 'verified'])->name('test.broadcast');

@@ -46,7 +46,7 @@ class WithdrawalShow extends Component
     public $spanDate = null; // selected span date from user
     public $useDate = null; // selected use date from user
     public $remarks = null; // remarks from user
-    public $overallTotal = 0; // overall total of selected items
+    public $overallTotal = 0.00; // overall total of selected items
     public $hasReviewer = false; // check if reviewer is required
     public $eventName = null; // event name for banquet procurement
     public $withdrawalID = null; // withdrawal id for update
