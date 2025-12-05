@@ -30,7 +30,7 @@ export default defineConfig({
              host: '127.0.0.1', // Replace with your local IP
 
         },
-        cors: true,
+        // cors: true,
 
     },
 
