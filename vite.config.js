@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
+
     plugins: [
         laravel({
             input: [
@@ -29,6 +30,8 @@ export default defineConfig({
              host: '127.0.0.1', // Replace with your local IP
 
         },
+        cors: true,
+
     },
 
 
