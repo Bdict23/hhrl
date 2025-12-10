@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\order;
-use App\Models\order_detail;
+use App\Models\Order_detail as order_detail;
 use Illuminate\Support\Facades\Auth;
 use App\Events\RemoteActionTriggered; // Import the event
 use App\Models\Order as orderModel; // Renaming to avoid conflict with the Livewire component name

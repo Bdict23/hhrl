@@ -66,7 +66,7 @@
                             @forelse ($recipes as $recipe)
                                 <tr>
                                     <td>{{ $recipe->menu_name }}</td>
-                                    <td>{{ $recipe->type ?? 'N/A' }}</td>
+                                    <td>{{ $recipe->menu_type ?? 'N/A' }}</td>
                                     <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
                                     <td>{{ $recipe->menu_code }}</td>
                                     <td>{{ $recipe->status }}</td>
