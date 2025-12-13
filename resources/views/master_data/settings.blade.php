@@ -113,6 +113,9 @@
                                 <a href="#" class="nav-link btn-sm" onclick="showTab('items-cost', this)">Cost</a>
                             </li>
                         @endif
+                         <li class="nav-item">
+                                <a href="#" class="nav-link btn-sm" onclick="showTab('discount-table', this)" wire:click="$emit('fetchDiscounts')">Discounts</a>
+                        </li>
                     </ul>                                                               
                     <hr>
                 @endif
@@ -238,6 +241,10 @@
                     @livewire('item-cost')
                 </div>
 
+                <div>
+                    @livewire('settings.discounts')
+                </div>
+
                 <!-- Menu Categories Tab Content -->
                 <div>
                     @livewire('settings.menu-category')
@@ -285,6 +292,7 @@
                 <div>
                     @livewire('settings.transfer-employee')
                 </div>
+                 
             </div>
         </div>
     </div>
