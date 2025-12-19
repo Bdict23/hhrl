@@ -114,7 +114,7 @@
                             </li>
                         @endif
                          <li class="nav-item">
-                                <a href="#" class="nav-link btn-sm" onclick="showTab('discount-table', this)" wire:click="$emit('fetchDiscounts')">Discounts</a>
+                                <a href="#" class="nav-link btn-sm" onclick="showTab('discount-table', this)">Discounts</a>
                         </li>
                     </ul>                                                               
                     <hr>

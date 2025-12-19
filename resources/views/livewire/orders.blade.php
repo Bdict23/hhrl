@@ -137,8 +137,7 @@
                                                 Item</td>
                                             <td style="position: sticky; top: 0; z-index: 1000; background-color: rgb(230, 225, 225);">
                                                 Qty</td>
-                                            <td style="position: sticky; top: 0; z-index: 1000; background-color: rgb(230, 225, 225);">
-                                                Marked</td>
+                                
                                             </th>
 
                                             @foreach ($order->order_details as $detail)
@@ -146,11 +145,7 @@
                                                     <td></td>
                                                     <td>{{ $detail->menu->menu_name }}</td>
                                                     <td style="text-align:center;">{{ $detail->qty }}x</td>
-                                                    <td style="text-align:right;"><input type="checkbox" name="item_checked[]"
-                                                            wire:click="markItem({{ $detail->id }}, $event.target.checked)"
-                                                            value="1" {{ $detail->marked == 1 ? 'checked' : '' }}
-                                                            {{ in_array($order->order_status, ['PENDING', 'CANCELLED', 'COMPLETED', 'SERVED']) ? 'disabled' : '' }}>
-                                                    </td>
+                                                   
                                                 </tr>
                                             @endforeach
 

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Order_detail;
+use App\Models\OrderDetail;
 use App\Models\Table;
 
 class Order extends Model
@@ -29,12 +29,17 @@ class Order extends Model
     ];
 
     public function order_details(){
-        return $this->hasMany(Order_detail::class)->with('menu');
+        return $this->hasMany(OrderDetail::class)->with('menu');
     }
 
     //has many table
     public function tables(){
         return $this->belongsTo(Table::class, 'table_id');
+    }
+
+    public function OrderDiscounts()
+    {
+        return $this->hasMany(OrderDiscount::class, 'order_id');
     }
 
 

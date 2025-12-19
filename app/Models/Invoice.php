@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use App\Models\Customer;
 
-class invoice extends Model
+class Invoice extends Model
 {
     use HasFactory;
     protected $table = 'invoices';

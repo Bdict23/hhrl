@@ -55,7 +55,7 @@
                                         {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}
                                     </p>
                                     <button class="btn btn-primary" @if(($menu->recipeCount->first()->bal_qty ?? 0)==0) disabled @endif
-                                        onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}, {{ $menu->recipeCount->first()->bal_qty ?? 0 }}, {{ $index }})"
+                                        onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}, {{ $menu->recipeCount->first()->bal_qty ?? 0 }}, {{ $index }},{{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->id ?? 'null' }})"
                                         wire:click.prevent="updateQTY('{{ $menu->id }}')">Add to Order</button>
                                 </div>
                             </div>
@@ -176,7 +176,7 @@
             }
         });
 
-        function addToOrder(menu_id, name, price,bal_qty,index) {
+        function addToOrder(menu_id, name, price,bal_qty,index, price_level_id) {
             const existingItem = order.find(item => item.name === name);
 
             if (existingItem) {
@@ -188,16 +188,18 @@
                     name,
                     price,
                     quantity: 1,
-                    bal_qty: bal_qty
+                    bal_qty: bal_qty,
+                    price_level_id: price_level_id
                 });
             }
             hasUnsavedChanges = true; // Mark as having unsaved changes
             updateOrderTable();
             updateOrderSummary();
-            $('#orderSummaryModal').modal('show');
+            // $('#orderSummaryModal').modal('show');
         }
 
         function updateOrderTable() {
+            console.log('price level id', order);
             const orderTableBody = document.getElementById('orderTableBody');
             orderTableBody.innerHTML = '';
 
@@ -218,6 +220,7 @@
                             <input type="number" name="order_qty[]" value="${item.quantity}" min="1" max="${item.bal_qty}" class="form-control text-center" readonly>
                             <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity + 1},'increase')" ${!canIncrease ? 'disabled' : ''}>+</button>
                             <input type="hidden" name="menu_id[]" value="${item.menu_id}">
+                            <input type="hidden" name="price_level_id[]" value="${item.price_level_id}">
                         </span>
                     </td>
                     <td>₱${item.price.toFixed(2)}</td>

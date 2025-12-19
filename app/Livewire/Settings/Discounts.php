@@ -47,7 +47,7 @@ class Discounts extends Component
         ]);
 
         Discount::create([
-            'code' => $this->discount_code ?? null,
+            'code' => $this->discount_code == '' ? null : $this->discount_code,
             'title' =>  $this->discount_title,
             'type' =>  $this->discount_type == 'item' ? 'SINGLE' : 'WHOLE',
             'amount' => $this->discount_ratevalue_type == 'Amount' ? $this->discount_ratevalue : 0,

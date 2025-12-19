@@ -172,7 +172,7 @@
                           </div>
                         </div>
                        
-                    <div class="row p-2 rounded" style="background-color: #f8f9fa;">
+                    {{-- <div class="row p-2 rounded" style="background-color: #f8f9fa;">
                           <div class="col-md-2">
                             <input class="form-check-input mt-0" type="checkbox" id="add_period_checkbox" wire:model.live="add_period">
                             <label class="form-check-label ms-2" for="add_period_checkbox">Add Period</label>
@@ -191,7 +191,7 @@
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <x-primary-button type="submit">Save</x-primary-button>
             </form>

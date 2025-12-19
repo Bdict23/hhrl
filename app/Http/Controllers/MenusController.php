@@ -19,7 +19,7 @@ use App\Models\Menu;
 use App\Models\Recipe;
 use App\Models\Table;
 use App\Models\Order;
-use App\Models\Order_detail;
+use App\Models\OrderDetail;
 use Carbon\Carbon;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
@@ -144,12 +144,14 @@ class MenusController extends Controller
 
             $menu_id = $request->input('menu_id', []);
             $qty = $request->input('order_qty', []);
+            $price_level_id = $request->input('price_level_id', []);
             
             foreach ($menu_id as $index => $value) {
-                $order_details = new Order_detail();
+                $order_details = new OrderDetail();
                 $order_details->order_id = $order->id;
                 $order_details->menu_id = $menu_id[$index];
                 $order_details->qty = $qty[$index];
+                $order_details->price_level_id = $price_level_id[$index];
                 $order_details->save();
             }
             

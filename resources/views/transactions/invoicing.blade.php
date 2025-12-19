@@ -1,279 +1,13 @@
 @extends('layouts.master')
 @section('content')
     <div>
-                @if (session()->has('success'))
-            <div class="alert alert-success" id="success-message">
-                {{ session('success') }}
-                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
-            @if (session()->has('error'))
-            <div class="alert alert-danger" id="success-message">
-                {{ session('error') }}
-                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
-        <form id="poForm" method="POST" action="{{ route('store.payment') }}">
-            @csrf
-            <div class="row me-3 w-100">
-                <div class=" col-md-7">
-                    <div class="card">
-                        <div class="card-header">
-                            <header>
-                                <h1>SALES ORDER</h1>
-                                <div class="me-3">
-                                    <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddOrderModal">+
-                                        Order Number</x-primary-button>
-                                    <x-danger-button type="button"> Clear </x-danger-button>
-                                    <x-secondary-button onclick="history.back()" type="button"> Back
-                                    </x-secondary-button>
-                                </div>
-                            </header>
-                        </div>
-                        <div class=" card-body">
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" id="search" name="search"
-                                        placeholder="Search">
-                                </div>
-                                <div class="col-md-6 text-end">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="orderNo">Order</label>
-                                        </div>
-                                        <div class="col-md-6">
-
-                                            <select id="orderNo" class="form-select">
-                                                @forelse ($orders as $order)
-                                                    <option value="{{ $order->id }}">{{ $order->order_number }}</option>
-                                                @empty
-                                                    <option value="">No Orders</option>
-                                                @endforelse
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="me-3" style="height: 320px; overflow-y: auto;">
-                                <table class="table table-striped table-hover me-3">
-                                    <thead class="thead-dark me-3">
-                                        <tr style="font-size: smaller;">
-                                            <th>Menu Name</th>
-                                            <th>CODE</th>
-                                            <th>QTY</th>
-                                            <th>PRICE</th>
-                                            <th>SUB TOTAL</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="itemTableBody">
-
-                                        {{--           POPULATE TABLE     --}}
-                                    </tbody>
-                                </table>
-                            </div>
-
-
-                            <div class="card-footer row mt-3">
-                                <div class="col-md-2">
-                                    <label for="customerName" class="form-label">Customer</label>
-                                    <label for="table_id" class="form-label">Table</label>
-                                </div>
-                                <div class="col-md-5">
-                                    <input type="text" class="form-control form-control-sm" id="customerName"
-                                        name="customer" readonly>
-                                    <input type="text" class="form-control form-control-sm" id="order_id"
-                                        name="order_id" hidden>
-                                    <input type="text" class="form-control form-control-sm mt-2" id="table_id"
-                                        name="table_id" readonly>
-                                </div>
-                                <div class="col-md-5 alert alert-secondary text-end" role="alert">
-                                    <h4 class="alert-heading " id="sumTotal">₱ 0.00</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-md-5">
-                    <div class="card me-3">
-                        <div class="card-body">
-                            <div class="alert alert-primary" role="alert"
-                                style="background-color: #f2f4f7; height: 100%;">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h6 class="alert-heading" style="font-size: smaller;">Invoice Number</h6>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="d-flex justify-content-end">
-                                            <input class="form-control form-control-sm text-center" id="invoiceNumber"
-                                                name="invoiceNumber" style="font-size: smaller;"
-                                                placeholder="Enter Invoice Number" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label for="discount" class="form-label"
-                                            style="font-size: smaller;">Discount</label>
-                                        <input class="form-control form-control-sm" id="discount" name="discount"
-                                            min="0" onchange="updateGrandTotal()" readonly value="0%" disabled
-                                            style="text-align: center;">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="grandTotal" class="form-label" style="font-size: smaller;">Total
-                                            Payable</label>
-                                        <input type="text" class="form-control form-control-sm text-center"
-                                            id="grandTotal" name="grandTotal" readonly value="₱ 0.00" disabled>
-                                    </div>
-                                </div>
-                                <script>
-                                    function updateGrandTotal() {
-                                        const discount = parseFloat(document.getElementById('discount').value) || 0;
-                                        let grandTotal = 0;
-                                        document.querySelectorAll('.total-price').forEach(cell => {
-                                            grandTotal += parseFloat(cell.textContent);
-                                        });
-                                        grandTotal -= discount;
-                                        document.getElementById('grandTotal').value = grandTotal.toFixed(2);
-                                    }
-                                </script>
-
-                            </div>
-
-
-                            <div class="alert" style="background-color: #f2f4f7;" role="alert">
-                                <h5 class="card-title">Payment Details</h5>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="paymentMethod" class="form-label">Payment Method</label>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <select name="paymentMethod" id="paymentMethod" class="form-control text-center"
-                                            required>
-                                            <option value="CASH">Cash</option>
-                                            <option value="BANK TRANSFER">Bank Transfer</option>
-                                            <option value="ONLINE">Online</option>
-                                            <option value="CHEQUE">Cheque</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-2">
-                                    <div class="col-md-5">
-                                        <label for="time" class="form-label">Amount Received</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <input type="text" class="form-control" id="amountReceived"
-                                            name="amountReceived" required>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-2">
-
-                                    <div class="col-md-3">
-                                        <label class="form-label">Change</label>
-                                    </div>
-
-                                    <div class="col-md-9 text-center">
-                                        <input type="text" class="form-control text-center" id="change"
-                                            name="change" readonly value="₱ 0.00" disabled onchange="updateChange()">
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="row mt-2 d-flex justify-content-end">
-                                <div class="col-md-6">
-                                    <div class= "row">
-
-                                        <div class="col-md-8 mt-3">
-                                            <x-primary-button type="submit">Save Payment</x-primary-button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </div>
-    </form>
-    </div>
-    </div>
-    </div>
-
-
-
-
-    <!-- Add Order Modal -->
-    <div class="modal fade" id="AddOrderModal" tabindex="-1" aria-labelledby="AddOrderModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="AddOrderModalLabel">Add Order Number</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body card">
-                    <div class="card-header">
-                        <h5>Customer List</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-
-                            <input type="text" class="form-control" id="newCustomerName" placeholder="Search">
-                        </div>
-                        <table class="table table-bordered table-hover">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>Order Number</th>
-                                    <th>Table</th>
-                                    <th>Customer</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($orders as $order)
-                                    <tr>
-                                        <td style="text-align: center;">{{ $order->order_number }}</td>
-                                        <td style="text-align: center;">{{ $order->tables->table_name }}</td>
-                                        <td style="text-align: center;">{{ $order->customer_name ?? 'N/A' }}</td>
-                                        @php
-                                            $latestSrpPrice = [];
-                                            foreach ($order->order_details as $detail) {
-                                                $latestSrpPrice[] =
-                                                    $detail->menu
-                                                        ->price_levels()
-                                                        ->latest()
-                                                        ->where('price_type', 'RATE')
-                                                        ->first()->amount ?? '0.00';
-                                            }
-                                        @endphp
-                                        <td style="text-align: center;"><x-primary-button type="button"
-                                                onclick="selectOrder({{ json_encode($order) }}, {{ json_encode($latestSrpPrice) }})">Select</x-primary-button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <x-danger-button data-bs-dismiss="modal">Close</x-d>
-                </div>
-            </div>
-        </div>
+        @livewire('restaurant.invoicing')
     </div>
 @endsection
 
 
 @section('script')
-    <script>
+    {{-- <script>
         function viewBranch(data) {
             console.log(data);
             document.getElementById('branch_id').value = data.id;
@@ -378,12 +112,12 @@
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
                     <td style="font-size: smaller; ">${menu.menu.menu_name}</td>
-                    <td style="font-size: smaller; ">${menu.menu.menu_code}</td>
                     <td style="font-size: smaller; ">
                        ${menu.qty}
                         <input type="hidden" name="menu_id[]" value="${menu.id}">
                     </td>
                     <td style="font-size: smaller; ">${price}</td>
+                    <td style="font-size: smaller; ">${menu.menu.menu_code}</td>
                     <td class="total-price" style="font-size: smaller; ">${subTotal.toFixed(2)}</td>
                 `;
                 tableBody.appendChild(newRow);
@@ -410,5 +144,5 @@
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             errorModal.show();
         @endif
-    </script>
+    </script> --}}
 @endsection
