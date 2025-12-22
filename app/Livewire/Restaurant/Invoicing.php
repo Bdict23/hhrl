@@ -39,7 +39,7 @@ class Invoicing extends Component
     protected function rules()
     {
         return [
-            'invoiceNumber' => 'string|max:255|unique:invoices,invoice_number',
+            'invoiceNumber' => 'nullable|max:255|unique:invoices,invoice_number',
             'amountReceived' => 'required|numeric|min:' . $this->totalAmountDue,
         ];
     }
@@ -368,7 +368,6 @@ class Invoicing extends Component
                 'amount' => 0
             ];
         }
-        dd($this->splitPayments);
     }
 
     public function removeSplitPayment($id)
@@ -387,10 +386,10 @@ class Invoicing extends Component
 
     public function savePayment()
     {
+        // dd($this->amountReceived);
         $this->validate(
             $this->rules()
         );
-
         //create invoice record
         $invoice = Invoice::create([
             'order_id' => $this->selectedOrderId,

@@ -138,6 +138,9 @@
                                             <input class="form-control form-control-sm text-center" id="invoiceNumber"
                                                 name="invoiceNumber" style="font-size: smaller;"
                                                 placeholder="Enter Invoice Number" wire:model="invoiceNumber" @if($selectedOrderId == null) disabled @endif>
+                                                @error('invoiceNumber')
+                                                    <div class="text-danger" style="font-size: smaller;">{{ $message }}</div>
+                                                @enderror
                                         </div>
                                     </div>
                                    
@@ -145,6 +148,9 @@
                                     <label for="grandTotal" class="form-label" style="font-size: smaller;">Customer</label>
                                     <input type="text" class="form-control form-control-sm text-center"
                                         id="customer" name="customer"  placeholder="(Optional)" wire:model="customerName" @if($selectedOrderId == null) disabled @endif>
+                                        @error('customerName')
+                                            <div class="text-danger" style="font-size: smaller;">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                                 <hr>
@@ -228,6 +234,9 @@
                                     <div class="col-md-7">
                                         <input type="number" class="form-control" id="amountReceived" min="0" 
                                             name="amountReceived" required wire:model="amountReceived" onchange="updateChange()" onkeyup="updateChange()" step="0.10">
+                                            @error('amountReceived')
+                                                <div class="text-danger" style="font-size: smaller;">{{ $message }}</div>
+                                            @enderror
                                     </div>
                                 </div>
 
@@ -317,7 +326,7 @@
                         <datagrid></datagrid>
                         <div>
                         <div class="modal-footer">
-                            <x-primary-button data-bs-dismiss="modal">Close</x-primary-button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
 
                             </div>
@@ -439,7 +448,7 @@
                             </div>
                             <div>
                                 <div class="modal-footer">
-                                    <x-primary-button data-bs-dismiss="modal">Done</x-primary-button>
+                                    <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Done</button>
                                 </div>
                             </div>
                         </div>
