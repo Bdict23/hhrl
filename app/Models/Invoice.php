@@ -11,6 +11,19 @@ class Invoice extends Model
 {
     use HasFactory;
     protected $table = 'invoices';
+    protected $fillable = [
+        'invoice_number',
+        'invoice_type',
+        'customer_id',
+        'updated_by',
+        'status',
+        'prepared_by',
+        'amount',
+        'payment_mode',
+        'order_id',
+        'customer_name',
+        'branch_id',
+    ];
 
     public function order()
     {

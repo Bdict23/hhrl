@@ -430,6 +430,12 @@ class Invoicing extends Component
             ]);
         }
 
+        // Update order status to COMPLETED
+        Order::where('id', $this->selectedOrderId)->update([
+            'order_status' => 'COMPLETED',
+            'payment_status' => 'PAID'
+        ]);
+
 
         // After saving payment, reset input fields and refresh orders
         $this->resetInputFields();
