@@ -24,4 +24,17 @@ class Payment extends Model
     ];
 
     use HasFactory;
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
+    public function payment_type()
+    {
+        return $this->belongsTo(PaymentType::class, 'payment_type_id');
+    }
 }

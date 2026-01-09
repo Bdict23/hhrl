@@ -41,6 +41,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderDiscount::class, 'order_id');
     }
+    public function ordered_items()
+    {
+        return $this->hasMany(OrderDetail::class, 'order_id')->where('marked', true);
+    }
 
 
 }

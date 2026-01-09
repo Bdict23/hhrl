@@ -10,6 +10,7 @@ use App\Models\OrderDiscount;
 use App\Models\PaymentType;
 use App\Models\Payment;
 use App\Models\Invoice;
+use App\Models\Table;
 use Illuminate\Support\Facades\Auth;
 
 class Invoicing extends Component
@@ -41,8 +42,15 @@ class Invoicing extends Component
         return [
             'invoiceNumber' => 'nullable|max:255|unique:invoices,invoice_number',
             'amountReceived' => 'required|numeric|min:' . $this->totalAmountDue,
+            'selectedPaymentType' => $this->totalAmountDue > 0 ? 'required|not_in:NONE' : 'nullable',
         ];
     }
+
+    // modify error messages
+    protected $messages = [
+        'selectedPaymentType.not_in' => 'Please select a valid payment type.',
+        'amountReceived.min' => 'Amount received must be at least equal to the total amount due.',
+    ];
 
 
     public function resetInputFields()
@@ -54,9 +62,14 @@ class Invoicing extends Component
         $this->change = "₱ 0.00";
     }
 
+    public function refresh()
+    {
+        $this->fetchOrders();
+        $this->resetInputFields();
+    }
     public function fetchOrders()
     {
-        $this->orders = Order::where([['branch_id', Auth::user()->branch->id],['order_status', 'SERVED']])->with('order_details','tables','order_details.menu.price_levels','order_details.OrderDiscounts.discount')->get();
+        $this->orders = Order::where([['branch_id', Auth::user()->branch->id],['order_status', 'SERVED']])->with('ordered_items','tables','ordered_items.menu.price_levels','ordered_items.OrderDiscounts.discount')->get();
         $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
        
     }
@@ -117,7 +130,8 @@ class Invoicing extends Component
         $this->change = "₱ 0.00";
 
         $this->selectedOrderId = $orderId;
-        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->with('priceLevel')->get();
+        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('marked', true)->with('priceLevel')->get();
+        
         // Calculate initial total amount due
         $this->grossAmount = $this->selectedOrderDetails->sum(function($detail) {
             return $detail->qty * ($detail->priceLevel->amount ?? 0);
@@ -357,21 +371,22 @@ class Invoicing extends Component
                 ];
         
     }
-    public function addSplitPayment($paymentTypeId)
-    {
-        $paymentType = PaymentType::find($paymentTypeId);
-        if ($paymentType) {
-            $this->splitPayments[] = [
-                'id' => uniqid(),
-                'payment_type_id' => $paymentTypeId,
-                'payment_type_name' => $paymentType->payment_type_name,
-                'amount' => 0
-            ];
-        }
-    }
+    // public function addSplitPayment($paymentTypeId)
+    // {
+    //     $paymentType = PaymentType::find($paymentTypeId);
+    //     if ($paymentType) {
+    //         $this->splitPayments[] = [
+    //             'id' => uniqid(),
+    //             'payment_type_id' => $paymentTypeId,
+    //             'payment_type_name' => $paymentType->payment_type_name,
+    //             'amount' => 0
+    //         ];
+    //     }
+    // }
 
     public function removeSplitPayment($id)
     {
+        dd($this->splitPayments);
         $this->splitPayments = array_values(array_filter($this->splitPayments, function($payment) use ($id) {
             return $payment['id'] !== $id;
         }));
@@ -386,10 +401,10 @@ class Invoicing extends Component
 
     public function savePayment()
     {
-        // dd($this->amountReceived);
         $this->validate(
             $this->rules()
         );
+
         //create invoice record
         $invoice = Invoice::create([
             'order_id' => $this->selectedOrderId,
@@ -411,9 +426,8 @@ class Invoicing extends Component
                Payment::create([
                     'order_id' => $this->selectedOrderId,
                     'invoice_id' => $invoice->id,
-                    'total_amount' => $this->totalAmountDue,
-                    'amount_received' => $splitPayment['amount'],
-                    'payment_type_id' => $splitPayment['payment_type_id'],
+                    'amount' => $splitPayment['amount'],
+                    'payment_type_id' => $splitPayment['paymentTypeId'],
                     'type' => 'SALES',
                     'prepared_by' => auth()->user()->employee->id,
                 ]);
@@ -436,6 +450,14 @@ class Invoicing extends Component
             'payment_status' => 'PAID'
         ]);
 
+
+        // Update table status to AVAILABLE
+        $order = Order::find($this->selectedOrderId);
+        if ($order && $order->table_id) {
+            Table::where('id', $order->table_id)->update([
+                'availability' => 'VACANT'
+            ]);
+        }
 
         // After saving payment, reset input fields and refresh orders
         $this->resetInputFields();

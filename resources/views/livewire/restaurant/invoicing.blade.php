@@ -24,6 +24,8 @@
                                 <div class="me-3">
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddOrderModal"><i class="bi bi-cart-check-fill"></i>
                                         Order Number</x-primary-button>
+                                    &nbsp;
+                                    <x-secondary-button type="button" wire:click="refresh"><i class="bi bi-arrow-clockwise"></i> Refresh</x-secondary-button>
                                     <x-secondary-button onclick="history.back()" type="button"> Back
                                     </x-secondary-button>
                                 </div>
@@ -89,11 +91,16 @@
                                                     
                                                 </button></td>
                                                 <td class="total-price" style="text-align: left;">
-                                                    ₱ {{ number_format($items->qty * ($items->priceLevel->amount ?? 0), 2) - number_format($items->orderDiscounts->sum(function($orderDiscount) use ($items) {
-                                                        return $orderDiscount->discount->amount > 0.00 
-                                                            ? $orderDiscount->discount->amount * $items->qty
-                                                            : ($orderDiscount->discount->percentage / 100) * ($items->priceLevel->amount ?? 0) * $items->qty;
-                                                    }), 2) }}
+                                                    @php
+                                                        $itemTotal = $items->qty * ($items->priceLevel->amount ?? 0);
+                                                        $discountTotal = $items->orderDiscounts->sum(function($orderDiscount) use ($items) {
+                                                            return $orderDiscount->discount->amount > 0.00 
+                                                                ? $orderDiscount->discount->amount * $items->qty
+                                                                : ($orderDiscount->discount->percentage / 100) * ($items->priceLevel->amount ?? 0) * $items->qty;
+                                                        });
+                                                        $finalTotal = $itemTotal - $discountTotal;
+                                                    @endphp
+                                                    ₱ {{ number_format($finalTotal, 2) }}
                                                 </td>
                                             </tr>
                                             
@@ -216,6 +223,9 @@
                                            
                                             <option value="SPLIT" @if($selectedPaymentType == 'SPLIT') selected @endif>SPLIT</option>
                                         </select>
+                                            @error('selectedPaymentType')
+                                                <div class="text-danger text-end" style="font-size: smaller;">{{ $message }}</div>
+                                            @enderror
                                     </div>
                                 </div>
 
@@ -227,17 +237,17 @@
                                     </div>
                                 </div>
 
-                                <div class="row mt-2" wire:ignore>
+                                <div class="row mt-2">
                                     <div class="col-md-5">
                                         <label for="time" class="form-label">Amount Received</label>
                                     </div>
-                                    <div class="col-md-7">
+                                    <div class="col-md-7" wire:ignore>
                                         <input type="number" class="form-control" id="amountReceived" min="0" 
                                             name="amountReceived" required wire:model="amountReceived" onchange="updateChange()" onkeyup="updateChange()" step="0.10">
-                                            @error('amountReceived')
-                                                <div class="text-danger" style="font-size: smaller;">{{ $message }}</div>
-                                            @enderror
                                     </div>
+                                     @error('amountReceived')
+                                                <div class="text-danger text-end" style="font-size: smaller;">{{ $message }}</div>
+                                            @enderror
                                 </div>
 
                                 <div class="row mt-2">
@@ -389,7 +399,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <x-danger-button data-bs-dismiss="modal">Close</x-danger-button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -630,6 +640,7 @@
             }
             document.getElementById('change').style.color = 'black';
             document.getElementById('change').value = `₱ ${change.toFixed(2)}`;
+
         }
 
          // Split Payment Logic
@@ -941,6 +952,7 @@
             if (amountReceivedInput) {
                 amountReceivedInput.value = grandTotal.toFixed(2);
             }
+            @this.set('amountReceived', grandTotal.toFixed(2));
 
             // Sync final split payments to Livewire component
             @this.set('splitPayments', splitPayments);

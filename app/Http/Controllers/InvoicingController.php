@@ -80,8 +80,7 @@ class InvoicingController extends Controller
     }
 
     public function daily_sales_report(){
-        $invoices = Invoice::where([['branch_id', Auth::user()->branch->id],['invoice_type', 'SALES']])->with('customers', 'order','order.order_details','order.order_details.menu.price_levels','order.tables')->get();
-        return view('transactions.daily_sales_report', compact('invoices'));
+        return view('transactions.daily_sales_report');
     }
 
 
