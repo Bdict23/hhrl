@@ -80,8 +80,9 @@
                                         <x-primary-button
                                             {{-- onclick="selectOrder({{ json_encode($invoice) }},{{ json_encode($latestSrpPrice) }})" --}}
                                             data-bs-target="#supplierViewModal" data-bs-toggle="modal"
-                                            wire:click="viewInvoiceDetails({{ $invoice->order->id }})">
-                                            <i class="bi bi-binoculars"></i>
+                                            wire:click="viewInvoiceDetails({{ $invoice->order->id }})"
+                                            title="View Invoice Details">
+                                            <i class="bi bi-info-circle"></i>
                                         </x-primary-button>
                                     </div>
                                 </td>
@@ -120,7 +121,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="supplierModalLabel">Invoice Details</h5>
+                    <h5 class="modal-title" id="supplierModalLabel">Invoice Details &nbsp;<i class="bi bi-info-circle"></i></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -139,8 +140,8 @@
                                     <input class="form-control form-control-sm" id="discount" name="discount"
                                         min="0"  readonly value="₱ {{ number_format($totalDiscountAmount, 2) }}" disabled
                                         style="text-align: center;">
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ViewDiscountsModal">
-                                    <i class="bi bi-eye-fill"></i>
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ViewDiscountsModal" title="View Info">
+                                  <i class="bi bi-info-lg"></i>
                                 </button>
                                 </div>
                             </div>
@@ -160,8 +161,8 @@
                                 <div class="input-group">
                                     <input class="form-control form-control-sm" id="paymentMethod" name="mode_of_payment"
                                         min="0"  readonly disabled style="text-align: center;" wire:model="paymentMethod">
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ViewPaments"> 
-                                    <i class="bi bi-eye-fill"></i>
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ViewPaments" title="View Info"> 
+                                   <i class="bi bi-info-lg"></i>
                                 </button>
                                 </div>
                             </div>
@@ -188,7 +189,7 @@
                                                 <td style="font-size: smaller;">{{ $details->qty }}</td>
                                                 <td style="font-size: smaller;">{{ number_format($details->priceLevel->amount, 2) }}</td>
                                                 <td style="font-size: smaller;">
-                                                    {{ number_format($details['sub_total'], 2) }}</td>
+                                                    {{ number_format($details->qty * ($details->priceLevel->amount ?? 0), 2) }}</td>
                                             </tr>
                                         @endforeach
                                         
@@ -196,7 +197,14 @@
                                 </table>
                             </div>
                             <div class="card-footer text-right">
-                                <h6>Total : 0.00</h6>
+                                <div class="d-flex justify-content-between">
+                                    <h6>AMOUNT DUE:</h6>
+                                    <h6>{{ $grossAmount }}</h6>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <h6>AMOUNT PAID:</h6>
+                                    <h6>{{ $totalAmountDue }}</h6>
+                                </div>
                             </div>
                         </div>
 
@@ -219,7 +227,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ViewPaymentsLabel">Payments</h5>
+                    <h5 class="modal-title" id="ViewPaymentsLabel">Payments &nbsp;<i class="bi bi-info-circle"></i></h5>
                     <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#supplierViewModal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="">
@@ -253,11 +261,11 @@
     {{-- END PAYMENTS MODAL --}}
 
     {{-- DISCOUNTS MODAL --}}
-    <div class="modal fade modal-sm" id="ViewDiscountsModal" tabindex="-1" aria-labelledby="ViewDiscountsLabel" aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade modal-lg" id="ViewDiscountsModal" tabindex="-1" aria-labelledby="ViewDiscountsLabel" aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ViewDiscountsLabel">Discount Details</h5>
+                    <h5 class="modal-title" id="ViewDiscountsLabel">Discount Details &nbsp;<i class="bi bi-info-circle"></i></h5>
                     <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#supplierViewModal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -266,11 +274,29 @@
                         <thead>
                             <tr>
                                 <th style="font-size: smaller;">Discount Name</th>
+                                <th style="font-size: smaller;">Description</th>
                                 <th style="font-size: smaller;">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                           
+                           @forelse ($discountDetails ?? [] as $discountInfo)
+                            <tr>
+                                <td style="font-size: smaller;">{{ $discountInfo->discount->title }}</td>
+                                <td style="font-size: smaller">{{ $discountInfo->discount->description }}</td>
+                                <td style="font-size: smaller;">
+                                     @if($discountInfo->discount->amount > 0.00)
+                                                        ₱ {{ number_format($discountInfo->discount->amount) }}
+                                                    @else
+                                                        {{ $discountInfo->discount->percentage  }} %
+                                                    @endif
+                                </td>
+                                
+                            </tr>
+                           @empty
+                            <tr>
+                                <td colspan="2" class="text-center" style="font-size: smaller;">No discount details available.</td>
+                            </tr>
+                           @endforelse
                         </tbody>
                     </table>
                 </div>

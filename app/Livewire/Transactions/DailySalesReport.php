@@ -11,6 +11,7 @@ use App\Models\OrderDiscount;
 use App\Models\Discount;
 use App\Models\Payment;
 
+
 class DailySalesReport extends Component
 {
     public $invoices;
@@ -25,6 +26,7 @@ class DailySalesReport extends Component
     public $payments;
     public $from_date;
     public $to_date;
+    public $discountDetails;
 
     public function fetchData()
     {
@@ -59,7 +61,19 @@ class DailySalesReport extends Component
 
 
     public function viewInvoiceDetails($orderId)
-    {   
+    {   //fetch discount details
+        $this->discountDetails = OrderDiscount::where('order_id', $orderId)
+            ->with('discount')
+            ->get();
+            // dd($this->discountDetails);
+        // calculate gross amount
+        $this->grossAmount = OrderDetail::where([['order_id', $orderId], ['marked', true]])
+            ->with('priceLevel')
+            ->get()
+            ->sum(function($detail) {
+                return $detail->qty * ($detail->priceLevel->amount ?? 0);
+            });
+
         // Calculate total order-level discounts
         $orderDiscountSum = OrderDiscount::where('order_id', $orderId)
             ->whereNull('order_detail_id')
