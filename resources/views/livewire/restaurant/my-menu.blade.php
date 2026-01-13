@@ -65,7 +65,7 @@
             </div>
             <div class="col-md-3 card mt-4 p-6" style="height: 100%; position: sticky; top: 0; " wire:ignore>
                 <div class="card-body">
-                    <strong><span id="tableNumber">{{ $selectedTable->table_name }}</span></strong>
+                    <strong><span id="tableNumber">{{ $selectedTable->table_name ?? 'TAKE OUT ORDER' }}</span></strong>
                     <h5 class="card-title mb-4 mt-4">Order Summary</h5>
                     <ul class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -105,7 +105,7 @@
                     <div class="modal-body">
                         <form action="{{ route('order.store') }}" method="POST">
                             @csrf
-                            <input type="text" name="tableID" value="{{ $selectedTable->id }}" hidden>
+                            <input type="text" name="tableID" value="{{ $selectedTable->id ?? null }}" hidden>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -136,177 +136,178 @@
 
 
          <script>
-        let order = [];
-        let hasUnsavedChanges = false;
-        const ORDER_STORAGE_KEY = 'unsaved_order_data';
+           
+            let order = [];
+            let hasUnsavedChanges = false;
+            const ORDER_STORAGE_KEY = 'unsaved_order_data';
 
-        // Load any existing unsaved order from localStorage on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            const savedOrder = localStorage.getItem(ORDER_STORAGE_KEY);
-            if (savedOrder) {
-                // Clear localStorage since we're loading the page fresh
-                localStorage.removeItem(ORDER_STORAGE_KEY);
-            }
-        });
-
-        // Warn user before leaving page if there are unsaved orders
-        window.addEventListener('beforeunload', function (e) {
-            if (hasUnsavedChanges && order.length > 0) {
-                // Save order to localStorage before leaving
-                localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
-                
-                // Call rollback via Livewire
-                @this.call('rollbackAllItems', order);
-                
-                e.preventDefault();
-                e.returnValue = ''; 
-                return 'You have unsaved orders. Are you sure you want to leave?';
-            }
-        });
-
-        // Handle page unload (when user confirms leaving)
-        window.addEventListener('unload', function() {
-            if (hasUnsavedChanges && order.length > 0) {
-                // Use sendBeacon for reliable delivery during page unload
-                const formData = new FormData();
-                formData.append('orderItems', JSON.stringify(order));
-                
-                // Make synchronous call to rollback
-                @this.call('rollbackAllItems', order);
-            }
-        });
-
-        function addToOrder(menu_id, name, price,bal_qty,index, price_level_id) {
-            const existingItem = order.find(item => item.name === name);
-
-            if (existingItem) {
-                existingItem.quantity += 1;
-                existingItem.bal_qty = bal_qty;
-            } else {
-                order.push({
-                    menu_id,
-                    name,
-                    price,
-                    quantity: 1,
-                    bal_qty: bal_qty,
-                    price_level_id: price_level_id
-                });
-            }
-            hasUnsavedChanges = true; // Mark as having unsaved changes
-            updateOrderTable();
-            updateOrderSummary();
-            // $('#orderSummaryModal').modal('show');
-        }
-
-        function updateOrderTable() {
-            console.log('price level id', order);
-            const orderTableBody = document.getElementById('orderTableBody');
-            orderTableBody.innerHTML = '';
-
-            let totalAmount = 0;
-
-            order.forEach(item => {
-                const total = item.price * item.quantity;
-                totalAmount += total;
-
-                const tr = document.createElement('tr');
-                const canDecrease = item.quantity > 1;
-                const canIncrease = item.quantity < item.bal_qty;
-                tr.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>
-                         <span class="input-group input-group-sm" style="width: 120px;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity - 1},'decrease')" ${!canDecrease ? 'disabled' : ''}>-</button>
-                            <input type="number" name="order_qty[]" value="${item.quantity}" min="1" max="${item.bal_qty}" class="form-control text-center" readonly>
-                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity + 1},'increase')" ${!canIncrease ? 'disabled' : ''}>+</button>
-                            <input type="hidden" name="menu_id[]" value="${item.menu_id}">
-                            <input type="hidden" name="price_level_id[]" value="${item.price_level_id}">
-                        </span>
-                    </td>
-                    <td>₱${item.price.toFixed(2)}</td>
-                    <td>₱${total.toFixed(2)}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="removeFromOrder('${item.name}')">Remove</button>
-                    </td>
-                `;
-                orderTableBody.appendChild(tr);
+            // Load any existing unsaved order from localStorage on page load
+            window.addEventListener('DOMContentLoaded', function() {
+                const savedOrder = localStorage.getItem(ORDER_STORAGE_KEY);
+                if (savedOrder) {
+                    // Clear localStorage since we're loading the page fresh
+                    localStorage.removeItem(ORDER_STORAGE_KEY);
+                }
             });
 
-            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
-        }
-
-        function updateOrderSummary() {
-            const totalItems = order.reduce((sum, item) => sum + item.quantity, 0);
-            const totalPrice = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-            document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('totalPrice').textContent = `₱${totalPrice.toFixed(2)}`;
-            document.getElementById('total').textContent = `₱${totalPrice.toFixed(2)}`;
-        }
-
-        function updateQuantity(name, quantity, action) {
-            const item = order.find(item => item.name === name);
-            if (item) {
-                const newQuantity = parseInt(quantity);
-                // Enforce minimum of 1 and maximum of available balance
-                if (newQuantity < 1 || newQuantity > item.bal_qty) {
-                    return;
+            // Warn user before leaving page if there are unsaved orders
+            window.addEventListener('beforeunload', function (e) {
+                if (hasUnsavedChanges && order.length > 0) {
+                    // Save order to localStorage before leaving
+                    localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
+                    
+                    // Call rollback via Livewire
+                    @this.call('rollbackAllItems', order);
+                    
+                    e.preventDefault();
+                    e.returnValue = ''; 
+                    return 'You have unsaved orders. Are you sure you want to leave?';
                 }
-                item.quantity = newQuantity;
-                @this.call('upQuantity', item.menu_id, item.quantity, action);
+            });
+
+            // Handle page unload (when user confirms leaving)
+            window.addEventListener('unload', function() {
+                if (hasUnsavedChanges && order.length > 0) {
+                    // Use sendBeacon for reliable delivery during page unload
+                    const formData = new FormData();
+                    formData.append('orderItems', JSON.stringify(order));
+                    
+                    // Make synchronous call to rollback
+                    @this.call('rollbackAllItems', order);
+                }
+            });
+
+            function addToOrder(menu_id, name, price,bal_qty,index, price_level_id) {
+                const existingItem = order.find(item => item.name === name);
+
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                    existingItem.bal_qty = bal_qty;
+                } else {
+                    order.push({
+                        menu_id,
+                        name,
+                        price,
+                        quantity: 1,
+                        bal_qty: bal_qty,
+                        price_level_id: price_level_id
+                    });
+                }
                 hasUnsavedChanges = true; // Mark as having unsaved changes
                 updateOrderTable();
                 updateOrderSummary();
+                // $('#orderSummaryModal').modal('show');
             }
-        }
 
-        function removeFromOrder(name) {
-            const item = order.find(item => item.name === name);
-            if (item) {
-                @this.call('rollbackQTY', item.menu_id, item.quantity);
+            function updateOrderTable() {
+                console.log('price level id', order);
+                const orderTableBody = document.getElementById('orderTableBody');
+                orderTableBody.innerHTML = '';
+
+                let totalAmount = 0;
+
+                order.forEach(item => {
+                    const total = item.price * item.quantity;
+                    totalAmount += total;
+
+                    const tr = document.createElement('tr');
+                    const canDecrease = item.quantity > 1;
+                    const canIncrease = item.quantity < item.bal_qty;
+                    tr.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>
+                            <span class="input-group input-group-sm" style="width: 120px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity - 1},'decrease')" ${!canDecrease ? 'disabled' : ''}>-</button>
+                                <input type="number" name="order_qty[]" value="${item.quantity}" min="1" max="${item.bal_qty}" class="form-control text-center" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('${item.name}', ${item.quantity + 1},'increase')" ${!canIncrease ? 'disabled' : ''}>+</button>
+                                <input type="hidden" name="menu_id[]" value="${item.menu_id}">
+                                <input type="hidden" name="price_level_id[]" value="${item.price_level_id}">
+                            </span>
+                        </td>
+                        <td>₱${item.price.toFixed(2)}</td>
+                        <td>₱${total.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="removeFromOrder('${item.name}')">Remove</button>
+                        </td>
+                    `;
+                    orderTableBody.appendChild(tr);
+                });
+
+                document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
             }
-            order = order.filter(item => item.name !== name);
-            hasUnsavedChanges = order.length > 0; // Update flag based on remaining items
-            updateOrderTable();
-            updateOrderSummary();
-        }
 
-        function placeOrder() {
-            // Logic to place the order
-            alert('Order placed successfully!');
-            // Clear unsaved changes flag when order is placed
-            hasUnsavedChanges = false;
-            order = [];
-            localStorage.removeItem(ORDER_STORAGE_KEY);
-            $('#orderSummaryModal').modal('hide');
-            Livewire.emit('orderAdded'); // Trigger the Livewire event
-        }
+            function updateOrderSummary() {
+                const totalItems = order.reduce((sum, item) => sum + item.quantity, 0);
+                const totalPrice = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-        function filterMenu(category) {
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                if (category === 'all' || item.getAttribute('data-category') == category) {
-                    item.style.display = 'block';
+                document.getElementById('totalItems').textContent = totalItems;
+                document.getElementById('totalPrice').textContent = `₱${totalPrice.toFixed(2)}`;
+                document.getElementById('total').textContent = `₱${totalPrice.toFixed(2)}`;
+            }
+
+            function updateQuantity(name, quantity, action) {
+                const item = order.find(item => item.name === name);
+                if (item) {
+                    const newQuantity = parseInt(quantity);
+                    // Enforce minimum of 1 and maximum of available balance
+                    if (newQuantity < 1 || newQuantity > item.bal_qty) {
+                        return;
+                    }
+                    item.quantity = newQuantity;
+                    @this.call('upQuantity', item.menu_id, item.quantity, action);
+                    hasUnsavedChanges = true; // Mark as having unsaved changes
+                    updateOrderTable();
+                    updateOrderSummary();
+                }
+            }
+
+            function removeFromOrder(name) {
+                const item = order.find(item => item.name === name);
+                if (item) {
+                    @this.call('rollbackQTY', item.menu_id, item.quantity);
+                }
+                order = order.filter(item => item.name !== name);
+                hasUnsavedChanges = order.length > 0; // Update flag based on remaining items
+                updateOrderTable();
+                updateOrderSummary();
+            }
+
+            function placeOrder() {
+                // Logic to place the order
+                alert('Order placed successfully!');
+                // Clear unsaved changes flag when order is placed
+                hasUnsavedChanges = false;
+                order = [];
+                localStorage.removeItem(ORDER_STORAGE_KEY);
+                $('#orderSummaryModal').modal('hide');
+                Livewire.emit('orderAdded'); // Trigger the Livewire event
+            }
+
+            function filterMenu(category) {
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => {
+                    if (category === 'all' || item.getAttribute('data-category') == category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Remove 'active' from all category links
+                document.querySelectorAll('.lists').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById('category-all').classList.remove('active');
+
+                // Add 'active' to the selected category
+                if (category === 'all') {
+                    document.getElementById('category-all').classList.add('active');
                 } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // Remove 'active' from all category links
-            document.querySelectorAll('.lists').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.getElementById('category-all').classList.remove('active');
-
-            // Add 'active' to the selected category
-            if (category === 'all') {
-                document.getElementById('category-all').classList.add('active');
-            } else {
-                const activeLink = document.getElementById('category-' + category);
-                if (activeLink) {
-                    activeLink.classList.add('active');
+                    const activeLink = document.getElementById('category-' + category);
+                    if (activeLink) {
+                        activeLink.classList.add('active');
+                    }
                 }
             }
-        }
     </script>
 </div>

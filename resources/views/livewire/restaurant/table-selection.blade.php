@@ -3,7 +3,20 @@
     
     <!-- Events Card View -->
     <div class="row" id="eventsContainer">
-        <!-- Events -->
+        <!-- TAKE OUT -->
+        <div class="col-md-4 mb-4 event-item"  wire:click="gotoMenuSelection('takeout')">
+                    <div class="card event-card shadow-sm bg-primary text-white">
+                        <div class="card-body text-center border border-primary">
+                           <div class="d-flex justify-content-between">
+                             <h5 class="card-title">&nbsp;</h5>
+                           </div>
+                           <h5>Take Out Order &nbsp; <i class="bi bi-person-walking"></i></h5>
+                            <div class="mt-2">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+            
+                {{-- dine in --}}
         @foreach ($availableTables as $table)
                 <div class="col-md-4 mb-4 event-item" data-date="{{ $table->event_date }}" wire:click="gotoMenuSelection({{ $table->id }})">
                     <div class="card event-card shadow-sm">

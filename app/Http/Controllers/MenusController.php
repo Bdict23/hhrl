@@ -127,8 +127,8 @@ class MenusController extends Controller
         try {
            
             $orderNumber = Order::whereDate('created_at', Carbon::today())
-                ->where('branch_id', Auth::user()->branch->id)
-                ->max('order_number') ?? 0;
+            ->where('branch_id', Auth::user()->branch->id)
+            ->max('order_number') ?? 0;
 
             $order = new Order();
             $order->order_number = $orderNumber + 1;
@@ -137,33 +137,35 @@ class MenusController extends Controller
             $order->sales_rep_id = Auth::user()->emp_id;
             $order->branch_id = Auth::user()->branch->id;
             $order->order_status = 'PENDING';
-            $order->table_id = $request->tableID;
+            $order->table_id = $request->tableID ?? null;
             $order->save();
+            if ($request->tableID) {
             Table::where('id', $request->tableID)
-                ->update(['availability' => 'OCCUPIED']);
+            ->update(['availability' => 'OCCUPIED']);
+            }
 
             $menu_id = $request->input('menu_id', []);
             $qty = $request->input('order_qty', []);
             $price_level_id = $request->input('price_level_id', []);
             
             foreach ($menu_id as $index => $value) {
-                $order_details = new OrderDetail();
-                $order_details->order_id = $order->id;
-                $order_details->menu_id = $menu_id[$index];
-                $order_details->qty = $qty[$index];
-                $order_details->price_level_id = $price_level_id[$index];
-                $order_details->save();
+            $order_details = new OrderDetail();
+            $order_details->order_id = $order->id;
+            $order_details->menu_id = $menu_id[$index];
+            $order_details->qty = $qty[$index];
+            $order_details->price_level_id = $price_level_id[$index];
+            $order_details->save();
             }
             
              $payload = [
-                'action' => 'newOrder',
-                'branch_id' => Auth::user()->branch->id,
+            'action' => 'newOrder',
+            'branch_id' => Auth::user()->branch->id,
             ];
             \Log::info('About to trigger RemoteActionTriggered event', ['payload' => $payload]);
             event(new RemoteActionTriggered($payload, Auth::user()->branch->id));
             \Log::info('RemoteActionTriggered event dispatched');
 
-           return view('sales.thank_you_message', compact('order'));
+           return redirect()->route('Restaurant.TableSelection')->with('success', 'Order Placed Successfully.');
         } catch (\Exception $e) {
             dd($e->getMessage());
             return redirect()->back()->withErrors([$e->getMessage()]);

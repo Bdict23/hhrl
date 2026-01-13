@@ -37,7 +37,7 @@
                                         <h4>{{ $order->order_number }}</h4>
                                         <div class="text-muted row">
                                             <div class="col-md-6 text-muted"> <span style="font-size: smaller;">
-                                                    {{ $order->tables->table_name ?? 'N/A' }}</span>
+                                                    {{ $order->tables->table_name ?? 'TAKE OUT' }}</span>
                                             </div>
                                         </div>
                                         {{-- <span style="font-size: smaller;">Status : <span>
@@ -121,7 +121,7 @@
                                         <h4>{{ $order->order_number }}</h4>
                                         <div class="text-muted row">
                                             <div class="col-md-6 text-muted"> <span style="font-size: smaller;">
-                                                    {{ $order->tables->table_name ?? 'N/A' }}</span>
+                                                    {{ $order->tables->table_name ?? 'TAKE OUT' }}</span>
                                             </div>
                                         </div>
                                         {{-- <span style="font-size: smaller;">Status : <span>

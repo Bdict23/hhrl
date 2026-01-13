@@ -48,7 +48,7 @@
                                             <select id="orderNo" class="form-select" wire:model="selectedOrderId" wire:change="selectedOrder($event.target.value)">
                                                 <option value="">-- Select --</option>
                                                 @forelse ($orders as $order)
-                                                    <option value="{{ $order->id }}" wire>{{ $order->order_number }} ({{ $order->tables->table_name }})</option>
+                                                    <option value="{{ $order->id }}" wire>{{ $order->order_number }} ({{ $order->tables->table_name ?? 'TAKE OUT' }})</option>
                                                 @empty
                                                     <option value="">No Orders</option>
                                                 @endforelse
@@ -376,7 +376,7 @@
                                 @foreach ($orders as $order)
                                     <tr>
                                         <td style="text-align: center;">{{ $order->order_number }}</td>
-                                        <td style="text-align: center;">{{ $order->tables->table_name }}</td>
+                                        <td style="text-align: center;">{{ $order->tables->table_name ?? 'TAKE OUT' }}</td>
                                         <td style="text-align: center;">{{ $order->customer_name ?? 'N/A' }}</td>
                                         @php
                                             $latestSrpPrice = [];
