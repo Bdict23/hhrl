@@ -55,6 +55,7 @@ class CurrentBranch extends Component
         $user = auth()->user();
         $user->update(['branch_id' => $this->currentSwitch]);
         // dd($employee);
+        return redirect()->to(request()->header('Referer'));
         session()->flash('message', 'Branch switched successfully.');
     }
 }

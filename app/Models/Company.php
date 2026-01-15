@@ -16,6 +16,7 @@ class Company extends Model
         'company_tin',
         'company_type',
         'company_description',
+        'company_logo',
     ];
     public function branches()
 

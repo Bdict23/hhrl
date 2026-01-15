@@ -25,9 +25,19 @@
                 <div class="modal-body">
                     <!-- Form -->
 
-                    <form action="{{ route('company.update') }}" method="POST">
+                    <form action="{{ route('company.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-
+                         <div class="row mb-3">
+                            <div class="col-md-6">
+                                <img id="company_logo_preview_update" src="" alt="Logo Preview" class="img-thumbnail" style="max-height: 100px; display: none;">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="company_logo" class="form-label">Company Logo</label>
+                                <input type="file" class="form-control" id="company_logo_update" name="company_logo" accept="image/*" onchange="document.getElementById('company_logo_preview_update').src = window.URL.createObjectURL(this.files[0]); document.getElementById('company_logo_preview_update').style.display = 'block';">
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="company_name" class="form-label">Company Name</label>

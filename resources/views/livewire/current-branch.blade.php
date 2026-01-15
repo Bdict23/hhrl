@@ -1,7 +1,9 @@
 <div>
    <button type="button" class="btn btn-light" 
       data-bs-target="#switchBranchModal" data-bs-toggle="modal">
+      
         {{ Auth::user()->branch()->first()->branch_name ?? ''}}
+
         @if (Auth::user()->branch()->first()->branch_name !=null)
             @if (Auth::user()->branch()->first()->branch_status == 'INACTIVE')
               <span data-bs-toggle="tooltip" data-bs-placement="top" title="Switch branch" style="color: rgb(219, 69, 69);">(INACTIVE)</span>
@@ -31,16 +33,11 @@
                     @empty
                         <option value=""> {{ auth()->user()->branch->branch_name ?? '' }}</option>
                     @endforelse
-                  {{-- @foreach(Auth::user()->branches as $branch)
-                    <option value="{{ $branch->id }}" {{ Auth::user()->branch()->first()->id == $branch->id ? 'selected' : '' }}>
-                      {{ $branch->branch_name }}{{ $branch->branch_status == 'INACTIVE' ? ' (INACTIVE)' : '' }}
-                    </option>
-                  @endforeach --}}
                 </select>
               </div>
             </div>
             <div class="modal-footer">
-              <button wire:click="switchBranch()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Switch</button>
+              <button wire:click="switchBranch()" type="button" class="btn btn-primary" wire:loading.attr="disabled" wire:target="switchBranch"> <span wire:loading.remove wire:target="switchBranch">Switch</span><span wire:loading wire:target="switchBranch">Switching...</span></button>
             </div>
           
         </div>

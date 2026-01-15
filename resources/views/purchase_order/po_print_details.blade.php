@@ -116,7 +116,12 @@
 
     <!-- HEADER SECTION -->
     <div class="title mt-4">
-        <h5>{{ $requestInfo->branches->branch_name }}</h5>
+        <div class="header">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                <img src="{{ asset('images/' . auth()->user()->branch->company->company_logo) }}" alt="Branch Logo" style="max-height: 50px;">
+                <h5 style="margin: 0;">{{ $requestInfo->branches->branch_name }}</h5>
+            </div>
+        </div>
         <span class="address">{{ $requestInfo->branches->branch_address }}</span>
     </div>
     <div>SUPPLIER NAME: <span class="label">{{ $requestInfo->supplier->supp_name }}</span></div>
@@ -157,13 +162,13 @@
 
     <!-- FOOTER SECTION -->
     <div class="footer">
-        <span>{{ $requestInfo->preparer->name }}
+        <span style="text-decoration-line: underline">{{ $requestInfo->preparer->name }}
             {{ $requestInfo->preparer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
             @if ($requestInfo->reviewer)
-                <span>{{ $requestInfo->reviewer->name }}
+                <span style="text-decoration-line: underline">{{ $requestInfo->reviewer->name }}
                 {{ $requestInfo->reviewer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
             @endif
-        <span>{{ $requestInfo->approver->name }} {{ $requestInfo->approver->middle_name }}
+        <span style="text-decoration-line: underline">{{ $requestInfo->approver->name }} {{ $requestInfo->approver->middle_name }}
             {{ $requestInfo->approver->last_name }}</span>
     </div>
 

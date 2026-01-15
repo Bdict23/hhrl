@@ -61,6 +61,7 @@
                     <table class="table table-sm min-w-full" id="companyTable">
                         <thead class="table-dark table-sm ">
                             <tr>
+                                <th></th>
                                 <th>Company Name</th>
                                 <th>Company Code</th>
                                 <th>TIN</th>
@@ -72,12 +73,14 @@
                         <tbody>
                             @forelse ($companies as $company)
                                 <tr>
-                                    <td>{{ $company->company_name }}</td>
+                                    <td>
+                                        @if ($company->company_logo)<img src="{{ asset('images/' . $company->company_logo) }}" alt="Company Logo" style="height: 50px;">@endif
+                                    </td>
+                                    <td> {{ $company->company_name }}</td>
                                     <td>{{ $company->company_code }}</td>
                                     <td>{{ $company->company_tin }}</td>
                                     <td>{{ $company->company_type }}</td>
                                     <td>{{ $company->company_description }}</td>
-            
                                     <td>
                                         <div class="button-group">
                                             <a href="{{ route('company.show', ['id' => $company->id]) }}">
@@ -98,7 +101,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">No company found</td>
+                                    <td colspan="7" class="text-center">No company found</td>
                                 </tr>
                         @endforelse
 

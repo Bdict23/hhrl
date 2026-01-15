@@ -18,10 +18,25 @@ class CompanyController extends Controller
             'company_tin' => 'required|string|max:255',
             'company_type' => 'required|string|max:255',
             'company_description' => 'required|string|max:255',
+            'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         $company = Company::find($request->myid);
-        // dd($company);
-        $company->update($request->all());
+        
+        // Update company fields
+        $company->company_name = $request->company_name;
+        $company->company_code = $request->company_code;
+        $company->company_tin = $request->company_tin;
+        $company->company_type = $request->company_type;
+        $company->company_description = $request->company_description;
+        
+        // Handle file upload only if a new file is provided
+        if ($request->hasFile('company_logo')) {
+            $logoName = time().'.'.$request->company_logo->extension();
+            $request->company_logo->move(public_path('images'), $logoName);
+            $company->company_logo = $logoName;
+        }
+        
+        $company->save();
 
         return redirect()->back()->with('success', 'Company updated successfully!');
     } catch (\Exception $e) {
