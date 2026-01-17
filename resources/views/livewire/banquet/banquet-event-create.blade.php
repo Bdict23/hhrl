@@ -19,7 +19,7 @@
                    <div  class="card-title row">
                     <h6 class="col-md-6">Event Services</h6>
                     <div class="col-md-6 d-flex justify-content-end">
-                        <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#servicesModal">Add Services</button>
+                        <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#servicesModal"><i class="bi bi-plus-circle-dotted"></i>&nbsp;Add Services</button>
                     </div>
                    </div>
                    <div class="card-body">
@@ -67,7 +67,7 @@
                     <div  class="card-title row">
                         <h6 class="col-md-6">Event Menus</h6>
                         <div class="col-md-6 d-flex justify-content-end">
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal">Add Menu</button>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal"><i class="bi bi-plus-circle-dotted"></i>&nbsp;Add Menu</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -131,7 +131,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="customer_name" name="customer_name" disabled value="{{ $selectedCustName }}">
                                     <button class="input-group-text" type="button"
-                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#customerModal">ADD</button>
+                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#customerModal"><i class="bi bi-person-plus"></i></button>
                                 </div>  
                             </div>
                         </div>
@@ -237,13 +237,13 @@
                                         <option value="FINAL">Final</option>
                                     </select>
                                     @if (!$is_editing && $saveAs != 'FINAL')
-                                        <button type="submit" class="btn btn-success ">Save</button>
-                                        <button wire:click="resetForm" class="btn btn-danger ms-2" type="reset">Reset</button>
+                                        <button type="submit" class="btn btn-success "><i class="bi bi-floppy"></i>&nbsp;Save</button>
+                                        <button wire:click="resetForm" class="btn btn-danger ms-2" type="reset"><i class="bi bi-x-circle"></i>&nbsp;Reset</button>
 
                                     @elseif ($is_editing)
-                                        <button type="submit" class="btn btn-success ">Update</button>
+                                        <button type="submit" class="btn btn-success "><i class="bi bi-floppy"></i>&nbsp;Update</button>
                                     @endif
-                                    <a type="button" href="{{ route('banquet_events.summary') }}" class="btn btn-secondary input-group-text">Summary</a>
+                                    <a type="button" href="{{ route('banquet_events.summary') }}" class="btn btn-secondary input-group-text"><i class="bi bi-card-list"></i>&nbsp;Summary</a>
                                 </div>
                                 </form>
                             </div>
@@ -314,7 +314,7 @@
                                         <td>{{ $service->ratePrice && $service->ratePrice->amount ? '₱' . $service->ratePrice->amount : 'FREE' }}</td>
                                         <td class="text-wrap">{{ $service->service_description }}</td>     
                                         <td>
-                                            <button wire:click="selectService({{ $service->id }})" class="btn btn-sm btn-success select-service-btn">ADD</button>
+                                            <button wire:click="selectService({{ $service->id }})" class="btn btn-sm btn-success select-service-btn"><i class="bi bi-plus-circle"></i>&nbsp;Add</button>
                                         </td>
                                     </tr>
                                     
@@ -332,7 +332,7 @@
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Adding...
                     </span>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>&nbsp;Close</button>
                 </div>
             </div>
         </div>
@@ -400,7 +400,7 @@
                                     <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
                                     <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
                                     <td>
-                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-menu-btn">ADD</button>
+                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-menu-btn"><i class="bi bi-plus-circle"></i>&nbsp;Add</button>
                                     </td>
                                 </tr>
                             @empty
@@ -416,7 +416,7 @@
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Adding...
                     </span>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>&nbsp;Close</button>
                 </div>
             </div>
         </div>
@@ -505,7 +505,7 @@
                         @error('customerAddress')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
-                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-node-plus"></i>&nbsp;Save|Add</button>
                         <button type="button" class="btn btn-link ms-2" data-bs-toggle="modal" data-bs-target="#customerListModal">Already Exist?</button>
                     </form>
                 </div>

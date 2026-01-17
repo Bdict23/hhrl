@@ -61,7 +61,7 @@
             <!-- Sidebar -->
             <div class="sidebar d-none d-md-block" style="overflow-y: auto; max-height: 500px;">
                 @if(auth()->user()->employee->getModulePermission('Manage Item') !=2)
-                    <h5 class="text-muted">Item Management</h5>
+                    <h6 class="text-muted"><i class="bi bi-box-seam"></i>&nbsp;Item Management</h6>
                         <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link active btn-sm" onclick="showTab('items-table', this)"
                                 style="background-color: #dddddd">Item List</a></li>
@@ -70,7 +70,7 @@
                 @endif
                 
                 @if(auth()->user()->employee->getGroupedModulePermissions('Item Properties') !=2)
-                    <h5 class="text-muted">Item Properties</h5>
+                    <h6 class="text-muted"><i class="bi bi-diagram-3"></i>&nbsp;Item Properties</h6>
                     <ul class="nav flex-column">
                        
                         @if (auth()->user()->employee->getModulePermission('Item Categories') !=2)
@@ -102,7 +102,7 @@
                 @endif
 
                 @if (auth()->user()->employee->getGroupedModulePermissions('Price Levels') !=2)
-                    <h5 class="text-muted">Price Level</h5>
+                    <h6 class="text-muted"><i class="bi bi-tags"></i>&nbsp;Price Level</h6>
                     <ul class="nav flex-column">
                         @if (auth()->user()->employee->getModulePermission('Item Retail Price') !=2)
                             <li class="nav-item"><a href="#" class="nav-link btn-sm"
@@ -121,7 +121,7 @@
                 @endif
 
                 @if (auth()->user()->employee->getGroupedModulePermissions('Restaurant Management') !=2)
-                    <h5 class="text-muted">Restaurant Management</h5>
+                    <h6 class="text-muted"><i class="bi bi-fork-knife"></i>&nbsp;Restaurant Management</h6>
                     <ul class="nav flex-column">
                         @if (auth()->user()->employee->getModulePermission('Menu Categories') !=2)
                             <li class="nav-item"><a href="#" class="nav-link btn-sm"
@@ -151,7 +151,7 @@
                 <hr> --}}
 
                 @if (auth()->user()->employee->getGroupedModulePermissions('Business') !=2)
-                    <h6 class="text-muted">Business</h6>
+                    <h6 class="text-muted"><i class="bi bi-bar-chart-line"></i>&nbsp;Business</h6>
                     @if (auth()->user()->employee->getModulePermission('Business Venues') !=2)
                         <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('venue-lists', this)">Venues</a></li>
@@ -160,6 +160,11 @@
                     @if (auth()->user()->employee->getModulePermission('Services') !=2)
                         <ul class="nav flex-column">
                             <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('service-lists', this)">Services</a></li>
+                        </ul>
+                    @endif
+                    @if (auth()->user()->employee->getModulePermission('Cash Drawer') !=2)
+                        <ul class="nav flex-column">
+                            <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('cash-drawer-lists', this)">Cash Drawers</a></li>
                         </ul>
                     @endif
                     @if (auth()->user()->employee->getModulePermission('Employee') !=2)
@@ -192,7 +197,7 @@
                       
                 @endif
                  @if (auth()->user()->employee->getModulePermission('Import Items') !=2)
-                    <h6 class="text-muted">Data Imports</h6>
+                    <h6 class="text-muted"><i class="bi bi-upload"></i>&nbsp;Data Imports</h6>
                             <ul class="nav flex-column">
                                 <li class="nav-item"><a href="#" class="nav-link btn-sm" onclick="showTab('item-import', this)">Import Items</a></li>
                             </ul>
@@ -276,6 +281,10 @@
                
                 <div>
                     @livewire('settings.service')
+                </div>
+
+                 <div>
+                    @livewire('settings.cashDrawer')
                 </div>
 
                 <div>

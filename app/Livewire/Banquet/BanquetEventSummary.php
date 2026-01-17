@@ -29,7 +29,11 @@ class BanquetEventSummary extends Component
 
     public function fetchData()
     {
-        $this->eventLists = BanquetEvent::with('venue')->where('branch_id', auth()->user()->branch_id)->orderBy('created_at', 'asc')->where('event_date', '>=', now())->get();
+        $this->eventLists = BanquetEvent::with('venue')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereDate('event_date', '>=', now()->toDateString())
+            ->orderBy('created_at', 'asc')
+            ->get();
     }
 
     public function viewEventDetails($eventId)

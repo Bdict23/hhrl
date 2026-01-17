@@ -420,3 +420,16 @@ Route::get('/test-broadcast', function () {
     event(new \App\Events\RemoteActionTriggered($payload, auth()->id()));
     return response()->json(['message' => 'Event dispatched', 'payload' => $payload]);
 })->middleware(['auth', 'verified'])->name('test.broadcast');
+
+
+// TRANSACTIONS ROUTES
+
+// transactions route for shifts summary
+Route::get('/shifts-summary', function () {
+    return view('transactions.shifts-summary');
+})->middleware(['auth', 'verified'])->name('shifts.summary');
+
+// transactions route for make open shift
+Route::get('/make-open-shift', function () {
+    return view('transactions.make-open-shift');
+})->middleware(['auth', 'verified'])->name('make.open.shift');

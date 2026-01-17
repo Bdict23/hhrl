@@ -650,6 +650,7 @@
 
         // Initialize split payments from Livewire on page load
         document.addEventListener('DOMContentLoaded', function() {
+
             updateChange();
           
             document.querySelectorAll('.discount-checkbox').forEach(checkbox => {

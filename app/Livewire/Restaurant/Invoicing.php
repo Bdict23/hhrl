@@ -11,6 +11,7 @@ use App\Models\PaymentType;
 use App\Models\Payment;
 use App\Models\Invoice;
 use App\Models\Table;
+use App\Models\CashierShift;
 use Illuminate\Support\Facades\Auth;
 
 class Invoicing extends Component
@@ -67,6 +68,23 @@ class Invoicing extends Component
         $this->fetchOrders();
         $this->resetInputFields();
     }
+
+    public function checkShiftStatus()
+    {
+        $openShift = CashierShift::where('cashier_id', auth()->user()->employee->id)
+            ->where('shift_status', 'OPEN')
+            ->first();
+
+        if ($openShift) {
+                    $this->fetchOrders();
+                    $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->get();
+                    $this->totalAmountDue = 0.00;
+        }else{
+          session()->flash('error', 'Please open a shift first before proceeding to invoicing.');
+          $this->redirectRoute('make.open.shift', navigate: true);
+        }
+    }
+
     public function fetchOrders()
     {
         $this->orders = Order::where([['branch_id', Auth::user()->branch->id],['order_status', 'SERVED']])->with('ordered_items','tables','ordered_items.menu.price_levels','ordered_items.OrderDiscounts.discount')->get();
@@ -75,9 +93,7 @@ class Invoicing extends Component
     }
     public function mount()
     {
-        $this->fetchOrders();
-        $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->get();
-        $this->totalAmountDue = 0.00;
+        $this->checkShiftStatus();
     }
     public function updateTotalAmountDue()
     {   

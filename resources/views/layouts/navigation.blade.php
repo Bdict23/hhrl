@@ -188,6 +188,9 @@
                                     {{ __('Daily Sales') }}
                                 </x-dropdown-link>
                             @endif
+                                <x-dropdown-link :href="url('/shifts-summary')" class="no-underline">
+                                    {{ __('Shifts') }} &nbsp;<i class="bi bi-clock-history"></i>
+                                </x-dropdown-link>
                         </x-slot>
                     </x-dropdown> 
                 </div>
@@ -422,9 +425,14 @@
                                 <x-dropdown-link :href="route('logout')" class="no-underline"
                                     onclick="event.preventDefault();
                                                     this.closest('form').submit();">
-                                    {{ __('Log Out') }}
+                                    </i>{{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
+                            @if (auth()->user()->employee->getModulePermission('Menu Order Invoicing') !=2)
+                                        <x-dropdown-link :href="url('/make-open-shift')" class="no-underline">
+                                            {{ __('Open Cashier Shift') }} &nbsp;<i class="bi bi-box-seam"></i>
+                                        </x-dropdown-link>
+                                   @endif
                         </x-slot>
                     </x-dropdown>
                 </div>
