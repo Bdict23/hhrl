@@ -433,3 +433,14 @@ Route::get('/shifts-summary', function () {
 Route::get('/make-open-shift', function () {
     return view('transactions.make-open-shift');
 })->middleware(['auth', 'verified'])->name('make.open.shift');
+
+// transactions route for close cashier shift
+Route::get('/close-cashier-shift', function () {
+    return view('transactions.close-cashier-shift-view');
+})->middleware(['auth', 'verified'])->name('close.cashier.shift');
+
+// cancellation view
+
+Route::get('/restaurant-cancelation', function () {
+    return view('restaurant.cancelation-view');
+})->middleware(['auth', 'verified'])->name('restauran.cancelation');

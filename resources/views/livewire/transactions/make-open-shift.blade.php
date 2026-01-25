@@ -21,7 +21,7 @@
                     </select>
                 </div>
                  <div class="text-end col-md-6 d-flex align-items-center justify-content-end">
-                    <h3>Beginning Balance</h3>
+                    <h3> <i class="bi bi-cash-coin"> </i> Beginning Balance</h3>
                 </div>
             </div>
            
@@ -89,7 +89,8 @@
             <div class="mt-4 text-center">
                 
                 <button wire:click="submitShift" class="btn btn-primary btn-lg px-5">
-                    <i class="bi bi-check-circle me-2"></i>Start Shift
+                    <span wire:loading.remove wire:target="submitShift">Start Shift</span>
+                    <span wire:loading wire:target="submitShift">Processing...</span>
                 </button>
             </div>
         </div>

@@ -24,12 +24,16 @@ class Order extends Model
         'sales_rep_id',
         'customer_id',
         'order_type',
+        'order_round',
         'created_at',
         'updated_at',
     ];
 
     public function order_details(){
         return $this->hasMany(OrderDetail::class)->with('menu');
+    }
+    public function order_details_unmarked(){
+        return $this->hasMany(OrderDetail::class)->where('status', 'PENDING')->with('menu');
     }
 
     //has many table

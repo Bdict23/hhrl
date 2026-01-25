@@ -46,12 +46,13 @@
                 <table class="table table-bordered table-hover align-middle mb-0 table-sm border-radius-15">
                     <thead class="table-dark">
                         <tr>
+                            <th style="position: sticky; top: 0; font-size: small;">Reference</th>
                             <th style="position: sticky; top: 0; font-size: small;">Date</th>
                             <th style="position: sticky; top: 0; font-size: small;">Cashier</th>
                             <th style="position: sticky; top: 0; font-size: small;">Drawer</th>
                             <th style="position: sticky; top: 0; font-size: small;">Status</th>
                             <th style="position: sticky; top: 0; font-size: small;">Beginning Balance</th>
-                            <th style="position: sticky; top: 0; font-size: small;">Total Sales</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Ending Balance</th>
                             <th style="position: sticky; top: 0; font-size: small;">Remarks</th>
                             <th style="position: sticky; top: 0; font-size: small;">Actions</th>
                         </tr>
@@ -59,6 +60,7 @@
                     <tbody>
                         @forelse ($shifts as $shift)
                             <tr>
+                                <td style="font-size: smaller;">{{ $shift->reference }}</td>
                                 <td style="font-size: smaller;">{{ $shift->created_at->format('Y-m-d H:i:s') }}</td>
                                 <td style="font-size: smaller;">{{ $shift->employee->name }} {{ $shift->employee->last_name }}</td>
                                 <td style="font-size: smaller;">{{ $shift->cashDrawer->drawer_name }}</td>
@@ -69,8 +71,8 @@
                                         <span class="badge bg-secondary">Closed</span>
                                     @endif
                                 </td>
-                                <td style="font-size: smaller;">₱ {{ number_format($shift->beginning_balance, 2) }}</td>
-                                <td style="font-size: smaller;">₱ {{ number_format($shift->total_sales, 2) }}</td>
+                                <td style="font-size: smaller;">₱ {{ number_format($shift->starting_cash, 2) }}</td>
+                                <td style="font-size: smaller;">₱ {{ number_format($shift->ending_cash, 2) ?? 'N/A' }}</td>
                                 <td style="font-size: smaller;">{{ $shift->notes ?? 'N/A' }}</td>
                                 <td style="font-size: smaller;">
                                     <button class="btn btn-info btn-sm">View Details <i class="bi bi-eye"></i></button>

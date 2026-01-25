@@ -27,13 +27,22 @@ class ShiftsSummary extends Component
     public function fetchData()
     {
         $this->shifts = CashierShift::where('branch_id', auth()->user()->branch->id)
-            ->whereBetween('created_at', [now()->toDateString() . ' 00:00:00', now()->toDateString() . ' 23:59:59'])
+            ->where('shift_status', 'OPEN')
             ->with('employee', 'cashDrawer')
             ->orderBy('created_at', 'desc')
             ->get();
     }
     public function filterShiftsByDate()
     {
-        // Logic to filter shifts by date can be implemented here
+       
+        $this->validate([
+                    'from_date' => 'required|date',
+                    'to_date' => 'required|date|after_or_equal:from_date',
+                ]);
+        $this->shifts = CashierShift::where('branch_id', auth()->user()->branch->id)
+            ->whereBetween('created_at', [$this->from_date . ' 00:00:00', $this->to_date . ' 23:59:59'])
+            ->with('employee', 'cashDrawer')
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 }

@@ -10,8 +10,12 @@ protected $table = 'order_details';
   protected $fillable = [
         'order_id',
         'menu_id',
+        'status',
+        'order_round',
         'qty',
         'price_level_id',
+        'created_at',
+        'updated_at',
     ];
 
     public function menu()

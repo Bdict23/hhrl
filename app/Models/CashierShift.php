@@ -11,6 +11,7 @@ class CashierShift extends Model
     use HasFactory;
     protected $table = 'cashier_shifts';
     protected $fillable = [
+        'reference',
         'cashier_id',
         'branch_id',
         'drawer_id',

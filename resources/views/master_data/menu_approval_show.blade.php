@@ -8,7 +8,7 @@
             <div class=" col-md-8 card">
                 <div class=" card-body">
                     <header>
-                        <h2>FOR APPROVAL MENU</h2>
+                        <h2>FOR APPROVAL - RECIPE</h2>
                         <div class="me-3">
                             <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                 data-bs-target="#approveModal">

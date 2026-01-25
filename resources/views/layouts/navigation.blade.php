@@ -241,7 +241,7 @@
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Menu Approval') == 1 )
                                     <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
-                                        {{ __('Menu - Approval') }}
+                                        {{ __('Recipe - Approval') }}
                                     </x-dropdown-link>
                                     <hr>
                                 @endif
@@ -339,12 +339,17 @@
                                    @endif --}}
                                     @if (auth()->user()->employee->getModulePermission('Menu - Orders') !=2)
                                         <x-dropdown-link :href="url('/orders_lists')" class="no-underline">
-                                            {{ __('Orders') }}
+                                            {{ __('Monitor') }}
                                         </x-dropdown-link>
                                     @endif
                                     @if (auth()->user()->employee->getModulePermission('Menu Order Invoicing') !=2)
                                         <x-dropdown-link :href="url('/invoicing')" class="no-underline">
-                                            {{ __('Invoice') }}
+                                            {{ __('Billing') }}
+                                        </x-dropdown-link>
+                                   @endif
+                                     @if (auth()->user()->employee->getModulePermission('Cancelation of Orders') !=2)
+                                        <x-dropdown-link :href="url('/restaurant-cancelation')" class="no-underline">
+                                            {{ __('Cancellation of Orders') }}
                                         </x-dropdown-link>
                                    @endif
                                 </x-slot>
@@ -428,9 +433,14 @@
                                     </i>{{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
-                            @if (auth()->user()->employee->getModulePermission('Menu Order Invoicing') !=2)
+                            @if (auth()->user()->employee->getModulePermission('Menu Order Invoicing') !=2 && auth()->user()->employee->hasOpenShift() == false)
                                         <x-dropdown-link :href="url('/make-open-shift')" class="no-underline">
                                             {{ __('Open Cashier Shift') }} &nbsp;<i class="bi bi-box-seam"></i>
+                                        </x-dropdown-link>
+                                   @endif
+                             @if (auth()->user()->employee->hasOpenShift() && auth()->user()->employee->getModulePermission('Menu Order Invoicing') !=2)
+                                        <x-dropdown-link :href="url('/close-cashier-shift?shift=' . auth()->user()->employee->id . '&referenced=current')" class="no-underline">
+                                            {{ __('Close Cashier Shift') }} &nbsp;<i class="bi bi-file-break"></i>
                                         </x-dropdown-link>
                                    @endif
                         </x-slot>

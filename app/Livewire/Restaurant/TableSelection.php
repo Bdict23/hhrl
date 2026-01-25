@@ -22,16 +22,29 @@ class TableSelection extends Component
     public function fetchData()
     {
         $this->availableTables = Table::query()
-            ->where('availability', 'vacant')
+            ->where('branch_id', auth()->user()->branch->id)
             ->orderBy('table_name')
             ->get();
     }
     public function gotoMenuSelection($tableId)
     {
-        if ($tableId) {
-            return redirect()->to('/my-menu?table-id=' . $tableId);
-        } else {
-            session()->flash('error', 'Please select a table before proceeding.');
+        if($tableId != 'takeout'){
+            if(Table::where('id', $tableId)->first()->availability == 'OCCUPIED'){
+            $this->dispatch('alert', ['tableId' => $tableId]);
+                return;
+            }else{
+                return redirect()->to('/my-menu?table-id=' . $tableId);
+            }
+        }else{
+            if ($tableId) {
+                return redirect()->to('/my-menu?table-id=' . $tableId);
+                } else {
+                session()->flash('error', 'Please select a table before proceeding.');
+            }
         }
+    }
+    public function additionalOrder($tableId)
+    {
+        return redirect()->to('/my-menu?table-id=' . $tableId);
     }
 }

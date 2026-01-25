@@ -60,7 +60,7 @@ class DailySalesReport extends Component
     }
 
 
-    public function viewInvoiceDetails($orderId)
+    public function viewInvoiceDetails($orderId, $invoiceId)
     {   //fetch discount details
         $this->discountDetails = OrderDiscount::where('order_id', $orderId)
             ->with('discount')
@@ -85,7 +85,7 @@ class DailySalesReport extends Component
                     : ($od->discount->percentage / 100) * $this->grossAmount;
             });
         $orderInfo = Order::find($orderId);
-        $invoice = Invoice::where('order_id', $orderId)->with('payments','payments.payment_type')->first();
+        $invoice = Invoice::where('order_id', $orderId)->where('id', $invoiceId)->with('payments','payments.payment_type')->first();
         $this->payments = Payment::where('invoice_id', $invoice->id)->with('payment_type')->get();
         if($this->payments->count() == 1){
             $this->paymentMethod = $this->payments->first()->payment_type->payment_type_name;
@@ -98,7 +98,7 @@ class DailySalesReport extends Component
         $this->table_name = $orderInfo->tables->table_name ?? 'Take Out';
         $this->order_number = $orderInfo->order_number;
 
-        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('marked', true)->with('priceLevel','menu')->get();
+        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('order_round', $invoice->order_round)->where('marked', true)->with('priceLevel','menu')->get();
         $this->totalAmountDue = $this->selectedOrderDetails->sum(function($detail) {
             $itemTotal = $detail->qty * ($detail->priceLevel->amount ?? 0);
             // Subtract discounts

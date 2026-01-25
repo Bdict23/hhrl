@@ -22,7 +22,7 @@
                             <header>
                                 <div class="me-3">
                                     <x-secondary-button onclick="history.back()" type="button"><i class="bi bi-arrow-90deg-left"></i>&nbsp; Back</x-secondary-button>
-                                    <x-secondary-button type="button" wire:click="refresh"><i class="bi bi-arrow-clockwise"></i> Refresh</x-secondary-button>
+                                    <x-secondary-button type="button" wire:click="refreshOrders"><i class="bi bi-arrow-clockwise"></i> Refresh</x-secondary-button>
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddOrderModal">
                                         <i class="bi bi-cart-check-fill"></i>
                                         Order Number</x-primary-button>

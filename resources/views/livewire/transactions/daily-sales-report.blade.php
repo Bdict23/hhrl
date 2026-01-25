@@ -41,13 +41,14 @@
                 </div>
             </div>
         </div>
-        <div class="card-body overflow-auto">
+        <div class="card-body overflow-auto" style="max-height: 450px;">
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle mb-0 table-sm">
                     <thead class="table-dark">
                         <tr>
                             <th style="position: sticky; top: 0; font-size: small;">Date</th>
-                            <th style="position: sticky; top: 0; font-size: small;">Invoice No</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Sys. Reference</th>
+                            <th style="position: sticky; top: 0; font-size: small;">Inv. No</th>
                             <th style="position: sticky; top: 0; font-size: small;">Customer Name</th>
                             <th style="position: sticky; top: 0; font-size: small;">Amount</th>
                             <th style="position: sticky; top: 0; font-size: small;">Actions</th>
@@ -57,6 +58,7 @@
                         @forelse ($invoices as $invoice)
                             <tr>
                                 <td style="font-size: small;">{{ $invoice->created_at->format('m/d/Y') }}</td>
+                                <td style="font-size: small;">{{ $invoice->reference ?? '' }}</td>
                                 <td style="font-size: small;">{{ $invoice->invoice_number }}</td>
                                 <td style="font-size: small;">
                                     {{ $invoice->customer->customer_name ?? $invoice->customer_name }}
@@ -80,7 +82,7 @@
                                         <x-primary-button
                                             {{-- onclick="selectOrder({{ json_encode($invoice) }},{{ json_encode($latestSrpPrice) }})" --}}
                                             data-bs-target="#supplierViewModal" data-bs-toggle="modal"
-                                            wire:click="viewInvoiceDetails({{ $invoice->order->id }})"
+                                            wire:click="viewInvoiceDetails({{ $invoice->order->id }}, {{ $invoice->id }})"
                                             title="View Invoice Details">
                                             <i class="bi bi-info-circle"></i>
                                         </x-primary-button>
@@ -117,7 +119,7 @@
 
 
     <!-- Modal view -->
-    <div class="modal fade modal-lg" id="supplierViewModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true" wire:ignore.self>
+    <div class="modal fade modal-xl" id="supplierViewModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -171,7 +173,7 @@
                             <div class="card-header">
                                 Order Details
                             </div>
-                            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-striped table-hover me-3">
                                     <thead class="thead-dark me-3">
                                         <tr style="font-size: smaller;">

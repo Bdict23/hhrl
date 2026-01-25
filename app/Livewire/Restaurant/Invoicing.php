@@ -13,6 +13,7 @@ use App\Models\Invoice;
 use App\Models\Table;
 use App\Models\CashierShift;
 use Illuminate\Support\Facades\Auth;
+use App\Events\RemoteActionTriggered; 
 
 class Invoicing extends Component
 {
@@ -43,7 +44,7 @@ class Invoicing extends Component
         return [
             'invoiceNumber' => 'nullable|max:255|unique:invoices,invoice_number',
             'amountReceived' => 'required|numeric|min:' . $this->totalAmountDue,
-            'selectedPaymentType' => $this->totalAmountDue > 0 ? 'required|not_in:NONE' : 'nullable',
+            'selectedPaymentType' => 'required|not_in:NONE',
         ];
     }
 
@@ -53,6 +54,19 @@ class Invoicing extends Component
         'amountReceived.min' => 'Amount received must be at least equal to the total amount due.',
     ];
 
+    protected $listeners = [
+    'RemoteActionTriggered' => 'handleRemoteExecute',
+];
+
+    public function handleRemoteExecute($payload){
+
+        $data = $payload['payload'] ?? $payload;
+
+        if(($data['action'] == 'newOrder' || $data['action'] == 'refreshOrders') && $data['branch_id'] == Auth::user()->branch->id ) {
+            $this->mount();
+        }
+    }
+
 
     public function resetInputFields()
     {
@@ -61,9 +75,12 @@ class Invoicing extends Component
         $this->customerName = '';
         $this->splitPayments = [];
         $this->change = "₱ 0.00";
+        $this->totalAmountDue = 0.00;
+                    $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->get();
+
     }
 
-    public function refresh()
+    public function refreshOrders()
     {
         $this->fetchOrders();
         $this->resetInputFields();
@@ -77,8 +94,6 @@ class Invoicing extends Component
 
         if ($openShift) {
                     $this->fetchOrders();
-                    $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->get();
-                    $this->totalAmountDue = 0.00;
         }else{
           session()->flash('error', 'Please open a shift first before proceeding to invoicing.');
           $this->redirectRoute('make.open.shift', navigate: true);
@@ -87,7 +102,7 @@ class Invoicing extends Component
 
     public function fetchOrders()
     {
-        $this->orders = Order::where([['branch_id', Auth::user()->branch->id],['order_status', 'SERVED']])->with('ordered_items','tables','ordered_items.menu.price_levels','ordered_items.OrderDiscounts.discount')->get();
+        $this->orders = Order::where([['branch_id', Auth::user()->branch->id]])->whereIn('order_status', ['SERVED','PENDING','SERVING'])->with('ordered_items','tables','ordered_items.menu.price_levels','ordered_items.OrderDiscounts.discount')->get();
         $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
        
     }
@@ -139,14 +154,15 @@ class Invoicing extends Component
     }
     public function selectedOrder($orderId)
     {
+        try {
+           
         // Reset split payments whenever total amount due is updated and amount received changes
         $this->splitPayments;
         $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
         $this->amountReceived = 0.00;
         $this->change = "₱ 0.00";
-
         $this->selectedOrderId = $orderId;
-        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('marked', true)->with('priceLevel')->get();
+        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('marked', false)->whereIn('status', ['SERVED','PENDING'])->with('priceLevel')->get();
         
         // Calculate initial total amount due
         $this->grossAmount = $this->selectedOrderDetails->sum(function($detail) {
@@ -179,6 +195,7 @@ class Invoicing extends Component
                     'discount_id' => $discount->id
                 ]);
             }
+            
         }
 
         // Refresh the selected order discounts after auto-apply
@@ -193,6 +210,9 @@ class Invoicing extends Component
             ->get();
          $this->appliedDiscounts = OrderDiscount::where('order_id', $orderId)->with('discount')->get();
         $this->updateTotalAmountDue();
+        } catch (\Exception $e) {
+            $this->dispatch('error', 'An error occurred while selecting the order: ' . $e->getMessage());
+        }
     }
 
     public function selectedItem($itemId)
@@ -387,18 +407,7 @@ class Invoicing extends Component
                 ];
         
     }
-    // public function addSplitPayment($paymentTypeId)
-    // {
-    //     $paymentType = PaymentType::find($paymentTypeId);
-    //     if ($paymentType) {
-    //         $this->splitPayments[] = [
-    //             'id' => uniqid(),
-    //             'payment_type_id' => $paymentTypeId,
-    //             'payment_type_name' => $paymentType->payment_type_name,
-    //             'amount' => 0
-    //         ];
-    //     }
-    // }
+    
 
     public function removeSplitPayment($id)
     {
@@ -420,12 +429,36 @@ class Invoicing extends Component
         $this->validate(
             $this->rules()
         );
+        if(Order::find($this->selectedOrderId)->payment_status == 'SERVING'){
+            //check if there are pending items
+            if(OrderDetail::where('order_id', $this->selectedOrderId)->where('status', 'SERVING')->exists()){
+                $this->dispatch('error', 'Order are served partially. Cancel pending items before proceeding to payment.');
+                return;
+            }
+        }
+        //calculate all invoices for the selected order
+        $orderRound = Invoice::where('order_id', $this->selectedOrderId)->get();
+        $invoiceCount = $orderRound->count();
+       if($invoiceCount > 0){
+            //update oder details order round
+            OrderDetail::where('order_id', $this->selectedOrderId)->where('marked', false)->update([
+                'order_round' => $invoiceCount + 1
+            ]);  
+        }
+        $curYear = now()->year;
+        $branchId = auth()->user()->branch_id;
+        $yearlyCount = Invoice::where('branch_id', $branchId)
+            ->whereYear('created_at', $curYear)
+            ->count() + 1;
+        $reference = 'INV-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
 
         //create invoice record
         $invoice = Invoice::create([
             'order_id' => $this->selectedOrderId,
             'invoice_number' => $this->invoiceNumber,
+            'reference' => $reference,
             'invoice_type' => 'SALES',
+            'order_round' => $invoiceCount + 1,
             'customer_name' => $this->customerName == '' ? 'N/A' : $this->customerName,
             'status' => 'CLOSED',
             'payment_mode' => 'CASH',
@@ -441,39 +474,60 @@ class Invoicing extends Component
             
                Payment::create([
                     'order_id' => $this->selectedOrderId,
+                    'branch_id' => auth()->user()->branch->id,
                     'invoice_id' => $invoice->id,
                     'amount' => $splitPayment['amount'],
                     'payment_type_id' => $splitPayment['paymentTypeId'],
                     'type' => 'SALES',
                     'prepared_by' => auth()->user()->employee->id,
+                    'created_at' => now('Asia/Manila'),
+                    'updated_at' => now('Asia/Manila'),
                 ]);
             }
         } else {
             // Single payment
             Payment::create([
                 'order_id' => $this->selectedOrderId,
+                'branch_id' => auth()->user()->branch->id,
                 'amount' => $this->totalAmountDue,
                 'prepared_by' => auth()->user()->employee->id,
                 'type' => 'SALES',
                 'invoice_id' => $invoice->id,
                 'payment_type_id' => $this->selectedPaymentType,
+                'created_at' => now('Asia/Manila'),
+                'updated_at' => now('Asia/Manila'),
             ]);
         }
-
-        // Update order status to COMPLETED
-        Order::where('id', $this->selectedOrderId)->update([
-            'order_status' => 'COMPLETED',
-            'payment_status' => 'PAID'
-        ]);
-
-
-        // Update table status to AVAILABLE
-        $order = Order::find($this->selectedOrderId);
-        if ($order && $order->table_id) {
-            Table::where('id', $order->table_id)->update([
+        // check order details has pending items
+        $hasPendingItems = OrderDetail::where('order_id', $this->selectedOrderId)->where('status', 'PENDING')->exists();
+        if (!$hasPendingItems) {
+            // Update order status to COMPLETED
+            Order::where('id', $this->selectedOrderId)->update([
+                'order_status' => 'COMPLETED',
+                'payment_status' => 'PAID',
+                'updated_at' => now('Asia/Manila'),
+            ]);
+            // Update table availability to VACANT
+            $order = Order::find($this->selectedOrderId);
+              Table::where('id', $order->table_id)->update([
                 'availability' => 'VACANT'
             ]);
+        }else{
+            // Update order payment status to PAID
+            Order::where('id', $this->selectedOrderId)->update([
+                'payment_status' => 'PAID',
+                'updated_at' => now('Asia/Manila'),
+            ]);
+
+         
         }
+
+
+        // update order details status to COMPLETED
+        OrderDetail::where('order_id', $this->selectedOrderId)->whereIn('status', ['SERVED','PENDING'])->update([
+            'marked' => true,
+            'updated_at' => now('Asia/Manila'),
+        ]);
 
         // After saving payment, reset input fields and refresh orders
         $this->resetInputFields();
@@ -482,7 +536,15 @@ class Invoicing extends Component
         $this->selectedOrderDetails = null;
         $this->totalAmountDue = 0.00;
         $this->dispatch('PaymentSaved', invoiceId: $invoice->id);
+
+           $payload = [
+                'action' => 'refreshOrders',
+                'branch_id' => Auth::user()->branch->id,
+            ];
+            event(new RemoteActionTriggered($payload, auth()->id()));
+
     }
+
 
     public function render()
     {

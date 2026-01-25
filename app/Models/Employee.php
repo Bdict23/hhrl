@@ -77,6 +77,19 @@ public function getModulePermission($moduleName)
     return $access->access ?? 2;
 }
 
+public function hasOpenShift()
+{
+    $check = CashierShift::where('cashier_id', $this->id)
+        ->where('shift_status', 'OPEN')
+        ->exists();
+    if ($check) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 public function getGroupedModulePermissions($moduleGroup)
 {
         $moduleId = Module::where('group_name', $moduleGroup)->get('id');

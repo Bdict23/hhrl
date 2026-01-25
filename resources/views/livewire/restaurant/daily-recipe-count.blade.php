@@ -25,8 +25,8 @@
                 <div class="col-md-5">
                 <div class="d-flex">
                     <div class="input-group">
-                        <input  type="text" class="form-control form-control-sm">
-                            <span wire:click="search" class=" btn-primary input-group-text">search</span>
+                        <input  type="text" class="form-control form-control-sm" id="searchInput" onkeyup="searchRecipe()">
+                            <span class=" btn-primary input-group-text">search</span>
                     </div>
                     <div>
                     </div>
@@ -47,7 +47,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="branchRecipeTable">
 
                             @forelse ($branchMenuRecipes as $recipe)
                                 <tr>
@@ -103,6 +103,28 @@
                 document.getElementById('success-message').style.display = 'none';
             }, 1500);
         });
+
+        function searchRecipe() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("branchRecipeTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0]; // Assuming search is based on the first column (Recipe Name)
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
         </script>
     
+
+
 </div>

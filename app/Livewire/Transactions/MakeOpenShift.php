@@ -22,6 +22,8 @@ class MakeOpenShift extends Component
     public $billDenominations = [];
     public $denominationCounts = [];
     public $totalBeginningBalance = 0;
+
+
     
 
     protected $rules = [
@@ -76,6 +78,7 @@ class MakeOpenShift extends Component
     public function submitShift()
     {
         try {
+           
         $this->calculateTotal();
         // Validate inputs
         $this->validate([
@@ -103,10 +106,16 @@ class MakeOpenShift extends Component
                 throw new \Exception('You already have an open shift. Please close it before opening a new one.');
             }
 
-       
+        $curYear = now()->year;
+        $branchId = auth()->user()->branch_id;
+        $yearlyCount = CashierShift::where('branch_id', $branchId)
+            ->whereYear('created_at', $curYear)
+            ->count() + 1;
+        $reference = 'CS-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
 
         // Create new cashier shift
         $shift = CashierShift::create([
+            'reference' => $reference,
             'cashier_id' => auth()->user()->employee->id,
             'branch_id' => auth()->user()->employee->branch_id,
             'drawer_id' => $this->drawerId,
@@ -116,7 +125,7 @@ class MakeOpenShift extends Component
         ]);
 
          // check invoices table for any transactions made by the cashier before the shift was opened
-            $pendingTransactions = Invoice::where('created_at', now()->toDateString())->get();
+            $pendingTransactions = Invoice::whereDate('created_at', now()->toDateString())->get();
 
         // if there are pending transactions, save the denomination counts
         if(!$pendingTransactions->isEmpty()) {

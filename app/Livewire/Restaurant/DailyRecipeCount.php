@@ -23,16 +23,14 @@ class DailyRecipeCount extends Component
     {
         $currentWeekday = date('D'); // Get the current day of the week (Mon, Tue, Wed, etc.)
         $columnName = strtolower($currentWeekday);
+        $AlaCarteMenus  = Menu::where('recipe_type', 'Ala carte')->pluck('id')->toArray();
         $this->branchMenuRecipes = BranchMenuRecipe::with('menu', 'branchMenu')
             ->whereHas('branchMenu', function ($query) use ($columnName) {
                 $query->where('branch_id', auth()->user()->branch_id)->where('is_available', '1')
                 ->where('start_date', '<=', now())
                 ->where('end_date', '>=', now())
                 ->where($columnName, '1');
-            })
-            ->whereHas('menu', function ($query) {
-                $query->where('menu_type', 'Ala carte');
-            })
+            })->whereIn('menu_id', $AlaCarteMenus)
             ->get();
           
 
