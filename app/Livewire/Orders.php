@@ -27,6 +27,7 @@ class Orders extends Component
     public $selectedItems2Cancel;
     public $reasonForCancelation;
     public $orderId;
+    public $isAdmin = false;
 
   protected $listeners = [
     'RemoteActionTriggered' => 'handleRemoteExecute',
@@ -85,7 +86,14 @@ class Orders extends Component
 
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Restaurant - Monitor') !=2 ){
+            if(auth()->user()->employee->getModulePermission('Restaurant - Monitor') == 1){
+                $this->isAdmin = true;
+            }
         $this->fetchData();
+        }else{
+            return abort(403, 'Unauthorized action.');
+        }
     }
     public function fetchData()
     {

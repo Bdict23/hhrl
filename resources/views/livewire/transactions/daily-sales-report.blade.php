@@ -8,12 +8,14 @@
     <div class="container mb-3">
         <div class="row">
             <div class="col-md-6">
+                @if(auth()->user()->employee->getModulePermission('Daily Sales Summary') == 1 )
                 <x-primary-button>Print <i class="bi bi-printer"></i></x-primary-button>
                 <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
+                @endif
                 <x-secondary-button wire:click="fetchData">Refresh &nbsp;<i class="bi bi-arrow-clockwise"></i></x-secondary-button>
             </div>
             <div class="col-md-6">
-                <h4 class="text-end">Daily Sales Report</h4>
+                <h4 class="text-end">Daily Sales Summary</h4>
             </div>
         </div>
     </div>

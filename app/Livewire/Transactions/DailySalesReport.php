@@ -40,7 +40,11 @@ class DailySalesReport extends Component
     }
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Daily Sales Summary') != 2 ){
         $this->fetchData();
+        }else{
+            return abort(403, 'Unauthorized action.');
+        }
     }
     public function render()
     {

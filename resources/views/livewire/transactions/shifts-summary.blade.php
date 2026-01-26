@@ -8,8 +8,11 @@
     <div class="container mb-3">
         <div class="row">
             <div class="col-md-6">
-                <x-primary-button>Print <i class="bi bi-printer"></i></x-primary-button>
-                <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
+               
+                @if(auth()->user()->employee->getModulePermission('Shift Summary') == 1 )
+                     <x-primary-button>Print <i class="bi bi-printer"></i></x-primary-button>
+                    <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
+                @endif
                 <x-secondary-button wire:click="fetchData">Refresh &nbsp;<i class="bi bi-arrow-clockwise"></i></x-secondary-button>
             </div>
             <div class="col-md-6">
@@ -54,7 +57,9 @@
                             <th style="position: sticky; top: 0; font-size: small;">Beginning Balance</th>
                             <th style="position: sticky; top: 0; font-size: small;">Ending Balance</th>
                             <th style="position: sticky; top: 0; font-size: small;">Remarks</th>
-                            <th style="position: sticky; top: 0; font-size: small;">Actions</th>
+                            @if(auth()->user()->employee->getModulePermission('Shift Summary') == 1 )
+                                <th style="position: sticky; top: 0; font-size: small;">Actions</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -74,9 +79,11 @@
                                 <td style="font-size: smaller;">₱ {{ number_format($shift->starting_cash, 2) }}</td>
                                 <td style="font-size: smaller;">₱ {{ number_format($shift->ending_cash, 2) ?? 'N/A' }}</td>
                                 <td style="font-size: smaller;">{{ $shift->notes ?? 'N/A' }}</td>
+                                @if(auth()->user()->employee->getModulePermission('Shift Summary') == 1 )
                                 <td style="font-size: smaller;">
                                     <button class="btn btn-info btn-sm">View Details <i class="bi bi-eye"></i></button>
                                 </td>
+                                @endif
                             </tr>
                             
                         @empty

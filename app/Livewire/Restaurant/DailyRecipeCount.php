@@ -16,7 +16,7 @@ class DailyRecipeCount extends Component
     public $availableQty;
 
     public function mount()
-    {
+    { 
         $this->loadData();
     }
     public function loadData()

@@ -64,7 +64,9 @@ class MakeOpenShift extends Component
     
     public function mount()
     {
-        $this->drawers = CashDrawer::where('branch_id', auth()->user()->branch_id)
+        if(auth()->user()->employee->getModulePermission('Restaurant - Order Billing') == 1 )
+        {
+            $this->drawers = CashDrawer::where('branch_id', auth()->user()->branch_id)
                             ->where('drawer_status', 'ACTIVE')
                             ->get();
         $this->coinDenominations = Denomination::where('type', 'coin')
@@ -73,6 +75,9 @@ class MakeOpenShift extends Component
         $this->billDenominations = Denomination::where('type', 'bill')
                                     ->orderBy('value', 'desc')
                                     ->get();
+        }else{
+            return abort(403, 'Unauthorized action.');
+              }
     }
     
     public function submitShift()

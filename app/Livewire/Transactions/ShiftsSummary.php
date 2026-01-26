@@ -19,9 +19,13 @@ class ShiftsSummary extends Component
 
     public function mount()
     {
+        if(auth()->user()->employee->getModulePermission('Shift Summary') != 2 ){
         $this->from_date = date('Y-m-d');
         $this->to_date = date('Y-m-d');
         $this->fetchData();
+        }else{
+            return abort(403, 'Unauthorized action.');
+        }
     }
 
     public function fetchData()

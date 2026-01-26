@@ -31,28 +31,32 @@ class CloseCashierShift extends Component
 
     public function mount( Request $request)
     {
-        if($request->has('shift')) {
-            if($request->has('referenced') && $request->input('referenced') == 'current') {
-                $this->cashierShift = CashierShift::where('cashier_id', auth()->user()->employee->id)
-            ->where('shift_status', 'OPEN')
-            ->first();
-            if(!$this->cashierShift){
-                return redirect()->to('/shifts-summary');
-            }
-            if($this->cashierShift->shift_status == 'CLOSED'){
-                $this->isClosed = true;
-            }
-            $this->totalSales = $this->getPaymentTotal();
+        if(auth()->user()->employee->getModulePermission('Restaurant - Order Billing') == 1 )
+        {
+                if($request->has('shift')) {
+                    if($request->has('referenced') && $request->input('referenced') == 'current') {
+                        $this->cashierShift = CashierShift::where('cashier_id', auth()->user()->employee->id)
+                    ->where('shift_status', 'OPEN')
+                    ->first();
+                    if(!$this->cashierShift){
+                        return redirect()->to('/shifts-summary');
+                    }
+                    if($this->cashierShift->shift_status == 'CLOSED'){
+                        $this->isClosed = true;
+                    }
+                    $this->totalSales = $this->getPaymentTotal();
+                    }else{
+                        $this->cashierShift = CashierShift::find($request->input('shift'));
+                    }
+                    
+                $this->billDenominations = Denomination::where('type', 'BILL')->orderBy('value', 'desc')->get();
+                $this->coinDenominations = Denomination::where('type', 'COIN')->orderBy('value', 'desc')->get();
+                }else{
+                    return redirect()->to('/shifts-summary');
+                }
             }else{
-                $this->cashierShift = CashierShift::find($request->input('shift'));
+            return abort(403, 'Unauthorized action.');
             }
-            
-        $this->billDenominations = Denomination::where('type', 'BILL')->orderBy('value', 'desc')->get();
-        $this->coinDenominations = Denomination::where('type', 'COIN')->orderBy('value', 'desc')->get();
-        }else{
-            return redirect()->to('/shifts-summary');
-        }
-        
         
     }
 

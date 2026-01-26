@@ -55,18 +55,20 @@
                                     <div style="text-align: center;position: absolute; right: 1%; top: 1%;">
                                         <span class="lapsed-time" data-time="{{ $order->created_at }}"></span>
                                     </div>
-                                    <div style="text-align: right;position: absolute; right: 1%; top: 1%;">
-                                        <x-dropdown>
-                                            <x-slot name="trigger">
-                                                    <i class="bi bi-three-dots-vertical" style="cursor: pointer;"></i>
-                                            </x-slot>
-                                            <x-slot name="content">
-                                                <x-dropdown-link class="no-underline" wire:click="openCancelOptionsModal({{ $order->id }})">
-                                                    {{ __('Cancelation') }}
-                                                </x-dropdown-link>
-                                            </x-slot>
-                                        </x-dropdown>
-                                    </div>
+                                    @if($isAdmin)
+                                        <div style="text-align: right;position: absolute; right: 1%; top: 1%;">
+                                            <x-dropdown>
+                                                <x-slot name="trigger">
+                                                        <i class="bi bi-three-dots-vertical" style="cursor: pointer;"></i>
+                                                </x-slot>
+                                                <x-slot name="content">
+                                                    <x-dropdown-link class="no-underline" wire:click="openCancelOptionsModal({{ $order->id }})">
+                                                        {{ __('Cancelation') }}
+                                                    </x-dropdown-link>
+                                                </x-slot>
+                                            </x-dropdown>
+                                        </div>
+                                    @endif
                                     <div class="card-body" style="height: 250px; overflow-y: auto;">
                                         <table class="table">
                                             <th style="position: sticky; top: 0; z-index: 1000; background-color: rgb(230, 225, 225);">
@@ -87,7 +89,7 @@
                                                             wire:click="markItem({{ $detail->id }}, $event.target.checked)"
                                                             value="1" {{ $detail->status == 'SERVED' ? 'checked' : '' }}
                                                             class="{{ ($detail->status == 'CANCELLED') ? 'd-none' : '' }}"
-                                                            {{ in_array($order->order_status, ['CANCELLED', 'COMPLETED', 'SERVED']) ? 'disabled' : '' }}>
+                                                            {{ in_array($order->order_status, ['CANCELLED', 'COMPLETED', 'SERVED']) || !$isAdmin ? 'disabled' : '' }}>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -96,9 +98,11 @@
                                     <div class="card-footer text-center">
                                         {{-- <x-danger-button class="{{ $order->order_status != 'PENDING' ? 'd-none' : '' }}"
                                             wire:click="cancelOrder({{ $order->id }})">{{ __('Cancel') }}</x-danger-button> --}}
-                                        <x-primary-button style="background-color: rgb(68, 146, 219);"
-                                            class="{{ $order->order_status != 'SERVING' ? 'd-none' : '' }}"
-                                            wire:click="serveOrder({{ $order->id }})">{{ __('SERVED') }}</x-primary-button>
+                                        @if($isAdmin)
+                                            <x-primary-button style="background-color: rgb(68, 146, 219);"
+                                                class="{{ $order->order_status != 'SERVING' ? 'd-none' : '' }}"
+                                                wire:click="serveOrder({{ $order->id }})">{{ __('SERVED') }}</x-primary-button>
+                                        @endif
                                         <h6 class=" {{ $order->order_status != 'COMPLETED' ? 'd-none' : '' }}"
                                             style="font-size: smaller;">
                                             COMPLETED</h6>

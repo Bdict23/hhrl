@@ -87,12 +87,13 @@
 
             <!-- Submit Button -->
             <div class="mt-4 text-center">
-                
+               @if(auth()->user()->employee->getModulePermission('Restaurant - Order Billing') == 1 ) 
                 <button wire:click="submitShift" class="btn btn-primary btn-lg px-5">
                     <span wire:loading.remove wire:target="submitShift">Start Shift</span>
                     <span wire:loading wire:target="submitShift">Processing...</span>
                 </button>
             </div>
+            @endif
         </div>
     </div>
 
