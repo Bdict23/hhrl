@@ -13,7 +13,7 @@ return new class extends Migration
     {
 
         Schema::table('order_details', function (Blueprint $table) {
-            $table->integer('order_round')->default(1)->after('status')->comment('to track multiple rounds of orders');
+            $table->integer('order_round')->default(1)->after('marked')->comment('to track multiple rounds of orders');
         });
     }
 
