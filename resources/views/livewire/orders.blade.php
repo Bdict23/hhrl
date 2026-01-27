@@ -146,6 +146,20 @@
                                     <div style="text-align: right;position: absolute; right: 1%; top: 1%;">
                                        <i class="bi bi-three-dots-vertical"></i>
                                     </div>
+                                    @if($isAdmin)
+                                        <div style="text-align: right;position: absolute; right: 1%; top: 1%;">
+                                            <x-dropdown>
+                                                <x-slot name="trigger">
+                                                        <i class="bi bi-three-dots-vertical" style="cursor: pointer;"></i>
+                                                </x-slot>
+                                                <x-slot name="content">
+                                                    <x-dropdown-link class="no-underline" wire:click="openCancelOptionsModal({{ $order->id }})">
+                                                        {{ __('Cancelation') }}
+                                                    </x-dropdown-link>
+                                                </x-slot>
+                                            </x-dropdown>
+                                        </div>
+                                    @endif
                                     <div class="card-body" style="height: 250px; overflow-y: auto;">
                                         <table class="table">
                                             <th style="position: sticky; top: 0; z-index: 1000; background-color: rgb(230, 225, 225);">
@@ -327,10 +341,12 @@
                                         </table>
 
                                     </div>
+                                    @if($isAdmin)
                                     <div class="card-footer text-center">
                                         <x-primary-button class="{{ $order->order_status != 'PENDING' ? 'd-none' : '' }}"
                                             wire:click="deployOrder({{ $order->id }})">{{ __('ORDER UP') }}</x-primary-button>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

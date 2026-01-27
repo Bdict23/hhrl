@@ -44,7 +44,7 @@
                                             {{ $item->uom ? $item->uom->unit_symbol : 'N/A' }}
                                         </td>
                                         <td>
-                                            <input wire:model.live="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="1">
+                                            <input wire:model.live="purchaseRequest.{{ $index }}.qty" type="number" class="form-control" id="qty_{{ $index }}" value="0" min="0.01" step="0.01" oninput="if(this.value === '' || this.value < 0.01) this.value = 1;" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46">
                                         </td>
                                         <td style="font-size: 80%">{{ number_format($item->costPrice->amount, 2) }}</td>
                                         <td class="total-price" id="total-price{{ $index }}" style="font-size: 80%">
