@@ -64,6 +64,9 @@ class Invoicing extends Component
 
         if(($data['action'] == 'newOrder' || $data['action'] == 'refreshOrders') && $data['branch_id'] == Auth::user()->branch->id ) {
             $this->mount();
+            if($this->selectedOrderId != null){
+                $this->selectedOrder($this->selectedOrderId);
+            }
         }
     }
 
@@ -102,7 +105,11 @@ class Invoicing extends Component
 
     public function fetchOrders()
     {
-        $this->orders = Order::where([['branch_id', Auth::user()->branch->id]])->whereIn('order_status', ['SERVED','PENDING','SERVING'])->with('ordered_items','tables','ordered_items.menu.price_levels','ordered_items.OrderDiscounts.discount')->get();
+        $this->orders = Order::where([['branch_id', Auth::user()->branch->id]])
+            ->whereIn('order_status', ['SERVED','PENDING','SERVING'])
+            ->where('payment_status', '!=', 'PAID')
+            ->with('ordered_items','tables','ordered_items.menu.price_levels','ordered_items.OrderDiscounts.discount')
+            ->get();
         $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
        
     }

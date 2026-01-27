@@ -243,7 +243,7 @@
                                         <label for="time" class="form-label">Amount Received</label>
                                     </div>
                                     <div class="col-md-7" wire:ignore>
-                                        <input type="number" class="form-control" id="amountReceived" min="0" 
+                                        <input type="number" class="form-control" id="amountReceived" min="0"  id="amountReceived"
                                             name="amountReceived" required wire:model="amountReceived" onchange="updateChange()" onkeyup="updateChange()" step="0.10">
                                     </div>
                                      @error('amountReceived')
@@ -1133,6 +1133,8 @@
                 icon: 'success',
                 timer: 2000
             });
+            document.getElementById('amountReceived').disabled = true;
+            document.getElementById('change').value = '₱ 0.00';
         });
     </script>
     </div>

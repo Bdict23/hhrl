@@ -4,18 +4,24 @@
         {{ session('message') ?? 'Something went wrong.' }}
     </div>
 @endif
-    <div class="card mt-3 mb-3">
-                <div class=" mb-2 mt-2 d-flex justify-content-start">
-                    <div class="col-md-12">
-                        @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                                <a href="{{ route('po.create') }}" type="button" class="btn btn-success btn-sm ml-2">+New Purchase Order</a>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <span wire:loading class="spinner-border text-primary" role="status"></span>
-                    </div>
-                </div>
-            <div class="row d-flex justify-content-between mx-2">
+                    <div class="container mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
+                                        <x-primary-button ><a href="{{ route('po.create') }}" style="text-decoration: none; color: white;">+ New Purchase Order</a></x-primary-button>
+                                        <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
+                                    @endif
+                                    <div class="d-flex justify-content-end">
+                                        <span wire:loading class="spinner-border text-primary" role="status"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 class="text-end">Purchase Order Summary <i class="bi bi-basket"></i></h4>
+                                </div>
+                            </div>
+                        </div>
+        <div class="card mt-3 mb-3">  
+            <div class=" card-header d-flex justify-content-between mx-2">
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-3 mb-2">
