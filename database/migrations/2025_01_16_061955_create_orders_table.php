@@ -28,7 +28,6 @@ return new class extends Migration
             $table->integer('order_number')->nullable()->default(null);
             $table->string('customer_name')->nullable();
             $table->foreignId('table_id')->nullable()->constrained('tables')->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('sales_rep_id')->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->enum('order_status', ['PENDING', 'CANCELLED','SERVING', 'SERVED', 'COMPLETED','FOR ALLOCATION'])->default('FOR ALLOCATION')->index('order_status');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('no action')->onUpdate('no action');
             $table->enum('payment_status', ['PAID', 'UNPAID'])->default('UNPAID')->index('payment_status');

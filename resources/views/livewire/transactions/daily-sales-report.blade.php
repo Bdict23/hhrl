@@ -48,6 +48,7 @@
                 <table class="table table-bordered table-hover align-middle mb-0 table-sm">
                     <thead class="table-dark">
                         <tr>
+                            <th style="position: sticky; top: 0; font-size: small;">Status</th>
                             <th style="position: sticky; top: 0; font-size: small;">Date</th>
                             <th style="position: sticky; top: 0; font-size: small;">Sys. Reference</th>
                             <th style="position: sticky; top: 0; font-size: small;">Inv. No</th>
@@ -58,7 +59,18 @@
                     </thead>
                     <tbody>
                         @forelse ($invoices as $invoice)
-                            <tr>
+                            <tr  @if ($invoice->status == 'CANCELLED') class="table-danger" @endif>
+                                <td style="font-size: small;">
+                                    @if ($invoice->status == 'CLOSED')
+                                        <span class="badge bg-success">CLOSED</span>
+                                    @elseif ($invoice->status == 'PARTIAL_REFUND')
+                                        <span class="badge bg-warning text-dark">PARTIAL REFUND</span>
+                                    @elseif ($invoice->status == 'CANCELLED')
+                                        <span class="badge bg-danger">CANCELLED</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $invoice->status }}</span>
+                                    @endif
+                                </td>
                                 <td style="font-size: small;">{{ $invoice->created_at->format('m/d/Y') }}</td>
                                 <td style="font-size: small;">{{ $invoice->reference ?? '' }}</td>
                                 <td style="font-size: small;">{{ $invoice->invoice_number }}</td>
@@ -179,6 +191,9 @@
                                 <table class="table table-striped table-hover me-3">
                                     <thead class="thead-dark me-3">
                                         <tr style="font-size: smaller;">
+                                            <th>Status</th>
+                                            <th>Waiter</th>
+                                            <th>Served By</th>
                                             <th>Menu Name</th>
                                             <th>QTY</th>
                                             <th>PRICE</th>
@@ -188,7 +203,20 @@
                                     <tbody id="itemTableBody">
 
                                         @foreach ($selectedOrderDetails ?? [] as $details)
-                                            <tr>
+                                            <tr @if ($details->status == 'CANCELLED') class="table-danger" @endif>
+                                                <td style="font-size: smaller;">
+                                                    @if ($details->status == 'SERVED')
+                                                        <span class="badge bg-success">SERVED</span>
+                                                    @elseif ($details->status == 'CANCELLED')
+                                                        <span class="badge bg-danger">CANCELLED</span>
+                                                    @elseif ($details->status == 'SERVING')
+                                                        <span class="badge bg-primary">SERVING</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">{{ $details->status }}</span>
+                                                    @endif
+                                                </td>
+                                                <td style="font-size: smaller;">{{ ($details->waiter->name ?? '-') . ' ' . ($details->waiter->middle_name ?? '-') }}</td>
+                                                <td style="font-size: smaller;">{{ ($details->servedBy->name ?? '-') . ' ' . ($details->servedBy->middle_name ?? '-') }}</td>
                                                 <td style="font-size: smaller;">{{ $details->menu->menu_name }}</td>
                                                 <td style="font-size: smaller;">{{ $details->qty }}</td>
                                                 <td style="font-size: smaller;">{{ number_format($details->priceLevel->amount, 2) }}</td>
@@ -228,35 +256,39 @@
 
     {{-- PAYMENTS MODAL --}}
     <div class="modal fade modal-sm " id="ViewPaments" tabindex="-1" aria-labelledby="ViewPaymentsLabel" aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-top modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ViewPaymentsLabel">Payments &nbsp;<i class="bi bi-info-circle"></i></h5>
+                    <h5 class="modal-title" id="ViewPaymentsLabel">Payment Transaction &nbsp;<i class="bi bi-info-circle"></i></h5>
                     <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#supplierViewModal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="">
-                   <table class="table table-bordered table-hover align-middle mb-0 table-sm">
-                    <thead>
-                        <tr>
-                            <th style="font-size: smaller;">Payment Type</th>
-                            <th style="font-size: smaller;">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                      @forelse ($payments ?? [] as $payment)
-                        <tr>
-                            <td style="font-size: smaller;">{{ $payment->payment_type->payment_type_name }}</td>
-                            <td style="font-size: smaller;">{{ number_format($payment->amount, 2) }}</td>
-                        </tr>
-                          
-                      @empty
-                        <tr>
-                            <td colspan="2" class="text-center" style="font-size: smaller;">No payment details available.</td>
-                        </tr>
-                      @endforelse
-                    </tbody>
-
-                   </table>
+                   <div class="card">
+                    <table class="table table-bordered table-hover align-middle mb-0 table-sm">
+                     <thead>
+                         <tr>
+                             <th style="font-size: smaller;">Type</th>
+                             <th style="font-size: smaller;">Mode</th>
+                             <th style="font-size: smaller;">Amount</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                       @forelse ($payments ?? [] as $payment)
+                         <tr>
+                             <td style="font-size: smaller;">{{ $payment->type }}</td>
+                             <td style="font-size: smaller;">{{ $payment->payment_type->payment_type_name }}</td>
+                             <td style="font-size: smaller;"@if($payment->type == 'REFUND') class="text-danger" @endif>@if($payment->type == 'REFUND') -@endif{{ number_format($payment->amount, 2) }}</td>
+                         </tr>
+                           
+                       @empty
+                         <tr>
+                             <td colspan="2" class="text-center" style="font-size: smaller;">No payment details available.</td>
+                         </tr>
+                       @endforelse
+                     </tbody>
+                    
+                    </table>
+                   </div>
 
                 </div>
             </div>
@@ -279,26 +311,29 @@
                             <tr>
                                 <th style="font-size: smaller;">Discount Name</th>
                                 <th style="font-size: smaller;">Description</th>
+                                <th style="font-size: smaller;">Type</th>
                                 <th style="font-size: smaller;">Amount</th>
+                                <th style="font-size: smaller;">Dish</th>
                             </tr>
                         </thead>
                         <tbody>
                            @forelse ($discountDetails ?? [] as $discountInfo)
-                            <tr>
+                            <tr @if($discountInfo->status == 'CANCELLED') class="table-danger" @endif>
                                 <td style="font-size: smaller;">{{ $discountInfo->discount->title }}</td>
                                 <td style="font-size: smaller">{{ $discountInfo->discount->description }}</td>
                                 <td style="font-size: smaller;">
-                                     @if($discountInfo->discount->amount > 0.00)
-                                                        ₱ {{ number_format($discountInfo->discount->amount) }}
-                                                    @else
-                                                        {{ $discountInfo->discount->percentage  }} %
-                                                    @endif
+                                    @if($discountInfo->discount->type == 'SINGLE')
+                                        <span class="badge text-bg-primary">Per Item</span>
+                                    @else
+                                        <span class="badge text-bg-secondary">Overall</span>
+                                    @endif
                                 </td>
-                                
+                                <td style="font-size: smaller;">₱ {{ number_format($discountInfo->calculated_amount, 2) }}</td>
+                                <td style="font-size: smaller;"> {{'('. $discountInfo->order_detail->qty .'x) '. $discountInfo->order_detail->menu->menu_name ?? 'N/A' }}</td>
                             </tr>
                            @empty
                             <tr>
-                                <td colspan="2" class="text-center" style="font-size: smaller;">No discount details available.</td>
+                                <td colspan="6" class="text-center" style="font-size: smaller;">No discount details available.</td>
                             </tr>
                            @endforelse
                         </tbody>

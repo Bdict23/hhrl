@@ -8,7 +8,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                                        <x-primary-button ><a href="{{ route('po.create') }}" style="text-decoration: none; color: white;">+ New Purchase Order</a></x-primary-button>
+                                        <a href="{{ route('po.create') }}" style="text-decoration: none; color: white;"><x-primary-button >+ New Purchase Order</x-primary-button></a>
                                         <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
                                     @endif
                                     <div class="d-flex justify-content-end">
@@ -16,7 +16,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <h4 class="text-end">Purchase Order Summary <i class="bi bi-basket"></i></h4>
+                                    <h4 class="text-end">Purchase Order Summary <i class="bi bi-basket"> </i></h4>
                                 </div>
                             </div>
                         </div>

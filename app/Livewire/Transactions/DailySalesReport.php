@@ -91,7 +91,7 @@ class DailySalesReport extends Component
         $orderInfo = Order::find($orderId);
         $invoice = Invoice::where('order_id', $orderId)->where('id', $invoiceId)->with('payments','payments.payment_type')->first();
         $this->payments = Payment::where('invoice_id', $invoice->id)->with('payment_type')->get();
-        if($this->payments->count() == 1){
+        if($this->payments->where('type', '!=', 'REFUND')->count() == 1){
             $this->paymentMethod = $this->payments->first()->payment_type->payment_type_name;
         } else {
             $this->paymentMethod = 'SPLIT';

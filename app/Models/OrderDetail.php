@@ -16,6 +16,9 @@ protected $table = 'order_details';
         'price_level_id',
         'created_at',
         'updated_at',
+        'prepared_by',
+        'served_by',
+        'price_level_cost',
     ];
 
     public function menu()
@@ -29,5 +32,13 @@ protected $table = 'order_details';
     public function OrderDiscounts()
     {
         return $this->hasMany(OrderDiscount::class, 'order_detail_id');
+    }
+    public function servedBy()
+    {
+        return $this->belongsTo(Employee::class, 'served_by');
+    }
+    public function waiter()
+    {
+        return $this->belongsTo(Employee::class, 'prepared_by');
     }
 }

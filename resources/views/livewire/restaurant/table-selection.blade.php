@@ -5,8 +5,8 @@
     <div class="row" id="eventsContainer">
         <!-- TAKE OUT -->
         <div class="col-md-4 mb-4 event-item"  wire:click="gotoMenuSelection('takeout')">
-                    <div class="card shadow-sm text-white" style="background-color : #038C25 ">
-                        <div class="card-body text-center border border-primary">
+                    <div class="card border-rounded shadow-sm text-white" style="background-color : #202221 ; cursor: pointer">
+                        <div class="card-body text-center">
                            <div class="d-flex justify-content-between">
                              <h5 class="card-title">&nbsp;</h5>
                            </div>
@@ -19,7 +19,7 @@
                 {{-- dine in --}}
         @foreach ($availableTables as $table)
                 <div class="col-md-4 mb-4 event-item" data-date="{{ $table->event_date }}">
-                    <div class="card  shadow-sm">
+                    <div class="card border-rounded shadow-sm">
                         <div class="card-body">
                            <div class="row">
                                 <div class="col-md-11"  wire:click="gotoMenuSelection({{ $table->id }})" id="test" style="cursor: pointer">
@@ -30,7 +30,7 @@
                                     <p class="card-text">
                                         {{ $table->seating_capacity }} Capacity
                                     </p>
-                                    <i class="bi bi-circle-fill text-muted text-success"  @if($table->status) style="text-color: green;" @endif ><i class="bi bi-fork-knife text-muted"></i></i>
+                                    <i class="bi bi-circle-fill"  @if($table->availability == 'OCCUPIED') style="color: green;" @endif ><i class="bi bi-fork-knife text-muted"></i></i>
                                 </div>
                                 <div class="col-md-1 d-flex align-items-center">
                                     <i class="bi bi-chevron-right text-muted"></i>

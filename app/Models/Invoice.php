@@ -27,6 +27,8 @@ class Invoice extends Model
         'branch_id',
         'created_at',
         'updated_at',
+        'adjusted_amount',
+        'original_amount'
     ];
 
     public function order()

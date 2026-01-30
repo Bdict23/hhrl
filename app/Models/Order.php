@@ -21,12 +21,12 @@ class Order extends Model
         'total_price',
         'table_id',
         'branch_id',
-        'sales_rep_id',
         'customer_id',
         'order_type',
         'order_round',
         'created_at',
         'updated_at',
+        'prepared_by',
     ];
 
     public function order_details(){

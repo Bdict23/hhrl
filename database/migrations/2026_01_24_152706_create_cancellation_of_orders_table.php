@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->nullable()->constrained('orders')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('order_detail_id')->nullable()->constrained('order_details')->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('canceled_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
+            $table->foreignId('cancelled_by')->nullable()->constrained('employees')->onDelete('no action')->onUpdate('no action');
             $table->string('reason_code')->nullable();
             $table->timestamp('created_at')->useCurrent(); // Set default value to current timestamp
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate(); // Set default value to current timestamp and update on change

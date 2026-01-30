@@ -62,14 +62,24 @@ class MenuPricing extends Component
         ]);
         PriceLevel::create([
             'menu_id' => $this->selectedMenuId,
-            'amount' => $this->menu_cost_amount,
+            'amount' => $this->menu_cost_amount, // this supposed to be SRP
             'branch_id' => auth()->user()->branch_id,
             'created_by' => auth()->user()->emp_id,
             'price_type' => 'RATE',
             'company_id' => auth()->user()->branch->company_id,
         ]);
 
-        session()->flash('success', 'New cost added successfully.');
+        // save menu new cost
+        PriceLevel::create([
+            'menu_id' => $this->selectedMenuId,
+            'amount' => $this->recipestWithTotalCost->firstWhere('menu_id', $this->selectedMenuId)['total_cost'],
+            'branch_id' => auth()->user()->branch_id,
+            'created_by' => auth()->user()->emp_id,
+            'price_type' => 'COST',
+            'company_id' => auth()->user()->branch->company_id,
+        ]);
+
+        session()->flash('success', 'Selling Price updated successfully.');
         $this->fetchData(); // Refresh data after adding new cost
 
 

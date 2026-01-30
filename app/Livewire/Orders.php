@@ -12,6 +12,14 @@ use App\Models\BranchSettingConfig;
 use App\Models\ProgramSetting;
 use Carbon\Carbon;
 use App\Models\Table;
+use App\Models\CancellationOfOrder as Cancellation;
+use App\Models\ItemWasteLog;
+use App\Models\PriceLevel;
+use App\Models\Invoice;
+use App\Models\Payment;
+USE App\Models\OrderDiscount;
+
+
 class Orders extends Component
 {
     public $orders;
@@ -25,7 +33,7 @@ class Orders extends Component
 
     public  $orderDetails = [];
     public $selectedItems2Cancel;
-    public $reasonForCancelation;
+    public $reasonForCancelationOfItems;
     public $orderId;
     public $isAdmin = false;
 
@@ -46,7 +54,6 @@ class Orders extends Component
         // dispatch broadcast event — server sends to Pusher
         event(new RemoteActionTriggered($payload, auth()->id()));
     }
-
 
     public function handleRemoteExecute($payload)
     {
@@ -127,6 +134,8 @@ class Orders extends Component
         
         if ($order_details) {
             $order_details->status = $this->markedAsCompleted;
+            $order_details->is_prepared = true;
+            $order_details->served_by = auth()->user()->employee->id;
             $order_details->save();
 
             // check if there are pe
@@ -144,11 +153,14 @@ class Orders extends Component
             } 
 
             // Dispatch remote action event
-            $payload = [
+           try{ $payload = [
                 'action' => 'refreshOrders',
                 'branch_id' => Auth::user()->branch->id,
             ];
             event(new RemoteActionTriggered($payload, auth()->id()));
+             }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
+        }
 
         } else {
             // Handle the case where the order is not found
@@ -179,6 +191,8 @@ class Orders extends Component
             $order_details = order_detail::find($orderId);
             if ($order_details) {
                 $order_details->status = $this->markedAsCompleted;
+                $order_details->is_prepared = false;
+                $order_details->served_by = null;
                 $order_details->save();
                 
                 // update order status to Pending if any item is unmarked
@@ -217,15 +231,19 @@ class Orders extends Component
             //UPDATE ORDER DETAILS STATUS TO SERVING EXCEPT CANCELLED ITEMS
             order_detail::where('order_id', $orderId)
                 ->whereNotIn('status', ['CANCELLED', 'SERVED'])
-                ->update(['status' => 'SERVING']);
+                ->update(['status' => 'SERVING',
+                          'is_prepared' => true,
+                          ]);
 
-            // Dispatch remote action event
+           try{ // Dispatch remote action event
             $payload = [
                 'action' => 'deployOrder',
                 'branch_id' => Auth::user()->branch->id,
             ];
             event(new RemoteActionTriggered($payload, auth()->id()));
-            
+             }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
+        }
         } else {
             // Handle the case where the order is not found
             session()->flash('error', 'Order not found.');
@@ -259,13 +277,15 @@ class Orders extends Component
             }
             
 
-            // Dispatch remote action event
+            try{// Dispatch remote action event
             $payload = [
                 'action' => 'refreshOrders',
                 'branch_id' => Auth::user()->branch->id,
             ];
             event(new RemoteActionTriggered($payload, auth()->id()));
-
+             }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
+        }
         } else {
             // Handle the case where the order is not found
             session()->flash('error', 'Order not found.');
@@ -295,32 +315,41 @@ class Orders extends Component
     //call from blade only
     public function makeChanges()
     {
-        $payload = [
+        try{
+            $payload = [
                 'action' => 'refreshOrders',
                 'branch_id' => Auth::user()->branch->id,
             ];
             event(new RemoteActionTriggered($payload, auth()->id()));
+             }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
+        }
     }
     public function render()
     {
         return view('livewire.orders', ['orders' => $this->orders]);
     }
 
-    // choose option first
+    // CHOSE OPTION TO CANCEL (ITEM CANCELLATION LEVEL 1-6)
     public function openCancelOptionsModal($orderId)
     {
         $this->dispatch('open-cancel-options-modal', ['orderId' => $orderId]);
     }
+    // (ITEM CANCELLATION LEVEL 2-6)
     public function openCancelItemsModal($orderId)
     {
+        $this->orderId = $orderId;
         $this->orderDetails = order_detail::where('order_id', $orderId)->get();
         $this->dispatch('open-cancel-items-modal', ['orderId' => $orderId]);
     }
 
     public function cancelOrder($orderId){
         $this->dispatch('open-cancel-reason-modal', ['orderId' => $orderId]);
+        $this->orderId = $orderId;
     }
 
+
+    //STORE ORDER ITEM FOR CANCELLATION (ITEM CANCELLATION LEVEL 3-6)
     public function selectedItem( $detailId , $isSelected)
     {
        
@@ -335,11 +364,13 @@ class Orders extends Component
         }
 
     }
+    
+    // VALIDATE ITEM CANCELLATION TO TRIGGER PASSWORD MODAL (ITEM CANCELLATION 4-6)
     public function cancelSelectedItems()
     {
           $this->validate([
             'selectedItems2Cancel' => 'required|array|min:1',
-            'reasonForCancelation' => 'required|string'
+            'reasonForCancelationOfItems' => 'required|string'
         ], [
             'selectedItems2Cancel.required' => 'Please select at least one item to cancel.',
             'selectedItems2Cancel.min' => 'Please select at least one item to cancel.',
@@ -353,6 +384,7 @@ class Orders extends Component
         }   
     }
 
+    //CHECK IF HAS PASSWORD (ITEM CANCELLATION 5-6) (ORDER CANCELLATION 1)
     public function hasCancelingPassword()
     {
         // Get Setting Id
@@ -373,6 +405,7 @@ class Orders extends Component
         }
     }
 
+    //COMPARE PASSWORD
     public function verifyCancelingPassword($inputPassword)
     {
         // Get Setting Id
@@ -401,12 +434,103 @@ class Orders extends Component
         }
     }
 
-    
-
+    // (ITEM CANCELLATION LEVEL 6-6)
     public function proccessOrderItemsCancelation(){
-
-        // Proceed with cancellation logic for selected items
+        $order = order::find($this->orderId);
+        $status = $order->payment_status;
         $itemsToCancel = $this->selectedItems2Cancel;
+        $amount2Refund = 0.00;
+        $itemCount = order_detail::where('order_id', $this->orderId)->where('status', '!=', 'CANCELLED')->count();
+        $items = order_detail::where('order_id', $this->orderId)->where('status', '!=', 'CANCELLED')->whereIn('id', $itemsToCancel)->with('priceLevel')->get(); // get all items except cancelled ones to avoid duplication
+
+
+        if($items->count() == $itemCount){
+            $this->processCancelOrder();
+        }else{
+             
+            // INSERT NEW CANCELLATION LOGS
+                    $cancellation = new Cancellation();
+                    $cancellation->branch_id = auth()->user()->branch->id;
+                    $cancellation->order_id = $this->orderId;
+                    $cancellation->reason_code = $this->reasonForCancelationOfItems;
+                    $cancellation->cancelled_by = auth()->user()->emp_id;
+                    $cancellation->save();
+                    $cancellationID = $cancellation->id;
+
+ 
+                    //UPDATE ORDER DETAILS AND INSERTION OF WASTE LOG IF PREPARED
+                    foreach($items as $item){
+
+                        // CHECK AND SUM ALL REFUNDABLE ITEMS
+                        if($item->marked == true){
+                            $discounts = orderDiscount::where('order_id',$this->orderId)
+                                ->where('order_detail_id', $item->id)
+                                ->get();
+                            foreach($discounts as $discount){$discount->update(['status' => 'CANCELLED'])->save();}
+                            $amount2Refund += (($item->priceLevel->amount * $item->qty) - $discounts->sum('calculated_amount'));
+                        }
+                        //INSERT TO WASTE LOG IF PREPARED
+                        if($item->is_prepared == 1){
+                            $waste = new ItemWasteLog();
+                            $waste->branch_id = auth()->user()->branch->id;
+                            $waste->cancellation_id = $cancellationID;
+                            $waste->waste_selling_price = (PriceLevel::find($item->price_level_id)->amount * $item->qty);
+                            $waste->price_level_srp = (PriceLevel::find($item->price_level_id)->id);
+                            $waste->waste_cost = (PriceLevel::find($item->price_level_cost)->amount * $item->qty);
+                            $waste->price_level_cost = (PriceLevel::find($item->price_level_cost)->id);
+                            $waste->order_detail_id = $item->id;
+                            $waste->created_at = Carbon::now('Asia/Manila');
+                            $waste->updated_at = Carbon::now('Asia/Manila');
+                            $waste->save();
+
+                        }
+                        // UPDATE ORDER DETAIL STATUS TO CANCELLED
+                        $item->status = 'CANCELLED';
+                        $item->save();
+                    }
+                    
+                    if($status == 'PAID' || $status == 'PARTIAL'){
+                        
+                         // PROCESS REFUND
+                            //UPDATE INVOICE STATUS TO CANCELLED
+                            $invoice = Invoice::where('order_id', $this->orderId)->first();
+                            $invoice->status = 'PARTIAL_REFUND';
+                            $invoice->adjusted_amount = $amount2Refund;
+                            $invoice->amount = $invoice->amount - $amount2Refund;
+                            $invoice->updated_by = auth()->user()->emp_id;
+                            $invoice->updated_at = Carbon::now('Asia/Manila');
+                            $invoice->save();
+                            
+                        //check payment based on invoice id
+                            $payments = Payment::where('invoice_id', $invoice->id)->get();
+                            foreach($payments as $payment){
+                                // INSERT PAYMENT AS REFUNDED
+                                $refundedPayment = new Payment();
+                                $refundedPayment->branch_id = $payment->branch_id;
+                                $refundedPayment->customer_id = $payment->customer_id;
+                                $refundedPayment->invoice_id = $payment->invoice_id;
+                                $refundedPayment->amount = $amount2Refund;
+                                $refundedPayment->status = $payment->status;
+                                $refundedPayment->payment_type_id = $payment->payment_type_id;
+                                $refundedPayment->type = 'REFUND';
+                                $refundedPayment->updated_by = auth()->user()->emp_id;
+                                $refundedPayment->prepared_by = $payment->prepared_by;
+                                $refundedPayment->payment_parent = $payment->id;
+                                $refundedPayment->created_at = Carbon::now('Asia/Manila');
+                                $refundedPayment->updated_at = Carbon::now('Asia/Manila');
+                                $refundedPayment->save();
+                            }
+                       
+                    }
+                    // UPDATE TABLE AVAILABITLITY
+                    $table = table::find($order->table_id);
+                    if ($table) {
+                        $table->availability = 'VACANT';
+                        $table->save();
+                    }
+        
+                
+            }
 
         // Reset selected items after cancellation
         $this->selectedItems2Cancel = [];
@@ -420,11 +544,11 @@ class Orders extends Component
     // for order cancelation
     public function submitCancelReason($reason){
         //validate
-        $this->reasonForCancelation = $reason;
+        $this->reasonForCancelationOfItems = $reason;
         $this->validate([
-            'reasonForCancelation' => 'required|string'
-        ], [
-            'reasonForCancelation.required' => 'Please specify the reason for cancelation.',
+            'reasonForCancelationOfItems' => 'required|string'
+        ], [ 
+            'reasonForCancelationOfItems.required' => 'Please specify the reason for cancelation.',
         ]);
         // check for password requirement
         if($this->hasCancelingPassword()){
@@ -445,10 +569,106 @@ class Orders extends Component
 
     }
 
+    // PROCESS THE CANCELLATION FOR WHOLE ORDER
     public function processCancelOrder(){
-        // proceed with order cancelation logic
+        //order status
+        $order = order::find($this->orderId);
+        $status = $order->payment_status;
+        
+        if($status != 'REFUNDED'){
+            //PROCESS REFUND AND WASTE LOGSS AND CANCELLED LOGS(ORDER ONLY)
+                // SET ORDER STATUS TO CANCELLED
+                if($status == 'PAID' || $status == 'PARTIAL'){
+                $order->update([
+                'order_status' => 'CANCELLED',
+                'payment_status' => 'REFUNDED',
+                ]);
+                }else{
+                    $order->update([
+                    'order_status' => 'CANCELLED',
+                    ]);
+                }
+                // INSERT NEW CANCELLATION LOGS
+                $cancellation = new Cancellation();
+                $cancellation->branch_id = auth()->user()->branch->id;
+                $cancellation->order_id = $this->orderId;
+                $cancellation->reason_code = $this->reasonForCancelationOfItems;
+                $cancellation->cancelled_by = auth()->user()->emp_id;
+                $cancellation->save();
 
-        dd('success');
+                $cancellationID = $cancellation->id;
+                // check if order has served items if true insert to waste logs
+                $items = order_detail::where('order_id', $this->orderId)->where('status', '!=', 'CANCELLED')->get(); // get all items except cancelled ones to avoid duplication
+                
+                //UPDATE ORDER DETAILS AND INSERTION OF WASTE LOG IF PREPARED
+                foreach($items as $item){
+                     //INSERT TO WASTE LOG IF PREPARED
+                    if($item->is_prepared == 1){
+                        $waste = new ItemWasteLog();
+                        $waste->branch_id = auth()->user()->branch->id;
+                        $waste->cancellation_id = $cancellationID;
+                        $waste->waste_selling_price = (PriceLevel::find($item->price_level_id)->amount * $item->qty);
+                        $waste->price_level_srp = (PriceLevel::find($item->price_level_id)->id);
+                        $waste->waste_cost = (PriceLevel::find($item->price_level_cost)->amount * $item->qty);
+                        $waste->price_level_cost = (PriceLevel::find($item->price_level_cost)->id);
+                        $waste->order_detail_id = $item->id;
+                        $waste->created_at = Carbon::now('Asia/Manila');
+                        $waste->updated_at = Carbon::now('Asia/Manila');
+                        $waste->save();
+
+                    }
+                    // UPDATE ORDER DETAIL STATUS TO CANCELLED
+                    $item->status = 'CANCELLED';
+                    $item->save();
+                }
+                  
+                if($status == 'PAID' || $status == 'PARTIAL'){
+                    // PROCESS REFUND
+                        //UPDATE INVOICE STATUS TO CANCELLED
+                        $invoice = Invoice::where('order_id', $this->orderId)->first();
+                        $invoice->status = 'CANCELLED';
+                        $invoice->adjusted_amount = $invoice->amount;
+                        $invoice->amount = 0;
+                        $invoice->updated_by = auth()->user()->emp_id;
+                        $invoice->updated_at = Carbon::now('Asia/Manila');
+                        $invoice->save();
+                        
+                    //check payment based on invoice id
+                        $payments = Payment::where('invoice_id', $invoice->id)->get();
+                        foreach($payments as $payment){
+                            // INSERT PAYMENT AS REFUNDED
+                            $refundedPayment = new Payment();
+                            $refundedPayment->branch_id = $payment->branch_id;
+                            $refundedPayment->customer_id = $payment->customer_id;
+                            $refundedPayment->invoice_id = $payment->invoice_id;
+                            $refundedPayment->amount = $payment->amount;
+                            $refundedPayment->status = $payment->status;
+                            $refundedPayment->payment_type_id = $payment->payment_type_id;
+                            $refundedPayment->type = 'REFUND';
+                            $refundedPayment->updated_by = auth()->user()->emp_id;
+                            $refundedPayment->prepared_by = $payment->prepared_by;
+                            $refundedPayment->payment_parent = $payment->id;
+                            $refundedPayment->created_at = Carbon::now('Asia/Manila');
+                            $refundedPayment->updated_at = Carbon::now('Asia/Manila');
+                            $refundedPayment->save();
+                        }
+                    // CANCEL ALL DISCOUNTS
+                        $orderDiscounts = OrderDiscount::where('order_id', $this->orderId)->get();;
+                        foreach($orderDiscounts as $od){
+                            $od->status = 'CANCELLED';
+                            $od->save();
+                        }
+                }
+                // UPDATE TABLE AVAILABITLITY
+                $table = table::find($order->table_id);
+                if ($table) {
+                    $table->availability = 'VACANT';
+                    $table->save();
+                }
+    
+        
+        }
+
     }
 
 }

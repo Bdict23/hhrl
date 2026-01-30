@@ -28,7 +28,6 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                
                 {{-- active orders --}}
                 <div class="row justify-content-center" id="orderContainerActive">
                     @foreach ($activeOrders as $order)
@@ -70,7 +69,7 @@
                                         </div>
                                     @endif
                                     <div class="card-body" style="height: 250px; overflow-y: auto;">
-                                        <table class="table">
+                                        <table class="table table-hover">
                                             <th style="position: sticky; top: 0; z-index: 1000; background-color: rgb(230, 225, 225);">
                                             <td style="position: sticky; top: 0; z-index: 1000; background-color: rgb(230, 225, 225);">
                                                 Item</td>
@@ -81,7 +80,7 @@
                                             </th>
 
                                             @foreach ($order->order_details as $detail)
-                                                <tr>
+                                                <tr @if(in_array($order->order_status, ['CANCELLED', 'COMPLETED', 'SERVED']) || !$isAdmin ) disabled @else style="cursor: pointer;"  @endif  onclick="serve({{ $detail->id }})">
                                                     <td><i @if($detail->status == 'SERVING' ) style="color: green;" title="Deployed" class = "bi bi-circle-fill blink" @elseif($detail->status == 'PENDING') style="color: orange;" class = "bi bi-circle-fill" title="Pending" @elseif($detail->status == 'SERVED') style="color: green;" title="Served" class = "bi bi-circle-fill" @endif></i></td>
                                                     <td>{{ $detail->menu->menu_name }}</td>
                                                     <td style="text-align:center;">{{ $detail->qty }}x</td>
@@ -373,7 +372,7 @@
                         <div class="form-group">
                             <label for="itemsToCancel">Select Items to Cancel:</label>
                             <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px;">
-                                    <table class="table table-sm table-bordered">
+                                    <table class="table table-sm table-bordered table-hover">
                                         <th>
                                             <td>Items</td>
                                             <td>Qty</td>
@@ -381,12 +380,12 @@
                                         </th>
                                         <table-body>
                                             @foreach ($orderDetails as $detail)
-                                                <tr>
+                                                <tr onclick="selectCheckbox({{ $detail->id }})" style="cursor: pointer;">
                                                     <td></td>
                                                     <td>{{ $detail->menu->menu_name }}</td>
                                                     <td style="text-align:center;">{{ $detail->qty }}x</td>
                                                     <td style="text-align:right;">
-                                                        <input class="form-check-input" type="checkbox" wire:change="selectedItem({{ $detail->id }}, $event.target.checked)">
+                                                        <input id="checkbox-{{$detail->id}}" class="form-check-input" type="checkbox" wire:change="selectedItem({{ $detail->id }}, $event.target.checked)">
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -405,22 +404,23 @@
                                             rows="5" 
                                             placeholder="Please provide a reason for canceling these items..."
                                             style="resize: vertical; border-radius: 0.375rem;"
-                                            wire:model="reasonForCancelation"
+                                            wire:model="reasonForCancelationOfItems"
                                         ></textarea>
-                                        @error('reasonForCancelation') <span class="text-danger">{{ $message }}</span> @enderror
+                                        @error('reasonForCancelationOfItems') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger" wire:click="cancelSelectedItems" >Cancel Selected Items</button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" wire:click="cancelSelectedItems" >Cancel Selected Items</button>
                 </div>
             </div>
         </div>
+    </div>
 
+    
     <script>
         // Listen for open-cancel-options-modal event
         window.addEventListener('open-cancel-options-modal', event => {
@@ -431,8 +431,8 @@
                 icon: 'info',
                 showCancelButton: true,
                 showDenyButton: true,
-                confirmButtonText: 'Cancel this Order',
-                denyButtonText: 'Cancel Specific Items',
+                confirmButtonText: 'Entire Order',
+                denyButtonText: 'Specific Items',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 denyButtonColor: '#F25E86',
@@ -705,13 +705,14 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    @this.proccessOrderItemsCancelation();
                     Swal.fire({
                         icon: 'success',
                         title: 'Order Canceled Successfully',
                         showConfirmButton: false,
                         timer: 1500
                     });
-                    @this.proccessOrderItemsCancelation();
+                    
                 } else if (result.isDismissed) {
                     // reset order details 
                    @this.resetCancelDetails();
@@ -787,6 +788,18 @@
                 }, 1500);
                 
                 });
+    
+    
+        function selectCheckbox(detailId) {
+            const checkbox = document.getElementById('checkbox-' + detailId);
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked; // Toggle checkbox state 
+                @this.selectedItem(detailId, checkbox.checked);
+                document.getElementById('checkbox-' + detailId).focus();
+                document.getElementById('checkbox-' + detailId).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    
     
     </script>
 </div>

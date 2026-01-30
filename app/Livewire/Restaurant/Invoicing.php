@@ -75,18 +75,26 @@ class Invoicing extends Component
     {
         $this->amountReceived = 0.00;
         $this->selectedPaymentType = null;
+        $this->selectedOrderDetails = [];
+        $this->selectedOrderId  = null;
+        $this->totalDiscountAmount = 0.00;
+        $this->totalAmountDue = 0.00;
+        $this->grossAmount = 0.00;
         $this->customerName = '';
         $this->splitPayments = [];
+        $this->appliedDiscounts = null;
+        $this->selectedItemDiscounts = null;
         $this->change = "₱ 0.00";
-        $this->totalAmountDue = 0.00;
-                    $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->get();
+        $this->orders = [];
+        $this->selectedItemId = null;
+        $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->get();
 
     }
 
     public function refreshOrders()
     {
-        $this->fetchOrders();
         $this->resetInputFields();
+        $this->mount();
     }
 
     public function checkShiftStatus()
@@ -103,7 +111,7 @@ class Invoicing extends Component
         }
     }
 
-    public function fetchOrders()
+    public function fetchOrders() // all good
     {
         $this->orders = Order::where([['branch_id', Auth::user()->branch->id]])
             ->whereIn('order_status', ['SERVED','PENDING','SERVING'])
@@ -113,22 +121,17 @@ class Invoicing extends Component
         $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
        
     }
-    public function mount()
+    public function mount() // all good
     {
         $this->checkShiftStatus();
     }
-    public function updateTotalAmountDue()
+    public function updateTotalAmountDue() // all good
     {   
         // Calculate total order-level discounts
         $orderDiscountSum = OrderDiscount::where('order_id', $this->selectedOrderId)
-            ->whereNull('order_detail_id')
             ->with('discount')
             ->get()
-            ->sum(function($od) {
-                return $od->discount->amount > 0 
-                    ? $od->discount->amount
-                    : ($od->discount->percentage / 100) * $this->grossAmount;
-            });
+            ->sum('calculated_amount');
         
            
         // Reset split payments whenever total amount due is updated and amount received changes
@@ -140,22 +143,11 @@ class Invoicing extends Component
 
         $this->totalAmountDue = $this->selectedOrderDetails->sum(function($detail) {
             $itemTotal = $detail->qty * ($detail->priceLevel->amount ?? 0);
-            // Subtract discounts
-            $discountTotal = $detail->orderDiscounts->sum(function($od) use ($detail) {
-                return $od->discount->amount > 0 
-                    ? $od->discount->amount * $detail->qty
-                    : ($od->discount->percentage / 100) * ($detail->priceLevel->amount ?? 0) * $detail->qty;
-            });
-            return $itemTotal - $discountTotal;
+            return $itemTotal;
         });
-        $this->totalDiscountAmount = $this->selectedOrderDetails->sum(function($detail) {
-            return $detail->orderDiscounts->sum(function($od) use ($detail) {
-                return $od->discount->amount > 0 
-                    ? $od->discount->amount * $detail->qty
-                    : ($od->discount->percentage / 100) * ($detail->priceLevel->amount ?? 0) * $detail->qty;
-            });
-        });
-        $this->totalDiscountAmount += $orderDiscountSum;
+        
+        
+        $this->totalDiscountAmount = $orderDiscountSum;
         $this->totalAmountDue -= $orderDiscountSum;
 
     }
@@ -164,50 +156,59 @@ class Invoicing extends Component
         try {
            
         // Reset split payments whenever total amount due is updated and amount received changes
-        $this->splitPayments;
+        $this->splitPayments = [];
         $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
         $this->amountReceived = 0.00;
         $this->change = "₱ 0.00";
         $this->selectedOrderId = $orderId;
-        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('marked', false)->whereIn('status', ['SERVED','PENDING'])->with('priceLevel')->get();
+        $this->selectedOrderDetails = OrderDetail::where('order_id', $orderId)->where('marked', false)->whereIn('status', ['SERVED','PENDING','SERVING'])->with('priceLevel')->get();
         
         // Calculate initial total amount due
         $this->grossAmount = $this->selectedOrderDetails->sum(function($detail) {
             return $detail->qty * ($detail->priceLevel->amount ?? 0);
-        });
+        }); // all good
 
         $selectedOrderDiscounts = OrderDiscount::where('order_id', $orderId)
-            ->whereNull('order_detail_id')
+            ->where('type', 'ORDER')
             ->get();
-        // Auto-apply discounts that have auto_apply = true
+        // check for Auto-apply discounts
         $autoApplyDiscounts = Discount::where('branch_id', auth()->user()->branch->id)
             ->where('status', 'ACTIVE')
             ->where('type', 'WHOLE')
             ->where('auto_apply', true)
             ->get();
+        
+            // Delete existing auto-applied discounts to prevent duplicates
+        foreach($autoApplyDiscounts as $discount) {
+            OrderDiscount::where('order_id', $orderId)
+                ->where('discount_id', $discount->id)
+                ->where('type', 'ORDER')
+                ->delete();
+        }
 
-        foreach ($autoApplyDiscounts as $discount) {
-            // Check if already applied
-            $exists = OrderDiscount::where([
-                ['order_id', $orderId],
-                ['order_detail_id', null],
-                ['discount_id', $discount->id]
-            ])->exists();
 
-            if (!$exists) {
-                // Apply the discount automatically
-                OrderDiscount::create([
-                    'order_id' => $orderId,
-                    'order_detail_id' => null,
-                    'discount_id' => $discount->id
-                ]);
-            }
+        foreach ($autoApplyDiscounts as $discount) {  
+
+                // Divide the discount amount among all items
+                    $amountToDistribute = $discount->amount > 0 
+                        ? $discount->amount 
+                        : ($discount->percentage / 100) * $this->totalAmountDue; 
+ 
+                // Apply the discount automatically each items
+                foreach ($this->selectedOrderDetails as $detail) {
+                    OrderDiscount::create([
+                        'order_id' => $orderId,
+                        'order_detail_id' => $detail->id,
+                        'discount_id' => $discount->id,
+                        'calculated_amount' => ($amountToDistribute / $this->selectedOrderDetails->count()),
+                    ]);
+                } 
             
         }
 
         // Refresh the selected order discounts after auto-apply
         $selectedOrderDiscounts = OrderDiscount::where('order_id', $orderId)
-            ->whereNull('order_detail_id')
+            ->where('type', 'ORDER')
             ->get();
 
         $this->perOrderDiscounts = Discount::where('branch_id', auth()->user()->branch->id)
@@ -227,14 +228,17 @@ class Invoicing extends Component
         $this->selectedItemId = $itemId;
         $this->selectedItemDiscounts = OrderDiscount::where([
             ['order_id', $this->selectedOrderId],
-            ['order_detail_id', $itemId]
+            ['order_detail_id', $itemId],
+            ['type', 'ITEM'],
         ])->with('discount')->get();
         $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->where('type','SINGLE')->whereNotIn('id', $this->selectedItemDiscounts->pluck('discount_id'))->get();
     }
 
     public function selectedDiscounts($discountId, $isChecked)
     {
+        
         $has_code = Discount::where('id', $discountId)->whereNotNull('code')->exists();
+        // Request discount code if needed
         if($has_code && $isChecked){
            $this->dispatch('RequestDiscountCode', discountId: $discountId);
             return;
@@ -245,23 +249,27 @@ class Invoicing extends Component
             $orderDetail = OrderDetail::with('priceLevel')->find($this->selectedItemId);
             $discount = Discount::find($discountId);
             
+            //delete any existing order-level discounts for this order
+                OrderDiscount::where([
+                    ['order_id', $this->selectedOrderId],
+                    ['type', 'ORDER'],
+                ])->delete();
+
             if ($orderDetail && $discount) {
                 $itemTotal = $orderDetail->qty * ($orderDetail->priceLevel->amount ?? 0);
-                
+
                 // Calculate current total discounts
                 $currentDiscounts = OrderDiscount::where('order_detail_id', $this->selectedItemId)
+                    ->where('order_id', $this->selectedOrderId)->where('status', 'APPLIED')->where('type', 'ITEM')
                     ->with('discount')
                     ->get()
-                    ->sum(function($od) use ($orderDetail) {
-                        return $od->discount->amount > 0 
-                            ? $od->discount->amount * $orderDetail->qty
-                            : ($od->discount->percentage / 100) * ($orderDetail->priceLevel->amount ?? 0) * $orderDetail->qty;
-                    });
-                
+                    ->sum('calculated_amount');
+
                 // Calculate new discount amount
                 $newDiscountAmount = $discount->amount > 0 
-                    ? $discount->amount * $orderDetail->qty
+                    ? $discount->amount * $orderDetail->qty 
                     : ($discount->percentage / 100) * ($orderDetail->priceLevel->amount ?? 0) * $orderDetail->qty;
+
                 
                 // Check if total discounts would exceed item total
                 if (($currentDiscounts + $newDiscountAmount) > $itemTotal) {
@@ -270,11 +278,13 @@ class Invoicing extends Component
                 }
             }
             
-            OrderDiscount::updateOrCreate(
+            OrderDiscount::create(
                 [
                     'order_id' => $this->selectedOrderId,
                     'order_detail_id' => $this->selectedItemId,
-                    'discount_id' => $discountId
+                    'discount_id' => $discountId,
+                    'type' => 'ITEM',
+                    'calculated_amount' => $currentDiscounts + $newDiscountAmount ,
                 ]
             );
             $this->updateTotalAmountDue();
@@ -283,7 +293,7 @@ class Invoicing extends Component
             OrderDiscount::where([
                 ['order_id', $this->selectedOrderId],
                 ['order_detail_id', $this->selectedItemId],
-                ['discount_id', $discountId]
+                ['discount_id', $discountId],
             ])->delete();
             $this->updateTotalAmountDue();
             $this->selectedOrder($this->selectedOrderId);
@@ -292,26 +302,32 @@ class Invoicing extends Component
 
     public function selectedOrderDiscounts($discountId, $isChecked)
     {
-       
         $has_code = Discount::where('id', $discountId)->whereNotNull('code')->exists();
         if($has_code && $isChecked){
            $this->dispatch('RequestOrderDiscountCode', discountId: $discountId);
             return;
         }
         if ($isChecked) {
-            OrderDiscount::updateOrCreate(
-                [
-                    'order_id' => $this->selectedOrderId,
-                    'order_detail_id' => null,
-                    'discount_id' => $discountId
-                ]
-            );
+             // Divide the discount amount among all items
+                    $amountToDistribute = $discount->amount > 0 
+                        ? $discount->amount 
+                        : ($discount->percentage / 100) * $this->totalAmountDue; 
+ 
+                // Apply the discount automatically each items
+                foreach ($this->selectedOrderDetails as $detail) {
+                    OrderDiscount::create([
+                        'order_id' => $this->selectedOrderId,
+                        'order_detail_id' => $detail->id,
+                        'discount_id' => $discount->id,
+                        'calculated_amount' => ($amountToDistribute / $this->selectedOrderDetails->count()),
+                    ]);
+                } 
             $this->updateTotalAmountDue();
             $this->selectedOrder($this->selectedOrderId);
         } else {
             OrderDiscount::where([
                 ['order_id', $this->selectedOrderId],
-                ['order_detail_id', null],
+                ['type', 'ORDER'],
                 ['discount_id', $discountId]
             ])->delete();
             $this->updateTotalAmountDue();
@@ -333,13 +349,20 @@ class Invoicing extends Component
                         'message' => 'Invalid discount code.'
                     ];
                 }
-                OrderDiscount::updateOrCreate(
-                    [
+                 // Divide the discount amount among all items
+                    $amountToDistribute = $discount->amount > 0 
+                        ? $discount->amount 
+                        : ($discount->percentage / 100) * $this->totalAmountDue; 
+ 
+                // Apply the discount automatically each items
+                foreach ($this->selectedOrderDetails as $detail) {
+                    OrderDiscount::create([
                         'order_id' => $this->selectedOrderId,
-                        'order_detail_id' => null,
-                        'discount_id' => $discountId
-                    ]
-                );
+                        'order_detail_id' => $detail->id,
+                        'discount_id' => $discount->id,
+                        'calculated_amount' => ($amountToDistribute / $this->selectedOrderDetails->count()),
+                    ]);
+                } 
 
                 $this->fetchOrders();
                 $this->updateTotalAmountDue();
@@ -400,7 +423,10 @@ class Invoicing extends Component
                     [
                         'order_id' => $this->selectedOrderId,
                         'order_detail_id' => $this->selectedItemId,
-                        'discount_id' => $discountId
+                        'discount_id' => $discountId,
+                        'calculated_amount' => $discount->amount > 0 
+                            ? $discount->amount * $orderDetail->qty
+                            : ($discount->percentage / 100) * ($orderDetail->priceLevel->amount ?? 0) * $orderDetail->qty,
                     ]
                 );
 
@@ -413,7 +439,7 @@ class Invoicing extends Component
                     'message' => 'Discount code applied successfully!'
                 ];
         
-    }
+    } //end applyDiscountWithCode
     
 
     public function removeSplitPayment($id)
@@ -472,6 +498,9 @@ class Invoicing extends Component
             'amount' => $this->totalAmountDue,
             'branch_id' => auth()->user()->branch->id,
             'prepared_by' => auth()->user()->employee->id,
+            'created_at' => now('Asia/Manila'),
+            'updated_at' => now('Asia/Manila'),
+            'original_amount' => $this->totalAmountDue,
         ]);
 
         //check payment type if its split or not
@@ -544,11 +573,16 @@ class Invoicing extends Component
         $this->totalAmountDue = 0.00;
         $this->dispatch('PaymentSaved', invoiceId: $invoice->id);
 
-           $payload = [
+        try{
+             $payload = [
                 'action' => 'refreshOrders',
                 'branch_id' => Auth::user()->branch->id,
             ];
             event(new RemoteActionTriggered($payload, auth()->id()));
+        }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
+        }
+          
 
     }
 

@@ -83,11 +83,7 @@
                                                     data-bs-toggle="modal" data-bs-target="#AddDiscountModal"
                                                      wire:click="selectedItem({{ $items->id }})" class="btn btn-link" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                                                    
-                                                        ₱ {{ number_format($items->orderDiscounts->sum(function($orderDiscount) use ($items) {
-                                                            return $orderDiscount->discount->amount > 0.00 
-                                                                ? $orderDiscount->discount->amount * $items->qty
-                                                                : ($orderDiscount->discount->percentage / 100) * ($items->priceLevel->amount ?? 0) * $items->qty;
-                                                        }), 2) }}
+                                                        ₱ {{ number_format($items->orderDiscounts->sum('calculated_amount'), 2) }}
                                                         <i class="bi bi-pencil-square" style="font-size: 0.8em;"></i>
                                                     
                                                 </button></td>
@@ -276,7 +272,7 @@
         </form>
         {{-- view all discounts applied summary modal --}}
         <div class="modal fade" id="ViewDiscountsModal" tabindex="-1" aria-labelledby="ViewDiscountsModalLabel" aria-hidden="true" wire:ignore.self>
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="ViewDiscountsModalLabel">Applied Discounts Summary</h5>
@@ -287,15 +283,15 @@
                             <h5>Discount Details</h5>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3">
+                            <div class="mb-3" style="overflow: auto; max-height : 200px;">
 
-                                <table class="table table-bordered table-hover">
-                                    <thead>
+                                <table class="table table-bordered table-hover table-sm table-striped">
+                                    <thead class="thead-dark sticky-top">
                                         <tr>
                                             <th>Item</th>
                                             <th>Title</th>
                                             <th>Deducted</th>
-                                            <th>Deducted to</th>
+                                            <th>Type</th>
                                             <th>Action</th>                                       
                                         </tr>
                                     </thead>
@@ -304,13 +300,7 @@
                                            <tr>
                                                 <td>{{ $appliedDiscount->discount->title }}</td>
                                                 <td>{{ $appliedDiscount->discount->description}}</td>
-                                                <td>
-                                                    @if($appliedDiscount->discount->amount > 0.00)
-                                                        ₱ {{ number_format($appliedDiscount->discount->amount) }}
-                                                    @else
-                                                        {{ $appliedDiscount->discount->percentage  }} %
-                                                    @endif
-                                                </td>
+                                                <td>₱ {{ number_format($appliedDiscount->calculated_amount, 2) }}</td>
                                                 <td>
                                                     @if($appliedDiscount->discount->type == 'SINGLE')
                                                         <span class="badge text-bg-primary">Per Item</span>
@@ -327,7 +317,7 @@
                                            </tr>
                                        @empty
                                            <tr>
-                                                <td colspan="4" style="text-align: center;">No discounts applied.</td>
+                                                <td colspan="5" style="text-align: center;">No discounts applied.</td>
                                            </tr>
                                        @endforelse
                                     </tbody>
@@ -1135,6 +1125,15 @@
             });
             document.getElementById('amountReceived').disabled = true;
             document.getElementById('change').value = '₱ 0.00';
+        });
+
+        document.addEventListener('error', event => {
+            const data = event.detail[0];
+            Swal.fire({
+                icon: 'warning',
+                title: data.title,
+                text: data.message,
+            }); 
         });
     </script>
     </div>

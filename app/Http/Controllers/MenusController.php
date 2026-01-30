@@ -125,7 +125,9 @@ class MenusController extends Controller
 
     public function order_store(Request $request){
         try {
-            //check tabkle availability
+        
+
+        //check tabkle availability
             if ($request->tableID) {
                 $table = Table::where('id', $request->tableID)->first();
 
@@ -147,8 +149,11 @@ class MenusController extends Controller
                         $order_details->order_id = $existingOrder->id;
                         $order_details->status = 'PENDING';
                         $order_details->menu_id = $menu_id[$index];
+                        $order_details->created_at = Carbon::now('Asia/Manila');
                         $order_details->qty = $qty[$index];
                         $order_details->price_level_id = $price_level_id[$index];
+                        $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
+                        $order_details->prepared_by = auth()->user()->employee->id;
                         $order_details->save();
                         }
 
@@ -178,10 +183,13 @@ class MenusController extends Controller
                         $price_level_id = $request->input('price_level_id', []);
                         foreach ($menu_id as $index => $value) {
                         $order_details = new OrderDetail();
+                        $order_details->created_at = Carbon::now('Asia/Manila');
                         $order_details->order_id = $existingOrder->id;
                         $order_details->status = 'PENDING';
                         $order_details->menu_id = $menu_id[$index];
                         $order_details->qty = $qty[$index];
+                        $order_details->prepared_by = auth()->user()->employee->id;
+                        $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                         $order_details->price_level_id = $price_level_id[$index];
                         $order_details->save();
                         }
@@ -206,9 +214,9 @@ class MenusController extends Controller
                     $order->order_number = $orderNumber + 1;
                     $order->created_at = Carbon::now('Asia/Manila');
                     $order->updated_at = Carbon::now('Asia/Manila');
-                    $order->sales_rep_id = Auth::user()->emp_id;
                     $order->branch_id = Auth::user()->branch->id;
                     $order->order_status = 'PENDING';
+                    $order->prepared_by = auth()->user()->employee->id;
                     $order->table_id = $request->tableID ?? null;
                     $order->save();
                     if ($request->tableID) {
@@ -223,8 +231,11 @@ class MenusController extends Controller
                     foreach ($menu_id as $index => $value) {
                     $order_details = new OrderDetail();
                     $order_details->order_id = $order->id;
+                    $order_details->created_at = Carbon::now('Asia/Manila');
                     $order_details->menu_id = $menu_id[$index];
                     $order_details->qty = $qty[$index];
+                    $order_details->prepared_by = auth()->user()->employee->id;
+                    $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                     $order_details->price_level_id = $price_level_id[$index];
                     $order_details->save();
                     }
@@ -249,7 +260,7 @@ class MenusController extends Controller
                 $order->order_number = $orderNumber + 1;
                 $order->created_at = Carbon::now('Asia/Manila');
                 $order->updated_at = Carbon::now('Asia/Manila');
-                $order->sales_rep_id = Auth::user()->emp_id;
+                $order->prepared_by = auth()->user()->employee->id;
                 $order->branch_id = Auth::user()->branch->id;
                 $order->order_status = 'PENDING';
                 $order->save();
@@ -259,9 +270,12 @@ class MenusController extends Controller
                 foreach ($menu_id as $index => $value) {
                     $order_details = new OrderDetail();
                     $order_details->order_id = $order->id;
+                    $order_details->created_at = Carbon::now('Asia/Manila');
                     $order_details->menu_id = $menu_id[$index];
                     $order_details->qty = $qty[$index];
+                    $order_details->prepared_by = auth()->user()->employee->id;
                     $order_details->price_level_id = $price_level_id[$index];
+                    $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                     $order_details->save();
                 }
                 $payload = [
