@@ -9,7 +9,7 @@ use App\Models\Supplier;
 use App\Models\Employee;
 use App\Models\Branch;
 use App\Models\Item;
-use App\Models\priceLevel;
+use App\Models\PriceLevel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Signatory;
