@@ -16,7 +16,7 @@ class WithdrawalSummary extends Component
         'PREPARING' => 'Preparing',
         'FOR REVIEW' => 'For Review',
         'FOR APPROVAL' => 'For Approval',
-        'APPROVED' => 'To Receive',
+        'APPROVED' => 'Approved',
         'REJECTED' => 'Rejected',
         'CANCELLED' => 'Cancelled',
     ];
