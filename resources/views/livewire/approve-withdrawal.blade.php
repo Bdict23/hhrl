@@ -73,8 +73,8 @@
                                         <td>{{ $cardex->item->item_description }}</td>
                                         <td>{{ $cardex->item->category->category_name }}</td>
                                         <td>{{ $cardex->qty_out }}</td>
-                                        <td>{{ $cardex->priceLevel->amount }}</td>
-                                        <td>{{ $cardex->qty_out * $cardex->priceLevel->amount }}</td>
+                                        <td> ₱ {{ $cardex->priceLevel->amount }}</td>
+                                        <td> ₱ {{ $cardex->qty_out * $cardex->priceLevel->amount }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -94,13 +94,16 @@
                         <h5 class="card-title">Information</h5>
                         <div class="alert" style="background-color: #f2f4f7;" role="alert">
 
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="reference_number" class="form-label">Ref. Number</label>
-                                </div>
+                            <div class="row">                
                                 <div class="col-md-7">
+                                    <label for="reference_number" class="form-label">Ref. Number</label>
                                     <input type="text" class="form-control" id="reference_number" readonly
                                         value="{{ $reference }}">
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="withdrawal_type" class="form-label">Withdrawal Type</label>
+                                    <input type="text" class="form-control" id="withdrawal_type" readonly
+                                        value="{{ $withdrawalInfo->withdrawalType->setting_value ?? 'N/A' }}">
                                 </div>
                             </div>
                             <div class="row mb-2">

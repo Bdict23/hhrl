@@ -9,6 +9,17 @@ use App\Models\Department;
 class WithdrawalSummary extends Component
 {
     public $withdrawals = [];
+    public $selectedStatus = 'All';
+    public $fromDate;
+    public $toDate;
+    public $statuses = [
+        'PREPARING' => 'Preparing',
+        'FOR REVIEW' => 'For Review',
+        'FOR APPROVAL' => 'For Approval',
+        'APPROVED' => 'To Receive',
+        'REJECTED' => 'Rejected',
+        'CANCELLED' => 'Cancelled',
+    ];
     public function mount()
     {
         if(auth()->user()->employee->getModulePermission('Item Withdrawal') == 2){
@@ -20,15 +31,7 @@ class WithdrawalSummary extends Component
 
     public function fetchData()
     {
-        // $withdrawal = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
 
-
-        // $departments = Department::where([['company_id', auth()->user()->branch->company_id], ['department_status', 'ACTIVE'], ['branch_id', auth()->user()->branch_id]])->get();
-        // $approvers = Signatory::where([['signatory_type', 'APPROVER', 'employees'], ['branch_id', auth()->user()->branch_id], ['status', 'ACTIVE'], ['MODULE', 'ITEM_WITHDRAWAL']])->get();
-        // $reviewers = Signatory::where([['signatory_type', 'REVIEWER', 'employees'], ['branch_id', auth()->user()->branch_id], ['status', 'ACTIVE'], ['MODULE', 'ITEM_WITHDRAWAL']])->get();
-        // $items = Item::with('priceLevel', 'units', 'category', 'classification')->where([['item_status', 'ACTIVE'], ['company_id', auth()->user()->branch->company_id]])->get();
-        // $categories = DB::table('categories')->select('category_name')->where([['status', 'ACTIVE'],['category_type', 'ITEM'],['company_id', auth()->user()->branch->company_id]])->get();
-    
         // Fetch data for the withdrawal summary
         $this->withdrawals = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'preparedBy', 'cardex')
             ->where('source_branch_id', auth()->user()->branch_id)
@@ -45,5 +48,23 @@ class WithdrawalSummary extends Component
         // Redirect to the withdrawal show page with the selected ID
         return redirect()->to('/withdrawal-show?withdrawal-id=' . $id);
 
+    }
+
+
+     public function search()
+    {
+        $query = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'preparedBy', 'cardex')
+            ->where('source_branch_id', auth()->user()->branch_id);
+
+        if ($this->selectedStatus !== "All") {
+            $query->where('withdrawal_status', $this->selectedStatus);
+        }
+
+        if ($this->fromDate && $this->toDate) {
+            $query->whereDate('created_at', '>=', $this->fromDate)
+                  ->whereDate('created_at', '<=', $this->toDate);
+        }
+
+        $this->withdrawals = $query->get();
     }
 }

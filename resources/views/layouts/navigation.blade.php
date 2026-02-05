@@ -349,7 +349,7 @@
                                    @endif
                                      @if (auth()->user()->employee->getModulePermission('Cancelation of Orders') !=2)
                                         <x-dropdown-link :href="url('/restaurant-cancelation')" class="no-underline">
-                                            {{ __('Cancellation of Orders') }}
+                                            {{ __('Cancellation Summary') }}
                                         </x-dropdown-link>
                                    @endif
                                 </x-slot>

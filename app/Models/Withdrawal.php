@@ -19,6 +19,7 @@ class Withdrawal extends Model
         'reviewed_by',
         'prepared_by',
         'remarks',
+        'withdrawal_type',
     ];
 
     public function department()
@@ -54,6 +55,15 @@ class Withdrawal extends Model
         return $this->cardex->sum(function ($cardex) {
             return optional($cardex->priceLevel)->amount ?? 0;
         });
+    }
+
+    public function withdrawalType()
+    {
+        return $this->belongsTo(OtherSetting::class, 'withdrawal_type', 'id');
+    }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'source_branch_id');
     }
   
 }

@@ -139,6 +139,17 @@
                                 @error('remarks')
                                     <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
                                 @enderror
+                                <select class="form-control mt-2 mb-2" name="order_type" id="order_type" style="font-size: x-small" wire:model="selectedOrderType">
+                                    <option value="">Order Type</option>
+                                    @foreach ($orderType as $order)
+                                        <option value="{{ $order->id }}" style="font-size: x-small">
+                                            {{ $order->setting_value }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('selectedOrderType')
+                                    <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6">
                                 <div class="row ">
@@ -163,9 +174,6 @@
                                         
                                     </div>
                                     @endif
-                                    @error('reviewer_id')
-                                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                    @enderror
                                     
                         
                                     <div
@@ -183,6 +191,21 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                       
+                                    </div>
+                                      @if ($hasReviewer)
+                                        <div class="col-md-6">
+                                            @error('reviewer_id')
+                                                <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    @endif
+                                     <div
+                                    @if (!$hasReviewer)
+                                        class="col-md-12"
+                                    @else
+                                        class="col-md-6"
+                                    @endif>
                                         @error('approver_id')
                                             <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
                                         @enderror

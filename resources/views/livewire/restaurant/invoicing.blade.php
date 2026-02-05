@@ -1133,6 +1133,7 @@
                 icon: 'warning',
                 title: data.title,
                 text: data.message,
+                showConfirmButton: true,
             }); 
         });
     </script>

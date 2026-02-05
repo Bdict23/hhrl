@@ -1,8 +1,23 @@
 <div>
-    <h2>{{ $branchName ?? '' }}</h2>
+    <style>
+         .title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+    <div class="title mt-2 mb-6">
+            <div class="header">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <img src="{{ asset('images/' . auth()->user()->branch->company->company_logo) }}" alt="Branch Logo" style="max-height: 50px;">
+                    <h5 style="margin: 0;">{{ $withdrawalData->branch->branch_name }}</h5>
+                </div>
+            </div>
+            <span class="address">{{ $withdrawalData->branch->branch_address }}</span>
+        </div>
 
     <!-- Document Information Tables -->
-    <div class="flex-container">
+    <div class="flex-container mt-4">
         <table class="table-xs table-sm">
             <tr>
                 <th>Reference No.</th>

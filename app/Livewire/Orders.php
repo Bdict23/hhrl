@@ -339,7 +339,7 @@ class Orders extends Component
     public function openCancelItemsModal($orderId)
     {
         $this->orderId = $orderId;
-        $this->orderDetails = order_detail::where('order_id', $orderId)->get();
+        $this->orderDetails = order_detail::where('order_id', $orderId)->where('status', '!=', 'CANCELLED')->get();
         $this->dispatch('open-cancel-items-modal', ['orderId' => $orderId]);
     }
 
@@ -528,12 +528,17 @@ class Orders extends Component
                         $table->availability = 'VACANT';
                         $table->save();
                     }
-        
-                
             }
-
         // Reset selected items after cancellation
         $this->selectedItems2Cancel = [];
+        try{ $payload = [
+                'action' => 'refreshOrders',
+                'branch_id' => Auth::user()->branch->id,
+            ];
+            event(new RemoteActionTriggered($payload, auth()->id()));
+             }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
+        }
 
     }
 
@@ -667,6 +672,15 @@ class Orders extends Component
                 }
     
         
+        }
+
+        try{ $payload = [
+                'action' => 'refreshOrders',
+                'branch_id' => Auth::user()->branch->id,
+            ];
+            event(new RemoteActionTriggered($payload, auth()->id()));
+             }catch(\Exception $e){
+             $this->dispatch('error', ['message' => 'Please Manual Refresh the other module for them to get updated', 'title' => 'Notification error']);
         }
 
     }

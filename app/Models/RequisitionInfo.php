@@ -32,6 +32,7 @@ class RequisitionInfo extends Model
         'requisition_status',
         'remarks',
         'event_id',
+        'order_type'
     ];
 
     public function branches()
@@ -63,5 +64,10 @@ class RequisitionInfo extends Model
     public function term()
     {
         return $this->belongsTo(Term::class, 'term_id');
+    }
+
+    public function orderType()
+    {
+        return $this->belongsTo(OtherSetting::class, 'order_type', 'id');
     }
 }

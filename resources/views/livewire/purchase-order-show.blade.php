@@ -124,12 +124,21 @@
                     </div>
 
 
-                    <div class="col-md-10">
-                        <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Prepared
-                            By</label>
-                        <input type="text" class="form-control" id="contact1" name="company_tin"
-                            value="{{ $requestInfo->preparer->name }} {{ $requestInfo->preparer->last_name }}" readonly
-                            style="width: 100; font-size: 12px">
+                    <div class="col-md-12 row">
+                        <div class="col-md-8">
+                            <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Prepared
+                                By</label>
+                            <input type="text" class="form-control" id="contact1" name="company_tin"
+                                value="{{ $requestInfo->preparer->name }} {{ $requestInfo->preparer->last_name }}" readonly
+                                style="width: 100; font-size: 12px">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Type</label>
+                            <input type="text" class="form-control" id="POtype" name="po_type"
+                                value="{{ $requestInfo->orderType->setting_value ?? 'N/A' }}" readonly
+                                style="width: 100; font-size: 12px">
+
+                        </div>
                     </div>
                     @if ($requestInfo->reviewer)
                     <div class="col-md-10">

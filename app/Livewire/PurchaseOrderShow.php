@@ -20,6 +20,7 @@ class PurchaseOrderShow extends Component
     public $totalReceived = [];
     public $term = [];
     public $terms = [];
+    public $selectedWithdrawalType = null;
     public function mount(Request $request)
     {
         if(auth()->user()->employee->getModulePermission('Purchase Order') != 2 ){
@@ -36,12 +37,12 @@ class PurchaseOrderShow extends Component
 
     public function loadRequestInfo($id)
     {
-        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails')->where( 'id',  $id)->first();
+        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails','orderType')->where( 'id',  $id)->first();
 
     }
     public function loadRequisitionInfo($id)
     {
-        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails','requisitionDetails.cost')->where( 'id',  $id)->first();
+        $this->requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver','term','requisitionDetails','requisitionDetails.cost','orderType')->where( 'id',  $id)->first();
         $this->requisitionDetails = RequisitionDetail::with('cost')->where('requisition_info_id', $id)->get();
         $this->totalReceived = Cardex::select('item_id', DB::raw('SUM(qty_in) as received_qty'))
             ->where(function($query) use ($id) {

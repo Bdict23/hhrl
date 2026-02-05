@@ -180,15 +180,31 @@
                                         @enderror
                                     </div>
                                 </div>
-                                 <div>
-                                    <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" id="event"
-                                            style="font-size: 13px" disabled value="{{ $eventName }}">
-                                        @if (!$isAlreadyFinal)
-                                            <button class="input-group-text" type="button"
-                                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
-                                            @endif
+                                 <div class="row">
+                                    <div class="col-md-7">
+                                        <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" id="event"
+                                                style="font-size: 13px" disabled value="{{ $eventName }}">
+                                            @if (!$isAlreadyFinal)
+                                                <button class="input-group-text" type="button"
+                                                    style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
+                                                @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="withdrawal_type" class="form-label" style="font-size: 12px;">Withdrawal Type</label>
+                                        <select wire:model="selectedWithdrawalType" id="withdrawal_type"  class="form-select"
+                                            aria-label="Default select example" style="width: 100%; font-size: 12px" {{ $isAlreadyFinal ? 'disabled' : '' }}>
+                                            <option value="">Select Withdrawal Type</option>
+                                            @foreach ($withdrawalTypes as $type)
+                                                <option value="{{ $type->id }}" {{ $selectedWithdrawalType == $type->id ? 'selected' : '' }}>{{ $type->setting_value }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('selectedWithdrawalType')
+                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="row mb-2">

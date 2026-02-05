@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Restaurant;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use App\Events\RemoteActionTriggered; 
 use Livewire\WithPagination;
 use App\Models\Table;
 
@@ -10,6 +12,22 @@ class TableSelection extends Component
 {
     public $selectedTableId;
     public $availableTables = [];
+
+
+
+        protected $listeners = [
+        'RemoteActionTriggered' => 'handleRemoteExecute',
+        ];
+
+    public function handleRemoteExecute($payload){
+
+        $data = $payload['payload'] ?? $payload;
+
+        if(($data['action'] == 'newOrder' || $data['action'] == 'refreshOrders') && $data['branch_id'] == Auth::user()->branch->id ) {
+            $this->fetchData();
+        }
+    }
+
     public function render()
     {
         return view('livewire.restaurant.table-selection');

@@ -80,8 +80,15 @@
                                             </th>
 
                                             @foreach ($order->order_details as $detail)
-                                                <tr @if(in_array($order->order_status, ['CANCELLED', 'COMPLETED', 'SERVED']) || !$isAdmin ) disabled @else style="cursor: pointer;"  @endif  onclick="serve({{ $detail->id }})">
-                                                    <td><i @if($detail->status == 'SERVING' ) style="color: green;" title="Deployed" class = "bi bi-circle-fill blink" @elseif($detail->status == 'PENDING') style="color: orange;" class = "bi bi-circle-fill" title="Pending" @elseif($detail->status == 'SERVED') style="color: green;" title="Served" class = "bi bi-circle-fill" @endif></i></td>
+                                                <tr @if(in_array($order->order_status, ['CANCELLED', 'COMPLETED', 'SERVED']) || !$isAdmin ) disabled
+                                                    @elseif($detail->status == 'CANCELLED') style="cursor: not-allowed;" class="table-danger" 
+                                                    @else style="cursor: pointer;"  
+                                                    @endif  onclick="serve({{ $detail->id }})">
+                                                    <td><i 
+                                                        @if($detail->status == 'SERVING' ) style="color: green;" title="Deployed" class = "bi bi-circle-fill blink" 
+                                                        @elseif($detail->status == 'PENDING') style="color: orange;" class = "bi bi-circle-fill" title="Pending" 
+                                                        @elseif($detail->status == 'SERVED') style="color: green;" title="Served" class = "bi bi-circle-fill" 
+                                                        @endif></i></td>
                                                     <td>{{ $detail->menu->menu_name }}</td>
                                                     <td style="text-align:center;">{{ $detail->qty }}x</td>
                                                     <td style="text-align:right;"><input id="checkbox{{ $detail->id }}" type="checkbox" name="item_checked[]"
@@ -171,8 +178,15 @@
                                             </th>
 
                                             @foreach ($order->order_details as $detail)
-                                                <tr>
-                                                    <td></td>
+                                                <tr @if(in_array($order->order_status, ['CANCELLED', 'COMPLETED', 'SERVED']) || !$isAdmin ) disabled
+                                                    @elseif($detail->status == 'CANCELLED') class="table-danger"
+                                                    @endif>
+                                                    <td><i 
+                                                        @if($detail->status == 'SERVING' ) style="color: green;" title="Deployed" class = "bi bi-circle-fill blink" 
+                                                        @elseif($detail->status == 'PENDING') style="color: orange;" class = "bi bi-circle-fill" title="Pending" 
+                                                        @elseif($detail->status == 'SERVED') style="color: green;" title="Served" class = "bi bi-circle-fill" 
+                                                        @endif></i>
+                                                    </td>
                                                     <td>{{ $detail->menu->menu_name }}</td>
                                                     <td style="text-align:center;">{{ $detail->qty }}x</td>
                                                     <td style="text-align:right;"><input id="checkbox{{ $detail->id }}" type="checkbox" name="item_checked[]"

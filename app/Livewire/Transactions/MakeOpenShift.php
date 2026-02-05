@@ -163,12 +163,12 @@ class MakeOpenShift extends Component
         }
 
           // if there are no pending transactions, update menu to default qty 0
-            if ($pendingTransactions->isEmpty()) {
-                $branchMenuIds = BranchMenu::where('branch_id', auth()->user()->branch_id)
-                    ->pluck('id');
-                BranchMenuRecipe::whereIn('branch_menu_id', $branchMenuIds)
-                    ->update(['bal_qty' => \DB::raw('default_qty')]);
-            }
+            // if ($pendingTransactions->isEmpty()) {
+            //     $branchMenuIds = BranchMenu::where('branch_id', auth()->user()->branch_id)
+            //         ->pluck('id');
+            //     BranchMenuRecipe::whereIn('branch_menu_id', $branchMenuIds)
+            //         ->update(['bal_qty' => \DB::raw('default_qty')]);
+            // }
        
 
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Cashier shift opened successfully!']);

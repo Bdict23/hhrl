@@ -24,6 +24,7 @@ class ApproveWithdrawal extends Component
     public $withdrawalRemarks = '';
     public $withdrawalId = '';
     public $overAllCost = 0;
+    public $withdrawalInfo = [];
 
     //display block
     public $showWithdrawalSummary = true;
@@ -41,7 +42,7 @@ class ApproveWithdrawal extends Component
         {
             // Fetch the withdrawal details
 
-        $withdrawal = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'preparedBy', 'cardex')
+        $withdrawal = Withdrawal::with('department', 'approvedBy', 'reviewedBy', 'preparedBy', 'cardex','withdrawalType')
             ->where('id', $id)
             ->first(); // Retrieve the correct record or fail
 
@@ -54,6 +55,7 @@ class ApproveWithdrawal extends Component
             $this->validityDate = $withdrawal->useful_date ? \Carbon\Carbon::parse($withdrawal->useful_date)->format('M. d, Y') : null;
             $this->withdrawalRemarks = $withdrawal->remarks;
             $this->withdrawalId = $withdrawal->id;
+            $this->withdrawalInfo = $withdrawal;
 
 
         $this->withdrawalDetails = Cardex::with('item', 'priceLevel')

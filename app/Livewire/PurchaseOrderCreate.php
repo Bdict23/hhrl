@@ -12,6 +12,7 @@ use App\Models\RequisitionDetail;
 use App\Models\Cardex;
 use App\Models\Module;
 use App\Models\BanquetEvent;
+use App\Models\OtherSetting;
 use Illuminate\Support\Facades\DB;
 
 
@@ -40,6 +41,8 @@ class PurchaseOrderCreate extends Component
     public $module;
     public $hasReviewer = false;
     public $isROP = false;
+    public $orderType = [];
+    public $selectedOrderType = null;
 
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
@@ -53,10 +56,12 @@ class PurchaseOrderCreate extends Component
     protected $messages = [
         'selectedItems.required' => 'The item list cannot be empty.',
         'purchaseRequest.*.qty.required' => 'The quantity is required.',
-        'supplierId' => 'The supplier is required.',
+        'supplierId.required' => 'The supplier is required.',
         'term_id' => 'The payment term is required.',
-        'reviewer_id' => 'The reviewer is required.',
-        'approver_id' => 'The approver is required.',
+        'reviewer_id' => 'Reviewer is required.',
+        'approver_id' => 'Approver is required.',
+        'selectedOrderType.required' => 'The order type is required.',
+        'selectedOrderType.in' => 'The selected order type is invalid.',
     ];
 
     public function mount()
@@ -66,8 +71,19 @@ class PurchaseOrderCreate extends Component
 
     public function store()
     {
+        $orderTypeValues = $this->orderType->pluck('id')->implode(',');
+        
         if($this->hasReviewer) {
-            $this->validate();    
+            $this->validate([
+                'supplierId' => 'required|exists:suppliers,id',
+                'mPoNumber' => 'nullable|string|max:25',
+                'term_id' => 'required',
+                'remarks' => 'nullable|string|max:55',
+                'reviewer_id' => 'required|exists:employees,id',
+                'approver_id' => 'required|exists:employees,id',
+                'selectedItems' => 'required|array',
+                'selectedOrderType' => 'required|in:'.$orderTypeValues.'',
+            ]);    
         }else {
             $this->validate([
                 'supplierId' => 'required|exists:suppliers,id',
@@ -78,6 +94,7 @@ class PurchaseOrderCreate extends Component
                 'approver_id' => 'required|exists:employees,id',
                 'selectedItems' => 'required|array',
                 'selectedEventId' => 'nullable|exists:banquet_events,id',
+                'selectedOrderType' => 'required|in:'.$orderTypeValues.'',
             ]);
         }
        
@@ -106,6 +123,7 @@ class PurchaseOrderCreate extends Component
         $requisitionInfo->requisition_number = $this->requisitionNumber;
         $requisitionInfo->from_branch_id = $branchId;
         $requisitionInfo->event_id = $this->selectedEventId ?? null;
+        $requisitionInfo->order_type = $this->selectedOrderType ?? null;
         $requisitionInfo->save();
 
         // Process the selected items and their quantities
@@ -200,6 +218,7 @@ class PurchaseOrderCreate extends Component
 
     public function fetchdata()
     {
+    $this->orderType = OtherSetting::where('setting_key', 'PO_TYPE')->where('branch_id', auth()->user()->branch_id)->where('is_active', 1)->get() ?? [];
     $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();

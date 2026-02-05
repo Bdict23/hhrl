@@ -10,7 +10,7 @@
             <div class=" col-md-8 card mt-2">
                 <div class=" card-body">
                     <header>
-                        <h4> ITEM WITHDRAWAL</h4>
+                        <h4> ITEM WITHDRAWAL <i class="bi bi-dropbox"></i></h4>
                         <div class="me-3">
                             @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
                                 <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
@@ -169,13 +169,30 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div>
-                                <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
-                                <div class="input-group mb-3">
-                                    <input wire:model="event" type="text" class="form-control" id="event"
-                                        style="font-size: 13px" disabled value="{{ $eventName }}">
-                                    <button class="input-group-text" type="button"
-                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
+                                    <div class="input-group mb-3">
+                                        <input wire:model="event" type="text" class="form-control" id="event"
+                                            style="font-size: 13px" disabled value="{{ $eventName }}">
+                                        <button class="input-group-text" type="button"
+                                            style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                       <label for="reviewed_to" class="form-label" style="font-size: 13px;">Type<span
+                                        style="color: red;">*</span></label>
+                                     <select class="form-control" name="withdraw_type" id="withdraw_type" style="font-size: x-small" wire:model="selectedWithdrawalType">
+                                        <option value="">Select</option>
+                                        @foreach ($withdrawType as $type)
+                                            <option value="{{ $type->id }}" style="font-size: x-small">
+                                                {{ $type->setting_value }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('selectedWithdrawalType')
+                                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="row mb-2">

@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Cardex;
 use App\Models\Item;
 use App\Models\Module;
+use App\Models\OtherSetting;
 
 
 class WithdrawalShow extends Component
@@ -52,6 +53,10 @@ class WithdrawalShow extends Component
     public $withdrawalID = null; // withdrawal id for update
     public $eventId = null; // event id for banquet procurement
     public $events = []; // display events on ui
+    public $withdrawalTypes = []; // display withdrawal types on ui
+    public $selectedWithdrawalType = null; // selected withdrawal type from user
+
+
     protected $rules = [
         'reference' => 'required|string|max:25|unique:withdrawals,reference_number',
         'selectedDepartment' => 'required',
@@ -92,8 +97,9 @@ class WithdrawalShow extends Component
 
     public function showWithdrawal($id)
     {
+  
         $this->withdrawalID = $id;
-        $withdrawal = WithdrawalModel::with('department', 'approvedBy', 'reviewedBy', 'cardex.item')->findOrFail($id);
+        $withdrawal = WithdrawalModel::with('department', 'approvedBy', 'reviewedBy', 'cardex.item','withdrawalType')->findOrFail($id);
         $this->hasReviewer = $withdrawal->reviewed_by != null ? true : false;
         $this->reference = $withdrawal->reference_number;
         $this->selectedDepartment = $withdrawal->department_id;
@@ -105,6 +111,7 @@ class WithdrawalShow extends Component
         $this->isAlreadyFinal = $withdrawal->withdrawal_status != 'PREPARING' ? true : false;
         $this->finalStatus = $this->isAlreadyFinal;
         $this->haveSpan = $withdrawal->useful_date != null ? true : false;
+        $this->selectedWithdrawalType = $withdrawal->withdrawalType->id ?? null;
         $this->selectedItems = [];
         
 
@@ -151,7 +158,7 @@ class WithdrawalShow extends Component
     }
 
     public function fetchData(){
-
+        $this->withdrawalTypes = OtherSetting::where('setting_key', 'WITHDRAW_TYPE')->where('branch_id', auth()->user()->branch_id)->where('is_active', 1)->get() ?? [];
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
         $this->events = auth()->user()->branch->banquetEvents()->where('status', 'pending')->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();

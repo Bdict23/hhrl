@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Cardex;
 use App\Models\Item;
 use App\Models\Module;
+use App\Models\OtherSetting;
 
 
 class Withdrawal extends Component
@@ -49,6 +50,8 @@ class Withdrawal extends Component
     public $events = []; // display events on ui
     public $eventId = null; // selected event from user
     public $eventName = null; // selected event name from user
+    public $withdrawType = []; // withdrawal types
+    public $selectedWithdrawalType = null; // selected withdrawal type from user
 
 
 
@@ -60,13 +63,14 @@ class Withdrawal extends Component
         'selectedItems' => 'required|array|min:1',
         'reviewer' => 'required',
         'approver' => 'required',
+        'selectedWithdrawalType' => 'required',
     ];
     protected $messages = [
         'selectedDepartment.required' => 'The department is required.',
         'selectedItems.required' => 'The item list cannot be empty.',
         'reviewer.required' => 'The reviewer is required.',
         'approver.required' => 'The approver is required.',
-       
+        'selectedWithdrawalType.required' => 'Withdrawal type is required.',
     ];
     protected $listeners = [
         'addItem' => 'addItem',
@@ -84,6 +88,7 @@ class Withdrawal extends Component
     }
 
     public function fetchData(){
+        $this->withdrawType = OtherSetting::where('setting_key', 'WITHDRAW_TYPE')->where('branch_id', auth()->user()->branch_id)->where('is_active', 1)->get() ?? [];
         $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Withdrawal') == 1 ? true : false;
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();
@@ -154,8 +159,20 @@ class Withdrawal extends Component
     }
     public function store()
     {
+        $withdrawalType =  $this->withdrawType->pluck('id')->implode(',');
         if($this->hasReviewer){
-            $this->validate();
+            $this->validate(
+                [
+                    'selectedDepartment' => 'required',
+                    'useDate' => 'required',
+                    'spanDate' => 'nullable|date|after_or_equal:useDate',
+                    'remarks' => 'nullable|string|max:150',
+                    'selectedItems' => 'required|array|min:1',
+                    'reviewer' => 'required',
+                    'approver' => 'required',
+                    'selectedWithdrawalType' => 'required|in:'.$withdrawalType,
+                ]
+            );
         }else{
             $this->validate([
                 'selectedDepartment' => 'required',
@@ -164,6 +181,7 @@ class Withdrawal extends Component
                 'remarks' => 'nullable|string|max:150',
                 'selectedItems' => 'required|array|min:1',
                 'approver' => 'required',
+                'selectedWithdrawalType' => 'required|in:'.$withdrawalType,
             ]);
         }
 
@@ -182,6 +200,7 @@ class Withdrawal extends Component
         $withdrawal->source_branch_id = auth()->user()->branch_id;
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
+        $withdrawal->withdrawal_type = $this->selectedWithdrawalType ?? null;
         $withdrawal->save();
         $withdrawalId = $withdrawal->id; // Ensure the ID is retrieved after saving
 
