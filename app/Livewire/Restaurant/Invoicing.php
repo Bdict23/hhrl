@@ -12,6 +12,8 @@ use App\Models\Payment;
 use App\Models\Invoice;
 use App\Models\Table;
 use App\Models\CashierShift;
+use App\Models\RecipeCardex;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Events\RemoteActionTriggered; 
 
@@ -462,22 +464,22 @@ class Invoicing extends Component
         $this->validate(
             $this->rules()
         );
-        if(Order::find($this->selectedOrderId)->payment_status == 'SERVING'){
-            //check if there are pending items
-            if(OrderDetail::where('order_id', $this->selectedOrderId)->where('status', 'SERVING')->exists()){
-                $this->dispatch('error', 'Order are served partially. Cancel pending items before proceeding to payment.');
-                return;
+            if(Order::find($this->selectedOrderId)->payment_status == 'SERVING'){
+                //check if there are pending items
+                if(OrderDetail::where('order_id', $this->selectedOrderId)->where('status', 'SERVING')->exists()){
+                    $this->dispatch('error', 'Order are served partially. Cancel pending items before proceeding to payment.');
+                    return;
+                }
             }
-        }
         //calculate all invoices for the selected order
         $orderRound = Invoice::where('order_id', $this->selectedOrderId)->get();
         $invoiceCount = $orderRound->count();
-       if($invoiceCount > 0){
-            //update oder details order round
-            OrderDetail::where('order_id', $this->selectedOrderId)->where('marked', false)->update([
-                'order_round' => $invoiceCount + 1
-            ]);  
-        }
+            if($invoiceCount > 0){
+                //update oder details order round
+                OrderDetail::where('order_id', $this->selectedOrderId)->where('marked', false)->update([
+                    'order_round' => $invoiceCount + 1
+                ]);  
+                }   
         $curYear = now()->year;
         $branchId = auth()->user()->branch_id;
         $yearlyCount = Invoice::where('branch_id', $branchId)
@@ -498,8 +500,8 @@ class Invoicing extends Component
             'amount' => $this->totalAmountDue,
             'branch_id' => auth()->user()->branch->id,
             'prepared_by' => auth()->user()->employee->id,
-            'created_at' => now('Asia/Manila'),
-            'updated_at' => now('Asia/Manila'),
+            'created_at' => Carbon::now('Asia/Manila'),
+            'updated_at' => Carbon::now('Asia/Manila'),
             'original_amount' => $this->totalAmountDue,
         ]);
 
@@ -516,8 +518,8 @@ class Invoicing extends Component
                     'payment_type_id' => $splitPayment['paymentTypeId'],
                     'type' => 'SALES',
                     'prepared_by' => auth()->user()->employee->id,
-                    'created_at' => now('Asia/Manila'),
-                    'updated_at' => now('Asia/Manila'),
+                    'created_at' => Carbon::now('Asia/Manila'),
+                    'updated_at' => Carbon::now('Asia/Manila'),
                 ]);
             }
         } else {
@@ -530,8 +532,8 @@ class Invoicing extends Component
                 'type' => 'SALES',
                 'invoice_id' => $invoice->id,
                 'payment_type_id' => $this->selectedPaymentType,
-                'created_at' => now('Asia/Manila'),
-                'updated_at' => now('Asia/Manila'),
+                'created_at' => Carbon::now('Asia/Manila'),
+                'updated_at' => Carbon::now('Asia/Manila'),
             ]);
         }
         // check order details has pending items
@@ -541,7 +543,7 @@ class Invoicing extends Component
             Order::where('id', $this->selectedOrderId)->update([
                 'order_status' => 'COMPLETED',
                 'payment_status' => 'PAID',
-                'updated_at' => now('Asia/Manila'),
+                'updated_at' => Carbon::now('Asia/Manila'),
             ]);
             // Update table availability to VACANT
             $order = Order::find($this->selectedOrderId);
@@ -552,7 +554,7 @@ class Invoicing extends Component
             // Update order payment status to PAID
             Order::where('id', $this->selectedOrderId)->update([
                 'payment_status' => 'PAID',
-                'updated_at' => now('Asia/Manila'),
+                'updated_at' => Carbon::now('Asia/Manila'),
             ]);
 
          
@@ -562,8 +564,23 @@ class Invoicing extends Component
         // update order details status to COMPLETED
         OrderDetail::where('order_id', $this->selectedOrderId)->whereIn('status', ['SERVED','PENDING'])->update([
             'marked' => true,
-            'updated_at' => now('Asia/Manila'),
+            'updated_at' => Carbon::now('Asia/Manila'),
         ]);
+
+        // update recipe cardex to final
+        $orderDetails = OrderDetail::where('order_id', $this->selectedOrderId)->get();
+        foreach($orderDetails as $detail){
+            RecipeCardex::where('branch_id', auth()->user()->branch->id)
+                ->where('menu_id', $detail->item_id)
+                ->where('status', 'TEMP')
+                ->where('transaction_type', 'SALES')
+                ->where('order_id', $this->selectedOrderId)
+                ->update([
+                    'status' => 'FINAL',
+                    'final_date' => Carbon::now('Asia/Manila'),
+                    'updated_at' => Carbon::now('Asia/Manila'),
+                ]);
+        }
 
         // After saving payment, reset input fields and refresh orders
         $this->resetInputFields();

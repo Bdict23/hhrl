@@ -53,6 +53,7 @@
                     <table class="table min-w-full table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
+                                <th>Image</th>
                                 <th>Recipe Name</th>
                                 <th>Type</th>
                                 <th>Category</th>
@@ -65,6 +66,13 @@
 
                             @forelse ($recipes as $recipe)
                                 <tr>
+                                    <td>
+                                        @if($recipe->menu_image)
+                                            <img src="{{ asset('images/' . $recipe->menu_image) }}" alt="{{ $recipe->menu_image }}" width="50" height="50">
+                                        @else
+                                            <span class="text-muted">No Image</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $recipe->menu_name }}</td>
                                     <td>{{ $recipe->menu_type ?? 'N/A' }}</td>
                                     <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
@@ -76,7 +84,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">No recipes found.</td>
+                                    <td colspan="7" class="text-center">No recipes found.</td>
                                 </tr>
                             @endforelse
 

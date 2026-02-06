@@ -325,7 +325,7 @@
                                         </x-dropdown-link>
                                     @endif
                                     <x-dropdown-link :href="url('/daily-recipe-count')" class="no-underline">
-                                            {{ __('Daily Recipe Count') }}
+                                            {{ __('Recipe Count') }}
                                         </x-dropdown-link>
                                     @if (auth()->user()->employee->getModulePermission('Menu') !=2)
                                          <x-dropdown-link :href="url('/order_menu')" class="no-underline">

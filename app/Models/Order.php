@@ -50,5 +50,10 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class, 'order_id')->where('marked', true);
     }
 
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'order_id');
+    }
+
 
 }

@@ -444,3 +444,8 @@ Route::get('/close-cashier-shift', function () {
 Route::get('/restaurant-cancelation', function () {
     return view('restaurant.cancelation-view');
 })->middleware(['auth', 'verified'])->name('restauran.cancelation');
+
+//recipe count adjustment view
+Route::get('/recipe-count-adjustment', function () {
+    return view('restaurant.recipe-count-adjustment-view');
+})->middleware(['auth', 'verified'])->name('restaurant.recipe-count-adjustment');

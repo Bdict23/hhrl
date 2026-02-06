@@ -28,7 +28,8 @@ use Livewire\Livewire;
 use App\Models\Module;
 use App\Models\BranchMenu;
 use App\Models\BranchMenuRecipe;
-use App\Events\RemoteActionTriggered; 
+use App\Events\RemoteActionTriggered;
+use App\Models\RecipeCardex; 
 
 
 class MenusController extends Controller
@@ -125,7 +126,7 @@ class MenusController extends Controller
 
     public function order_store(Request $request){
         try {
-        
+        $branch = auth()->user()->branch_id;
 
         //check tabkle availability
             if ($request->tableID) {
@@ -134,7 +135,7 @@ class MenusController extends Controller
                 if ($table->availability == 'OCCUPIED') {
                     // get latest active order for the table
                     $existingOrder = Order::where('table_id', $request->tableID)
-                        ->where('branch_id', Auth::user()->branch->id)
+                        ->where('branch_id', $branch)
                         ->latest()
                         ->first();
 
@@ -155,6 +156,18 @@ class MenusController extends Controller
                         $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                         $order_details->prepared_by = auth()->user()->employee->id;
                         $order_details->save();
+
+                        $recipeCardex = new RecipeCardex();
+                        $recipeCardex->order_id = $existingOrder->id;
+                        $recipeCardex->branch_id = $branch;
+                        $recipeCardex->menu_id = $menu_id[$index];
+                        $recipeCardex->qty_out = $qty[$index];
+                        $recipeCardex->status = 'TEMP';
+                        $recipeCardex->transaction_type = 'SALES';
+                        $recipeCardex->final_date = Carbon::now('Asia/Manila');
+                        $recipeCardex->created_at = Carbon::now('Asia/Manila');
+                        $recipeCardex->updated_at = Carbon::now('Asia/Manila');
+                        $recipeCardex->save();
                         }
 
                         // update oder status to PENDING
@@ -165,10 +178,10 @@ class MenusController extends Controller
                         
                         $payload = [
                         'action' => 'newOrder',
-                        'branch_id' => Auth::user()->branch->id,
+                        'branch_id' => $branch,
                         ];
                         \Log::info('About to trigger RemoteActionTriggered event', ['payload' => $payload]);
-                        event(new RemoteActionTriggered($payload, Auth::user()->branch->id));
+                        event(new RemoteActionTriggered($payload,  $branch));
                         \Log::info('RemoteActionTriggered event dispatched');
 
                         return redirect()->route('Restaurant.TableSelection')->with('success', 'Order Added to Existing Table Successfully.');
@@ -192,13 +205,26 @@ class MenusController extends Controller
                         $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                         $order_details->price_level_id = $price_level_id[$index];
                         $order_details->save();
+
+                        $recipeCardex = new RecipeCardex();
+                        $recipeCardex->order_id = $existingOrder->id;
+                        $recipeCardex->branch_id = $branch;
+                        $recipeCardex->menu_id = $menu_id[$index];
+                        $recipeCardex->qty_out = $qty[$index];
+                        $recipeCardex->status = 'TEMP';
+                        $recipeCardex->transaction_type = 'SALES';
+                        $recipeCardex->final_date = Carbon::now('Asia/Manila');
+                        $recipeCardex->created_at = Carbon::now('Asia/Manila');
+                        $recipeCardex->updated_at = Carbon::now('Asia/Manila');
+                        $recipeCardex->save();
+
                         }
                         $payload = [
                         'action' => 'newOrder',
-                        'branch_id' => Auth::user()->branch->id,
+                        'branch_id' => $branch,
                         ];
                         \Log::info('About to trigger RemoteActionTriggered event', ['payload' => $payload]);
-                        event(new RemoteActionTriggered($payload, Auth::user()->branch->id));
+                        event(new RemoteActionTriggered($payload, $branch));
                         \Log::info('RemoteActionTriggered event dispatched'); 
                         return redirect()->route('Restaurant.TableSelection')->with('success', 'Order Added to Existing Table Successfully.');
                         }
@@ -207,14 +233,14 @@ class MenusController extends Controller
                 }else{
             
                     $orderNumber = Order::whereDate('created_at', Carbon::today('Asia/Manila'))
-                    ->where('branch_id', Auth::user()->branch->id)
+                    ->where('branch_id', $branch)
                     ->max('order_number') ?? 0;
 
                     $order = new Order();
                     $order->order_number = $orderNumber + 1;
                     $order->created_at = Carbon::now('Asia/Manila');
                     $order->updated_at = Carbon::now('Asia/Manila');
-                    $order->branch_id = Auth::user()->branch->id;
+                    $order->branch_id = $branch;
                     $order->order_status = 'PENDING';
                     $order->prepared_by = auth()->user()->employee->id;
                     $order->table_id = $request->tableID ?? null;
@@ -238,14 +264,26 @@ class MenusController extends Controller
                     $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                     $order_details->price_level_id = $price_level_id[$index];
                     $order_details->save();
+
+                    $recipeCardex = new RecipeCardex();
+                    $recipeCardex->order_id = $order->id;
+                    $recipeCardex->branch_id = $branch;
+                    $recipeCardex->menu_id = $menu_id[$index];
+                    $recipeCardex->qty_out = $qty[$index];
+                    $recipeCardex->status = 'TEMP';
+                    $recipeCardex->transaction_type = 'SALES';
+                    $recipeCardex->final_date = Carbon::now('Asia/Manila');
+                    $recipeCardex->created_at = Carbon::now('Asia/Manila');
+                    $recipeCardex->updated_at = Carbon::now('Asia/Manila');
+                    $recipeCardex->save();
                     }
                     
                     $payload = [
                     'action' => 'newOrder',
-                    'branch_id' => Auth::user()->branch->id,
+                    'branch_id' => $branch,
                     ];
                     \Log::info('About to trigger RemoteActionTriggered event', ['payload' => $payload]);
-                    event(new RemoteActionTriggered($payload, Auth::user()->branch->id));
+                    event(new RemoteActionTriggered($payload, $branch));
                     \Log::info('RemoteActionTriggered event dispatched');
 
                     return redirect()->route('Restaurant.TableSelection')->with('success', 'Order Placed Successfully.');
@@ -253,7 +291,7 @@ class MenusController extends Controller
             } else {
                 // Takeout order
                 $orderNumber = Order::whereDate('created_at', Carbon::today('Asia/Manila'))
-                    ->where('branch_id', Auth::user()->branch->id)
+                    ->where('branch_id', $branch)
                     ->max('order_number') ?? 0;
 
                 $order = new Order();
@@ -261,7 +299,7 @@ class MenusController extends Controller
                 $order->created_at = Carbon::now('Asia/Manila');
                 $order->updated_at = Carbon::now('Asia/Manila');
                 $order->prepared_by = auth()->user()->employee->id;
-                $order->branch_id = Auth::user()->branch->id;
+                $order->branch_id = $branch;
                 $order->order_status = 'PENDING';
                 $order->save();
                 $menu_id = $request->input('menu_id', []);
@@ -277,13 +315,25 @@ class MenusController extends Controller
                     $order_details->price_level_id = $price_level_id[$index];
                     $order_details->price_level_cost = PriceLevel::where('menu_id', $menu_id[$index])->where('price_type','COST')->latest()->first()->id ?? null;
                     $order_details->save();
+
+                    $recipeCardex = new RecipeCardex();
+                    $recipeCardex->order_id = $order->id;
+                    $recipeCardex->branch_id = $branch;
+                    $recipeCardex->menu_id = $menu_id[$index];
+                    $recipeCardex->qty_out = $qty[$index];
+                    $recipeCardex->status = 'TEMP';
+                    $recipeCardex->transaction_type = 'SALES';
+                    $recipeCardex->final_date = Carbon::now('Asia/Manila');
+                    $recipeCardex->created_at = Carbon::now('Asia/Manila');
+                    $recipeCardex->updated_at = Carbon::now('Asia/Manila');
+                    $recipeCardex->save();
                 }
                 $payload = [
                     'action' => 'newOrder',
-                    'branch_id' => Auth::user()->branch->id,
+                    'branch_id' => $branch,
                 ];
                 \Log::info('About to trigger RemoteActionTriggered event', ['payload' => $payload]);
-                event(new RemoteActionTriggered($payload, Auth::user()->branch->id));
+                event(new RemoteActionTriggered($payload, $branch));
                 \Log::info('RemoteActionTriggered event dispatched');
                 return redirect()->route('Restaurant.TableSelection')->with('success', 'Takeout Order Placed Successfully.');
             }

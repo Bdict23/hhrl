@@ -253,7 +253,6 @@
                                     <th>Menu Category</th>
                                     <th>Menu Item</th>
                                     <th>Price</th>
-                                    <th>Default Qty</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -263,16 +262,15 @@
                                        <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
                                        <td>{{ $recipe->menu_name ?? 'N/A' }}</td>
                                        <td>{{ $recipe->price ?? 'N/A' }}</td>
-                                       <td>
-                                            <input class="form-control form-control-sm" wire:model="defaultQtyInput.{{ $index }}" type="number"  min="1"  id="qty_{{ $index }}">
-                                       </td>
                                         <td>
                                            <button type="button" class="btn btn-danger btn-sm" wire:click="removeMenuItem({{ $recipe->id }})">Remove</button>
                                        </td>
                                    </tr>
                         
                                @empty
-                                   
+                                   <tr>
+                                        <td colspan="4" class="text-center">No menu items selected.</td>
+                                   </tr>
                                @endforelse
                             </tbody>
                         </table>

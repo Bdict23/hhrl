@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Menu;
 use App\Models\BranchMenuRecipe;
 use App\Models\BranchMenu;
+use App\Models\RecipeCardex;
 
 class BranchMenuController extends Component
 {
@@ -88,11 +89,13 @@ class BranchMenuController extends Component
             $branchMenu->is_available = $this->isAvailableInput;
             $branchMenu->save();
             foreach ($this->selectedRecipe as $recipe) {
+                // calculate available balance from recipe cardex
+                $cardex = RecipeCardex::where('menu_id', $recipe->id)->where('branch_id', auth()->user()->branch_id)->get();
+                $availableBalance = $cardex->sum('qty_in') - $cardex->sum('qty_out');
                 BranchMenuRecipe::create([
                     'branch_menu_id' => $branchMenu->id,
                     'menu_id' => $recipe->id,
-                    'default_qty'=> $this->defaultQtyInput[array_search($recipe, $this->selectedRecipe)] ?? 1,
-                    'bal_qty' => $this->defaultQtyInput[array_search($recipe, $this->selectedRecipe)] ?? 1,
+                    'bal_qty' => $availableBalance,
                 ]);
             }
             session()->flash('success', 'Menu items saved successfully.');
