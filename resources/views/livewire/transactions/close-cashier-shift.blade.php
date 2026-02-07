@@ -60,7 +60,7 @@
                         <div class="card shadow-sm h-100">
                             <div class="card-body text-center bg-light">
                                 <h6 class="text-muted mb-2">Current Shift Sales</h6>
-                                <h4 class="text-success fw-bold mb-0">₱ {{ number_format($totalSales, 2) }}</h4>
+                                <h4 class="text-success fw-bold mb-0">₱ {{ number_format($cashierShift->payments->sum('amount'), 2) }}</h4>
                             </div>
                         </div>
                     </div>

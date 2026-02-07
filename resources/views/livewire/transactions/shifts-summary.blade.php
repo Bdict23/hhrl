@@ -44,10 +44,10 @@
                 </div>
             </div>
         </div>
-        <div class="card-body overflow-auto">
+        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle mb-0 table-sm border-radius-15">
-                    <thead class="table-dark">
+                <table class="table table-bordered table-hover align-middle mb-0 table-sm border-radius-15" >
+                    <thead class="table-dark card-header">
                         <tr>
                             <th style="position: sticky; top: 0; font-size: small;">Reference</th>
                             <th style="position: sticky; top: 0; font-size: small;">Date</th>
@@ -81,7 +81,10 @@
                                 <td style="font-size: smaller;">{{ $shift->notes ?? 'N/A' }}</td>
                                 @if(auth()->user()->employee->getModulePermission('Shift Summary') == 1 )
                                 <td style="font-size: smaller;">
-                                    <button class="btn btn-info btn-sm">View Details <i class="bi bi-eye"></i></button>
+                                    <button class="btn btn-info btn-sm" wire:click="viewShiftDetails({{ $shift->id }})" wire:loading.attr="disabled">
+                                        View Details <i class="bi bi-eye" wire:loading.remove wire:target="viewShiftDetails({{ $shift->id }})"></i>
+                                        <i class="spinner-border spinner-border-sm" role="status" wire:loading wire:target="viewShiftDetails({{ $shift->id }})"></i>
+                                    </button>
                                 </td>
                                 @endif
                             </tr>
@@ -113,157 +116,158 @@
 
 
 
-    <!-- Modal view -->
-    {{-- <div class="modal fade modal-lg" id="supplierViewModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true" wire:ignore.self>
+
+
+    {{-- MODAL --}}
+    <div class="modal fade modal-lg " id="ViewShiftDetails" tabindex="-1" aria-labelledby="ViewShiftDetailsLabel" aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="supplierModalLabel">Invoice Details &nbsp;<i class="bi bi-info-circle"></i></h5>
+                    <h5 class="modal-title" id="ViewShiftDetailsLabel">Shift Details &nbsp;<i class="bi bi-info-circle"></i></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                   
-                    <form>
-                        @csrf
-                        <div class="row mb-1">
+                <div class="modal-body card">
+                   <div class="card-body">
+                        <div class="row">
                             <div class="col-md-6">
-                                <label for="customer_name" class="form-label">Customer Name</label>
-                                <input type="text" class="form-control" id="customer_name" wire:model="customer_name">
+                                <ul class="nav nav-tabs mb-3" id="denominationTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="opening-denominations-tab" data-bs-toggle="tab" data-bs-target="#opening-denominations" type="button" role="tab" aria-controls="opening-denominations" aria-selected="true">Opening</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="closing-denominations-tab" data-bs-toggle="tab" data-bs-target="#closing-denominations" type="button" role="tab" aria-controls="closing-denominations" aria-selected="false">Closing</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                 <div class="tab-pane fade show active" id="opening-denominations" role="tabpanel" aria-labelledby="opening-denominations-tab">
+                                   <table class="table table-sm">
+                                       <tbody>
+                                           <th colspan="3" class="text-center bg-dark text-white">Bills</th>
+                                           </tr>
+                                               <th style="font-size: smaller;">Denomination</th>
+                                               <th style="font-size: smaller;">Quantity</th>
+                                               <th style="font-size: smaller;">Total</th>
+                                           </tr>
+                                           @foreach ($billDenominations as $denomination)
+                                               <tr>
+                                                   <td style="font-size: smaller;">₱ {{ number_format($denomination->value, 2) }}</td>
+                                                   <td style="font-size: smaller;">@if($curShift){{ ($curShift->openingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity) ?? 0 }}@endif</td>
+                                                   <td style="font-size: smaller;">₱ @if($curShift){{ number_format((float)($curShift->openingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0) * (float)$denomination->value, 2) }}@else 0.00 @endif</td>
+                                               </tr>
+                                           @endforeach
+                                           <th colspan="3" class="text-center bg-dark text-white">Coins</th>
+                                           </tr>
+                                               <th style="font-size: smaller;">Denomination</th>
+                                               <th style="font-size: smaller;">Quantity</th>
+                                               <th style="font-size: smaller;">Total</th>
+                                           </tr>
+                                           @foreach ($coinDenominations as $denomination)
+                                               <tr>
+                                                   <td style="font-size: smaller;">₱ {{ number_format($denomination->value, 2) }}</td>
+                                                   <td style="font-size: smaller;">@if($curShift){{ $curShift->openingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0 }}@endif</td>
+                                                   <td style="font-size: smaller;">₱ @if($curShift){{ number_format((float)($curShift->openingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0) * (float)$denomination->value, 2) }}@else 0.00 @endif</td>
+                                               </tr>
+                                           @endforeach
+                                           <tfoot>
+                                               <tr class="bg-light">
+                                                   <td colspan="2" class="text-end fw-bold" style="font-size: smaller;">Total:</td>
+                                                   <td style="font-size: smaller;" class="fw-bold">₱ @if($curShift){{ number_format($curShift->openingShiftDenominations->sum(function($item) {
+                                                       return $item->quantity * $item->denomination->value;
+                                                   }), 2) }}@else 0.00 @endif</td>
+                                               </tr>
+                                           </tfoot>
+                                       </tbody>
+                                   </table>
+                                 </div>
+                                 <div class="tab-pane fade" id="closing-denominations" role="tabpanel" aria-labelledby="closing-denominations-tab">
+                                   <table class="table table-sm">
+                                       <tbody>
+                                           <th colspan="3" class="text-center bg-dark text-white">Bills</th>
+                                           </tr>
+                                               <th style="font-size: smaller;">Denomination</th>
+                                               <th style="font-size: smaller;">Quantity</th>
+                                               <th style="font-size: smaller;">Total</th>
+                                           </tr>
+                                           @foreach ($billDenominations as $denomination)
+                                               <tr>
+                                                   <td style="font-size: smaller;">₱ {{ number_format($denomination->value, 2) }}</td>
+                                                   <td style="font-size: smaller;">@if($curShift){{ $curShift->closingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0 }}@else 0.00 @endif</td>
+                                                   <td style="font-size: smaller;">₱ @if($curShift){{ number_format((float)($curShift->closingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0) * (float)$denomination->value, 2) }}@else 0.00 @endif</td>
+                                               </tr>
+                                           @endforeach
+                                           <th colspan="3" class="text-center bg-dark text-white">Coins</th>
+                                           </tr>
+                                               <th style="font-size: smaller;">Denomination</th>
+                                               <th style="font-size: smaller;">Quantity</th>
+                                               <th style="font-size: smaller;">Total</th>
+                                           </tr>
+                                           @foreach ($coinDenominations as $denomination)
+                                               <tr>
+                                                   <td style="font-size: smaller;">₱ {{ number_format($denomination->value, 2) }}</td>
+                                                   <td style="font-size: smaller;">@if($curShift){{ $curShift->closingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0 }}@else 0.00 @endif</td>
+                                                   <td style="font-size: smaller;">₱ @if($curShift){{ number_format((float)($curShift->closingShiftDenominations->where('denomination_id', $denomination->id)->first()->quantity ?? 0) * (float)$denomination->value, 2) }}@else 0.00 @endif</td>
+                                               </tr>
+                                           @endforeach
+                                           <tfoot>
+                                               <tr class="bg-light">
+                                                   <td colspan="2" class="text-end fw-bold" style="font-size: smaller;">Total:</td>
+                                                   <td style="font-size: smaller;" class="fw-bold">₱ @if($curShift){{ number_format($curShift->closingShiftDenominations->sum(function($item) {
+                                                       return $item->quantity * $item->denomination->value;
+                                                   }), 2) }}@else 0.00 @endif</td>
+                                               </tr>
+                                           </tfoot>
+                                       </tbody>
+                                   </table>
+                                 </div>
+                              </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="discount" class="form-label"
-                                    style="font-size: smaller;">Total Discount Applied</label>
-                                <div class="input-group">
-                                    <input class="form-control form-control-sm" id="discount" name="discount"
-                                        min="0"  readonly value="₱ {{ number_format($totalDiscountAmount, 2) }}" disabled
-                                        style="text-align: center;">
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ViewDiscountsModal" title="View Info">
-                                  <i class="bi bi-info-lg"></i>
-                                </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mb-1">
-                            <div class="col-md-4">
-                                <label for="table" class="form-label">Table</label>
-                                <input type="text" class="form-control" id="table_name" wire:model="table_name">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="order_number" class="form-label">Order No</label>
-                                <input type="text" class="form-control text-center" id="order_number" wire:model="order_number">
-                            </div>
-                             <div class="col-md-4">
-                                <label for="discount" class="form-label"
-                                    style="font-size: smaller;">Mode of Payment</label>
-                                <div class="input-group">
-                                    <input class="form-control form-control-sm" id="paymentMethod" name="mode_of_payment"
-                                        min="0"  readonly disabled style="text-align: center;" wire:model="paymentMethod">
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ViewPaments" title="View Info"> 
-                                   <i class="bi bi-info-lg"></i>
-                                </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">
-                                Order Details
-                            </div>
-                            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
-                                <table class="table table-striped table-hover me-3">
-                                    <thead class="thead-dark me-3">
-                                        <tr style="font-size: smaller;">
-                                            <th>Menu Name</th>
-                                            <th>QTY</th>
-                                            <th>PRICE</th>
-                                            <th>SUB TOTAL</th>
+                            <div class="col-md-6 card">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th style="font-size: smaller;">Beginning Balance:</th>
+                                            <td style="font-size: smaller;">₱ @if($curShift){{ number_format($curShift->starting_cash, 2) }}@else 0.00 @endif</td>
                                         </tr>
-                                    </thead>
-                                    <tbody id="itemTableBody">
-
-                                     
-                                        
+                                        <tr>
+                                            <th style="font-size: smaller;">Ending Balance:</th>
+                                            <td style="font-size: smaller;">₱ @if($curShift) {{ number_format($curShift->ending_cash, 2) ?? 'N/A' }}@else 0.00 @endif</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="font-size: smaller;">Remarks:</th>
+                                            <td style="font-size: smaller;"> @if($curShift) {{ $curShift->notes ?? 'N/A' }}@endif</td>
+                                        </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="card-footer text-right">
-                                <div class="d-flex justify-content-between">
-                                    <h6>AMOUNT DUE:</h6>
-                                    <h6>{{ $grossAmount }}</h6>
+                                <div class="">
+                                    <div class="card bg-light text-center mb-3">
+                                        <h6 class="mb-2 mt-3">Total Refund</h6>
+                                        <h5 class="mb-3">₱ 0.00</h5>
                                 </div>
-                                <div class="d-flex justify-content-between">
-                                    <h6>AMOUNT PAID:</h6>
-                                    <h6>{{ $totalAmountDue }}</h6>
+                                <div class="card bg-light text-center mb-3">
+                                        <h6 class="mb-2 mt-3">Total Collections</h6>
+                                        <h5 class="mb-3">₱ @if($shift){{ number_format($shift->shiftDenominations->sum(function($item) {
+                                            return $item->quantity * $item->denomination->value;
+                                        }), 2) }}@else 0.00 @endif</h5>
+                                </div>
+                                <div class="card bg-light text-center mb-3">
+                                        <h6 class="mb-2 mt-3">Current Shift Sales</h6>
+                                        <h5 class="mb-3">₱ @if($curShift){{ number_format($curShift->payments->sum('amount'), 2) }}@else 0.00 @endif</h5>
                                 </div>
                             </div>
                         </div>
-
-                </div>
-                <div class="modal-footer">
-                    <div wire:loading wire:target="viewInvoiceDetails" class="me-auto">
-                        <span class="spinner-border text-primary" role="status"></span>
-                        &nbsp; Please Wait...
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-            </form>
-        </div>
-    </div> --}}
-    <!-- End Modal view-->
-
-    {{-- PAYMENTS MODAL --}}
-    <div class="modal fade modal-sm " id="ViewPaments" tabindex="-1" aria-labelledby="ViewPaymentsLabel" aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ViewPaymentsLabel">Payments &nbsp;<i class="bi bi-info-circle"></i></h5>
-                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#supplierViewModal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" style="">
-                   <table class="table table-bordered table-hover align-middle mb-0 table-sm">
-                    <thead>
-                        <tr>
-                            <th style="font-size: smaller;">Payment Type</th>
-                            <th style="font-size: smaller;">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {{--  --}}
-                    </tbody>
-
-                   </table>
-
+                   </div>
                 </div>
             </div>
         </div>
     </div>
     {{-- END PAYMENTS MODAL --}}
 
-    {{-- DISCOUNTS MODAL --}}
-    <div class="modal fade modal-lg" id="ViewDiscountsModal" tabindex="-1" aria-labelledby="ViewDiscountsLabel" aria-hidden="true" wire:ignore.self data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ViewDiscountsLabel">Discount Details &nbsp;<i class="bi bi-info-circle"></i></h5>
-                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#supplierViewModal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Discount Details Content -->
-                    <table class="table table-bordered table-sm">
-                        <thead>
-                            <tr>
-                                <th style="font-size: smaller;">Discount Name</th>
-                                <th style="font-size: smaller;">Description</th>
-                                <th style="font-size: smaller;">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                          {{--  --}}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- END DISCOUNTS MODAL --}}
+    <script>
+        window.addEventListener('showShiftDetails', event => {
+            var myModal = new bootstrap.Modal(document.getElementById('ViewShiftDetails'), {
+                keyboard: false
+            });
+            myModal.show();
+        });
+    </script>
 </div>

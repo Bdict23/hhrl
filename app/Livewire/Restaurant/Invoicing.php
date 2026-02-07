@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Events\RemoteActionTriggered; 
 
+
 class Invoicing extends Component
 {
     public $orders;
@@ -36,6 +37,7 @@ class Invoicing extends Component
     public $change = "₱ 0.00";
     public $appliedDiscounts;
     public $selectedItemDiscounts;
+    public $shift_id;
 
     //form inputs
     public $invoiceNumber;
@@ -106,6 +108,7 @@ class Invoicing extends Component
             ->first();
 
         if ($openShift) {
+            $this->shift_id = $openShift->id;
                     $this->fetchOrders();
         }else{
           session()->flash('error', 'Please open a shift first before proceeding to invoicing.');
@@ -520,6 +523,7 @@ class Invoicing extends Component
                     'prepared_by' => auth()->user()->employee->id,
                     'created_at' => Carbon::now('Asia/Manila'),
                     'updated_at' => Carbon::now('Asia/Manila'),
+                    'shift_id'=> $this->shift_id,
                 ]);
             }
         } else {
@@ -534,6 +538,7 @@ class Invoicing extends Component
                 'payment_type_id' => $this->selectedPaymentType,
                 'created_at' => Carbon::now('Asia/Manila'),
                 'updated_at' => Carbon::now('Asia/Manila'),
+                'shift_id'=> $this->shift_id,
             ]);
         }
         // check order details has pending items

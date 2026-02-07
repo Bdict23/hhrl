@@ -17,4 +17,9 @@ class ShiftDenomination extends Model
         'quantity',
         'counter_type',
     ];
+
+    public function denomination()
+    {
+        return $this->belongsTo(Denomination::class, 'denomination_id');
+    }
 }

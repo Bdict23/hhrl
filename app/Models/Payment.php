@@ -21,7 +21,8 @@ class Payment extends Model
         'payment_type_id', 
         'created_at', 
         'updated_at', 
-        'payment_parent' 
+        'payment_parent',
+        'shift_id',
     ];
 
     use HasFactory;

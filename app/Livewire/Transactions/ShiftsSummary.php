@@ -4,12 +4,30 @@ namespace App\Livewire\Transactions;
 
 use Livewire\Component;
 use App\Models\CashierShift;
+use App\Models\Denomination;
+use App\Models\ShiftDenomination;
+use App\Models\Payment;
 
 class ShiftsSummary extends Component
 {
     public $from_date;
     public $to_date;
     public $shifts = [];
+    public $curShift;
+
+
+    public $shift_status;
+    public $coinDenominations = [];
+    public $billDenominations = [];
+
+    public $shiftBillDenominations = [];
+    public $shiftCoinDenominations = [];
+
+    public $totalBeginningBalance = 0;
+    public $totalEndingBalance = 0;
+    public $totalSales = 0;
+    public $denominationCounts = [];
+
 
 
     public function render()
@@ -31,10 +49,16 @@ class ShiftsSummary extends Component
     public function fetchData()
     {
         $this->shifts = CashierShift::where('branch_id', auth()->user()->branch->id)
-            ->where('shift_status', 'OPEN')
-            ->with('employee', 'cashDrawer')
+            ->whereIn('shift_status', ['OPEN','CLOSED'])
+            ->with('employee', 'cashDrawer','openingShiftDenominations')
             ->orderBy('created_at', 'desc')
             ->get();
+            $this->billDenominations = Denomination::where('type', 'bill')
+                                    ->orderBy('value', 'desc')
+                                    ->get();
+            $this->coinDenominations = Denomination::where('type', 'coin')
+                                    ->orderBy('value', 'desc')
+                                    ->get();
     }
     public function filterShiftsByDate()
     {
@@ -48,5 +72,19 @@ class ShiftsSummary extends Component
             ->with('employee', 'cashDrawer')
             ->orderBy('created_at', 'desc')
             ->get();
+    }
+
+    public function viewShiftDetails($shiftId)
+    {
+        $shift = CashierShift::find($shiftId);
+
+        if ($shift) {
+            $this->shift_status = $shift->shift_status;
+            $this->curShift = $shift;
+            // dd($this->shift->payments->sum('amount'));
+            $this->dispatch('showShiftDetails');
+            return;
+        }
+        
     }
 }

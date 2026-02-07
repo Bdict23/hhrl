@@ -34,4 +34,21 @@ class CashierShift extends Model
     {
         return $this->belongsTo(CashDrawer::class, 'drawer_id');
     }
+    public function shiftDenominations()
+    {
+        return $this->hasMany(ShiftDenomination::class, 'shift_id');
+    }
+
+    public function closingShiftDenominations()
+    {
+        return $this->hasMany(ShiftDenomination::class, 'shift_id')->where('counter_type', 'ENDING_CASH');
+    }
+    public function openingShiftDenominations()
+    {
+        return $this->hasMany(ShiftDenomination::class, 'shift_id')->where('counter_type', 'STARTING_CASH') ?? 0;
+    }
+    public function payments(){
+         return $this->hasMany(Payment::class, 'shift_id');
+    }
+   
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('recipe_cardex', function (Blueprint $table) {
             $table->id();
-           $table->foreignId('branch_id')->constrained()->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this cardex belongs to');
+           $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the branch this cardex belongs to');
             $table->foreignId('menu_id')->constrained('menus')->onDelete('cascade')->onUpdate('cascade')->comment('Reference to the item in the cardex');
             $table->decimal('qty_in', 10, 2)->default(0)->comment('Current quantity of the item received into the cardex');
             $table->decimal('qty_out', 10, 2)->default(0)->comment('Current quantity of the item issued from the cardex');
