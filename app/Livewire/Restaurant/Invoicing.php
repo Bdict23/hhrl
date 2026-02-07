@@ -206,6 +206,8 @@ class Invoicing extends Component
                         'order_detail_id' => $detail->id,
                         'discount_id' => $discount->id,
                         'calculated_amount' => ($amountToDistribute / $this->selectedOrderDetails->count()),
+                        'shift_id' => $this->shift_id,
+
                     ]);
                 } 
             
@@ -290,6 +292,8 @@ class Invoicing extends Component
                     'discount_id' => $discountId,
                     'type' => 'ITEM',
                     'calculated_amount' => $currentDiscounts + $newDiscountAmount ,
+                    'shift_id' => $this->shift_id,
+
                 ]
             );
             $this->updateTotalAmountDue();
@@ -325,6 +329,8 @@ class Invoicing extends Component
                         'order_detail_id' => $detail->id,
                         'discount_id' => $discount->id,
                         'calculated_amount' => ($amountToDistribute / $this->selectedOrderDetails->count()),
+                        'shift_id' => $this->shift_id,
+
                     ]);
                 } 
             $this->updateTotalAmountDue();
@@ -366,6 +372,8 @@ class Invoicing extends Component
                         'order_detail_id' => $detail->id,
                         'discount_id' => $discount->id,
                         'calculated_amount' => ($amountToDistribute / $this->selectedOrderDetails->count()),
+                        'shift_id' => $this->shift_id,
+
                     ]);
                 } 
 
@@ -506,6 +514,7 @@ class Invoicing extends Component
             'created_at' => Carbon::now('Asia/Manila'),
             'updated_at' => Carbon::now('Asia/Manila'),
             'original_amount' => $this->totalAmountDue,
+            'shift_id' => $this->shift_id,
         ]);
 
         //check payment type if its split or not

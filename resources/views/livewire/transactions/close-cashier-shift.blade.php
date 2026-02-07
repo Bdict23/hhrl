@@ -69,7 +69,7 @@
                         <div class="card shadow-sm h-100">
                             <div class="card-body text-center bg-light">
                                 <h6 class="text-muted mb-2">Difference</h6>
-                                <h4 class="text-warning fw-bold mb-0">₱ 0.00</h4>
+                                <h4 @if($differenceAmount != 0) class="text-danger fw-bold mb-0" @else class="fw-bold mb-0" @endif>₱ {{ number_format($differenceAmount, 2) }}</h4>
                             </div>
                         </div>
                     </div>

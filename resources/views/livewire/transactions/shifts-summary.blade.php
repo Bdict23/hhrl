@@ -78,7 +78,7 @@
                                 </td>
                                 <td style="font-size: smaller;">₱ {{ number_format($shift->starting_cash, 2) }}</td>
                                 <td style="font-size: smaller;">₱ {{ number_format($shift->ending_cash, 2) ?? 'N/A' }}</td>
-                                <td style="font-size: smaller;">{{ $shift->notes ?? 'N/A' }}</td>
+                                <td style="font-size: smaller; color: aliceblue" @if($shift->discrepancy_status == 'NONE') class = "badge badge-pill  bg-success" @else class="badge badge-pill  bg-danger" @endif>{{ $shift->discrepancy_status == 'NONE' ? 'N/A' : $shift->discrepancy_status }}</td>
                                 @if(auth()->user()->employee->getModulePermission('Shift Summary') == 1 )
                                 <td style="font-size: smaller;">
                                     <button class="btn btn-info btn-sm" wire:click="viewShiftDetails({{ $shift->id }})" wire:loading.attr="disabled">
@@ -234,32 +234,30 @@
                                         </tr>
                                         <tr>
                                             <th style="font-size: smaller;">Remarks:</th>
-                                            <td style="font-size: smaller;"> @if($curShift) {{ $curShift->notes ?? 'N/A' }}@endif</td>
+                                            <td style="font-size: smaller;"> @if($curShift) {{ $curShift->discrepancy_status == 'NONE' ? 'N/A' : $curShift->discrepancy_status }}@endif</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div class="">
                                     <div class="card bg-light text-center mb-3">
                                         <h6 class="mb-2 mt-3">Total Refund</h6>
-                                        <h5 class="mb-3">₱ 0.00</h5>
-                                </div>
-                                <div class="card bg-light text-center mb-3">
-                                        <h6 class="mb-2 mt-3">Total Collections</h6>
-                                        <h5 class="mb-3">₱ @if($shift){{ number_format($shift->shiftDenominations->sum(function($item) {
-                                            return $item->quantity * $item->denomination->value;
-                                        }), 2) }}@else 0.00 @endif</h5>
-                                </div>
-                                <div class="card bg-light text-center mb-3">
+                                        <h5 class="mb-3">₱ @if($curShift){{ number_format($curShift->payments->where('type', 'REFUND')->sum('amount'), 2) }}@else 0.00 @endif</h5>
+                                    </div>
+                                    <div class="card bg-light text-center mb-3">
                                         <h6 class="mb-2 mt-3">Current Shift Sales</h6>
-                                        <h5 class="mb-3">₱ @if($curShift){{ number_format($curShift->payments->sum('amount'), 2) }}@else 0.00 @endif</h5>
+                                        <h5 class="mb-3">₱ @if($curShift){{ number_format($curShift->payments->where('type', 'SALES')->sum('amount'), 2) }}@else 0.00 @endif</h5>
+                                    </div>
+                                    <div class="card bg-light text-center mb-3">
+                                        <h6 class="mb-2 mt-3">Total Collections</h6>
+                                        <h5 class="mb-3">₱ @if($curShift){{ number_format(($curShift->payments->where('type', 'SALES')->sum('amount') - $curShift->payments->where('type', 'REFUND')->sum('amount')), 2) }}@else 0.00 @endif</h5>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                   </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     {{-- END PAYMENTS MODAL --}}
 
     <script>

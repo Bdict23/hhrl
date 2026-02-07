@@ -17,6 +17,8 @@ class OrderDiscount extends Model
         'type',
         'status',
         'calculated_amount',
+        'shift_id',
+
 
     ];
 

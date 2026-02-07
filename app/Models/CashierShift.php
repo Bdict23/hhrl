@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\PaymentType;
 
 class CashierShift extends Model
 {
@@ -49,6 +50,22 @@ class CashierShift extends Model
     }
     public function payments(){
          return $this->hasMany(Payment::class, 'shift_id');
+    }
+    
+    public function orderDiscounts(){
+        return $this->hasMany(OrderDiscount::class, 'shift_id');
+    }
+    public function invoice(){
+        return $this->hasMany(Invoice::class, 'shift_id');
+    }
+
+    public function cashPaymentId()
+    {
+        $cashPaymentType = PaymentType::where('payment_type_name', 'CASH')->first();
+        if ($cashPaymentType) {
+            return $cashPaymentType->id;
+        }
+        return null;
     }
    
 }

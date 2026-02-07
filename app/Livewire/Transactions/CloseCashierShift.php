@@ -8,6 +8,7 @@ use App\Models\Denomination;
 use App\Models\ShiftDenomination;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\PaymentType;
 
 class CloseCashierShift extends Component
 {
@@ -22,6 +23,10 @@ class CloseCashierShift extends Component
     public $cashierShift;
     public $isClosed = false;
     public $verified = false;
+    public $differenceAmount = 0;
+
+    public $cashRefundTotal = 0;
+    public $cashPaymentTotal = 0;
 
     public function render()
     {
@@ -45,8 +50,12 @@ class CloseCashierShift extends Component
                         $this->isClosed = true;
                     }
                     $this->totalSales = $this->getPaymentTotal();
+                    $this->cashRefundTotal = $this->getTotalRefundCash();
+                    $this->cashPaymentTotal = $this->getPaymentTotalCash();
+                    $this->calculateDifferenceAmount();
                     }else{
                         $this->cashierShift = CashierShift::find($request->input('shift'));
+                        $this->shiftId = $this->cashierShift?->id;
                     }
                     
                 $this->billDenominations = Denomination::where('type', 'BILL')->orderBy('value', 'desc')->get();
@@ -63,6 +72,15 @@ class CloseCashierShift extends Component
     public function setBeginningBalance()
     {
         $this->totalBeginningBalance = $this->cashierShift->starting_cash;
+    }
+
+    public function updated($field)
+    {
+        
+        if (str_starts_with($field, 'denominationCounts.')) {
+            $this->calculateTotal();
+            $this->calculateDifferenceAmount();
+        }
     }
 
     public function calculateTotal()
@@ -82,29 +100,69 @@ class CloseCashierShift extends Component
         }
 
         $this->totalEndingBalance = $total;
+        $this->calculateDifferenceAmount();
     }
 
     public function getPaymentTotal()
     {
-        if($this->isClosed){
+       
         $paymentTotal = Payment::where('branch_id', auth()->user()->branch_id)
-            ->where('prepared_by', $this->cashierShift->cashier_id)->where('type', 'SALES')
-            ->whereBetween('created_at', [$this->cashierShift->shift_started, $this->cashierShift->shift_ended])
-            ->sum('amount');
-    }else{
-        $paymentTotal = Payment::where('branch_id', auth()->user()->branch_id)
-            ->where('prepared_by', $this->cashierShift->cashier_id)->where('type', 'SALES')
-            ->whereBetween('created_at', [$this->cashierShift->shift_started, now()])
-            ->sum('amount');
-    }
+            ->where('type', 'SALES')
+            ->where('shift_id',$this->cashierShift->id)
+            ->sum('amount') ?? 0;
+    
         return $paymentTotal;
-    }   
+    }
+    
+    public function getTotalRefundCash()
+    {
+        $refundTotal = Payment::where('branch_id', auth()->user()->branch_id)
+            ->where('type', 'REFUND')
+            ->where('payment_type_id', $this->cashierShift->cashPaymentId())
+            ->where('shift_id',$this->cashierShift->id)
+            ->sum('amount') ?? 0;
+
+        return $refundTotal;
+    }
+    public function getPaymentTotalCash()
+    {
+        $paymentTotal = Payment::where('branch_id', auth()->user()->branch_id)
+            ->where('type', 'SALES')
+            ->where('payment_type_id', $this->cashierShift->cashPaymentId())
+            ->where('shift_id',$this->cashierShift->id)
+            ->sum('amount') ?? 0;
+        return $paymentTotal;
+    }
+
+    public function remarks()
+    {
+        $collection = $this->cashPaymentTotal - $this->cashRefundTotal + $this->cashierShift->starting_cash;
+        $result  =   $this->totalEndingBalance - $collection;
+        if($result > 0) {
+            $remarks = "EXCESS";
+        } elseif ($result < 0) {
+            $remarks = "SHORT";
+        } else {
+            $remarks = "NONE";
+        }
+
+        return $remarks;
+    }
+
+    public function calculateDifferenceAmount()
+    {
+        $collection = $this->cashPaymentTotal - $this->cashRefundTotal + $this->cashierShift->starting_cash;
+        $difference = $this->totalEndingBalance - $collection;
+        $this->differenceAmount = $difference;
+        
+    }
+    
 
     public function closeShift()
     {
         try {
         $this->calculateTotal();
-
+        
         $this->validate([
             'verified' => 'accepted',
         ], [
@@ -144,6 +202,8 @@ class CloseCashierShift extends Component
             'shift_ended' => now(),
             'ending_cash' => $this->totalEndingBalance,
             'notes' => $this->notes,
+            'total_sales' => $this->totalSales,
+            'discrepancy_status' => $this->remarks(),
         ]);
 
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Cashier shift closed successfully.']);

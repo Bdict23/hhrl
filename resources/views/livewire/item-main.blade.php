@@ -163,13 +163,10 @@
                                         <option value="" disabled>No Symbol</option>
                                     @endforelse
                                 </select>
-                                {{-- <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        $('#uom_id').selectpicker();
-                                    });
-                                </script> --}}
-                                <button class="input-group-text" type="button"
-                                    style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addUomModal">+</button>
+                                
+                                {{-- temporary disable para dili maka create ug duplicate Unit of Measure --}}
+                                {{-- <button class="input-group-text" type="button"
+                                    style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addUomModal">+</button> --}}
 
                                     <!-- Modal -->
                                     <div class="modal fade" id="addUomModal" tabindex="-1" aria-labelledby="addUomModalLabel" aria-hidden="true" wire:ignore.self>
@@ -584,8 +581,9 @@
                                         <option value="">No Symbol</option>
                                     @endforelse
                                 </select>
-                                <button class="input-group-text" type="button"
-                                    style="background-color: rgb(190, 243, 217);">+</button>
+                                {{-- temporary disable para dili maka create ug duplicate Unit of Measure --}}
+                                {{-- <button class="input-group-text" type="button"
+                                    style="background-color: rgb(190, 243, 217);">+</button> --}}
                             </div>
 
                             @error('uom_id')

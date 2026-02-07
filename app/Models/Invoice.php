@@ -28,7 +28,8 @@ class Invoice extends Model
         'created_at',
         'updated_at',
         'adjusted_amount',
-        'original_amount'
+        'original_amount',
+        'shift_id',
     ];
 
     public function order()

@@ -39,4 +39,12 @@ class Payment extends Model
     {
         return $this->belongsTo(PaymentType::class, 'payment_type_id');
     }
+
+    public function cashPaymentId(){
+        $cashPaymentType = PaymentType::where('payment_type_name', 'CASH')->first();
+        if($cashPaymentType){
+            return $cashPaymentType->id;
+        }
+        return null;
+    }
 }

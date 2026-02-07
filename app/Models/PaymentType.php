@@ -7,4 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentType extends Model
 {
     //
+    protected $table = 'payment_types';
+    protected $fillable = [
+        'payment_type_name',
+        'created_at',
+        'updated_at',
+    ];
 }

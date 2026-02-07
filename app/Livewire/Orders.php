@@ -520,14 +520,18 @@ class Orders extends Component
                                 $refundedPayment->updated_at = Carbon::now('Asia/Manila');
                                 $refundedPayment->save();
                             }
+
+                            // update table if order status is completed
+                            if($order->order_status == 'COMPLETED'){
+                                $table = table::find($order->table_id);
+                                if ($table) {
+                                    $table->availability = 'VACANT';
+                                    $table->save();
+                                }
+                            }
                        
                     }
-                    // UPDATE TABLE AVAILABITLITY
-                    $table = table::find($order->table_id);
-                    if ($table) {
-                        $table->availability = 'VACANT';
-                        $table->save();
-                    }
+                    
             }
         // Reset selected items after cancellation
         $this->selectedItems2Cancel = [];
