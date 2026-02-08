@@ -37,4 +37,18 @@ class Recipe extends Model
         ->latest('created_at');
 }
 
+public function conversionFactor(){
+    $uom = $this->uom()->first()->id;
+    return $this->item()->first()
+        ->units->fromUnits
+        ->where('to_uom_id',  $uom)
+        ->first()->conversion_factor ?? 1;
+}
+
+//  public function getConversionFactorValue()
+//         {
+//             $conversion = $this->conversionFactor;
+//             return $conversion ? $conversion->conversion_factor : 1; // Default to 1 if not found
+//         }
+
 }

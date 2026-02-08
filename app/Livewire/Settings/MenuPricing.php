@@ -38,6 +38,9 @@ class MenuPricing extends Component
             $recipes = $menu->recipes ?? collect(); // Ensure recipes is a collection
             $totalCost = $recipes->sum(function ($recipe) {
                 $itemCost = $recipe->latestItemCost?->amount ?? 0;
+                $convertUnit = $recipe->conversionFactor();
+                $itemCost =   $itemCost / $convertUnit ;
+                // dd($recipe->conversionFactor(). '' . $recipe->item->item_description . '' .  $recipe->item->id );
                 return $itemCost * $recipe->qty;
             });
         

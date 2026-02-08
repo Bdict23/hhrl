@@ -84,8 +84,8 @@
                                 <td>{{ $recipe->menu_code }}</td>
                                 <td>{{ $recipe->recipe_type }}</td>
                                 <td>{{ $recipe->category ? $recipe->category->category_name : 'N/A' }}</td>
+                                <td>{{ $recipe->totalCost}}</td>
                                 <td>{{ number_format($recipestWithTotalCost[$index]['total_cost'] ?? 0, 2) }}</td>
-                                <td>{{ number_format($recipe->mySRP->amount ?? 0, 2) }}</td>
                                 <td class="d-flex">
                                 <button 
                                     data-bs-toggle="modal"
