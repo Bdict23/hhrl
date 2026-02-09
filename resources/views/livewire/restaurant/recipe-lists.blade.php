@@ -10,9 +10,10 @@
                 <div class=" row col-md-6">
                     <div class="col-md-6">
                         @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                            <x-primary-button style="text-decoration: none;">
-                                <a href="{{ route('menus.create') }}" style="text-decoration: none; color: inherit;">+ Create New Recipe</a>
-                            </x-primary-button>
+                            
+                                <a href="{{ route('menus.create') }}" style="text-decoration: none; color: inherit;">
+                                    <x-primary-button style="text-decoration: none;">+ Create New Recipe</x-primary-button>
+                                </a>
                         @endif
                     </div>
                     <div class="col-md-6">
@@ -68,7 +69,7 @@
                                 <tr>
                                     <td>
                                         @if($recipe->menu_image)
-                                            <img src="{{ asset('images/' . $recipe->menu_image) }}" alt="{{ $recipe->menu_image }}" width="50" height="50">
+                                            <img class="img-thumbnail" src="{{ asset('storage/' . $recipe->menu_image) }}" alt="{{ $recipe->menu_image }}" width="50" height="50">
                                         @else
                                             <span class="text-muted">No Image</span>
                                         @endif
@@ -83,9 +84,10 @@
                                             <a href="" style="text-decoration: none; color: inherit;"
                                                 wire:click.prevent="edit({{ $recipe->id }})">Edit</a>
                                         </x-primary-button>
-                                        <x-secondary-button style="text-decoration: none;">
-                                            <a href="" style="text-decoration: none; color: inherit;">View</a>
-                                        </x-secondary-button>
+                                        
+                                            <a href="" style="text-decoration: none; color: inherit;">
+                                                <x-secondary-button style="text-decoration: none;">View</x-secondary-button>
+                                            </a>
                                        
                                     </td>
                                 </tr>

@@ -1,10 +1,8 @@
 <div>
    <div>
-        <form id="poForm" method="POST" action="{{ route('menu.store') }}" enctype="multipart/form-data">
+        <form id="poForm" method="POST" wire:submit.prevent="updateRecipe" enctype="multipart/form-data">
             @csrf
-
-
-            <div class="row me-3 w-100">
+            <div class="row me-3 w-100" wire:ignore.self>
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
@@ -35,7 +33,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="itemTableBody">
-
                                     @forelse ($recipes as $recipe)
                                         <tr>
                                             <td style="font-size: 13PX;">{{ $recipe->item->item_code}}</td>
@@ -75,47 +72,55 @@
                 </div>
                 <div class="col-md-4">
                     <div class="container">
-                        <form>
-                            @csrf
-                            <div class="form-group">
-                                <img id="imagePreview" src="{{ asset('images/' . $menu->menu_image) }}" alt="Image Preview"
+                        <div>
+                            <div class="form-group" >
+                                @if($hasNewImage)
+                                    <img id="imagePreview" src="{{ $menu_image->temporaryUrl() }}" alt="Image Preview"
+                                        style="width: 90%; height: 120px; object-fit: cover;" name="image">
+                                @else
+                                <img id="imagePreview" src="{{ asset('storage/' . $menu->menu_image) }}" alt="{{ $menu->menu_image }}"
                                     style="width: 90%; height: 120px; object-fit: cover;" name="image">
+                                @endif
                             </div>
                             <div class="form-group mt-1">
                                 <label for="recipe_name" style="font-size: 13px;">Recipe Name:</label>
                                 <input type="text" class="form-control" id="recipe_name" name="menu_name" required
-                                value="{{ $menu->menu_name }}"
-                                >
+                                wire:model="menu_name">
+                                @error('menu_name') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group mt-1">
                                 <label for="recipe_type" style="font-size: 13px;">Type</label>
-                                <select name="menu_type" id="recipe_type" class="form-select" aria-label="Default select example">
-                                    <option value="Ala carte">Ala Carte</option>
-                                    <option value="Banquet">Banquet</option>
+                                <select name="menu_type" id="recipe_type" class="form-select" aria-label="Default select example" wire:model="menu_type">
+                                    <option value="Ala Carte" @if ($menu_type == 'Ala Carte') selected @endif>Ala Carte</option>
+                                    <option value="Banquet" @if ($menu_type == 'Banquet') selected @endif>Banquet</option>
                                 </select>
+                                @error('menu_type') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label for="recipe_description" style="font-size: 13px;">Description:</label>
-                                <textarea class="form-control" id="recipe_description" name="menu_description" rows="3" required
-                                    style="height: 30px; width:100%">{{ $menu->menu_description }}</textarea>
+                                <textarea class="form-control" id="recipe_description" name="menu_description" rows="3" required wire:model="description"
+                                    style="height: 30px; width:100%"></textarea>
+                                @error('description') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group mt-2">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label for="recipe_price" style="font-size: 13px;">CODE:</label>
-                                        <input type="text" class="form-control" id="recipe_code" name="menu_code" required
+                                        <input type="text" class="form-control" id="recipe_code" name="menu_code" required wire:model="menu_code"
                                             placeholder="ex. CY23">
+                                        @error('menu_code') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label style="font-size : 13px;" for="category">Category:</label>
                                         <select id="category" name="category_id" class="form-select"
-                                            aria-label="Default select example">
+                                            aria-label="Default select example" wire:model="category_id">
                                             @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}">
+                                                <option value="{{ $category->id }}" @if ($category_id == $category->id) selected @endif>
                                                     {{ $category->category_name }}
                                                 </option>
                                             @endforeach
                                         </select>
+                                        @error('category_id') <span class="text-danger">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
 
@@ -124,41 +129,43 @@
                                 @if ($hasReviewer)
                                     <label for="reviewer_select" style="font-size : 13px;">Reviewed By:</label>
                                     <select id="reviewer_select" class="form-select" aria-label="Default select example"
-                                        name="reviewer_id">
-                                        @foreach ($reviewers as $reviewer)
-                                            <option value="{{ $reviewer->employees->id }}">
-                                                {{ $reviewer->employees->name }} {{ $reviewer->employees->last_name }}
+                                        name="reviewer_id" wire:model="reviewer">
+                                        @foreach ($reviewers as $reviewerItem)
+                                            <option value="{{ $reviewerItem->employees->id }}" @if($hasReviewer && $reviewerItem->employees->id == $reviewer) selected @endif>
+                                                {{ $reviewerItem->employees->name }} {{ $reviewerItem->employees->last_name }}
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('reviewer') <span class="text-danger">{{ $message }}</span> @enderror
                                 @endif
 
                                 <label for="approver_select" style="font-size: 13px">Approved By:</label>
                                 <div class="col-md-12">
                                     <select id="approver_select" class="form-select" aria-label="Default select example"
-                                        name="approver_id">
-                                        @foreach ($approvers as $approver)
-                                            <option value="{{ $approver->employees->id }}">
-                                                {{ $approver->employees->name }} {{ $approver->employees->last_name }}
+                                        name="approver_id" wire:model="approver">
+                                        @foreach ($approvers as $approverItem)
+                                            <option value="{{ $approverItem->employees->id }}" @if($approverItem->employees->id == $approver) selected @endif>
+                                                {{ $approverItem->employees->name }} {{ $approverItem->employees->last_name }}
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('approver') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="menu_image" style="font-size: 13px">Upload Image:</label>
-                                <input class="form-control text-sm" type="file" id="menu_image" name="menu_image" required
-                                    onchange="previewImage(event)">
+                                <input class="form-control text-sm" type="file" id="menu_image" name="menu_image"
+                                    onchange="previewImage(event)" wire:model.live="menu_image">
+                                @error('menu_image') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
-
-                            <button type="submit" class="btn btn-primary mt-3">Create Menu</button>
-                        </form>
+                            <button type="submit" class="btn btn-primary mt-3">Update Recipe</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="AddItemModalLabel"
-                aria-hidden="true">
+                aria-hidden="true" wire:ignore.self>
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -230,6 +237,7 @@
                                             <td>
                                                 <!-- Assign a unique ID to the button -->
                                                 <button id="addToTable_{{ $item->id }}"
+                                                    type="button"
                                                     class="btn btn-primary btn-sm"
                                                     onclick="addToTable({{ $item->id }}, {{ json_encode(['id' => $uom_id, 'factor' => 1, 'symbol' => $itemUnit, 'item_code' => $itemCode, 'item_price' => $itemPrice, 'item_description' => $itemDescription, 'price_id' => $priceID]) }})">
                                                     Add
@@ -260,8 +268,15 @@
      <script>
 
         window.addEventListener('DOMContentLoaded', function(){
-             console.log('loadeds');
              updateOverallCost();
+        });
+
+        document.addEventListener('livewire:initialized', function () {
+            if (window.Livewire && Livewire.hook) {
+                Livewire.hook('message.processed', function () {
+                    updateOverallCost();
+                });
+            }
         });
 
         function filterModalTable() {

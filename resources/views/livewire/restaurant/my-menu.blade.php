@@ -35,7 +35,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <img src="{{ asset('images/' . $menu->menu_image) }}" class="card-img-top"
+                                <img src="{{ asset('storage/' . $menu->menu_image) }}" class="card-img-top"
                                     alt="{{ $menu->menu_image }}" style="width: 100%; height: 200px; object-fit: cover;">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $menu->menu_name }}</h5>

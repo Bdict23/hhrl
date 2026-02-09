@@ -58,11 +58,12 @@ class MenusController extends Controller
                 'menu_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10048',
             ]);
 
-            $imageName = time().'.'.$request->menu_image->extension();
-            $request->menu_image->move(public_path('images'), $imageName);
+            // $imageName = time().'.'.$request->menu_image->extension();
+            $path = $request->menu_image->store('recipe_images', 'public');
+            // $request->menu_image->move(public_path('images'), $imageName);
 
             $menu = new Menu();
-            $menu->menu_image = $imageName;
+            $menu->menu_image = $path;
             $menu->menu_code = $request->menu_code;
             $menu->recipe_type = $request->menu_type;
             $menu->menu_name = $request->menu_name;

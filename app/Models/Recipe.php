@@ -13,6 +13,13 @@ class Recipe extends Model
 {
     use HasFactory;
     protected $table = 'recipes';
+    protected $fillable = [
+            'menu_id',
+            'item_id',
+            'qty',
+            'uom_id',
+            'price_level_id',
+        ];
 
     public function menu(){
         return $this->belongsTo(Menu::class, 'menu_id');

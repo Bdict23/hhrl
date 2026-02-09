@@ -100,7 +100,7 @@
                     <form>
                         @csrf
                         <div class="form-group">
-                            <img id="imagePreview" src="{{ asset('images/' . $menus->menu_image) }}" alt="Image Preview"
+                            <img id="imagePreview" src="{{ asset('storage/' . $menus->menu_image) }}" alt="Image Preview"
                                 style="width: 90%; height: 150px; object-fit: cover;" name="image">
                         </div>
                         <div class="form-group mt-1">
