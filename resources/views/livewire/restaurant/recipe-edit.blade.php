@@ -1,6 +1,5 @@
-@extends('layouts.master')
-@section('content')
-    <div>
+<div>
+   <div>
         <form id="poForm" method="POST" action="{{ route('menu.store') }}" enctype="multipart/form-data">
             @csrf
 
@@ -9,13 +8,11 @@
                 <div class=" col-md-8 card">
                     <div class=" card-body">
                         <header>
-                            <h4>Create New Recipe</h4>
+                            <h4>UPDATE RECIPE</h4>
                             <div class="me-3">
                                 <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                     data-bs-target="#AddItemModal">+
                                     Add Ingredients</button>
-                                <a class="btn btn-info" type="button" href="/recipe-lists">Recipe Summary</a>
-                                <button onclick="history.back()" class="btn btn-primary" type="button"> Back </button>
                             </div>
                         </header>
                         <div class="row me-3">
@@ -39,7 +36,26 @@
                                 </thead>
                                 <tbody id="itemTableBody">
 
-                                    {{--           POPULATE TABLE     --}}
+                                    @forelse ($recipes as $recipe)
+                                        <tr>
+                                            <td style="font-size: 13PX;">{{ $recipe->item->item_code}}</td>
+                                            <td style="font-size: 13PX;">{{$recipe->item->item_description}}</td>         
+                                            <td>
+                                                <input type="number" name="qty[]" class="form-control" value="{{ number_format($recipe->qty ?? 0, 0) }}" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
+                                                <input type="hidden" name="uom_id[]" value="{{$recipe->uom->uom_id}}">
+                                                <input type="hidden" name="item_id[]" value="{{$recipe->item_id}}">
+                                                <input type="hidden" name="price_level_id[]" value="{{$recipe->price_level->id}}">
+                                            </td>
+                                            <td style="font-size: 13PX; text-align: center">{{$recipe->uom->unit_symbol}}</td>
+                                            <td style="font-size: 13PX; text-align: center">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) * $recipe->qty ?? 0 , 2) }}</td>
+                                            <td class="total-price">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) * $recipe->qty ?? 0 , 2) }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        
+                                    @endforelse
 
                                 </tbody>
                             </table>
@@ -62,12 +78,14 @@
                         <form>
                             @csrf
                             <div class="form-group">
-                                <img id="imagePreview" src="{{ asset('images/' . auth()->user()->branch->company->company_logo) }}" alt="Image Preview"
+                                <img id="imagePreview" src="{{ asset('images/' . $menu->menu_image) }}" alt="Image Preview"
                                     style="width: 90%; height: 120px; object-fit: cover;" name="image">
                             </div>
                             <div class="form-group mt-1">
                                 <label for="recipe_name" style="font-size: 13px;">Recipe Name:</label>
-                                <input type="text" class="form-control" id="recipe_name" name="menu_name" required>
+                                <input type="text" class="form-control" id="recipe_name" name="menu_name" required
+                                value="{{ $menu->menu_name }}"
+                                >
                             </div>
                             <div class="form-group mt-1">
                                 <label for="recipe_type" style="font-size: 13px;">Type</label>
@@ -79,7 +97,7 @@
                             <div class="form-group">
                                 <label for="recipe_description" style="font-size: 13px;">Description:</label>
                                 <textarea class="form-control" id="recipe_description" name="menu_description" rows="3" required
-                                    style="height: 30px; width:100%"></textarea>
+                                    style="height: 30px; width:100%">{{ $menu->menu_description }}</textarea>
                             </div>
                             <div class="form-group mt-2">
                                 <div class="row">
@@ -228,19 +246,23 @@
                         </div>
                     </div>
                 </div>
+
+                
             </div>
 
-            </div>
-        </form>
+    </div>
+    </form>
     </div>
 
     </div>
     </div>
-@endsection
 
+     <script>
 
-@section('script')
-    <script>
+        window.addEventListener('DOMContentLoaded', function(){
+             console.log('loadeds');
+             updateOverallCost();
+        });
 
         function filterModalTable() {
             const searchInput = document.getElementById('modalSearch').value.toLowerCase();
@@ -393,4 +415,4 @@
             errorModal.show();
         @endif
     </script>
-@endsection
+</div>

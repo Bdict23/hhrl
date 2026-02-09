@@ -449,3 +449,8 @@ Route::get('/restaurant-cancelation', function () {
 Route::get('/recipe-count-adjustment', function () {
     return view('restaurant.recipe-count-adjustment-view');
 })->middleware(['auth', 'verified'])->name('restaurant.recipe-count-adjustment');
+
+//recipe editing view
+Route::get('//recipe-edit', function () {
+    return view('restaurant.recipe-edit-view');
+})->middleware(['auth', 'verified'])->name('restaurant.recipe-edit');

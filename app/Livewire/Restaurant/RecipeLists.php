@@ -26,4 +26,8 @@ class RecipeLists extends Component
             ->where('company_id', auth()->user()->branch->company_id)
             ->get();
     }
+    public function edit($id)
+    {
+       return redirect()->to('/recipe-edit?recipe-id=' . $id);
+    }
 }

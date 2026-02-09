@@ -79,7 +79,14 @@
                                     <td>{{ $recipe->menu_code }}</td>
                                     <td>{{ $recipe->status }}</td>
                                     <td>
-                                        <a href="" class="btn btn-sm btn-info">View</a>
+                                         <x-primary-button style="text-decoration: none;">
+                                            <a href="" style="text-decoration: none; color: inherit;"
+                                                wire:click.prevent="edit({{ $recipe->id }})">Edit</a>
+                                        </x-primary-button>
+                                        <x-secondary-button style="text-decoration: none;">
+                                            <a href="" style="text-decoration: none; color: inherit;">View</a>
+                                        </x-secondary-button>
+                                       
                                     </td>
                                 </tr>
                             @empty
