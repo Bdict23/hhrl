@@ -55,7 +55,7 @@
                             <tr>
                                 <td>
                                     @if($recipe->menu->menu_image)
-                                        <img src="{{ asset('images/' . $recipe->menu->menu_image) }}" alt="{{ $recipe->menu->menu_image }}" width="50" height="50">
+                                        <img src="{{ asset('storage/' . $recipe->menu->menu_image) }}" alt="" width="50" height="50">
                                     @else
                                         <span class="text-muted">No Image</span>
                                     @endif

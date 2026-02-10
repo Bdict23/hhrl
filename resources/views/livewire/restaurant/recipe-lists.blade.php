@@ -50,7 +50,7 @@
 
 
         <div class="card-body ">
-                <div class="overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
+                <div class="overflow-x-auto" style="height: 400px; overflow-x: auto;">
                     <table class="table min-w-full table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
@@ -69,7 +69,7 @@
                                 <tr>
                                     <td>
                                         @if($recipe->menu_image)
-                                            <img class="img-thumbnail" src="{{ asset('storage/' . $recipe->menu_image) }}" alt="{{ $recipe->menu_image }}" width="50" height="50">
+                                            <img class="img-thumbnail" src="{{ asset('storage/' . $recipe->menu_image) }}" alt="Image" width="50" height="50">
                                         @else
                                             <span class="text-muted">No Image</span>
                                         @endif

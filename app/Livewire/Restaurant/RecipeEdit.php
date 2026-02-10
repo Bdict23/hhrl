@@ -119,6 +119,16 @@ class RecipeEdit extends Component
             $imagePath = $this->menu_image->store('recipe_images', 'public');
             $this->menu->menu_image = $imagePath;
         }
+        $this->menu->menu_name = $this->menu_name;
+        $this->menu->menu_code = $this->menu_code;
+        $this->menu->menu_type = $this->menu_type;
+        $this->menu->category_id = $this->category_id;
+        $this->menu->approver_id = $this->approver;
+        $this->menu->reviewer_id = $this->hasReviewer ? $this->reviewer : null;
+        $this->menu->menu_description = $this->description;
+
+
+
 
         $this->menu->save();
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class InventoryAdjustment extends Model
 {
     //
-    protected $table = 'Inventory_adjustments';
+    protected $table = 'inventory_adjustments';
 
     protected  $fillable = [
         'adjustment_type',
