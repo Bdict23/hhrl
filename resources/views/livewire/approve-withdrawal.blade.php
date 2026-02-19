@@ -95,15 +95,10 @@
                         <div class="alert" style="background-color: #f2f4f7;" role="alert">
 
                             <div class="row">                
-                                <div class="col-md-7">
+                                <div class="col-md-12">
                                     <label for="reference_number" class="form-label">Ref. Number</label>
                                     <input type="text" class="form-control" id="reference_number" readonly
                                         value="{{ $reference }}">
-                                </div>
-                                <div class="col-md-5">
-                                    <label for="withdrawal_type" class="form-label">Withdrawal Type</label>
-                                    <input type="text" class="form-control" id="withdrawal_type" readonly
-                                        value="{{ $withdrawalInfo->withdrawalType->setting_value ?? 'N/A' }}">
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -123,7 +118,7 @@
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div class="row">
+                                <div class="row mb-2">
                                     <div class="col-md-6">
                                         <label for="usage_date" class="form-label"
                                             style="width: 100; font-size: 13px">To be
@@ -140,11 +135,25 @@
 
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="input-group col-md-12 mb-2">
+                                        <label for="production_order_no" class="input-group-text"
+                                            style="width: 100; font-size: 13px">Production Order No.</label>
+                                        <input type="text" class="form-control" id="production_order_no"
+                                            name="production_order_no" value="{{ $withdrawalInfo->productionOrder->reference ?? '' }}" readonly>
+                                    </div>
+                                    <div class="input-group col-md-12 mb-2">
+                                        <label for="event_name" class="input-group-text"
+                                            style="width: 100; font-size: 13px">Event Name</label>
+                                        <input type="text" class="form-control" id="event_name"
+                                            name="event_name" value="{{ $withdrawalInfo->event->event_name ?? '' }}" readonly>
 
-                                <div class="row mt-3">
-                                    <label for="remarks" class="form-label" style="font-size: 13px;">Remarks</label>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
                                     <textarea type="text" class="form-control" id="remarks" name="remarks" style="font-size: 13px; height: 100px"
-                                        readonly> {{ $withdrawalRemarks }}</textarea>
+                                        readonly placeholder="Remarks"> {{ $withdrawalRemarks }}</textarea>
                                 </div>
 
                                 <div class="row mt-1">
@@ -178,5 +187,37 @@
             </div>
         </div>
     </div>
+
+    {{-- listen too show sweet alert --}}
+    <script>
+        window.addEventListener('showAlert', event => {
+            Swal.fire({
+                icon: event.detail.type,
+                title: event.detail.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        });
+        // listen for success message after approval or rejection
+        window.addEventListener('showAlert', event => {
+            const data = event.detail[0];
+            console.log(data);
+            if(data.type === 'success') {
+                Swal.fire({
+                icon: 'success',
+                title: data.message,
+                showConfirmButton: true
+            });
+            }else{
+                Swal.fire({
+                icon: 'error',
+                title: data.message,
+                showConfirmButton: true
+            });
+            }
+             
+        });
+            
+    </script>
 
 </div>

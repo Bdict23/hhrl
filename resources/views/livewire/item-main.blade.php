@@ -89,6 +89,7 @@
                         <tr>
                             <th>SKU</th>
                             <th>NAME</th>
+                            <th>UNIT</th>
                             <th class="text-end">CATEGORY</th>
                             <th class="text-end">CLASSIFICATION</th>
                             <th class="text-end">SUB CLASS</th>
@@ -101,6 +102,7 @@
                             <tr>
                                 <td>{{ $item->item_code }}</td>
                                 <td>{{ $item->item_description }}</td>
+                                <td>{{ $item->uom->unit_symbol ?? 'N/A' }}</td>
                                 <td class="text-end">{{ $item->category->category_name ?? 'N/A' }}</td>
                                 <td class="text-end">
                                     {{ $item->classification->classification_name ?? 'N/A' }}
@@ -120,7 +122,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No items found</td>
+                                <td colspan="7" class="text-center">No items found</td>
                             </tr>
                         @endforelse
                     </tbody>

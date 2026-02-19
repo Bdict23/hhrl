@@ -40,8 +40,7 @@
           icon: 'success',
           title: 'Success!',
           text: '{{ session('success') }}',
-          timer: 3000,
-          showConfirmButton: false
+          showConfirmButton: true
         });
       @endif
 
@@ -50,8 +49,7 @@
           icon: 'error',
           title: 'Error!',
           text: '{{ session('error') }}',
-          timer: 3000,
-          showConfirmButton: false
+          showConfirmButton: true
         });
       @endif
     });

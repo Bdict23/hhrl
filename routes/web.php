@@ -451,6 +451,16 @@ Route::get('/recipe-count-adjustment', function () {
 })->middleware(['auth', 'verified'])->name('restaurant.recipe-count-adjustment');
 
 //recipe editing view
-Route::get('//recipe-edit', function () {
+Route::get('/recipe-edit', function () {
     return view('restaurant.recipe-edit-view');
 })->middleware(['auth', 'verified'])->name('restaurant.recipe-edit');
+
+// route for production order lists
+Route::get('/production-orders', function () {
+    return view('restaurant.production-order-lists-view');
+})->middleware(['auth', 'verified'])->name('production.orders');
+
+// route for production create
+Route::get('/create-production', function(){
+    return view('restaurant.production-create-view');
+})->middleware(['auth','verified'])->name('production.create');

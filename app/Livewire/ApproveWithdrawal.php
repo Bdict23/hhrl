@@ -5,6 +5,11 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Withdrawal;
 use App\Models\Cardex;
+use App\Models\RecipeCardex;
+use App\Models\ProductionOrder;
+use Carbon\Carbon;
+use App\Models\BranchMenuRecipe;
+use App\Models\BranchMenu;
 
 class ApproveWithdrawal extends Component
 {
@@ -94,7 +99,10 @@ class ApproveWithdrawal extends Component
     }
     public function approveWithdrawal($id)
     {
-        $withdrawal = Withdrawal::find($id);
+        try{
+        
+        $withdrawal = Withdrawal::where('id', $id)->first();
+        $productionOrder = $withdrawal->productionOrder ?? null;
         if ($withdrawal) {
             $withdrawal->withdrawal_status = 'APPROVED';
             $withdrawal->approved_date = now();
@@ -105,7 +113,53 @@ class ApproveWithdrawal extends Component
             
             // Refresh the data
             $this->fetchData();
-            return redirect()->route('withdrawal.approval');
+        }
+        if($productionOrder){
+            // Get all branch menus for the current branch
+            $branchMenus = BranchMenu::where('branch_id', auth()->user()->branch_id)->get();
+
+            // update production order to completed and add recipes to inventory
+            $productionOrder->status = 'COMPLETED';
+            $productionOrder->save();
+                foreach($productionOrder->productionMenus as $recipe){
+                    // calculate the total quantity of the recipe to be added to inventory
+                    $branchMenuRecipe = BranchMenuRecipe::whereIn('branch_menu_id', $branchMenus->pluck('id'))
+                    ->where('menu_id', $recipe->menu_id)
+                    ->get();
+                    $cardex = RecipeCardex::where('menu_id', $recipe->menu_id)->where('branch_id', auth()->user()->branch_id)->get();
+                    $availableBalance = $cardex->sum('qty_in') - $cardex->sum('qty_out');
+                    if ($branchMenuRecipe) {
+                        foreach ($branchMenuRecipe as $recipeItem) {
+                            $recipeItem->bal_qty = $availableBalance + $recipe->qty;
+                            $recipeItem->save();
+                        }
+                    } 
+
+                    RecipeCardex::create([
+                        'branch_id' => auth()->user()->branch_id,
+                        'menu_id' => $recipe->menu_id,
+                        'qty_in' => $recipe->qty,
+                        'status' => 'FINAL',
+                        'final_date' => Carbon::now('Asia/Manila'),
+                        'created_at' => Carbon::now('Asia/Manila'),
+                        'production_order_id' => $productionOrder->id,
+                        'transaction_type' => 'PRODUCTION'
+                    ]);
+
+                    
+                }
+                // update production details status to completed
+                    foreach($productionOrder->productionOrderDetails as $detail){
+                        $detail->status = 'COMPLETED';
+                        $detail->save();
+                    }
+
+
+        }
+        $this->dispatch('showAlert', ['message' => 'Approved Successfully', 'type' => 'success']);
+         $this->fetchData();
+        } catch (\Exception $e) {
+            $this->dispatch('showAlert', ['message' => 'An error occurred while approving the withdrawal.'. $e->getMessage(), 'type' => 'error']);
         }
     }
 

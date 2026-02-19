@@ -1,27 +1,24 @@
 <div>
     <div>
-        @if (session()->has('success'))
-            <div class="alert alert-success mt-1">
-                {{ session('success') }}
-                <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>  
-        @endif
+        
         <div class="row me-3 w-100">
-            <div class=" col-md-8 card mt-2">
+            <div class=" col-md-9 card mt-2">
+                <div class="card-header">
+                     <h4> ITEM WITHDRAWAL <i class="bi bi-dropbox"></i></h4>
+                </div>
                 <div class=" card-body">
                     <header>
-                        <h4> ITEM WITHDRAWAL <i class="bi bi-dropbox"></i></h4>
                         <div class="me-3">
-                            @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
+                            @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1 && $action)
                                 <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
                             @endif
                             <x-secondary-button style="color: rgb(135, 235, 168);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary </x-secondary-button>
                             <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                         </div>
                     </header>
-                    <div class="overflow-x-auto" style="display: height: 400px; overflow-x: auto;">
-                        <table class="table table-striped table-hover me-3">
-                            <thead class="table-light me-3">
+                    <div class="overflow-x-auto" style=" height: 400px; overflow: auto;">
+                        <table class="table table-border table-hover me-3">
+                            <thead class="table-light me-3 sticky-top">
                                 <tr style="font-size: x-small;">
                                     @if ($avlBal)
                                         <th>BAL.</th>
@@ -33,9 +30,9 @@
                                         <th>SKU</th>
                                     @endif
                                     <th>NAME</th>
-                                    @if ($uom)
-                                        <th>UNIT</th>
-                                    @endif
+                                    @if ($uom && $action)
+                                         <th>UNIT</th>
+                                    @endif                                    
                                     @if ($category)
                                         <th>CATEGORY</th>
                                     @endif
@@ -54,25 +51,71 @@
                                     @if ($barcode)
                                         <th>BARCODE</th>
                                     @endif
-                                    <th>REQ. QTY</th>
-                                    <th>COST</th>
-                                    <th>TOTAL</th>
-                                    <th>
-                                        ACTION
-                                        <button type="button"
-                                        class="btn btn-sm float-end"
-                                        style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
-                                        data-bs-toggle="modal"
+                                    @if (!$action && !$uom)
+                                         <th>UNIT</th>
+                                    @endif
+                                    <th>WIT. QTY</th>
+                                    @if ($requestQty)
+                                        <th>REQ. QTY
+                                            @if(!$action && !$total && !$cost)
+                                                <button type="button"
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                            data-bs-target="#customCol"
+                                            title="Add or remove column">
+                                            +
+                                        </button>
+                                            @endif
+                                        </th>
+                                    @endif
+                                    @if ($cost)
+                                        <th>COST
+                                            @if(!$action && !$total)
+                                                <button type="button"
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                            data-bs-target="#customCol"
+                                            title="Add or remove column">
+                                            +
+                                        </button>
+                                            @endif
+                                        </th>
+                                    @endif
+                                    @if ($total)
+                                        <th>
+                                            TOTAL
+                                            @if(!$action)
+                                                <button type="button"
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                            data-bs-target="#customCol"
+                                            title="Add or remove column">
+                                            +
+                                        </button>
+                                            @endif
+                                        </th>
+                                    @endif
+                                    @if ($action)
+                                        <th>
+                                            ACTION
+                                            <button type="button"
+                                            class="btn btn-sm float-end"
+                                            style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                            data-bs-toggle="modal"
                                         data-bs-target="#customCol"
                                         title="Add or remove column">
                                         +
                                     </button>
                                     </th>
+                                @endif
                                 </tr> 
                             </thead>
                             <tbody id="itemTableBody">
                                 @forelse ($selectedItems as $index => $item)
-                                    <tr style="font-size: x-small;">
+                                    <tr style="font-size: x-small;" @if($item['total_available'] < $item['requested_qty'] || $item['requested_qty'] == 0) class="table-danger" @endif>
                                         @if ($avlBal)
                                             <td>{{ $item['total_balance'] }}</td>
                                         @endif
@@ -83,8 +126,8 @@
                                             <td>{{ $item['code'] }}</td>
                                         @endif
                                         <td>{{ $item['name'] }}</td>
-                                        @if ($uom)
-                                            <td>{{ $item['uom'] }}</td>
+                                        @if ($uom && $action)
+                                            <td>{{ $item['unit_symbol'] }}</td>
                                         @endif
                                         @if ($category)
                                             <td>{{ $item['category'] }}</td>
@@ -104,12 +147,35 @@
                                         @if ($barcode)
                                             <td>{{ $item['barcode'] }}</td>
                                         @endif
-                                        <td><input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
-                                                min="1" max="{{ $item['total_available'] }}"></td>
-                                        <td>{{ $item['cost'] }}</td>
-                                        <td>{{ $item['total'] }}</td>
-                                        <td><button type="button" class="btn btn-danger btn-sm"
-                                                wire:click="removeItem({{ $index }})">Remove</button></td>
+                                        @if (!$action)
+                                            <td>
+                                                <select  class="form-select" wire:model.live="selectedItems.{{ $index }}.uom">
+                                                    @foreach ($item['unit'] as $unit)
+                                                        <option value="{{ $unit['to_uom_id'] }}" @if($unit['to_uom_id'] === $item['base_uom_id']) selected @endif>{{ $unit['unit_symbol'] }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                        @endif
+                                        <td>
+                                            <input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
+                                                min="1" max="{{ $item['total_available'] }}">
+                                        </td>
+                                        
+                                        @if ($requestQty)
+                                            <td>{{ $item['request_qty'] }}</td>
+                                        @endif
+                                        @if ($cost)
+                                            <td>{{ $item['cost'] }}</td>
+                                        @endif
+                                        @if ($total)
+                                            <td>{{ $item['total'] }}</td>
+                                        @endif
+                                        @if ($action)
+                                         <td>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                wire:click="removeItem({{ $index }})">Remove</button>
+                                        </td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr>
@@ -146,53 +212,46 @@
                                 <div class="alert alert-danger mt-1">
                                     {{ $message }}
                                     <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>  
-                                </div> 
-                                                                
+                                </div>                              
+                            @enderror
+                            @error('selectedItems.*.requested_qty')
+                                <div class="alert alert-danger mt-1">
+                                    {{ $message }}
+                                    <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>  
+                                </div>
                             @enderror
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-2">
+            <div class="col-md-3 mt-1">
                 <div class="card">
+                    <div class="card-header">
+                         <h5 class="card-title">Information</h5>
+                    </div>
                     <div class="card-body">
-                        <div class="alert" style="background-color: #f2f4f7;" role="alert">
-                            <h5 class="card-title">Information</h5>
+                        <div>
                             <div class="row">
-                                <div class="col-md-4">
-                                    <label for="reference" class="form-label" style="font-size: 12px;">REFERENCE</label>
-                                </div>
-                                <div class="col-md-7">
+                                <div class="col-md-12 input-group mb-1">
+                                    <label for="reference" class="input-group-text" style="font-size: 12px;">REFERENCE</label>
                                     <input wire:model="reference" type="text" class="form-control text-center" id="reference_number" disabled placeholder="<AUTO>">
+                                </div>
                                     @error('reference')
                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                     @enderror
-                                </div>
-                            </div>
+                              </div>
                             <div class="row">
-                                <div class="col-md-7">
-                                    <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
-                                    <div class="input-group mb-3">
-                                        <input wire:model="event" type="text" class="form-control" id="event"
-                                            style="font-size: 13px" disabled value="{{ $eventName }}">
-                                        <button class="input-group-text" type="button"
-                                            style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
-                                    </div>
+                                <div class="col-md-12 input-group mb-1">
+                                    <input wire:model="event" type="text" class="form-control" id="event"
+                                        style="font-size: 13px; text-align: center;" disabled value="{{ $eventName }}" placeholder="Event (optional)">
+                                    <button class="input-group-text" type="button"
+                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Select</strong></button>
                                 </div>
-                                <div class="col-md-5">
-                                       <label for="reviewed_to" class="form-label" style="font-size: 13px;">Type<span
-                                        style="color: red;">*</span></label>
-                                     <select class="form-control" name="withdraw_type" id="withdraw_type" style="font-size: x-small" wire:model="selectedWithdrawalType">
-                                        <option value="">Select</option>
-                                        @foreach ($withdrawType as $type)
-                                            <option value="{{ $type->id }}" style="font-size: x-small">
-                                                {{ $type->setting_value }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('selectedWithdrawalType')
-                                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                    @enderror
+                                <div class="col-md-12 input-group mb-1">
+                                      <input wire:model="productionOrder" type="text" class="form-control" id="production_order"
+                                        style="font-size: 13px; text-align: center;" disabled value="{{ $productionOrderName }}" placeholder="Production Order (optional)">
+                                    <button class="input-group-text" type="button"
+                                        style="background-color: rgb(190, 228, 243);" data-bs-toggle="modal" data-bs-target="#getProductionOrderModal"><strong class="text-sm">Select</strong></button>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -213,7 +272,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Expected Date</label> <span style="color: red;">*</span>
+                                    <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Effective Date</label> <span style="color: red;">*</span>
                                     <input wire:model='useDate' type="date" class="form-control" id="usage_date">
                                     @error('useDate')
                                     <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
@@ -222,24 +281,23 @@
                             </div>
                             <div class="row mb-2">
 
-                                    <div class="col-md-6">
-                                        <label for="status" class="form-label">Have Span</label>
-                                        <input wire:model.live='haveSpan' type="checkbox" class="form-check-input" id="span-date">
+                                    <div class="col-md-12 input-group mb-1">
+                                        <label for="status" class="input-group-text">Restock Interval</label>
+                                        <div class="input-group-text d-flex align-items-center">
+                                            <input wire:model.live='haveSpan' type="checkbox" class="form-check-input" id="span-date">
+                                        </div>
+                                        <input wire:model='spanDate' type="date" class="form-control" id="lifespan_date" @if(!$haveSpan) hidden @endif>
                                     </div>
-                                    <div class="col-md-6">
+                                     @error('spanDate')
+                                        <i class="text-danger" style="font-size: 12px">{{ $message }}</i>
+                                    @enderror
+                                    {{-- <div class="col-md-6">
                                         <label for="finalStatus" class="form-label">Set as Final</label>
                                         <input wire:model.live ="finalStatus" type="checkbox" class="form-check-input" id="finalStatus">
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div>
-                                    <div id="lifespanContainer" {{ $haveSpan ? 'style=display:block' : 'style=display:none' }}>
-                                        <label for="lifespan_date" class="form-label"
-                                            style="width: 100; font-size: 13px">Lifespan Date</label>
-                                        <input wire:model='spanDate' type="date" class="form-control" id="lifespan_date">
-                                        @error('spanDate')
-                                            <i class="text-danger" style="font-size: 12px">{{ $message }}</i>
-                                        @enderror
-                                    </div>
+                                   
                                 <div class="row mt-3">
                                     <label for="remarks" class="form-label" style="font-size: 13px;">Remarks</label>
                                     <textarea wire:model="remarks" type="text" class="form-control" id="remarks" style="font-size: 13px; height: 100px"></textarea>
@@ -300,8 +358,17 @@
                                 </div>
                                 <div>
                                     @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
-                                        <x-primary-button wire:click="store" type="button" class=" mt-3">Save</x-primary-button>
-                                        <x-danger-button wire:click="resetForm" type="button" class="mt-3">Reset</x-danger-button>
+                                      <div class="input-group rounded shadow-sm mt-2">
+                                        <select name="" id="" class="form-select" wire:model="finalStatus" >
+                                            <option value="">SAVE AS</option>
+                                            <option value="DRAFT">DRAFT</option>
+                                            <option value="FINAL">FINAL</option>
+                                        </select>
+                                        <button class="btn btn-primary btn-sm" wire:click="store">Save</button>
+                                    </div>
+                                    @error('finalStatus')
+                                        <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                    @enderror
                                     @endif
                                 </div>
                             </div>
@@ -337,12 +404,14 @@
                                 SKU/CODE (SKU)
                             </label>
                         </div>
+                        @if ($action && $uom)
                         <div class="form-check">
                             <input wire:model.live="uom" class="form-check-input" type="checkbox" value="" id="checkUom">
                             <label class="form-check-label" for="checkUom">
                                 Unit of Measure (UNIT)
                             </label>
                         </div>
+                        @endif
                         <div class="form-check">
                             <input wire:model.live="category" class="form-check-input" type="checkbox" value="" id="checkCategory">
                             <label class="form-check-label" for="checkCategory">
@@ -379,6 +448,18 @@
                                 Barcode (BARCODE)
                             </label>
                         </div>
+                         <div class="form-check">
+                            <input wire:model.live="cost" class="form-check-input" type="checkbox" value="" id="checkCost">
+                            <label class="form-check-label" for="checkCost">
+                                Cost Price (COST)
+                            </label>
+                        </div>
+                         <div class="form-check">
+                            <input wire:model.live="total" class="form-check-input" type="checkbox" value="" id="checkTotal">
+                            <label class="form-check-label" for="checkTotal">
+                                 Total (TOTAL)
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -398,7 +479,7 @@
                         </div>
                         <!-- Table for Event Selection -->
                         <table class="table table-bordered table-hover">
-                            <thead class="thead-dark">
+                            <thead class="thead-dark sticky-top">
                                 <tr>
                                     <th>EVENT NAME</th>
                                     <th>CUSTOMER</th>
@@ -455,13 +536,13 @@
                         <!-- Table for Item Selection -->
                        <div class="overflow-x-auto" style="height: 400px; overflow-x: auto;">
                          <table class="table table-sm table-bordered table-hover">
-                             <thead class="table-dark">
+                             <thead class="table-dark sticky-top">
                                  <tr>
                                      <th>CODE</th>
                                      <th>NAME</th>
-                                     <th>INVENTORY BALANCE</th>
-                                     <th>AVAILABLE QTY.</th>
-                                     <th>COST PRICE</th>
+                                     <th>INV. BAL.</th>
+                                     <th>AVL. QTY.</th>
+                                     <th>COST</th>
                                      <th>CATEGORY</th>
                                      <th>STATUS</th>
                                      <th>ACTION</th>
@@ -494,6 +575,71 @@
                 </div>
             </div>
         </div>
+
+        {{-- PRODUCTION ORDERS  MODAL--}}
+        <div class="modal fade" id="getProductionOrderModal" tabindex="-1" aria-labelledby="getProductionOrderModalLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="getProductionOrderModalLabel">Select Production Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <label for="searchProductionOrderInput" class="input-group-text">Search</label>
+                            <input type="text" id="searchProductionOrderInput" class="form-control w-25"
+                                placeholder="Search..." onkeyup="applyProductionOrderFilters()">
+                                <script>
+                                    function applyProductionOrderFilters() {
+                                        const searchInput = document.getElementById('searchProductionOrderInput').value.toLowerCase();
+                                        const productionOrderRows = document.querySelectorAll('#productionOrderTable tr');
+
+                                        productionOrderRows.forEach(row => {
+                                            const reference = row.cells[0].textContent.toLowerCase();
+                                            const preparedBy = row.cells[1].textContent.toLowerCase();
+                                            const dateRequested = row.cells[2].textContent.toLowerCase();
+
+                                            if (reference.includes(searchInput) || preparedBy.includes(searchInput) || dateRequested.includes(searchInput)) {
+                                                row.style.display = '';
+                                            } else {
+                                                row.style.display = 'none';
+                                            }
+                                        });
+                                    }
+                                </script>
+                        </div>
+                        <!-- Table for Production Order Selection -->
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark sticky-top">
+                                <tr>
+                                    <th>REFERENCE</th>
+                                    <th>PREPARED BY</th>
+                                    <th>DATE REQUESTED</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productionOrderTable">
+                                @foreach ($productionOrders as $productionOrder)
+                                    <tr>
+                                        <td>{{ $productionOrder->reference }}</td>
+                                        <td>{{ $productionOrder->employee->name }} {{ $productionOrder->employee->last_name }}</td>
+                                        <td>{{ date_format($productionOrder->created_at, 'M-d-Y') }}</td>
+                                        <td>
+                                            <button wire:click="selectedProductionOrder({{ $productionOrder->id }})" type="button" class="btn btn-primary btn-sm"> Select </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <script>
         function applyEventFilters() {
             const searchInput = document.getElementById('searchEventInput').value.toLowerCase();
@@ -513,10 +659,24 @@
         }
 
         document.addEventListener('closeEventModal', function () {
-            document.getElementById('usage_date').value = @this.useDate;
-            console.log(@this.useDate);
             var modal = bootstrap.Modal.getInstance(document.getElementById('getEventModal'));
             modal.hide();
         });
+            document.addEventListener('closeProductionOrderModal', function () {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('getProductionOrderModal'));
+                modal.hide();
+            });
+
+            window.addEventListener('showAlert', event => {
+                const data = event.detail[0];
+                    Swal.fire({
+                        icon: data.type,
+                        title: data.message,
+                        showConfirmButton: true
+                    });
+              
+                
+            });
+                
     </script>
 </div>

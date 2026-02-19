@@ -19,7 +19,8 @@ class RecipeCardex extends Model
         'order_id',
         'final_date',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'production_order_id'
     ];
 
     public function adjustment()
@@ -30,5 +31,10 @@ class RecipeCardex extends Model
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function productionOrder()
+    {
+        return $this->belongsTo(ProductionOrder::class, 'production_order_id');
     }
 }

@@ -41,4 +41,9 @@ class UOM extends Model
     {
         return $this->hasOne(Item::class, 'uom_id');
     }
+
+    public function availableUnits()
+    {
+        return $this->fromUnits()->with('toUnit')->get()->merge($this->toUnits()->with('fromUnit')->get());
+    }
 }

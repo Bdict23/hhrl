@@ -54,7 +54,7 @@
             </div>
            <div class="card-body overflow-x-auto" style="max-height: 400px;">
              <table class="table table-hover table-bordered table-striped table-sm" style="display: height : 400px; overflow-x: auto;">
-                 <thead class="table-dark table-hover ">
+                 <thead class="table-dark table-hover sticky-top">
                      <tr>
                          <th>Reference Number</th>
                          <th>Department</th>

@@ -21,7 +21,12 @@ class WithdrawalShow extends Component
     // Custom Columns Properties
     public $avlBal = false;
     public $avlQty = true;
-    public $code = true;
+    public $code = false;
+    public $cost = false;
+    public $total = false;
+    public $requestQty = false;
+    public $action = true;
+
     // public $location = false;
     public $uom = true;
     public $brand = false;
@@ -54,7 +59,6 @@ class WithdrawalShow extends Component
     public $eventId = null; // event id for banquet procurement
     public $events = []; // display events on ui
     public $withdrawalTypes = []; // display withdrawal types on ui
-    public $selectedWithdrawalType = null; // selected withdrawal type from user
 
 
     protected $rules = [
@@ -84,6 +88,7 @@ class WithdrawalShow extends Component
 
     public function mount(Request $request = null)
     {
+        return redirect()->to('/withdrawals');
         $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Withdrawal') == 1 ? true : false;
 
         if ($request->has('withdrawal-id')) {
@@ -111,7 +116,6 @@ class WithdrawalShow extends Component
         $this->isAlreadyFinal = $withdrawal->withdrawal_status != 'PREPARING' ? true : false;
         $this->finalStatus = $this->isAlreadyFinal;
         $this->haveSpan = $withdrawal->useful_date != null ? true : false;
-        $this->selectedWithdrawalType = $withdrawal->withdrawalType->id ?? null;
         $this->selectedItems = [];
         
 

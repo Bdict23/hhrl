@@ -14,7 +14,7 @@
                                 <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                     data-bs-target="#AddItemModal">+
                                     Add Ingredients</button>
-                                <a class="btn btn-info" type="button" href="/recipe-lists">Recipe Summary</a>
+                                <a class="btn btn-info" type="button" href="/recipe-lists">Summary</a>
                                 <button onclick="history.back()" class="btn btn-primary" type="button"> Back </button>
                             </div>
                         </header>

@@ -110,7 +110,7 @@
                                             <td>{{ intval($detail->qty_in) }}</td>
                                             <td>{{ intval($detail->qty_out) }}</td>
                                             <td>{{ intval($detail->balance) }}</td>
-                                            <td>@if($detail->qty_in != 0){{ $detail->adjustment->reference }}@else 
+                                            <td>@if($detail->qty_in != 0){{ $detail->adjustment->reference ?? $detail->productionOrder->reference ?? 'N/A' }}@else 
                                                 {{ $detail->order->invoice->first()->reference ?? 'N/A' }} 
                                                 @endif
                                             </td>

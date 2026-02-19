@@ -20,6 +20,8 @@ class Withdrawal extends Model
         'prepared_by',
         'remarks',
         'withdrawal_type',
+        'production_order_id',
+        'event_id',
     ];
 
     public function department()
@@ -64,6 +66,11 @@ class Withdrawal extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'source_branch_id');
+    }
+
+    public function productionOrder()
+    {
+        return $this->belongsTo(ProductionOrder::class, 'production_order_id');
     }
   
 }

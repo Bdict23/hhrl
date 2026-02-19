@@ -72,7 +72,7 @@
                            <th>Type</th>
                            <th>Category</th>
                            <th>COST</th>
-                           <th>SELLING RATE</th>
+                           <th>SELL RATE</th>
                            <th>Action</th> 
                        </tr>
                    </thead>
@@ -84,12 +84,13 @@
                                 <td>{{ $recipe->menu_code }}</td>
                                 <td>{{ $recipe->recipe_type }}</td>
                                 <td>{{ $recipe->category ? $recipe->category->category_name : 'N/A' }}</td>
-                                <td>{{ $recipe->totalCost}}</td>
                                 <td>{{ number_format($recipestWithTotalCost[$index]['total_cost'] ?? 0, 2) }}</td>
+                                <td>{{ $recipe->mySRP->amount ?? '0.00' }}</td>
                                 <td class="d-flex">
                                 <button 
+                                    wire:click="viewPriceTrend({{ $recipe->id }})"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#trendModal"
+                                    data-bs-target="#priceTrendModal"
                                     class="btn btn-primary btn-sm text-smaller">
                                     Trend
                                 </button>
@@ -113,7 +114,65 @@
            </div>
        </div>
    </div>
-
+ <!-- Right Column: Cost Trend Chart with Filters -->
+                <div  
+                class="modal modal-xl " 
+                id="priceTrendModal" 
+                tabindex="-1" 
+                aria-labelledby="priceTrendModalLabel" 
+                aria-hidden="true" wire:ignore.self>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="flex gap-2 align-items-center">
+                                     <h5 class="card-title mb-0">Selling Trend</h5>
+                                     <div class="d-flex gap-2">
+                                         <select wire:model="chartYear" 
+                                                 class="form-select form-select-sm"
+                                                 style="width: 100px;">
+                                             <option value="">All Years</option>
+                                             @foreach($availableYears as $year)
+                                                 <option value="{{ $year }}">{{ $year }}</option>
+                                             @endforeach
+                                         </select>
+                                         <select wire:model="chartMonth" 
+                                                 class="form-select form-select-sm"
+                                                 style="width: 120px;">
+                                             <option value="">All Months</option>
+                                             @foreach($months as $num => $name)
+                                                 <option value="{{ $num }}">{{ $name }}</option>
+                                             @endforeach
+                                         </select>
+                                     </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                             </div>
+                           <div class="modal-body">
+                             <div class="card-body position-relative" style="height: 400px; min-height: 400px;">
+                                 @if($chartLoading)
+                                     <div class="chart-overlay">
+                                         <div class="spinner-border text-primary" role="status">
+                                             <span class="visually-hidden">Loading...</span>
+                                         </div>
+                                     </div>
+                                 @endif
+                                 @if(empty($chartData))
+                                     <div class="d-flex align-items-center justify-content-center h-100">
+                                         <div class="text-muted">
+                                             @if($selectedMenuId)
+                                                 Cost of {{ now()->format('F Y') }} not available
+                                             @else
+                                                 Select a menu to view cost trend
+                                             @endif
+                                         </div>
+                                     </div>
+                                 @endif
+                                 <canvas id="menuCostChart"></canvas>
+                             </div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
 
 
 
@@ -123,19 +182,19 @@
        <div class="modal-dialog">
            <div class="modal-content">
                <div class="modal-header">
-                   <h5 class="modal-title" id="addCostModalLabel">Update Cost</h5>
+                   <h5 class="modal-title" id="addCostModalLabel">Update Selling Price</h5>
                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                </div>
                <div class="modal-body">
                    <form action="" wire:submit.prevent="addNewMenuCost" id="addCostForm">
                        <div class="mb-3">
-                           <label for="cost_amount" class="form-label">Cost Amount</label>
-                           <input type="number" step="0.01" class="form-control" id="cost_amount" wire:model="menu_cost_amount" placeholder="Enter cost amount">
+                           <label for="cost_amount" class="form-label">Selling Price</label>
+                           <input type="number" step="0.01" class="form-control" id="cost_amount" wire:model="menu_cost_amount" placeholder="Enter selling price">
                            @error('menu_cost_amount')
                                <span class="text-danger">{{ $message }}</span>
                            @enderror
                        </div>
-                       <x-primary-button type="submit">Update Cost</x-primary-button>
+                       <x-primary-button type="submit">Update</x-primary-button>
                    </form>
                </div>
            </div>

@@ -352,6 +352,11 @@
                                             {{ __('Cancellation Summary') }}
                                         </x-dropdown-link>
                                    @endif
+                                   @if (auth()->user()->employee->getModulePermission('Production Orders') !=2)
+                                        <x-dropdown-link :href="url('/production-orders')" class="no-underline">
+                                            {{ __('Production Orders') }}
+                                        </x-dropdown-link>
+                                   @endif
                                 </x-slot>
                             </x-dropdown>
                         </div>

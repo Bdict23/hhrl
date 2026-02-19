@@ -44,7 +44,7 @@
                                                 <input type="hidden" name="price_level_id[]" value="{{$recipe->price_level->id}}">
                                             </td>
                                             <td style="font-size: 13PX; text-align: center">{{$recipe->uom->unit_symbol}}</td>
-                                            <td style="font-size: 13PX; text-align: center">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) * $recipe->qty ?? 0 , 2) }}</td>
+                                            <td style="font-size: 13PX; text-align: center">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) ?? 0 , 2) }}</td>
                                             <td class="total-price">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) * $recipe->qty ?? 0 , 2) }}</td>
                                             <td>
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>

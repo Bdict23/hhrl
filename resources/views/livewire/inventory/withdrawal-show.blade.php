@@ -8,11 +8,13 @@
         @endif
             <div class="row me-3 w-100">
                 <div class=" col-md-8 card">
+                     <div class="card-header">
+                         <h5 class="card-title">WITHDRAWAL <i class="bi bi-dropbox"></i></h5>
+                    </div>
                     <div class=" card-body">
                         <header>
-                            <h4> ITEM WITHDRAWAL</h4>
                             <div class="me-3" wire:ignore>
-                                @if(!$isAlreadyFinal)
+                                @if(!$isAlreadyFinal  && $action && auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
                                 @endif
                                 <x-primary-button wire:click="printPreview" type="button"> Print Preview </x-primary-button>
@@ -20,8 +22,6 @@
                                 <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                             </div>
                         </header>
-                       
-                      
                         <table class="table table-striped table-hover me-3">
                             <thead class="table-light me-3">
                                 <tr style="font-size: x-small;">
@@ -35,9 +35,9 @@
                                         <th>SKU</th>
                                     @endif
                                     <th>NAME</th>
-                                    @if ($uom)
+                                    @if ($uom && $action)
                                         <th>UNIT</th>
-                                    @endif
+                                    @endif                  
                                     @if ($category)
                                         <th>CATEGORY</th>
                                     @endif
@@ -56,22 +56,61 @@
                                     @if ($barcode)
                                         <th>BARCODE</th>
                                     @endif
-                                    <th>REQ. QTY</th>
-                                    <th>COST</th>
-                                    <th>TOTAL</th>
+                                     @if (!$action && !$uom)
+                                         <th>UNIT</th>
+                                    @endif
+                                    <th>WIT. QTY</th>
+                                     @if ($requestQty)
+                                        <th>REQ. QTY
+                                            @if(!$action && !$total && !$cost)
+                                                <button type="button"
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                            data-bs-target="#customCol"
+                                            title="Add or remove column">
+                                            +
+                                        </button>
+                                            @endif
+                                        </th>
+                                    @endif
+                                    <th>COST
+                                        @if(!$action && !$total)
+                                                <button type="button"
+                                                    class="btn btn-sm float-end"
+                                                    style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#customCol"
+                                                    title="Add or remove column">
+                                                    +
+                                            </button>
+                                        @endif
+                                    </th>
                                     <th>
-                                        @if (!$isAlreadyFinal)
+                                        TOTAL
+                                            @if(!$action)
+                                                <button type="button"
+                                                        class="btn btn-sm float-end"
+                                                        style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                        data-bs-toggle="modal"
+                                                    data-bs-target="#customCol"
+                                                    title="Add or remove column">
+                                                    +
+                                                </button>
+                                            @endif
+                                    </th>
+                                    <th>
+                                        @if (!$isAlreadyFinal && $action)
                                             ACTION
                                         @endif
-                                        
                                         <button type="button"
-                                        class="btn btn-sm float-end"
-                                        style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#customCol"
-                                        title="Add or remove column">
-                                        +
-                                    </button>
+                                            class="btn btn-sm float-end"
+                                            style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#customCol"
+                                            title="Add or remove column">
+                                            +
+                                        </button>
                                     </th>
                                     
                                 </tr>
@@ -91,8 +130,8 @@
                                             <td>{{ $item['code'] }}</td>
                                         @endif
                                         <td>{{ $item['name'] }}</td>
-                                        @if ($uom)
-                                            <td>{{ $item['uom'] }}</td>
+                                        @if ($uom && $action)
+                                            <td>{{ $item['unit_symbol'] }}</td>
                                         @endif
                                         @if ($category)
                                             <td>{{ $item['category'] }}</td>
@@ -112,12 +151,24 @@
                                         @if ($barcode)
                                             <td>{{ $item['barcode'] }}</td>
                                         @endif
-                                        <td><input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
-                                                min="1" max="{{ $item['total_available'] }}"></td>
+                                        <td>
+                                            <select  class="form-select" wire:model.live="selectedItems.{{ $index }}.uom">
+                                                @foreach ($item['unit'] as $unit)
+                                                    <option value="{{ $unit['to_uom_id'] }}" @if($unit['to_uom_id'] === $item['base_uom_id']) selected @endif>{{ $unit['unit_symbol'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                         <td>
+                                            <input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
+                                                min="1" max="{{ $item['total_available'] }}">
+                                        </td>
+                                         @if ($requestQty)
+                                            <td>{{ $item['request_qty'] }}</td>
+                                        @endif
                                         <td>{{ $item['cost'] }}</td>
                                         <td>{{ $item['total'] }}</td>
                                         <td>
-                                             @if (!$isAlreadyFinal)
+                                             @if (!$isAlreadyFinal && $action)
                                             <button type="button" class="btn btn-danger btn-sm"
                                                 wire:click="removeItem({{ $index }})">Remove</button>
                                              @endif
@@ -157,8 +208,13 @@
                                     <div class="alert alert-danger mt-1">
                                         {{ $message }}
                                         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>  
-                                    </div> 
-                                                                  
+                                    </div>                                 
+                                @enderror
+                                @error('selectedItems.*.requested_qty')
+                                <div class="alert alert-danger mt-1">
+                                    {{ $message }}
+                                    <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>  
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -168,46 +224,27 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="alert" style="background-color: #f2f4f7;" role="alert">
-                                <h5 class="card-title">Information</h5>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="reference" class="form-label">REFERENCE<span style="color: red;">&nbsp;*</span></label>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <input wire:model="reference" type="text" class="form-control" id="reference_number" disabled>
-                                        @error('reference')
-                                            <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                 <div class="row">
-                                    <div class="col-md-7">
-                                        <label for="requestor" class="form-label" style="font-size: 12px;">Event</label>
-                                        <div class="input-group mb-3">
-                                            <input type="text" class="form-control" id="event"
-                                                style="font-size: 13px" disabled value="{{ $eventName }}">
-                                            @if (!$isAlreadyFinal)
-                                                <button class="input-group-text" type="button"
-                                                    style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
-                                                @endif
+                                <h5 class="card-title">Information </h5>
+                                    <div class="row">
+                                        <div class="col-md-12 input-group mt-1 mb-2">
+                                            <label for="reference" class="input-group-text" style="font-size: 12px;">REFERENCE</label>
+                                            <input wire:model="reference" type="text" class="form-control" id="reference_number" disabled>
+                                            @error('reference')
+                                                <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <label for="withdrawal_type" class="form-label" style="font-size: 12px;">Withdrawal Type</label>
-                                        <select wire:model="selectedWithdrawalType" id="withdrawal_type"  class="form-select"
-                                            aria-label="Default select example" style="width: 100%; font-size: 12px" {{ $isAlreadyFinal ? 'disabled' : '' }}>
-                                            <option value="">Select Withdrawal Type</option>
-                                            @foreach ($withdrawalTypes as $type)
-                                                <option value="{{ $type->id }}" {{ $selectedWithdrawalType == $type->id ? 'selected' : '' }}>{{ $type->setting_value }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('selectedWithdrawalType')
-                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
-                                        @enderror
+                                 <div class="row">
+                                    <div class="col-md-12 input-group mb-1">
+                                        <input type="text" class="form-control" id="event"
+                                            style="font-size: 13px" disabled value="{{ $eventName }}" placeholder="Event">
+                                        @if (!$isAlreadyFinal)
+                                            <button class="input-group-text" type="button"
+                                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
+                                            @endif
                                     </div>
                                 </div>
-                                <div class="row mb-2">
+                                <div class="col-md-12 input-group mb-1">
                                     <div class="col-md-6">
                                         <label for="deptartment" class="form-label"
                                             style="width: 100; font-size: 13px">Department</label><span
