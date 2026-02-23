@@ -12,6 +12,8 @@ use App\Models\Cardex;
 use App\Models\Item;
 use App\Models\Module;
 use App\Models\OtherSetting;
+use App\Models\ProductionOrder;
+use App\Models\ProductionOrderDetail;
 
 
 class WithdrawalShow extends Component
@@ -59,6 +61,7 @@ class WithdrawalShow extends Component
     public $eventId = null; // event id for banquet procurement
     public $events = []; // display events on ui
     public $withdrawalTypes = []; // display withdrawal types on ui
+    public $productionRef = null;
 
 
     protected $rules = [
@@ -70,6 +73,8 @@ class WithdrawalShow extends Component
         'selectedItems' => 'required|array|min:1',
         'reviewer' => 'required',
         'approver' => 'required',
+        'finalStatus' => 'required|boolean',
+        
     ];
     protected $messages = [
         'reference.required' => 'The reference number is required.',
@@ -77,6 +82,8 @@ class WithdrawalShow extends Component
         'selectedItems.required' => 'The item list cannot be empty.',
         'reviewer.required' => 'The reviewer is required.',
         'approver.required' => 'The approver is required.',
+        'finalStatus.boolean' => 'Select A saving options',
+        'finalStatus.required' => 'Select A saving options',
        
     ];
     protected $listeners = [
@@ -85,10 +92,11 @@ class WithdrawalShow extends Component
         'updatedHaveSpan' => 'updatedHaveSpan',
     ];
 
+  
 
     public function mount(Request $request = null)
     {
-        return redirect()->to('/withdrawals');
+        
         $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Withdrawal') == 1 ? true : false;
 
         if ($request->has('withdrawal-id')) {
@@ -127,38 +135,116 @@ class WithdrawalShow extends Component
             $this->eventId = null;
             $this->eventName = null;
         }
+        
+        // check if the withdrawal is for Production Order
+        if($withdrawal->production_order_id != null){
+            $this->requestQty = true;
+            $this->action = false;
+            $this->uom = false;
+            $this->productionRef = $withdrawal->productionOrder->reference;
 
+        }
+        
+        // mag pluck sa production details para makuha ang item id
+        $Productdetail = ProductionOrderDetail::where('production_order_id', $withdrawal->production_order_id)->with('uom')->get();
+        
         foreach ($withdrawal->cardex as $item) {
             $totalIn = Cardex::where('status', 'final')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_in');
             $totalOut = Cardex::where('status', 'final')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');
             $totalReserved = Cardex::where('status', 'reserved')->where('item_id', $item->item_id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');
-            $totalBal = $totalIn - $totalOut;
-            $totalAvailable = $totalBal - $totalReserved;
+            $balance = $totalIn - $totalOut;
+            $totalAvailable = $balance - $totalReserved;
+            $reqQtyInBaseUnit = (float) $item['qty_out'];
+            $item2 = Item::with('uom','category','location','brand','classification')->where('id',$item->item_id)->first(); 
+            $itemUnitLists = $this->buildUnitOptions($item2);
+            $baseUomId = $item2->uom_id;
+
+            // get unit Jsymbol from used in production order detail 
+            $prdOrderDtl= $Productdetail->where('item_id',$item->item_id)->first();
+            if(!$prdOrderDtl){
+                $reqQty = $item['qty_out'];
+            }else{
+                $reqQty = (float) $prdOrderDtl->qty;
+            }
+            
             
             if ($item['qty_out'] > 0) {
                 $this->selectedItems[] = [
                     'id' => $item['item_id'],
-                    'requested_qty' => (float) $item['qty_out'],
-                    'total_balance' =>  $totalBal,
+                    'code' => $item['item_id'],
+                    'name' => $item2->item_description,
+                    'unit' => $itemUnitLists,
+                    'uom' => $baseUomId,
+                    'base_uom_id' => $baseUomId,
+                    'unit_symbol' => $item2->uom->unit_symbol ?? 'N/A',
+
+                    // Base quantities (always in item's base UOM)
+                    'base_total_balance' => $balance,
+                    'base_total_available' => $totalAvailable,
+                    'requested_qty_base' => $reqQtyInBaseUnit,
+
+                    // Display quantities (convert based on selected UOM)
+                    'total_balance' =>  $balance,
                     'total_available' => $totalAvailable,
-                    'code' => $item->item->item_code ?? 'N/A',
-                    'name' => $item->item->item_description,
-                    'unit' => $item->item->uom->unit_symbol,
-                    'category' => $item->item->category->category_name,
-                    'classification' => $item->item->classification->classification_name ?? 'N/A',
-                    'barcode' => $item->item->item_barcode ?? 'N/A',
-                    // 'location' => $item->item->location->location_name ?? 'N/A',
-                    'uom' => $item->item->uom->unit_name ?? 'N/A',
-                    'brand' => $item->item->brand->brand_name ?? 'N/A',
-                    'status' => $item->item->item_status,
-                    'cost' => $item->item->costPrice->amount,
-                    'costId' => $item->item->costPrice->id,
-                    'total' => $item['qty_out'] * ($item->item->costPrice->amount ?? 0),
+                    'requested_qty' => (float) $item['qty_out'],
+
+                    // Original request (stays as reference, never changes)
+                    'request_qty' => $this->formatQtyWithUnit($reqQty, $prdOrderDtl->uom->unit_symbol ?? $item2->uom->unit_symbol) ,
+
+                    // Original request (stays as reference, never changes)
+                    'code' => $item2->item_code ?? 'N/A',
+                    'category' => $item2->category->category_name,
+                    'classification' => $item2->classification->classification_name ?? 'N/A',
+                    'barcode' => $item2->item_barcode ?? 'N/A',
+
+                    // 'location' => $item2->location->location_name ?? 'N/A',
+                    'brand' => $item2->brand->brand_name ?? 'N/A',
+                    'status' => $item2->item_status,
+                    'cost' => $item2->costPrice->amount,
+                    'costId' => $item2->costPrice->id,
+                    'total' => $item['qty_out'] * ($item2->costPrice->amount ?? 0),
                 ];
             }
-            $this->overallTotal += (float) $item['qty_out'] * (float) $item->item->costPrice->amount;
+            $this->overallTotal += (float) $item['qty_out'] * (float) $item2->costPrice->amount;
 
         }
+    }
+
+     private function formatQtyWithUnit(float $qty, ?string $unitSymbol): string
+    {
+        $label = rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.');
+        if ($unitSymbol) {
+            return $label . ' (' . $unitSymbol . ')';
+        }
+        return $label;
+    }
+
+    private function buildUnitOptions(Item $item): array
+    {
+        $unitOptions = [];
+        if ($item->uom) {
+            $unitOptions[] = [
+                'from_uom_id' => $item->uom->id,
+                'to_uom_id' => $item->uom->id,
+                'unit_symbol' => $item->uom->unit_symbol,
+                'unit_name' => $item->uom->unit_name,
+                'item_id' => $item->id,
+                'conversion_factor' => 1,
+            ];
+        }
+
+        foreach ($item->units->fromUnits as $fromUnit) {
+            $unitOptions[] = [
+                'from_uom_id' => $fromUnit->from_uom_id,
+                'to_uom_id' => $fromUnit->to_uom_id,
+                'unit_symbol' => $item->units->where('id', $fromUnit->to_uom_id)->pluck('unit_symbol')->implode(', '),
+                'unit_name' => $item->units->where('id', $fromUnit->to_uom_id)->pluck('unit_name')->implode(', '),
+                'item_id' => $item->id,
+                'conversion_factor' => $fromUnit->conversion_factor,
+            ];
+        }
+
+        return $unitOptions;
     }
 
     public function fetchData(){
@@ -206,17 +292,27 @@ class WithdrawalShow extends Component
 
             $this->selectedItems[] = [
                 'id' => $selected->id,
-                'total_balance' => $balance,
-                'total_available' => $available,
                 'code' => $selected->item_code ?? 'N/A',
                 'name' => $selected->item_description,
                 'unit' => $selected->uom->unit_symbol,
+                'uom' => $selected->uom->unit_name ?? 'N/A',
+                'base_uom_id' => $selected->uom_id,
+                'unit_symbol' => $selected->uom->unit_symbol ?? 'N/A',
+    
+                // Base quantities (always in item's base UOM)
+                'base_total_balance' => $balance,
+                'base_total_available' => $available,
+                'requested_qty_base' => 0,
+
+                // Display quantities (convert based on selected UOM)
+                'total_balance' => $balance,
+                'total_available' => $available,
+                'requested_qty' => 0,
+
+
                 'category' => $selected->category->category_name,
                 'classification' => $selected->classification->classification_name ?? 'N/A',
                 'barcode' => $selected->item_barcode ?? 'N/A',
-                'requested_qty' => 0,
-                // 'location' => $selected->location->location_name ?? 'N/A',
-                'uom' => $selected->uom->unit_name ?? 'N/A',
                 'brand' => $selected->brand->brand_name ?? 'N/A',
                 'status' => $selected->item_status,
                 'cost' => $selected->costPrice->amount,
@@ -232,6 +328,11 @@ class WithdrawalShow extends Component
     }
     public function updateWithdrawal()
     {
+        if($this->finalStatus == "FINAL"){
+            $this->finalStatus = true;
+        }else{
+            $this->finalStatus = false;
+        }
         if ($this->hasReviewer) {
             $this->validate(
                 [
@@ -299,6 +400,17 @@ class WithdrawalShow extends Component
 
     public function updatedSelectedItems($value, $key)
     {
+        // Handle unit dropdown change
+        if (str_contains($key, '.uom')) {
+            [$index] = explode('.', $key);
+            $this->updateItemUnit((int) $index);
+            return;
+        }
+        // Handle withdrawal qty change
+        if (str_contains($key, '.requested_qty')) {
+            [$index] = explode('.', $key);
+            $this->updateRequestedQty((int) $index);
+        }
        // Mag Check if ang requested quantity mag exceed sa available balance
         if (str_contains($key, 'requested_qty')) {
             foreach ($this->selectedItems as $index => $item) {
@@ -318,6 +430,90 @@ class WithdrawalShow extends Component
                 }
             }
         }
+    }
+    private function updateRequestedQty(int $index): void
+    {
+        if (!isset($this->selectedItems[$index])) {
+            return;
+        }
+        
+        $item = $this->selectedItems[$index];
+        
+        // Check if requested qty exceeds available
+        if (isset($item['requested_qty'], $item['total_available']) && $item['requested_qty'] > $item['total_available']) {
+            $this->selectedItems[$index]['requested_qty'] = $item['total_available'];
+            session()->flash('error', 'Requested quantity cannot exceed available balance.');
+        }
+        
+        // Convert requested qty to base unit for storage and costing
+        $selectedUomId = $item['uom'] ?? null;
+        $conversionFactor = $this->getUnitFactor($item, $selectedUomId);
+        
+        if ($conversionFactor <= 0) {
+            $conversionFactor = 1;
+        }
+        
+        $requestedQty = (float) ($item['requested_qty'] ?? 0);
+        $this->selectedItems[$index]['requested_qty_base'] = round($requestedQty / $conversionFactor, 4);
+        
+        // Update total based on base unit qty
+        if (isset($item['cost'])) {
+            $this->selectedItems[$index]['total'] = round($this->selectedItems[$index]['requested_qty_base'] * $item['cost'], 2);
+        }
+        
+        $this->overallTotal = array_sum(array_column($this->selectedItems, 'total'));
+    }
+     private function updateItemUnit(int $index): void
+    {
+        if (!isset($this->selectedItems[$index])) {
+            return;
+        }
+
+        $item = $this->selectedItems[$index];
+        $selectedUomId = $item['uom'] ?? null;
+        $conversionFactor = $this->getUnitFactor($item, $selectedUomId);
+        
+        // Ensure valid conversion factor
+        if ($conversionFactor <= 0) {
+            $conversionFactor = 1;
+        }
+
+        // Convert balance from base unit to selected unit
+        if (isset($item['base_total_balance'])) {
+            $this->selectedItems[$index]['total_balance'] = round($item['base_total_balance'] * $conversionFactor, 2);
+        }
+        
+        // Convert available from base unit to selected unit
+        if (isset($item['base_total_available'])) {
+            $this->selectedItems[$index]['total_available'] = round($item['base_total_available'] * $conversionFactor, 2);
+        }
+        
+        // Convert withdrawal qty from base unit to selected unit
+        if (isset($item['requested_qty_base'])) {
+            $this->selectedItems[$index]['requested_qty'] = round($item['requested_qty_base'] * $conversionFactor, 2);
+        }
+
+        // Total always based on base unit qty (no conversion needed)
+        if (isset($item['requested_qty_base'], $item['cost'])) {
+            $this->selectedItems[$index]['total'] = round($item['requested_qty_base'] * $item['cost'], 2);
+        }
+        
+        $this->overallTotal = array_sum(array_column($this->selectedItems, 'total'));
+    }
+
+    private function getUnitFactor(array $item, $uomId): float
+    {
+        if (!isset($item['unit']) || !is_array($item['unit'])) {
+            return 1;
+        }
+
+        foreach ($item['unit'] as $unit) {
+            if (($unit['to_uom_id'] ?? null) == $uomId) {
+                return (float) ($unit['conversion_factor'] ?? 1);
+            }
+        }
+
+        return 1;
     }
     public function updatedHaveSpan($value)
     {

@@ -91,4 +91,11 @@ class Item extends Model
     {
         return $this->belongsTo(UOM::class, 'uom_id');
     }
+
+    public function conversionFactor(){
+        $uom = $this->uom()->first()->id;
+        return $this->units()->first()->fromUnits
+            ->where('to_uom_id',  $uom)
+            ->first()->conversion_factor ?? 1;
+    }
 }

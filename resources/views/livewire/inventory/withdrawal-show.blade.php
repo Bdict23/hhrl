@@ -11,15 +11,15 @@
                      <div class="card-header">
                          <h5 class="card-title">WITHDRAWAL <i class="bi bi-dropbox"></i></h5>
                     </div>
-                    <div class=" card-body">
+                    <div class=" card-body" style="max-height: 500px; overflow-y: auto;">
                         <header>
                             <div class="me-3" wire:ignore>
                                 @if(!$isAlreadyFinal  && $action && auth()->user()->employee->getModulePermission('Item Withdrawal') == 1)
                                     <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
                                 @endif
                                 <x-primary-button wire:click="printPreview" type="button"> Print Preview </x-primary-button>
-                                <x-secondary-button style="color: rgb(135, 235, 168);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary </x-secondary-button>
-                                <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
+                                <x-secondary-button style="color: rgb(87, 224, 133);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary &nbsp; <i class="bi bi-card-list"></i></x-secondary-button>
+                                <x-secondary-button onclick="history.back()"> Back &nbsp;<i class="bi bi-arrow-90deg-left"></i></x-secondary-button>
                             </div>
                         </header>
                         <table class="table table-striped table-hover me-3">
@@ -59,7 +59,18 @@
                                      @if (!$action && !$uom)
                                          <th>UNIT</th>
                                     @endif
-                                    <th>WIT. QTY</th>
+                                    <th>WIT. QTY
+                                        @if( !$requestQty && !$cost && !$total && $isAlreadyFinal)
+                                            <button type="button"
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#customCol"
+                                                title="Add or remove column">
+                                                +
+                                            </button>
+                                        @endif
+                                    </th>
                                      @if ($requestQty)
                                         <th>REQ. QTY
                                             @if(!$action && !$total && !$cost)
@@ -70,48 +81,52 @@
                                             data-bs-target="#customCol"
                                             title="Add or remove column">
                                             +
-                                        </button>
+                                            </button>
                                             @endif
                                         </th>
                                     @endif
-                                    <th>COST
-                                        @if(!$action && !$total)
-                                                <button type="button"
-                                                    class="btn btn-sm float-end"
-                                                    style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#customCol"
-                                                    title="Add or remove column">
-                                                    +
-                                            </button>
-                                        @endif
-                                    </th>
-                                    <th>
-                                        TOTAL
-                                            @if(!$action)
-                                                <button type="button"
+                                    @if($cost)
+                                        <th>COST
+                                            @if(!$action && !$total)
+                                                    <button type="button"
                                                         class="btn btn-sm float-end"
                                                         style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
                                                         data-bs-toggle="modal"
-                                                    data-bs-target="#customCol"
-                                                    title="Add or remove column">
-                                                    +
+                                                        data-bs-target="#customCol"
+                                                        title="Add or remove column">
+                                                        +
                                                 </button>
                                             @endif
-                                    </th>
-                                    <th>
-                                        @if (!$isAlreadyFinal && $action)
+                                        </th>
+                                    @endif
+                                    @if($total)
+                                        <th>
+                                            TOTAL
+                                                @if(!$action)
+                                                    <button type="button"
+                                                            class="btn btn-sm float-end"
+                                                            style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                            data-bs-toggle="modal"
+                                                        data-bs-target="#customCol"
+                                                        title="Add or remove column">
+                                                        +
+                                                    </button>
+                                                @endif
+                                        </th>
+                                    @endif
+                                    @if (!$isAlreadyFinal && $action)
+                                        <th>
                                             ACTION
-                                        @endif
-                                        <button type="button"
-                                            class="btn btn-sm float-end"
-                                            style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#customCol"
-                                            title="Add or remove column">
-                                            +
-                                        </button>
-                                    </th>
+                                            <button type="button"
+                                                class="btn btn-sm float-end"
+                                                style="background: transparent; border: none; font-size: 1.25rem; padding: 0; line-height: 1;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#customCol"
+                                                title="Add or remove column">
+                                                +
+                                            </button>
+                                        </th>
+                                    @endif
                                     
                                 </tr>
                                
@@ -151,13 +166,15 @@
                                         @if ($barcode)
                                             <td>{{ $item['barcode'] }}</td>
                                         @endif
-                                        <td>
-                                            <select  class="form-select" wire:model.live="selectedItems.{{ $index }}.uom">
-                                                @foreach ($item['unit'] as $unit)
-                                                    <option value="{{ $unit['to_uom_id'] }}" @if($unit['to_uom_id'] === $item['base_uom_id']) selected @endif>{{ $unit['unit_symbol'] }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
+                                        @if(!$action)
+                                            <td>
+                                                <select  class="form-select" wire:model.live="selectedItems.{{ $index }}.uom">
+                                                    @foreach ($item['unit'] as $unit)
+                                                        <option value="{{ $unit['to_uom_id'] }}" @if($unit['to_uom_id'] === $item['base_uom_id']) selected @endif>{{ $unit['unit_symbol'] }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                        @endif
                                          <td>
                                             <input type="number" class="form-control" wire:model.live="selectedItems.{{ $index }}.requested_qty"
                                                 min="1" max="{{ $item['total_available'] }}">
@@ -165,8 +182,12 @@
                                          @if ($requestQty)
                                             <td>{{ $item['request_qty'] }}</td>
                                         @endif
-                                        <td>{{ $item['cost'] }}</td>
-                                        <td>{{ $item['total'] }}</td>
+                                        @if($cost)
+                                            <td>{{ $item['cost'] }}</td>
+                                        @endif 
+                                        @if($total)
+                                            <td>{{ $item['total'] }}</td>
+                                        @endif
                                         <td>
                                              @if (!$isAlreadyFinal && $action)
                                             <button type="button" class="btn btn-danger btn-sm"
@@ -236,16 +257,23 @@
                                     </div>
                                  <div class="row">
                                     <div class="col-md-12 input-group mb-1">
+                                        <label for="" class="input-group-text" style="font-size: 12px;">Event</label>
                                         <input type="text" class="form-control" id="event"
-                                            style="font-size: 13px" disabled value="{{ $eventName }}" placeholder="Event">
+                                            style="font-size: 13px" disabled value="{{ $eventName }}" placeholder="N/A">
                                         @if (!$isAlreadyFinal)
                                             <button class="input-group-text" type="button"
                                                 style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Get</strong></button>
                                             @endif
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12 input-group mb-1">
+                                        <label for="production-input" class="input-group-text" style="font-size: 12px;">Production</label>
+                                        <input type="text" class="form-control" id="production-input" placeholder="N/A" disabled value="{{ $productionRef }}">
+                                    </div>
+                                </div>
                                 <div class="col-md-12 input-group mb-1">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 p-1">
                                         <label for="deptartment" class="form-label"
                                             style="width: 100; font-size: 13px">Department</label><span
                                             style="color: red;"> *</span>
@@ -261,8 +289,8 @@
                                          <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Will use on</label> <span style="color: red;">*</span>
+                                    <div class="col-md-6 p-1">
+                                        <label for="usage_date" class="form-label" style="width: 100; font-size: 13px">Effective Date</label> <span style="color: red;">*</span>
                                         <input  wire:model.live="useDate"  type="date" class="form-control" id="usage_date"
                                            
                                             {{ $isAlreadyFinal ? 'disabled' : '' }}>
@@ -273,24 +301,20 @@
                                 </div>
                                 <div class="row mb-2">
 
-                                        <div class="col-md-6">
-                                            <label for="status" class="form-label">Have Span</label>
-                                            <input wire:model.live='haveSpan' type="checkbox" class="form-check-input" id="span-date" {{ $isAlreadyFinal ? 'disabled' : '' }}>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="finalStatus" class="form-label">Set as Final</label>
-                                            <input wire:model.live ="finalStatus" type="checkbox" class="form-check-input" id="finalStatus" {{ $isAlreadyFinal ? 'disabled' : '' }}>
+                                        <div class="col-md-12 input-group">
+                                            <label for="status" class="input-group-text">Restock Interval</label>
+                                            <div class="input-group-text d-flex align-items-center">
+                                                <input wire:model.live='haveSpan' type="checkbox" class="form-check-input" id="span-date" {{ $isAlreadyFinal ? 'disabled' : '' }}>
+                                            </div>
+                                                <input {{ $haveSpan ? 'style=display:block' : 'style=display:none' }} wire:model='spanDate' type="date" class="form-control" id="lifespan_date" {{ $isAlreadyFinal ? 'disabled' : '' }}>
+                                          
+                                                @error('spanDate')
+                                                    <i class="text-danger" style="font-size: 12px">{{ $message }}</i>
+                                                @enderror
                                         </div>
                                     </div>
                                     <div>
-                                        <div id="lifespanContainer" {{ $haveSpan ? 'style=display:block' : 'style=display:none' }}>
-                                            <label for="lifespan_date" class="form-label"
-                                                style="width: 100; font-size: 13px">Lifespan Date</label>
-                                            <input wire:model='spanDate' type="date" class="form-control" id="lifespan_date" {{ $isAlreadyFinal ? 'disabled' : '' }}>
-                                            @error('spanDate')
-                                                <i class="text-danger" style="font-size: 12px">{{ $message }}</i>
-                                            @enderror
-                                        </div>
+                                        
                                     <div class="row mt-3">
                                         <label for="remarks" class="form-label" style="font-size: 13px;">Remarks</label>
                                         <textarea wire:model="remarks" type="text" class="form-control" id="remarks" style="font-size: 13px; height: 100px"></textarea>
@@ -354,8 +378,17 @@
                                         </div>
                                     </div>
                                     <div>
-                                        @if (!$isAlreadyFinal)
-                                            <x-primary-button wire:click="updateWithdrawal" type="button" class=" mt-3">Save</x-primary-button>
+                                        @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1 && !$isAlreadyFinal)
+                                            <div class="input-group rounded shadow-sm mt-2" wire:ignore.self>
+                                                <select name="" id="" class="form-select" wire:model="finalStatus" >
+                                                    <option value="DRAFT" @if($finalStatus === false) selected @endif>DRAFT</option>
+                                                    <option value="FINAL" @if($finalStatus === true) selected @endif>FINAL</option>
+                                                </select>
+                                                <button class="btn btn-primary btn-sm" wire:click="updateWithdrawal">Save &nbsp;<i class="bi bi-save"></i></button>
+                                            </div>
+                                        @error('finalStatus')
+                                            <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
+                                        @enderror
                                         @endif
                                     </div>
                                 </div>
@@ -442,6 +475,18 @@
                                 Barcode (BARCODE)
                             </label>
                         </div>
+                         <div class="form-check">
+                            <input wire:model.live="cost" class="form-check-input" type="checkbox" value="" id="checkCost">
+                            <label class="form-check-label" for="checkCost">
+                                Cost Price (COST)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input wire:model.live="total" class="form-check-input" type="checkbox" value="" id="checkTotal">
+                            <label class="form-check-label" for="checkTotal">
+                                    Total (TOTAL)
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -510,36 +555,38 @@
                                 placeholder="Search items..." onkeyup="applyFilters()">
                         </div>
                         <!-- Table for Item Selection -->
-                        <table class="table table-bordered table-hover">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>CODE</th>
-                                    <th>NAME</th>
-                                    <th>INVENTORY BALANCE</th>
-                                    <th>AVAILABLE QTY.</th>
-                                    <th>COST PRICE</th>
-                                    <th>CATEGORY</th>
-                                    <th>STATUS</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                            <tbody id="itemTable">
-                                @foreach ($myCardexItems as $index => $item)
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-bordered table-hover">
+                                <thead class="thead-dark sticky-top">
                                     <tr>
-                                        <td>{{ $item->item_code }}</td>
-                                        <td>{{ $item->item_description }}</td>
-                                        <td>{{ $item->total_balance }}</td>
-                                        <td>{{ $item->total_available}}</td>
-                                        <td>{{ $item->costPrice->amount ?? 0 }}</td>
-                                        <td>{{ $item->category->category_name ?? 'N/A' }}</td>
-                                        <td>{{ $item->item_status }}</td>
-                                        <td>
-                                            <button wire:click="addItem({{ $item->id }}, {{ $item->total_balance }} , {{ $item->total_available }} )" type="button" class="btn btn-primary btn-sm"> Add </button>
-                                        </td>
+                                        <th>CODE</th>
+                                        <th>NAME</th>
+                                        <th>INV. BAL.</th>
+                                        <th>AVL. QTY.</th>
+                                        <th>COST</th>
+                                        <th>CATEGORY</th>
+                                        <th>STATUS</th>
+                                        <th>ACTION</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody id="itemTable" >
+                                    @foreach ($myCardexItems as $index => $item)
+                                        <tr>
+                                            <td>{{ $item->item_code }}</td>
+                                            <td>{{ $item->item_description }}</td>
+                                            <td>{{ $item->total_balance }}</td>
+                                            <td>{{ $item->total_available}}</td>
+                                            <td>{{ $item->costPrice->amount ?? 0 }}</td>
+                                            <td>{{ $item->category->category_name ?? 'N/A' }}</td>
+                                            <td>{{ $item->item_status }}</td>
+                                            <td>
+                                                <button wire:click="addItem({{ $item->id }}, {{ $item->total_balance }} , {{ $item->total_available }} )" type="button" class="btn btn-primary btn-sm"> Add </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <span wire:loading class="mr-2 spinner-border text-primary float-left" role="status"></span>

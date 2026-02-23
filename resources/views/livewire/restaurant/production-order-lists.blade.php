@@ -72,11 +72,11 @@
                                     <td>{{ \Carbon\Carbon::parse($order->created_at)->format('M d, Y') }}</td>
                                     <td>{{ $order->reference }}</td>
                                     <td>{{ $order->employee->name }} {{ $order->employee->last_name }}</td>
-                                    <td @if($order->status === 'COMPLETED') class="badge bg-success" 
+                                    <td> <i @if($order->status === 'COMPLETED') class="badge bg-success" 
                                         @elseif($order->status === 'PENDING') class=" badge bg-warning"
                                         @elseif($order->status === 'CANCELLED') class=" badge bg-danger"
                                         @else class=" badge bg-secondary" 
-                                        @endif>{{ $order->status }}</td>
+                                        @endif>{{ $order->status }}</i></td>
                                     <td>
                                         <a href="/create-production?order_id={{ $order->id }}" class="btn btn-sm btn-primary">View</a>
                                     </td>

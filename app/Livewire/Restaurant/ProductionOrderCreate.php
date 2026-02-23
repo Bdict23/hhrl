@@ -44,6 +44,9 @@ class ProductionOrderCreate extends Component
     public $notes;
     public $reference;
 
+    public $isEditMode = false; // To differentiate between create and edit mode
+    public $productionOrderId; // To store the ID of the production order being edited
+
     public function render()
     {
         return view('livewire.restaurant.production-order-create');
@@ -57,6 +60,8 @@ class ProductionOrderCreate extends Component
             $existingOrder = ProductionOrder::where('id', $orderId)->first();
 
             if ($existingOrder) {
+                $this->isEditMode = true;
+                $this->productionOrderId = $existingOrder->id;
                 $this->loadExistingData($existingOrder->id);
             } else {
                 $this->dispatch('showAlert', ['type' => 'error', 'message' => 'No existing production order found for the selected menu.']);
@@ -69,7 +74,7 @@ class ProductionOrderCreate extends Component
 
     public function loadExistingData($productionOrderId)
     {
-        $productionOrder = ProductionOrder::with('employee', 'productionMenus', 'productionOrderDetails')->find($productionOrderId);
+        $productionOrder = ProductionOrder::with('employee', 'productionMenus', 'productionOrderDetails', 'productionOrderDetails.item.uom')->find($productionOrderId);
 
         if (!$productionOrder) {
             $this->dispatch('showAlert', ['type' => 'error', 'message' => 'Production Order not found.']);
@@ -92,23 +97,27 @@ class ProductionOrderCreate extends Component
                 'recipe_id' => $menu->id,
             ];
 
-            foreach ($menu->recipes as $recipe) {
+            
+        }
+        foreach ($productionOrder->productionOrderDetails as $recipe) {
                 $cardexItem = collect($this->cardex)->firstWhere('item_code', $recipe->item->item_code);
                 $this->recipeIngredients[] = [
                     'item_id' => $recipe->item_id,
                     'item' => $recipe->item->toArray(),
                     'qty' => $recipe->qty * ($productionMenu->qty ?? 1), // Multiply by requested qty
                     'base_qty' => $recipe->qty, // Store base qty for calculations
-                    'recipe_id' => $menu->id,
+                    'recipe_id' => $recipe->menu_id,
                     'balance' => $cardexItem['total_balance'] ?? 0,
                     'total_available' => $cardexItem['total_available'] ?? 0,
                     'conversion_factor' => $recipe->conversionFactor(),
-                    'uom' => ['unit_symbol' => $recipe->uom()->first()->unit_symbol ?? 'N/A'],
+                    'uom' => [
+                        'id' => $recipe->uom_id,
+                        'unit_symbol' => $recipe->uom()->first()->unit_symbol ?? 'N/A',
+                    ],
                     'uom_id' => $recipe->uom_id,
-                    'base_uom' => $recipe->item->uom->unit_symbol,
+                    'base_uom' => $recipe->item->uom->unit_symbol ?? 'N/A',
                 ];
             }
-        }
     }
 
     public function loadData(){
@@ -164,6 +173,10 @@ class ProductionOrderCreate extends Component
                 'balance' => $cardexItem['total_balance'] ?? 0,
                 'total_available' => $cardexItem['total_available'] ?? 0, // I-save ni para sa computation later
                 'conversion_factor' => $ingredient->conversionFactor(),
+                'uom' => [
+                    'id' => $ingredient->uom_id,
+                    'unit_symbol' => $ingredient->uom->unit_symbol ?? 'N/A',
+                ],
             ]);
         }
     }
@@ -308,7 +321,10 @@ class ProductionOrderCreate extends Component
                 'balance'           => $cardexItem['total_balance'] ?? 0,
                 'total_available'   => $cardexItem['total_available'] ?? 0,
                 'conversion_factor' => 1,
-                'uom'               => ['unit_symbol' => $item->uom->unit_symbol ?? 'N/A'],
+                'uom'               => [
+                    'id' => $item->uom_id,
+                    'unit_symbol' => $item->uom->unit_symbol ?? 'N/A',
+                ],
             ];
         }
     }
@@ -324,6 +340,19 @@ class ProductionOrderCreate extends Component
             "recipeIngredients.*.item_id" => "required|exists:items,id",
             "recipeIngredients.*.qty" => "required|numeric|min:0.01",
          ]);
+
+            if($this->isEditMode) {
+                $productionOrder = ProductionOrder::find($this->productionOrderId);
+                $productionOrder->status = $this->saveAs == "FINAL" ? "PENDING" : "DRAFT";
+                $productionOrder->notes = $this->notes;
+                $productionOrder->updated_at = Carbon::now('Asia/Manila');
+                $productionOrder->save();
+
+                // Delete existing details and menus to replace with new ones
+                ProductionOrderMenu::where('production_order_id', $productionOrder->id)->delete();
+                ProductionOrderDetail::where('production_order_id', $productionOrder->id)->delete();
+               
+            }else {
 
             $curYear = now()->year;
             $branchId = auth()->user()->branch_id;
@@ -342,6 +371,7 @@ class ProductionOrderCreate extends Component
             $productionOrder->updated_at = Carbon::now('Asia/Manila');
             $productionOrder->save();
 
+            }
             foreach($this->selectedRecipes as $selectedRecipe){
                 ProductionOrderMenu::create([
                     'branch_id' => auth()->user()->branch_id,
@@ -355,17 +385,22 @@ class ProductionOrderCreate extends Component
             }
 
             foreach($this->recipeIngredients as $ingredient){
-                ProductionOrderDetail::create([
-                    'branch_id' => auth()->user()->branch_id,
-                    'production_order_id' => $productionOrder->id,
-                    'item_id' => $ingredient['item_id'],
-                    'menu_id' => $ingredient['recipe_id'],
-                    'qty' => $ingredient['qty'],
-                    'uom_id' => $ingredient['uom']['id'] ?? $ingredient['item']['uom']['id'],
-                    'created_at' => Carbon::now('Asia/Manila'),
-                    'updated_at' => Carbon::now('Asia/Manila'),
-                ]);
-
+                $resolvedUomId = data_get($ingredient, 'uom.id')
+                    ?? data_get($ingredient, 'uom_id')
+                    ?? data_get($ingredient, 'item.uom.id')
+                    ?? data_get($ingredient, 'item.uom_id');
+                
+                    ProductionOrderDetail::create([
+                        'branch_id' => auth()->user()->branch_id,
+                        'production_order_id' => $productionOrder->id,
+                        'item_id' => $ingredient['item_id'],
+                        'menu_id' => $ingredient['recipe_id'],
+                        'qty' => $ingredient['qty'],
+                        'uom_id' => $resolvedUomId,
+                        'created_at' => Carbon::now('Asia/Manila'),
+                        'updated_at' => Carbon::now('Asia/Manila'),
+                    ]);
+                
                 $this->dispatch('showAlert', ['type' => 'success', 'message' => 'Production Order saved successfully.']);
             }
             
@@ -375,5 +410,6 @@ class ProductionOrderCreate extends Component
 
 
     }
+
 
 }

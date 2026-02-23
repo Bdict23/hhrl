@@ -423,7 +423,14 @@
                     icon: 'success',
                     title: 'Success',
                     text: data.message,
+                    timer: 2000,
+                    showConfirmButton: false
                 });
+                // REDIRECT AFTER 2 SECONDS
+                    setTimeout(() => {
+                        window.location.href = '/production-orders'; // Redirect to the desired URL
+                    }, 2000); // Redirect after 2 seconds
+                
             } else if(data.type === 'error') {
                 Swal.fire({
                     icon: 'error',

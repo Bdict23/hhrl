@@ -2,7 +2,7 @@
     <div>
         
         <div class="row me-3 w-100">
-            <div class=" col-md-9 card mt-2">
+            <div class=" col-md-8 card mt-2">
                 <div class="card-header">
                      <h4> ITEM WITHDRAWAL <i class="bi bi-dropbox"></i></h4>
                 </div>
@@ -12,8 +12,8 @@
                             @if (auth()->user()->employee->getModulePermission('Item Withdrawal') == 1 && $action)
                                 <x-primary-button type="button" data-bs-toggle="modal" data-bs-target="#AddItemModal">+ Add ITEM</x-primary-button>
                             @endif
-                            <x-secondary-button style="color: rgb(135, 235, 168);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary </x-secondary-button>
-                            <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
+                            <x-secondary-button style="color: rgb(46, 221, 139);" onclick="window.location.href='{{ route('withdrawal.summary') }}'"> Summary &nbsp; <i class="bi bi-card-list"></i></x-secondary-button>
+                            <x-secondary-button onclick="history.back()"> Back &nbsp;<i class="bi bi-arrow-90deg-left"></i></x-secondary-button>
                         </div>
                     </header>
                     <div class="overflow-x-auto" style=" height: 400px; overflow: auto;">
@@ -224,7 +224,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mt-1">
+            <div class="col-md-4 mt-1">
                 <div class="card">
                     <div class="card-header">
                          <h5 class="card-title">Information</h5>
@@ -364,7 +364,7 @@
                                             <option value="DRAFT">DRAFT</option>
                                             <option value="FINAL">FINAL</option>
                                         </select>
-                                        <button class="btn btn-primary btn-sm" wire:click="store">Save</button>
+                                        <button class="btn btn-primary btn-sm" wire:click="store">Save &nbsp;<i class="bi bi-save"></i></button>
                                     </div>
                                     @error('finalStatus')
                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
