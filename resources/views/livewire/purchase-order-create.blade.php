@@ -8,8 +8,11 @@
         @endif
     </div>
     <div class="container">
+        <div class="d-flex justify-content-end">
+            <h4>Purchase Order Form &nbsp;<i class="bi bi-cart4"></i></h4>
+        </div>
         <div class="row">
-            <div class=" mt-3 col-md-7">
+            <div class="col-md-7">
                 <div class='card'>
                     <div class="card-header">
                         <div>
@@ -72,7 +75,7 @@
                             @enderror
                         </div>
                         <div wire:loading>
-                            Saving Please Wait...
+                            Please Wait...
                         </div>
                         <strong style="float: right">Total Cost : ₱
                             @php
@@ -86,135 +89,119 @@
                     </div>
                 </div>
             </div>
-            <div class=" mt-3 col-md-5">
+            <div class="col-md-5">
                 <div class='card p-1'>
                 <div class="card-header">
                     <strong>Purchase Order Information</strong>
                 </div>
-                   
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                        
-                                <label for="options" class="form-label">Select Supplier <span style="color: red; font-size: smaller;"> *</span></label>
-                                <select wire:model="supplierId" class="form-control"  style="font-size: x-small">
-                                    <option value="" selected>Select Supplier</option>
-                                    @foreach ($suppliers as $supp)
-                                        <option value="{{ $supp->id }}" style="font-size: x-small">
-                                            {{ $supp->supp_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        <div class="row">
+                            <div class="col-md-12 input-group mt-2">
+                                <label for="po_number" class="input-group-text">PO Number</label>
+                                <input wire:model="requisitionNumber" type="text" class="form-control" readonly placeholder="<AUTO>" disabled>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                               <div class="input-group">
+                                <label for="" class="input-group-text">Supplier <span class="text-danger"> *</span></label>
+                                    <select wire:model="supplierId" class="form-control">
+                                        <option value="" selected>Select Supplier</option>
+                                        @foreach ($suppliers as $supp)
+                                            <option value="{{ $supp->id }}" style="font-size: x-small">
+                                                {{ $supp->supp_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                               </div>
                                 @error('supplierId')
-                                    <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
+                                    <span class="text-danger" >{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
-                                <label for="po_number" class="form-label">PO Number</label>
-                                <input wire:model="requisitionNumber" type="text" class="form-control" readonly style="font-size: x-small"placeholder="<AUTO>" disabled>
+
+                            <div class="col-md-12 mt-2">
+                                   <div class="input-group">
+                                     <input value="{{ $selectedEventName }}" type="text" class="form-control" id="event" disabled placeholder="Event (Optional)" readonly> 
+                                     <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#eventModal" style="background-color: rgb(147, 248, 198);"><i class="bi bi-pencil-square"></i></span>
+                                   </div>
+                                    @error('event')
+                                        <span class="text-danger" >{{ $message }}</span>
+                                    @enderror
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="contact_no_1" class="form-label text-sm">M. PO NUMBER</label>
-                                <input wire:model="mPoNumber" type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number" style="font-size: x-small">
+
+                            <div class="col-md-12 mt-2">
+                                   <div class="input-group">
+                                     <input value="{{ $selectedProductionReference }}" type="text" class="form-control" id="production" disabled placeholder="Production Order (Optional)" readonly> 
+                                     <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#productionModal" style="background-color: rgb(147, 203, 248);"><i class="bi bi-pencil-square"></i></span>
+                                   </div>
+                                    @error('selectedproductionID')
+                                        <span class="text-danger" >{{ $message }}</span>
+                                    @enderror
                             </div>
-                            <div class="col-md-6">
-                                <label for="options" class="form-label">Terms<span style="color: red; font-size: smaller;"> *</span></label>
-                                <select wire:model="term_id" class="form-control" style="font-size: x-small">
-                                    <option value=""  selected>Select Terms</option>
-                                    @foreach ($terms as $term)
-                                        <option value="{{ $term->id }}" style="font-size: x-small">
-                                            {{ $term->term_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('term_id')
-                                <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                            @enderror
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <textarea wire:model="remarks" type="text" class="form-control" style="font-size: x-small" placeholder="Remarks"></textarea>
-                                @error('remarks')
-                                    <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                @enderror
-                                <select class="form-control mt-2 mb-2" name="order_type" id="order_type" style="font-size: x-small" wire:model="selectedOrderType">
-                                    <option value="">Order Type</option>
-                                    @foreach ($orderType as $order)
-                                        <option value="{{ $order->id }}" style="font-size: x-small">
-                                            {{ $order->setting_value }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('selectedOrderType')
-                                    <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <div class="row ">
-                                    <div class="col-md-6 input-group">
-                                        <input value="{{ $selectedEventName }}" type="text" class="form-control" id="event" style="font-size: x-small" disabled placeholder="(Optional)" readonly> 
-                                        <span type="button" class="input-group-text" style="font-size: x-small" data-bs-toggle="modal" data-bs-target="#eventModal">Event</span>
-                                        @error('event')
-                                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    @if ($hasReviewer)
-                                    <div class="col-md-6">
-                                        <label for="" class="form-label">Reviewed To <span style="color: red; font-size: x-small;"> *</span></label>
-                                        <select wire:model="reviewer_id"  class="form-control" style="font-size: x-small">
-                                            <option value="">Select Reviewer</option>
-                                            @foreach ($reviewer as $reviewers)
-                                                <option value="{{ $reviewers->employees->id }}" style="font-size: x-small">
-                                                    {{ $reviewers->employees->name }} {{ $reviewers->employees->last_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        
-                                    </div>
-                                    @endif
-                                    
-                        
-                                    <div
-                                    @if (!$hasReviewer)
-                                        class="col-md-12"
-                                    @else
-                                        class="col-md-6"
-                                    @endif>
-                                        <label for="contact_no_2" class="form-label">Approved To <span style="color: red; font-size: x-small;"> *</span></label>
-                                        <select wire:model="approver_id" class="form-control" style="font-size: x-small">
-                                            <option value="" selected>Select Approver</option>
-                                            @foreach ($approver as $approvers)
-                                                <option value="{{ $approvers->employees->id }}" style="font-size: x-small">
-                                                    {{ $approvers->employees->name }} {{ $approvers->employees->last_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                       
-                                    </div>
-                                      @if ($hasReviewer)
-                                        <div class="col-md-6">
-                                            @error('reviewer_id')
-                                                <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    @endif
-                                     <div
-                                    @if (!$hasReviewer)
-                                        class="col-md-12"
-                                    @else
-                                        class="col-md-6"
-                                    @endif>
-                                        @error('approver_id')
-                                            <span class="text-danger" style="font-size: x-small">{{ $message }}</span>
-                                        @enderror
-                                    </div>
+
+                            <div class="col-md-6 mt-2">
+                                <div class="input-group">
+                                    <label for="contact_no_1" class="input-group-text">M. PO No.</label>
+                                    <input wire:model="mPoNumber" type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number">
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-2">
+                                <div class="input-group">
+                                    <label for="options" class="input-group-text">Terms <span style="color: red; font-size: smaller;"> *</span></label>
+                                    <select wire:model="term_id" class="form-control" style="font-size: x-small">
+                                        <option value=""  selected></option>
+                                        @foreach ($terms as $term)
+                                            <option value="{{ $term->id }}" style="font-size: x-small">
+                                                {{ $term->term_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                    @error('term_id')
+                                        <span class="text-danger" >{{ $message }}</span>
+                                    @enderror
+                            </div>
+                        
+                            <div class="col-md-12 mt-2">
+                                <textarea wire:model="remarks" type="text" class="form-control"  placeholder="Remarks"></textarea>
+                                @error('remarks')
+                                    <span class="text-danger" >{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if ($hasReviewer)
+                                <div class="input-group mt-2">
+                                    <label for="" class="input-group-text">Reviewed To <span style="color: red; font-size: x-small;"> *</span></label>
+                                    <select wire:model="reviewer_id"  class="form-control" >
+                                        <option value="">Select Reviewer</option>
+                                        @foreach ($reviewer as $reviewers)
+                                            <option value="{{ $reviewers->employees->id }}">
+                                                {{ $reviewers->employees->name }} {{ $reviewers->employees->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                 @error('reviewer_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            @endif   
+                        
+                            <div class="col-md-12 mt-2 mb-3">
+                                <div class="input-group mt-2">
+                                    <label for="contact_no_2" class="input-group-text">Approved To <span style="color: red; font-size: x-small;"> *</span></label>
+                                    <select wire:model="approver_id" class="form-control" >
+                                        <option value="" selected>Select Approver</option>
+                                        @foreach ($approver as $approvers)
+                                            <option value="{{ $approvers->employees->id }}">
+                                                {{ $approvers->employees->name }} {{ $approvers->employees->last_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                 @error('approver_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>        
                         </div>
                         <div class="card-footer">
-                            <x-primary-button type="submit">
+                            <x-primary-button type="button" onclick="SavePO()">
                                 Save
                             </x-primary-button>
                             <a href="/purchase_order"><x-secondary-button type="button"> Summary </x-secondary-button></a>
@@ -260,6 +247,61 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {{-- Production Order Modal --}}
+        <div>
+            <div class="modal fade" id="productionModal" tabindex="-1" aria-labelledby="productionModalLabel" aria-hidden="true" wire:ignore.self>
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content card">
+                        <div class="modal-header card-header">
+                            <h5 class="modal-title" id="productionModalLabel">Select Production Order</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="card-body">
+                            <input type="text" id="searchProductionInput" class="form-control mb-2" placeholder="Search production order...">
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-hover table-sm">
+                                    <thead class="table-dark sticky-top">
+                                        <tr>
+                                            <th style="font-size: 12px;">Reference</th>
+                                            <th style="font-size: 12px;">Note</th>
+                                            <th style="font-size: 12px;">Order Date</th>
+                                            <th style="font-size: 12px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productionTableBody">
+                                        @forelse ($productionOrders as $production)
+                                            <tr>
+                                                <td style="font-size: 12px;">{{ $production->reference }}</td>
+                                                <td style="font-size: 12px;">{{ $production->note ?? 'N/A' }}</td>
+                                                <td style="font-size: 12px;">{{ $production->created_at->format('M. d, Y') }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-primary btn-sm" wire:click="selectProduction({{ $production->id }})">
+                                                        <span wire:loading wire:target="selectProduction({{ $production->id }})"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> &nbsp;Wait...</span>
+                                                        <span wire:loading.remove wire:target="selectProduction({{ $production->id }})">
+                                                            <i class="bi bi-cursor"></i>&nbsp;Select
+                                                        </span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" style="font-size: 12px;">No production orders found.</td>
+                                            </tr>
+                                        @endforelse
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -340,7 +382,10 @@
                                         <td style="font-size: 12px;">{{ $item->costPrice ? $item->costPrice->amount : 'N/A' }}</td>
                                         <td style="font-size: 12px;">{{ $item->item_status ? 'Active' : 'Inactive' }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">Add</button>
+                                            <button type="button" class="btn btn-primary btn-sm" wire:click="addItem({{ $item->id }})">
+                                               <span wire:loading wire:target="addItem({{ $item->id }})"> <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> &nbsp;adding...</span>
+                                                <span wire:loading.remove wire:target="addItem({{ $item->id }})"><i class="bi bi-plus-circle-dotted"></i> Add</span>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -400,6 +445,44 @@
             });
         }
 
+
+    window.addEventListener('showAlert', event => {
+            const data = event.detail[0];
+            Swal.fire({
+                icon: data.type,
+                title: data.title,
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        });
+
+        
+       
+        function SavePO() {
+            Swal.fire({
+            title: "Are you sure?",
+            text: "You want to save this purchase order?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, save it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+            }).then((result) => {
+            if (result.isConfirmed) {
+                @this.store() // Call the Livewire method to save the purchase order
+            } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+            ) {
+            Swal.fire({
+                title: "Cancelled",
+                text: "Operation aborted",
+                icon: "error"
+            });
+            }
+            });
+        }
         
         // let filterROP = document.getElementById('filterReorderPoint');
         //     filterROP.addEventListener('click', function() {

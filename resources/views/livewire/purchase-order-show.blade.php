@@ -1,4 +1,7 @@
 <div class="container-fluid" style="width: 100%; height: 100%;">
+    <div class="justify-content-end d-flex mb-3">
+        <h5>Show Purchas Order &nbsp;<i class="bi bi-cart4"></i></h5>
+    </div>
     <div class="row justify-content-center" style="display: flex;">
         <!-- Left Dashboard -->
         <div class="col-md-7" >
@@ -111,10 +114,23 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6">
+                            <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">BEO</label>
+                            <input type="text" class="form-control" id="contact1" name="company_tin"
+                                value="{{ $requestInfo->event->reference ?? 'N/A'}}" readonly style="width: 100; font-size: 13px">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contact_no_2" class="form-label" style="width: 100; font-size: 13px">Production</label>
+                            <input type="text" class="form-control" id="contact2" name="company_contact"
+                                value="{{ $requestInfo->production->reference ?? 'N/A' }}" readonly style="width: 100; font-size: 13px">
+                        </div>
+
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">M. PO
                                 NUMBER</label>
                             <input type="text" class="form-control" id="contact1" name="company_tin"
-                                value="{{ $requestInfo->merchandise_po_number }}" readonly style="width: 100; font-size: 13px">
+                                value="{{ $requestInfo->merchandise_po_number ?? 'N/A' }}" readonly style="width: 100; font-size: 13px">
                         </div>
                         <div class="col-md-6">
                             <label for="supp_address" class="form-label" style="width: 100; font-size: 13px">Term</label>
@@ -133,10 +149,9 @@
                                 style="width: 100; font-size: 12px">
                         </div>
                         <div class="col-md-4">
-                            <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Type</label>
-                            <input type="text" class="form-control" id="POtype" name="po_type"
-                                value="{{ $requestInfo->orderType->setting_value ?? 'N/A' }}" readonly
-                                style="width: 100; font-size: 12px">
+                            <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Created</label>
+                             <input type="text" class="form-control" id="contact1" name="company_tin"
+                                value="{{ \Carbon\Carbon::parse($requestInfo->created_at)->format('M d, Y') }}" readonly style="width: 100; font-size: 13px">
 
                         </div>
                     </div>

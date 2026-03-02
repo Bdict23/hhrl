@@ -85,7 +85,8 @@ class PurchaseOrderController extends Controller
     public function po_edit($id=null)
     {
         $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
-        $requisitionInfo = RequisitionInfo::with('requisitionDetails')->where([['category', 'PO'],['requisition_status', 'preparing'],['from_branch_id', auth()->user()->branch_id]])->find($id);
+        $requisitionInfo = RequisitionInfo::with('requisitionDetails','supplier')->where([['category', 'PO'],['requisition_status', 'preparing'],['from_branch_id', auth()->user()->branch_id]])->find($id);
+        // dd($requisitionInfo);
         if (!$requisitionInfo) {
             return redirect()->route('purchase_order.po_summary')->with('status', 'error');
         }

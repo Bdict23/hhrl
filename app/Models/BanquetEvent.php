@@ -9,20 +9,24 @@ class BanquetEvent extends Model
     protected $table = 'banquet_events';
     protected $fillable = [
         'event_name',
-        'event_date',
-        'start_time',
-        'end_time',
-        'venue_id',
+        'reference',
+        'event_address',
+        'start_date',
+        'end_date',
+        'arrival_time',
+        'departure_time',
         'guest_count',
         'status',
+        'reviewer_id',
+        'approver_id',
+        'reviewed_at',
+        'approved_at',
+        'created_by',
         'notes',
         'customer_id',
+        'total_amount',
     ];
 
-    public function venue()
-    {
-        return $this->belongsTo(Venue::class, 'venue_id');
-    }
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
@@ -46,6 +50,24 @@ class BanquetEvent extends Model
     public function purchaseOrders()
     {
         return $this->hasMany(RequisitionInfo::class, 'event_id');
+    }
+
+    public function eventVenues()
+    {
+        return $this->hasMany(EventVenue::class, 'event_id');
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(Employee::class, 'reviewer_id');
+    }
+    public function approver()
+    {
+        return $this->belongsTo(Employee::class, 'approver_id');
+    }
+    public function createdBy()
+    {
+        return $this->belongsTo(Employee::class, 'created_by');
     }
 
 }

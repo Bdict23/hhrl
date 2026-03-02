@@ -11,8 +11,10 @@ class EventMenu extends Model
     protected $fillable = [
         'event_id',
         'menu_id',
+        'note',
         'qty',
         'price_id',
+        'total_amount',
     ];
 
     public function menu()

@@ -155,11 +155,6 @@
         </tbody>
     </table>
 
-    <!-- NOTICE SECTION -->
-    <div class="title mt-4">
-        THIS ORDER IS VALID ONLY FOR 45 DAYS. PLEASE CANCEL ANY UNSERVE ITEMS AFTER THE VALIDITY PERIOD.
-    </div>
-
     <!-- FOOTER SECTION -->
     <div class="footer">
         <span style="text-decoration-line: underline">{{ $requestInfo->preparer->name }}

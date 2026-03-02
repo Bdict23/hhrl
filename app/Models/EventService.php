@@ -12,6 +12,7 @@ class EventService extends Model
         'event_id',
         'service_id',
         'price_id',
+        'total_amount',
         'qty',
     ];
 

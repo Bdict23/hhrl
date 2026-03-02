@@ -1,23 +1,63 @@
 
    <div class="row">
-        @if (session()->has('success'))
-        <div class="alert alert-success" id="success-message">
-            {{ session('success') }}
-            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        @endif
-        @if (session()->has('error'))
-        <div class="alert alert-danger" id="success-message">
-            {{ session('error') }}
-            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        @endif
     <div class="col-md-6">
         <div class="container my-4">
-            <div class="card shadow-sm border-0">
+            {{-- Venues --}}
+             <div class="card shadow-sm border-0">
                 <div class="card-body">
                    <div  class="card-title row">
-                    <h6 class="col-md-6">Event Services</h6>
+                    <h6 class="col-md-6">Venues</h6>
+                    <div class="col-md-6 d-flex justify-content-end">
+                        <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#venuesModal"><i class="bi bi-plus-circle-dotted"></i>&nbsp;Add Venues</button>
+                    </div>
+                   </div>
+                   <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-xs">Venue</th>
+                                <th class="text-xs">Qty</th>
+                                <th class="text-xs">Rate</th>
+                                <th class="text-xs">Sub Total</th>
+                                <th class="text-xs">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($selectedVenues as $index => $venue )
+                                <tr>
+                                    <td>{{ $venue->venue_name }}</td>
+                                    <td>
+                                        <input wire:model.live="venuesAdded.{{ $index }}.qty" type="number" class="form-control" style="width: 60px;" min="1" value="{{ $venuesAdded[$index]['qty'] ?? 1 }}" onchange="updateTotalVenuePrice(this)">
+                                    </td>
+                                    <td>{{ $venuesAdded[$index]['rate_amount'] ?? 'FREE' }}</td>
+                                    <td class="total-venue-price">
+                                        <span wire:loading.remove wire:target="venuesAdded.{{ $index }}.qty">
+                                            {{ isset($venuesAdded[$index]['rate_amount']) ? (floatval($venuesAdded[$index]['qty']) * floatval($venuesAdded[$index]['rate_amount'])) : '-' }}
+                                        </span>
+                                        <span wire:loading wire:target="venuesAdded.{{ $index }}.qty" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    </td>
+                                    <td>
+                                        <button wire:click="removeVenue({{ $index }})" class="btn btn-sm btn-danger">
+                                            <span wire:loading wire:target="removeVenue({{ $index }})" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            <span wire:loading.remove wire:target="removeVenue({{ $index }})"><i class="bi bi-trash"></i></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">No venues selected</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                   </div>
+                </div>
+            </div>
+            {{-- Services / Miscellaneous --}}
+            <div class="card shadow-sm border-0 mt-2">
+                <div class="card-body">
+                   <div  class="card-title row">
+                    <h6 class="col-md-6">Services / Miscellaneous</h6>
                     <div class="col-md-6 d-flex justify-content-end">
                         <button class="btn btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#servicesModal"><i class="bi bi-plus-circle-dotted"></i>&nbsp;Add Services</button>
                     </div>
@@ -49,7 +89,10 @@
                                         {{ isset($service->ratePrice) ? (floatval($servicesAdded[$index]['qty']) * floatval($service->ratePrice->amount)) : '-' }}
                                     </td>
                                     <td>
-                                        <button wire:click="removeService({{ $index }})" class="btn btn-sm btn-danger">x</button>
+                                        <button wire:click="removeService({{ $index }})" class="btn btn-sm btn-danger">
+                                            <span wire:loading wire:target="removeService({{ $index }})" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            <span wire:loading.remove wire:target="removeService({{ $index }})"><i class="bi bi-trash"></i></span>
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -62,10 +105,11 @@
                    </div>
                 </div>
             </div>
-            <div class="card shadow-sm border-0 mt-4">
+            {{-- FOOD --}}
+            <div class="card shadow-sm border-0 mt-2">
                 <div class="card-body">
                     <div  class="card-title row">
-                        <h6 class="col-md-6">Event Menus</h6>
+                        <h6 class="col-md-6">FOOD</h6>
                         <div class="col-md-6 d-flex justify-content-end">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal"><i class="bi bi-plus-circle-dotted"></i>&nbsp;Add Menu</button>
                         </div>
@@ -78,6 +122,7 @@
                                     <th class="text-xs">Category</th>
                                     <th class="text-xs">Price</th>
                                     <th class="text-xs">Qty</th>
+                                    <th class="text-xs">Note</th>
                                     <th class="text-xs">Total</th>
                                     <th class="text-xs">Actions</th>
                                 </tr>
@@ -92,14 +137,20 @@
                                         <td>
                                             <input wire:model="menusAdded.{{ $index }}.qty" type="number" class="form-control form-control-sm" min="1" value="1" onchange="updateTotalMenuPrice(this)">
                                         </td>
+                                        <td wire:click="editMenuNote({{ $index }})" data-bs-toggle="modal" data-bs-target="#menuNoteModal" style="cursor: pointer;">
+                                            <i class="bi bi-card-text" title=" {{ $menusAdded[$index]['note'] ?? 'Add Note' }}"></i>
+                                        </td>
                                         <td class="total-price-menu">{{ isset($menu->mySRP) ? ($menusAdded[$index]['qty'] * $menu->mySRP->amount) : '-' }}</td>
                                         <td>
-                                            <button wire:click="removeMenu({{ $index }})" class="btn btn-sm btn-danger">x</button>
+                                            <button wire:click="removeMenu({{ $index }})" class="btn btn-sm btn-danger">
+                                                <span wire:loading.remove wire:target="removeMenu({{ $index }})"><i class="bi bi-trash"></i></span>
+                                                <span wire:loading wire:target="removeMenu({{ $index }})" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">No menus selected</td>
+                                        <td colspan="8" class="text-center">No menus selected</td>
                                     </tr>
                                 @endforelse
 
@@ -110,6 +161,117 @@
             </div>
         </div>
     </div>
+
+    {{-- Menu Note Modal --}}
+    <div class="modal fade" id="menuNoteModal" tabindex="-1" aria-labelledby="menuNoteModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="menuNoteModalLabel">Menu Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="menuNoteForm">
+                        <div class="mb-3">
+                            <label for="menu_note" class="form-label">Note</label>
+                            <textarea wire:model="currentMenuNote" class="form-control" id="menu_note" name="menu_note" rows="4"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" wire:click="updateMenuNote" wire:loading.attr="disabled">Save Note
+                            <span wire:loading wire:target="updateMenuNote" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- select Venue modal --}}
+    <div class="modal fade" id="venuesModal" tabindex="-1" aria-labelledby="venuesModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="venuesModalLabel">Select Venue</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if(session()->has('venue_error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('venue_error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    <div class="card-header">
+                           <div class="input-group mb-2">
+                                <span class="input-group-text">Search</span>
+                                <input type="text" class="form-control" id="search-venues"
+                                    onkeyup="filterVenues()">
+                            </div>
+                            <script>
+                                function filterVenues() {
+                                    const searchInput = document.getElementById('search-venues');
+                                    const filter = searchInput.value.toLowerCase();
+                                    const tableBody = document.getElementById('venuesTableBody');
+                                    const rows = tableBody.getElementsByTagName('tr');
+                        
+                                    for (let i = 0; i < rows.length; i++) {
+                                        const cells = rows[i].getElementsByTagName('td');
+                                        let match = false;
+                        
+                                        for (let j = 0; j < cells.length; j++) {
+                                            const cell = cells[j];
+                                            if (cell) {
+                                                const text = cell.textContent || cell.innerText;
+                                                if (text.toLowerCase().indexOf(filter) > -1) {
+                                                    match = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                        
+                                        rows[i].style.display = match ? '' : 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-xs">Venue Name</th>
+                                <th class="text-xs">Code</th>
+                                <th class="text-xs">Description</th>
+                                <th class="text-xs">Capacity</th>
+                                <th class="text-xs">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="venuesTableBody">
+                            @forelse ($venues as $venue)
+                                <tr>
+                                    <td>{{ $venue->venue_name }}</td>
+                                    <td>{{ $venue->venue_code }}</td>
+                                    <td style="cursor: help;" title="{{ $venue->description }}">{{ Str::limit($venue->description, 50) }}</td>
+                                    <td>{{ $venue->capacity }}</td>
+                                    <td>
+                                        <button wire:click="selectVenue({{ $venue->id }})" class="btn btn-sm btn-success select-venue-btn">
+                                            <span wire:loading.remove wire:target="selectVenue({{ $venue->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
+                                            <span wire:loading wire:target="selectVenue({{ $venue->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">No venues available.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     
     <div class="col-md-6 container">
         <h5 class="mb-2 text-center">Create Banquet Event</h5>
@@ -119,6 +281,11 @@
                     <form action="" method="POST" wire:submit.prevent="createEvent">
                         @csrf
                         <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-text">Reference</span>
+                                    <input type="text" class="form-control text-center" id="reference" name="reference" disabled value="{{ $reference ?? '<AUTO>' }}">    </div>
+                            </div>
                             <div class="col-md-6">
                                 <label for="event_name" class="form-label text-sm">Event Name <span class="text-danger">*</span></label>
                                 <input wire:model="event_name" type="text" class="form-control" id="event_name" name="event_name" >
@@ -132,53 +299,65 @@
                                     <input type="text" class="form-control" id="customer_name" name="customer_name" disabled value="{{ $selectedCustName }}">
                                     <button class="input-group-text" type="button"
                                         style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#customerModal"><i class="bi bi-person-plus"></i></button>
-                                </div>  
+                                </div>
+                                @error('selectedCustID')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror 
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-1 col-md-12">
                             <div class="col-md-6">
-                                <label for="event_date" class="form-label text-sm">Event Date</label>
-                                <input wire:model="event_date" type="date" class="form-control" id="event_date" name="event_date">
-                                @error('event_date')
+                               <div class="input-group">
+                                 <label for="event_start_date" class="input-group-text">Start Date</label>
+                                 <input wire:model="event_start_date" type="date" class="form-control" id="event_start_date" name="event_start_date">
+                               </div>
+                                @error('event_start_date')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="row col-md-6">
-                                <div class="col-md-6">
-                                    <label for="event_time" class="form-label text-sm">Start Time</label>
-                                    <input wire:model="event_start_time" type="time" class="form-control" id="event_time" name="event_time">
+                                <div class="input-group">
+                                    <label for="arrival_time" class="input-group-text">Arrival Time</label>
+                                    <input wire:model="arrival_time" type="time" class="form-control" id="arrival_time" name="arrival_time">   
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="event_time" class="form-label text-sm">End Time</label>
-                                    <input wire:model="event_end_time" type="time" class="form-control" id="event_time" name="event_time">
-                                </div>
-                                @error('event_start_time')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                                @error('event_end_time')
+                                @error('arrival_time')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
+                        <div class="row  mb-3 col-md-12">
+                            <div class=" col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">End Date</span>
+                                    <input wire:model="event_end_date" type="date" class="form-control" id="event_end_date" name="event_end_date">
+                                    
+                                </div>
+                            </div>
+                            <div class=" col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">Departure Time</span>
+                                    <input wire:model="departure_time" type="time" class="form-control" id="departure_time" name="departure_time">
+                                </div>
+                            </div>
+                        </div>
+                        @error('event_end_date')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        @error('departure_time')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                         <div class="row col-md-12 mb-1">
                              <div class="col-md-6">
                                     <div class="mb-1">
-                                    <label for="venue" class="form-label text-sm">Venue</label>
-                                    <select wire:model="venue_id" class="form-select">
-                                        <option value="">Select Venue</option>
-                                        @forelse ($venues as $venue)
-                                            <option value="{{ $venue->id }}">{{ $venue->venue_name }} &nbsp; ({{ $venue->ratePrice && $venue->ratePrice->amount ? '₱' . $venue->ratePrice->amount : 'FREE' }})</option>
-                                        @empty
-                                            
-                                        @endforelse
-                                    </select>
-                                @error('venue_id')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                    <label for="event_address" class="form-label text-sm">Event Address</label>
+                                    <input  type="text" class="form-control" id="event_address" wire:model="event_address">
+                                    @error('event_address')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div class="mb-3">
                                     <label for="guest_count" class="form-label text-sm">Expected Guest Count</label>
-                                    <input wire:model="guest_count" type="number" class="form-control" id="guest_count" name="guest_count" min="0" placeholder="Enter expected guest count">
+                                    <input  type="number" class="form-control" id="guest_count" min="0" placeholder="Enter expected guest count" wire:model="guest_count">
                                     @error('guest_count')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -186,7 +365,10 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="event-notes" class="form-label text-sm">Notes</label>
-                            <textarea wire:model="event_notes" class="form-control" id="event-notes" name="event-notes" rows="4"></textarea>
+                                <textarea wire:model="event_notes" class="form-control" id="event-notes" rows="4"></textarea>
+                                @error('event_notes')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                         
@@ -221,6 +403,35 @@
                                     </tfoot>
                                 </table>
                         </div>
+
+                        <div class="row col-md-12 mb-1 mt-2">
+                            <div class="input-group col-md-6 mb-1">
+                                <label for="" class="input-group-text">Reviewer</label>
+                                <select name="" id="" class="form-select" wire:model="selectedReviewerID">
+                                    <option value="">Select Reviewer</option>
+                                    @foreach ($reviewers as $reviewer)
+                                        <option value="{{ $reviewer->employees->id }}" {{ (isset($selectedReviewerID) && $selectedReviewerID == $reviewer->employees->id) ? 'selected' : '' }}>{{ $reviewer->employees->name }} {{ $reviewer->employees->last_name }}</option>
+                                    @endforeach
+                                </select>
+                                
+                            </div>
+                                @error('selectedReviewerID')
+                                        <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            <div class="input-group col-md-6 mb-1">
+                                <label for="" class="input-group-text">Approver</label>
+                                <select name="" id="" class="form-select" wire:model="selectedApproverID">
+                                    <option value="">Select Approver</option>
+                                    @foreach ($approvers as $approver)
+                                        <option value="{{ $approver->employees->id }}" {{ (isset($selectedApproverID) && $selectedApproverID == $approver->employees->id) ? 'selected' : '' }}>{{ $approver->employees->name }} {{ $approver->employees->last_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                             @error('selectedApproverID')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                        </div>
+
                     </div>
                 </div>    
             </div>
@@ -264,6 +475,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                     @if(session()->has('service_error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('service_error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
                     <div class="overflow-auto" style="max-height: 400px;">
                         <div class="card-header">
                            <div class="input-group mb-2">
@@ -314,7 +531,10 @@
                                         <td>{{ $service->ratePrice && $service->ratePrice->amount ? '₱' . $service->ratePrice->amount : 'FREE' }}</td>
                                         <td class="text-wrap">{{ $service->service_description }}</td>     
                                         <td>
-                                            <button wire:click="selectService({{ $service->id }})" class="btn btn-sm btn-success select-service-btn"><i class="bi bi-plus-circle"></i>&nbsp;Add</button>
+                                            <button wire:click="selectService({{ $service->id }})" class="btn btn-sm btn-success select-service-btn">
+                                                <span wire:loading.remove wire:target="selectService({{ $service->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
+                                                <span wire:loading wire:target="selectService({{ $service->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
+                                            </button>
                                         </td>
                                     </tr>
                                     
@@ -328,16 +548,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <span wire:loading wire:target="selectService" class="me-2 text-primary">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Adding...
-                    </span>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>&nbsp;Close</button>
                 </div>
             </div>
         </div>
     </div>
-   
    
     <!-- Menu Modal -->
     <div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true" wire:ignore.self>
@@ -348,6 +563,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                     @if(session()->has('menu_error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('menu_error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
                     <div class="card-header">
                            <div class="input-group mb-2">
                                 <span class="input-group-text">Search</span>
@@ -400,7 +621,10 @@
                                     <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
                                     <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
                                     <td>
-                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-menu-btn"><i class="bi bi-plus-circle"></i>&nbsp;Add</button>
+                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-menu-btn">
+                                            <span wire:loading.remove wire:target="selectMenu({{ $menu->menu->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
+                                            <span wire:loading wire:target="selectMenu({{ $menu->menu->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -412,10 +636,6 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <span wire:loading wire:target="selectMenu" class="me-2 text-primary">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Adding...
-                    </span>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>&nbsp;Close</button>
                 </div>
             </div>
@@ -574,7 +794,11 @@
                                     <td>{{ $customer->contact_no_1 }}</td>
                                     <td>{{ $customer->gender }}</td>
                                     <td>
-                                        <button wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->customer_fname . ' ' . $customer->customer_mname . ' ' . $customer->customer_lname }}')" class="btn btn-sm btn-success select-customer-btn" data-name="{{ $customer->customer_fname . ' ' . $customer->customer_mname . ' ' . $customer->customer_lname }}">Select</button>
+                                        <button wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->customer_fname . ' ' . $customer->customer_mname . ' ' . $customer->customer_lname }}')" class="btn btn-sm btn-success select-customer-btn" data-name="{{ $customer->customer_fname . ' ' . $customer->customer_mname . ' ' . $customer->customer_lname }}">
+                                            <span wire:loading wire:target="selectCustomer({{ $customer->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>
+                                            <span wire:loading.remove wire:target="selectCustomer({{ $customer->id }})"><i class="bi bi-check-circle"></i>&nbsp;Select</span>
+                                        </button>
+                                    
                                     </td>
 
                                </tr>
@@ -645,6 +869,18 @@
         </div>
 
     <script>
+        window.addEventListener('hideMenuNoteModal', event => {
+            // reset form
+                 document.getElementById('menuNoteForm').reset();
+            // Hide the modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('menuNoteModal'));
+            modal.hide();
+
+            // Hide the success message after 1 second
+            setTimeout(function() {
+                document.getElementById('success-message').style.display = 'none';
+            }, 1500);
+        });
         window.addEventListener('refresh', event => {
             // Reset all forms on the page
             document.querySelectorAll('form').forEach(form => form.reset());
@@ -717,6 +953,26 @@
             // Update the total amount in the footer
             totalAmountElement.textContent = totalAmount.toFixed(2);
         }
+
+
+        window.addEventListener('showAlert', event =>{
+            const data  = event.detail[0];
+            if(data.type === 'success' ){
+                 Swal.fire({
+                icon: 'success',
+                title: data.title,
+                text: data.message,
+                showConfirmButton: true,
+            }); 
+            }else if(data.type === 'error'){
+                 Swal.fire({
+                icon: 'error',
+                title: data.title,
+                text: data.message,
+                showConfirmButton: true,
+            }); 
+            }
+        });
 
     </script>
 </div>

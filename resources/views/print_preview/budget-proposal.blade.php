@@ -70,6 +70,12 @@
                 color-adjust: exact;
                 print-color-adjust: exact;
             }
+
+            @page {
+                margin: 0;
+                size: auto;
+                margin-right: 8pt;
+            }
         }
         
     </style>

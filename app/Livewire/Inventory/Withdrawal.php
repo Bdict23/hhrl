@@ -15,6 +15,7 @@ use App\Models\OtherSetting;
 use App\Models\ProductionOrder;
 use App\Models\ProductionOrderDetail;
 use App\Models\ProductionOrderMenu;
+use App\Models\BanquetEvent;
 
 
 class Withdrawal extends Component
@@ -112,7 +113,7 @@ class Withdrawal extends Component
         $module = Module::where('module_name', 'Item Withdrawal')->first();
 
         // Calculate total balance for each item using the Cardex model
-        $this->events = auth()->user()->branch->banquetEvents()->where('status', 'CONFIRMED')->where('event_date', '>=', now())->get();
+        $this->events = auth()->user()->branch->banquetEvents()->where('status', 'CONFIRMED')->where('end_date', '>=', now())->get();
         $this->myCardexItems = $myItems->map(function ($item) {
             $totalIn = Cardex::where('status', 'final')->where('item_id', $item->id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_in');
             $totalOut = Cardex::where('status', 'final')->where('item_id', $item->id)->where('source_branch_id',auth()->user()->branch_id)->sum('qty_out');
@@ -325,8 +326,8 @@ class Withdrawal extends Component
         $this->eventId = $eventId;
         $event = BanquetEvent::find($eventId);
         if ($event) {
-            $this->eventName = $event->event_name . '  ( ' . \Carbon\Carbon::parse($event->event_date)->format('M-d-Y') . ' )';
-            $this->useDate = $event->event_date; // Set useDate to the event date
+            $this->eventName = $event->event_name . '  ( ' . \Carbon\Carbon::parse($event->end_date)->format('M-d-Y') . ' )';
+            $this->useDate = $event->start_date; // Set useDate to the event start date
         } else {
             $this->eventName = null;
         }

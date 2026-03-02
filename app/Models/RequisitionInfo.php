@@ -32,7 +32,8 @@ class RequisitionInfo extends Model
         'requisition_status',
         'remarks',
         'event_id',
-        'order_type'
+        'total_amount',
+        'production_id'
     ];
 
     public function branches()
@@ -69,5 +70,13 @@ class RequisitionInfo extends Model
     public function orderType()
     {
         return $this->belongsTo(OtherSetting::class, 'order_type', 'id');
+    }
+    public function event()
+    {
+        return $this->belongsTo(BanquetEvent::class, 'event_id');
+    }
+    public function production()
+    {
+        return $this->belongsTo(ProductionOrder::class, 'production_id');
     }
 }

@@ -1,5 +1,8 @@
 @extends('layouts.master')
 @section('content')
+<div class="justify-content-end d-flex mb-3">
+    <h3>Update Purchas Order &nbsp;<i class="bi bi-cart4"></i></h3>
+</div>
     <form id="poForm" method="POST" action="{{ route('purchase_order.update', $requisitionInfo->id ?? '') }}">
         @csrf
         @method('PUT')
@@ -70,27 +73,37 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>Update Purchase Order</h5>
                 </div>
-               <div class="card-body">
+               <div class="card-body row">
                 
-                     <div class="row mb-3">
-                         <div class="col-md-6">
+                     <div class="col-md-12 mb-3 row">
+                         <div class="col-md-6 mb-3">
                              <label for="options" class="form-label">Select Supplier</label>
                              <select id="options" name="supp_id" class="form-control" required>
                                  @foreach ($suppliers ?? [] as $supp)
-                                     <option value="{{ $supp->id ?? '' }}"
-                                         {{ $supp->id ?? '' == $requisitionInfo->supplier_id ? 'selected' : '' }}>
+                                     <option value="{{ $supp->id }}"
+                                         {{ $supp->id  == $requisitionInfo->supplier_id ? 'selected' : '' }}>
                                          {{ $supp->supp_name ?? '' }}
                                      </option>
                                  @endforeach
                              </select>
                          </div>
-                         <div class="col-md-6">
+                         <div class="col-md-6 mb-3">
                              <label for="po_number" class="form-label">PO Number</label>
                              <input type="text" class="form-control" id="po_number" name="po_number"
                                  value="{{ $requisitionInfo->requisition_number ?? '' }}" readonly>
                          </div>
+                         <div class="col-md-12">
+                            <div class="input-group">
+                                <label for="" class="input-group-text">Event</label>
+                                <input type="text" class="form-control" value="{{ $requisitionInfo->event->reference ?? 'N/A' }}" readonly disabled>
+                            </div>
+                            <div class="input-group mt-2">
+                                <label for="" class="input-group-text">Production</label>
+                                <input type="text" class="form-control" value="{{ $requisitionInfo->production->reference ?? 'N/A' }}" readonly disabled>
+                            </div>
+                         </div>
                      </div>
-                     <div class="row mb-3">
+                     <div class="row mb-3 col-md-12">
                          <div class="col-md-6">
                              <label for="contact_no_1" class="form-label">M. PO NUMBER</label>
                              <input type="text" class="form-control" id="merchandise_po_number" name="merchandise_po_number"
@@ -108,23 +121,20 @@
                              </select>
                          </div>
                      </div>
-                     <div class="row mb-3">
-                         <div class="col-md-6">
+                     <div class="row mb-3 col-md-12">
+                         <div class="col-md-12">
                              <label for="contact_no_2" class="form-label">Remarks</label>
-                             <input type="text" class="form-control" id="contact2" name="remarks"
-                                 value="{{ $requisitionInfo->remarks ?? '' }}">
+                             <textarea class="form-control" id="contact2" name="remarks">{{ $requisitionInfo->remarks ?? '' }}</textarea>
                          </div>
-                         <div class="col-md-6">
-                             <div class="row mv-20">
                                 @if ($hasReviewer)
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for="contact_no_2" class="form-label">Reviewed To</label>
                                         <select id="options" name="reviewer_id" class="form-control">
                                             @forelse ($reviewer ?? [] as $reviewers)
                                                 <option value="{{ $reviewers->employees->id }}"
-                                                    {{ $reviewers->employees->id ?? '' == $requisitionInfo->reviewer->id ? 'selected' : '' }}>
-                                                    {{ $reviewers->employees->name ?? '' }}
-                                                    {{ $reviewers->employees->last_name ?? '' }}
+                                                    {{ $reviewers->employees->id == $requisitionInfo->reviewed_by ? 'selected' : '' }}>
+                                                    {{ $reviewers->employees->name }}
+                                                    {{ $reviewers->employees->last_name }}
                     
                                                 </option>
                                             @empty
@@ -134,27 +144,20 @@
                                     </div>
                                 @endif
                                  
-                                 <div 
-                                 @if ($hasReviewer)
-                                     class="col-md-6"
-                                 @else
-                                     class="col-md-12"
-                                 @endif>
+                                 <div class="col-md-12">
                                      <label for="contact_no_2" class="form-label">Approved To</label>
                                      <select id="options" name="approver_id" class="form-control" required>
                                          @forelse ($approver ?? [] as $approvers)
                                              <option value="{{ $approvers->employees->id }}"
-                                                 {{ $approvers->employees->id ?? '' == $requisitionInfo->approved_by ? 'selected' : '' }}>
-                                                 {{ $approvers->employees->name ?? '' }}
-                                                 {{ $approvers->employees->last_name ?? '' }}
+                                                 {{ $approvers->employees->id == $requisitionInfo->approved_by ? 'selected' : '' }}>
+                                                 {{ $approvers->employees->name  }}
+                                                 {{ $approvers->employees->last_name }}
                                              </option>
                                          @empty
                                              <option value="">No data available</option>
                                          @endforelse
                                      </select>
                                  </div>
-                             </div>
-                         </div>
                      </div>
                </div>
             </div>

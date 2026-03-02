@@ -279,7 +279,7 @@
                             <x-slot name="content">
                                 @if (auth()->user()->employee->getModulePermission('Banquet Events') != 2 )
                                     <x-dropdown-link :href="url('/banquet-events-summary')" class="no-underline">
-                                        {{ __('Events') }}
+                                        {{ __('Events (BEO)') }}
                                     </x-dropdown-link>
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Banquet Equipment Request') != 2 )
@@ -289,7 +289,7 @@
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Banquet Procurement') != 2 )
                                     <x-dropdown-link :href="url('/banquet-procurement-lists')" class="no-underline">
-                                        {{ __('Budget Proposal') }}
+                                        {{ __('Budget Proposal (BEB)') }}
                                     </x-dropdown-link>
                                 @endif
                                  

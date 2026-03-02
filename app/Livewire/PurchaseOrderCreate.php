@@ -14,6 +14,7 @@ use App\Models\Module;
 use App\Models\BanquetEvent;
 use App\Models\OtherSetting;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductionOrder;
 
 
 
@@ -41,8 +42,11 @@ class PurchaseOrderCreate extends Component
     public $module;
     public $hasReviewer = false;
     public $isROP = false;
-    public $orderType = [];
-    public $selectedOrderType = null;
+
+    // production order
+    public $selectedproductionID = null;
+    public $productionOrders = [];
+    public $selectedProductionReference;
 
     protected $rules = [
         'supplierId' => 'required|exists:suppliers,id',
@@ -60,8 +64,6 @@ class PurchaseOrderCreate extends Component
         'term_id' => 'The payment term is required.',
         'reviewer_id' => 'Reviewer is required.',
         'approver_id' => 'Approver is required.',
-        'selectedOrderType.required' => 'The order type is required.',
-        'selectedOrderType.in' => 'The selected order type is invalid.',
     ];
 
     public function mount()
@@ -71,7 +73,6 @@ class PurchaseOrderCreate extends Component
 
     public function store()
     {
-        $orderTypeValues = $this->orderType->pluck('id')->implode(',');
         
         if($this->hasReviewer) {
             $this->validate([
@@ -82,7 +83,6 @@ class PurchaseOrderCreate extends Component
                 'reviewer_id' => 'required|exists:employees,id',
                 'approver_id' => 'required|exists:employees,id',
                 'selectedItems' => 'required|array',
-                'selectedOrderType' => 'required|in:'.$orderTypeValues.'',
             ]);    
         }else {
             $this->validate([
@@ -94,8 +94,13 @@ class PurchaseOrderCreate extends Component
                 'approver_id' => 'required|exists:employees,id',
                 'selectedItems' => 'required|array',
                 'selectedEventId' => 'nullable|exists:banquet_events,id',
-                'selectedOrderType' => 'required|in:'.$orderTypeValues.'',
             ]);
+        }
+
+
+        $totalCost = 0;
+        foreach ($this->selectedItems as $index => $item) {
+            $totalCost += $item->costPrice->amount * (float)($this->purchaseRequest[$index]['qty'] ?? 1);
         }
        
         // Save to requisitionInfos table
@@ -123,7 +128,8 @@ class PurchaseOrderCreate extends Component
         $requisitionInfo->requisition_number = $this->requisitionNumber;
         $requisitionInfo->from_branch_id = $branchId;
         $requisitionInfo->event_id = $this->selectedEventId ?? null;
-        $requisitionInfo->order_type = $this->selectedOrderType ?? null;
+        $requisitionInfo->production_id = $this->selectedproductionID ?? null;
+        $requisitionInfo->total_amount = $totalCost;
         $requisitionInfo->save();
 
         // Process the selected items and their quantities
@@ -138,7 +144,7 @@ class PurchaseOrderCreate extends Component
 
         $this->reset();
         $this->fetchdata();
-        session()->flash('success', 'Purchase Order created successfully.');
+        $this->dispatch('showAlert', ['type' => 'success', 'title' => 'Success', 'message' => 'Purchase order created successfully.']);
         $this->dispatch('refresh');
     }
 
@@ -218,13 +224,12 @@ class PurchaseOrderCreate extends Component
 
     public function fetchdata()
     {
-    $this->orderType = OtherSetting::where('setting_key', 'PO_TYPE')->where('branch_id', auth()->user()->branch_id)->where('is_active', 1)->get() ?? [];
     $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
-    $this->events = BanquetEvent::with('customer')->where('status', 'CONFIRMED')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+    $this->events = BanquetEvent::with('customer')->where('status', 'CONFIRMED')->where('end_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
     $purchasing = Module::where('module_name', 'Purchase order')->first();
-
+    $this->productionOrders = ProductionOrder::where('branch_id', auth()->user()->branch_id)->where('status', 'PENDING')->get();
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();
     $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module_id', $purchasing->id  ],['branch_id', auth()->user()->branch_id]])->get();
     $this->reviewer = Signatory::where([['signatory_type', 'REVIEWER'],['module_id',$purchasing->id ],['branch_id', auth()->user()->branch_id]])->get();
@@ -252,7 +257,26 @@ class PurchaseOrderCreate extends Component
             $this->selectedEventName = $event->event_name . ' - ' . $event->customer->customer_fname . ' ' . $event->customer->customer_lname;
             $this->dispatch('closeEventModal');
         }else{
-            session()->flash('error', 'Event not found.');
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Event not found.']);
+            return;
+        }
+    }
+
+    public function selectProduction($productionId)
+    {
+        $production = ProductionOrder::find($productionId);
+
+        if ($production) {
+            $this->selectedproductionID = $production->id;
+            $this->selectedProductionReference = $production->reference;
+             $this->selectedItems = []; // Clear previously selected items
+            foreach ($production->productionOrderDetails as $detail) {
+                
+                    $this->addItem($detail->item_id);
+                    
+            }
+        } else {
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Production order not found.']);
             return;
         }
     }

@@ -464,3 +464,7 @@ Route::get('/production-orders', function () {
 Route::get('/create-production', function(){
     return view('restaurant.production-create-view');
 })->middleware(['auth','verified'])->name('production.create');
+
+// route for printing event in event summary
+Route::get('/print-preview', function () {
+    return view('print_preview.event');})->middleware(['auth', 'verified'])->name('event.print-preview');

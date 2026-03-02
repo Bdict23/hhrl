@@ -3,7 +3,10 @@
 namespace App\Livewire\Banquet;
 
 use Livewire\Component;
-use App\Models\BanquetEvent; 
+use App\Models\BanquetEvent;
+use App\Models\Customer; 
+use App\Models\EventMenu;
+use App\Models\EventVenue;
 
 class BanquetEventSummary extends Component
 {
@@ -11,8 +14,12 @@ class BanquetEventSummary extends Component
     public $selectedEventId = null;
     public $selectedEventStatus = null;
     public $eventDetails = [];
+    public $venueDetails = [];
     public $fromDate;
     public $toDate;
+    public $customerDetails;
+
+    
     public function render()
     {
         return view('livewire.banquet.banquet-event-summary');
@@ -27,11 +34,16 @@ class BanquetEventSummary extends Component
       return redirect()->to('/banquet-events-create?event-id=' .  $this->selectedEventId);
     }
 
+     public function viewCustomer($customerId = null)
+    {
+         $this->customerDetails = $customerId ? Customer::find($customerId) : null;
+
+    }
+
     public function fetchData()
     {
-        $this->eventLists = BanquetEvent::with('venue')
-            ->where('branch_id', auth()->user()->branch_id)
-            ->whereDate('event_date', '>=', now()->toDateString())
+        $this->eventLists = BanquetEvent::where('branch_id', auth()->user()->branch_id)
+            ->whereDate('start_date', '>=', now()->toDateString())
             ->orderBy('created_at', 'asc')
             ->get();
     }
@@ -40,14 +52,16 @@ class BanquetEventSummary extends Component
     {
         $this->selectedEventId = $eventId;
         $this->selectedEventStatus = BanquetEvent::find($eventId)->status;
-        $this->eventDetails = BanquetEvent::with('customer', 'venue', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel', 'eventServices.service')->find($eventId);
+        $this->eventDetails = BanquetEvent::with('customer', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel', 'eventServices.service')->find($eventId);
+        $this->venueDetails = EventVenue::with('venue', 'ratePrice')->where('event_id', $eventId)->get();
+        $this->viewCustomer($this->eventDetails->customer_id);
+        $this->dispatch('showEventDetailsModal');
         $this->dispatch('modalOpened');
     }
 
     public function filterEvents()
     {
-        $this->eventLists = BanquetEvent::with('venue')
-            ->where('branch_id', auth()->user()->branch_id)
+        $this->eventLists = BanquetEvent::where('branch_id', auth()->user()->branch_id)
             ->whereBetween('event_date', [$this->fromDate, $this->toDate])
             ->orderBy('created_at', 'asc')
             ->get();
@@ -78,4 +92,6 @@ class BanquetEventSummary extends Component
           session()->flash('success', 'Event has been confirmed successfully.');
       }
     }
+
+
 }
