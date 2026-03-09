@@ -205,6 +205,7 @@ class BanquetEventCreate extends Component
                     'end_date' => $this->event_end_date,
                     'start_time' => $this->arrival_time,
                     'end_time' =>  $this->departure_time,
+                    'total_amount' => $venue['rate_amount'] * $venue['qty'],
                 ]);
 
                 $total += ($venue['rate_amount'] * $venue['qty']);
@@ -218,6 +219,7 @@ class BanquetEventCreate extends Component
                     'service_id' => $service['id'],
                     'qty' => $service['qty'],
                     'price_id' => $service['rate'],
+                    'total_amount' => $service['rate_amount'] * $service['qty'],
                 ]);
                 $total += ($service['rate_amount'] * $service['qty']);
             }
@@ -231,13 +233,14 @@ class BanquetEventCreate extends Component
                     'note' => $menu['note'] ?? '',
                     'qty' => $menu['qty'],
                     'price_id' => $menu['rate'],
+                    'total_amount' => $menu['rate_amount'] * $menu['qty'],
                 ]);
                 $total += ($menu['rate_amount'] * $menu['qty']);
             }
-            $event->update([
+        }
+         $event->update([
                 'total_amount' => $total,
             ]);
-        }
         $this->reset();
         $this->fetchData();
         $this->dispatch('refresh');

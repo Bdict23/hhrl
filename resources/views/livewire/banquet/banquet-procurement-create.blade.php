@@ -515,10 +515,10 @@
                         <thead>
                             <tr>
                                 <th>Event Name</th>
-                                <th>Event Date</th>
+                                <th>Event Start</th>
+                                <th>Event End</th>
                                 <th>Customer Name</th>
                                 <th>Guest Count</th>
-                                <th>Venue</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -526,10 +526,10 @@
                             @forelse ($events as $event)
                                 <tr>
                                     <td>{{ $event->event_name }}</td>
-                                    <td>{{ $event->event_date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }} ({{ \Carbon\Carbon::parse($event->arrival_time)->format('h:i A') }})</td>
+                                    <td>{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }} ({{ \Carbon\Carbon::parse($event->departure_time)->format('h:i A') }})</td>
                                     <td>{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
                                     <td>{{ $event->guest_count }}</td>
-                                    <td>{{ $event->venue->venue_name }}</td>
                                     <td>
                                         <button wire:click="loadEventDetails({{ $event->id }})" class="btn btn-sm btn-primary">Select</button>
                                     </td>

@@ -52,7 +52,7 @@
                                             {{ $mrp_price ? '₱' . $mrp_price->amount : 'hidden' }}>₱
                                             {{ $menu->price_levels()->latest()->where('price_type', 'MRP')->first()->amount ?? '0.00' }}</span>
                                         ₱
-                                        {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}
+                                        {{ $menu->mySRP->amount ?? '0.00' }}
                                     </p>
                                     <button class="btn btn-primary" @if(($menu->recipeCount->first()->bal_qty ?? 0)==0) disabled @endif
                                         onclick="addToOrder('{{ $menu->id }}','{{ $menu->menu_name }}', {{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->amount ?? '0.00' }}, {{ $menu->recipeCount->first()->bal_qty ?? 0 }}, {{ $index }},{{ $menu->price_levels()->latest()->where('price_type', 'RATE')->first()->id ?? 'null' }})"

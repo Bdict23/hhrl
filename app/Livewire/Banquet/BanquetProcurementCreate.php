@@ -109,8 +109,8 @@ class BanquetProcurementCreate extends Component
 
     public function fetchData()
     {
-        $this->events = BanquetEvent::with('customer','venue','eventServices','eventMenus','purchaseOrders')->where('status', 'CONFIRMED')->where('event_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
-        
+        $this->events = BanquetEvent::with('customer','eventVenues.venue','eventServices','eventMenus','purchaseOrders')->where('status', 'CONFIRMED')->where('end_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+
         $moduleId = Module::where('module_name', 'Banquet Procurement')->value('id');
         $this->approvers = Signatory::with('employees')->where('signatory_type', 'APPROVER')
             ->where('module_id', $moduleId)
@@ -124,7 +124,7 @@ class BanquetProcurementCreate extends Component
 
     public function loadEventDetails($eventId)
     {
-        $this->selectedEvent = BanquetEvent::with('purchaseOrders','customer', 'venue', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel')->find($eventId);
+        $this->selectedEvent = BanquetEvent::with('purchaseOrders','customer', 'eventVenues', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel')->find($eventId);
         $this->selectedEventId = $this->selectedEvent->id;
         if ($this->selectedEvent) {
             $this->dispatch('closeSelectEventModal');

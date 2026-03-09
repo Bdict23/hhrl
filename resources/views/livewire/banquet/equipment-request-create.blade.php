@@ -274,7 +274,6 @@
                                 <th>Event Date</th>
                                 <th>Customer Name</th>
                                 <th>Guest Count</th>
-                                <th>Venue</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -285,7 +284,6 @@
                                     <td>{{ $event->event_date }}</td>
                                     <td>{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
                                     <td>{{ $event->guest_count }}</td>
-                                    <td>{{ $event->venue->venue_name }}</td>
                                     <td>
                                         <button wire:click="loadEvent({{ $event->id }})" class="btn btn-sm btn-primary">Select</button>
                                     </td>

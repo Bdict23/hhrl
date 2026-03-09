@@ -468,3 +468,28 @@ Route::get('/create-production', function(){
 // route for printing event in event summary
 Route::get('/print-preview', function () {
     return view('print_preview.event');})->middleware(['auth', 'verified'])->name('event.print-preview');
+
+    // acknowledgement-receipt summary route
+Route::get('/acknowledgement-receipt-summary', function () {
+    return view('banquet.disbursement.acknowledgement-receipt-summary-view');})->middleware(['auth', 'verified'])->name('acknowledgement_receipt.summary');
+
+    // route('acknowledgement-receipt.create')
+Route::get('/acknowledgement-receipt-create', function () {
+    return view('banquet.disbursement.acknowledgement-receipt-create-view');})->middleware(['auth', 'verified'])->name('acknowledgement_receipt.create');
+
+    // /petty-cash-voucher-summary route
+Route::get('/petty-cash-voucher-summary', function () {
+    return view('transactions.petty-cash-voucher-view');})->middleware(['auth', 'verified'])->name('petty_cash_voucher.summary');
+// /petty-cash-voucher-create route
+Route::get('/petty-cash-voucher-create', function () {
+    return view('transactions.petty-cash-voucher-create-view');})->middleware(['auth', 'verified'])->name('petty_cash_voucher.create');
+
+
+// ACCOUNTING
+    // ROUTE FOR accounting.types
+Route::get('/accounting/types', function () {
+    return view('accounting.chart-of-accounts-view');})->middleware(['auth', 'verified'])->name('accounting.coa.management');
+
+    // Route for accounting transaction titles
+Route::get('/coa-management', function () {
+    return view('accounting.transaction-templates-view');})->middleware(['auth', 'verified'])->name('accounting.transaction.titles');

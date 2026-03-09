@@ -191,6 +191,16 @@
                                 <x-dropdown-link :href="url('/shifts-summary')" class="no-underline">
                                     {{ __('Shifts') }} &nbsp;<i class="bi bi-clock-history"></i>
                                 </x-dropdown-link>
+                            @if(auth()->user()->employee->getModulePermission('Acknowledgement Receipt') != 2 )
+                                    <x-dropdown-link :href="url('/acknowledgement-receipt-summary')" class="no-underline">
+                                        {{ __('Acknowledgement') }}
+                                    </x-dropdown-link>
+                            @endif
+                             @if(auth()->user()->employee->getModulePermission('Petty Cash Voucher') != 2 )
+                                    <x-dropdown-link :href="url('/petty-cash-voucher-summary')" class="no-underline">
+                                        {{ __('Petty Cash Voucher') }}
+                                    </x-dropdown-link>
+                            @endif
                         </x-slot>
                     </x-dropdown> 
                 </div>
@@ -291,9 +301,7 @@
                                     <x-dropdown-link :href="url('/banquet-procurement-lists')" class="no-underline">
                                         {{ __('Budget Proposal (BEB)') }}
                                     </x-dropdown-link>
-                                @endif
-                                 
-                                    
+                                @endif  
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -361,7 +369,26 @@
                             </x-dropdown>
                         </div>
                 @endif
-              
+                    @if (auth()->user()->employee->getGroupedModulePermissions('Accounting') !=2)
+                        <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-top: 23px">
+                                <x-dropdown>
+                                    <x-slot name="trigger">
+                                        <button
+                                            class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                            <div>Accounting</div>
+                                        </button>
+                                    </x-slot>
+                                    <x-slot name="content">   
+                                        @if (auth()->user()->employee->getModulePermission('Accounting - COA Management') !=2)
+                                            <x-dropdown-link :href="route('accounting.coa.management')" class="no-underline">
+                                                COA - Management
+                                                </x-dropdown-link>
+                                        @endif
+                                         
+                                    </x-slot>
+                                </x-dropdown>
+                            </div>
+                        @endif
 
                     {{-- Ken Entrance module --}}
                         @if (auth()->user()->employee->getGroupedModulePermissions('Entrance') !=2)
