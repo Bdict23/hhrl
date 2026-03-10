@@ -48,4 +48,9 @@ class PettyCashVoucher extends Model
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
+
+    public function pcvDetails()
+    {
+        return $this->hasMany(PCVDetail::class, 'petty_cash_voucher_id');
+    }
 }

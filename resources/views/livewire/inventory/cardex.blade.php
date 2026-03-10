@@ -5,7 +5,7 @@
             <div class="input-group ">
                 <input wire:model="itemCode" type="text" wire:loading.class.remove="bg-blue" class="form-control bg-blue" id="itemCode" name="item_code">
                 <button class="btn btn-primary" wire:click="getData()">
-                   Search
+                   Search &nbsp;<i class="bi bi-search"></i>
                 </button>
             </div>
             @error('itemCode')

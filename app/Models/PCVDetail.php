@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PCVDetails extends Model
+class PCVDetail extends Model
 {
     //
     protected $table = 'petty_cash_voucher_details';

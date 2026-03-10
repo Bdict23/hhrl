@@ -245,13 +245,13 @@
                                     <input wire:model="event" type="text" class="form-control" id="event"
                                         style="font-size: 13px; text-align: center;" disabled value="{{ $eventName }}" placeholder="Event (optional)">
                                     <button class="input-group-text" type="button"
-                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm">Select</strong></button>
+                                        style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#getEventModal"><strong class="text-sm"><i class="bi bi-calendar-week"></i></strong></button>
                                 </div>
                                 <div class="col-md-12 input-group mb-1">
                                       <input wire:model="productionOrder" type="text" class="form-control" id="production_order"
                                         style="font-size: 13px; text-align: center;" disabled value="{{ $productionOrderName }}" placeholder="Production Order (optional)">
                                     <button class="input-group-text" type="button"
-                                        style="background-color: rgb(190, 228, 243);" data-bs-toggle="modal" data-bs-target="#getProductionOrderModal"><strong class="text-sm">Select</strong></button>
+                                        style="background-color: rgb(190, 228, 243);" data-bs-toggle="modal" data-bs-target="#getProductionOrderModal"><strong class="text-sm"><i class="bi bi-box2"></i></strong></button>
                                 </div>
                             </div>
                             <div class="row mb-2">

@@ -119,7 +119,7 @@
                             <div class="col-md-12 mt-2">
                                    <div class="input-group">
                                      <input value="{{ $selectedEventName }}" type="text" class="form-control" id="event" disabled placeholder="Event (Optional)" readonly> 
-                                     <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#eventModal" style="background-color: rgb(147, 248, 198);"><i class="bi bi-pencil-square"></i></span>
+                                     <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#eventModal" style="background-color: rgb(147, 248, 198);"><i class="bi bi-calendar-week"></i></span>
                                    </div>
                                     @error('event')
                                         <span class="text-danger" >{{ $message }}</span>
@@ -129,7 +129,7 @@
                             <div class="col-md-12 mt-2">
                                    <div class="input-group">
                                      <input value="{{ $selectedProductionReference }}" type="text" class="form-control" id="production" disabled placeholder="Production Order (Optional)" readonly> 
-                                     <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#productionModal" style="background-color: rgb(147, 203, 248);"><i class="bi bi-pencil-square"></i></span>
+                                     <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#productionModal" style="background-color: rgb(147, 203, 248);"><i class="bi bi-box2"></i></span>
                                    </div>
                                     @error('selectedproductionID')
                                         <span class="text-danger" >{{ $message }}</span>

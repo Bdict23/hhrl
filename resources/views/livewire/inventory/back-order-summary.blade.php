@@ -33,7 +33,7 @@
                         <label for="to_date" class="input-group-text">To:</label>
                         <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
                             class="form-control form-control-sm">
-                            <button wire:click="search" class="btn btn-primary input-group-text">search</button>
+                            <button wire:click="search" class="btn btn-primary input-group-text">Search &nbsp;<i class="bi bi-search"></i></button>
                     </div>
                     <div>
                     </div>

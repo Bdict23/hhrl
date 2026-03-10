@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\PettyCashVoucher;
 use App\Models\BanquetEvent as Event;
 
 
@@ -347,6 +348,10 @@ class AcknowledgementReceiptCreate extends Component
 
             $this->selectBank($data->bank_id);
             $this->selectCustomer($data->customer_id);
+
+            // load expesses using PCV linked to this AR
+            $this->expenses = PettyCashVoucher::where('acknowledgement_receipt_id', $id)->get();
+
             $this->currentARStatus = $data->status;
             $this->isCreate = false;
 

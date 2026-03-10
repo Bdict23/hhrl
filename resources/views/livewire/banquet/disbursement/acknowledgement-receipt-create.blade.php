@@ -38,12 +38,13 @@
                 <div class="card-header">
                     <h6>Expenses</h6>
                 </div>
-                <table class="table table-sm table-hover">
-                    <thead>
+                <table class="table table-sm table-hover table-bordered  table-striped">
+                    <thead class="table-dark">
                         <tr>
                             <th>Reference</th>
                             <th>Date</th>
-                            <th>Particulars</th>
+                            <th>Transaction</th>
+                            <th>Note</th>
                             <th>Amount</th>
                         </tr>
                     </thead>
@@ -51,14 +52,15 @@
                         @forelse ($expenses ?? [] as $expense)
                             <tr>
                                 <td>{{ $expense->reference }}</td>
-                                <td>{{ $expense->date }}</td>
-                                <td>{{ $expense->particulars }}</td>
-                                <td>{{ $expense->amount }}</td>
+                                <td>{{ \Carbon\Carbon::parse($expense->created_at)->format('M. d, Y') }}</td>
+                                <td>{{ $expense->transaction_title }}</td>
+                                <td title="{{$expense->purpose}}" style="cursor:help;">{{ Str::limit($expense->purpose, 10) }}</td>
+                                <td>{{ $expense->total_amount }}</td>
                             </tr>
                             
                         @empty
                             <tr class="text-center">
-                                <td colspan="4">No data available</td>
+                                <td colspan="5">No data available</td>
                             </tr>
                         @endforelse
                     </tbody>

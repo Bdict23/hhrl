@@ -61,7 +61,13 @@
                                     <td>{{ $pcv->reference }}</td>
                                     <td>{{ $pcv->voucher_number }}</td>
                                     <td>{{ $pcv->acknowledgementReceipt->reference }}</td>
-                                    <td>{{ $pcv->customer->customer_fname . ' ' . $pcv->customer->customer_lname ?? $pcv->employee->name . ' ' . $pcv->employee->last_name }}</td>
+                                    <td>
+                                        @if($pcv->paid_to_employee_id)
+                                            {{ $pcv->employee->name . ' ' . $pcv->employee->middle_name ?? '' . ' ' . $pcv->employee->last_name }}
+                                        @else
+                                            {{ $pcv->customer->customer_fname ?? '' . ' ' . $pcv->customer->customer_mname ?? '' . ' ' . $pcv->customer->customer_lname ?? '' . ' '.$pcv->customer->suffix ?? '' }}
+                                        @endif
+                                    </td>
                                     <td>{{ number_format($pcv->total_amount, 2) }}</td>
                                     <td><span 
                                         @if( $pcv->status =='OPEN' ) class = "badge bg-warning" 
@@ -73,7 +79,7 @@
                                     <td>{{ $pcv->created_at->format('M. d, Y') }}</td>
                                     <td>{{ $pcv->preparedBy->name . ' ' . $pcv->preparedBy->last_name ?? '' }}</td>
                                     <td>
-                                        <a href="/pcv-edit-view?PCV-id={{ $pcv->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
+                                        <a href="/petty-cash-voucher?PCV-id={{ $pcv->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
                                     </td>
                                 </tr>
                             @empty

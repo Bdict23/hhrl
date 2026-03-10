@@ -1,5 +1,9 @@
 <div class="container my-5">
-        <h3 class="mb-3 text-center">Banquet Event Order &nbsp;<i class="bi bi-journals"></i></h3>
+        <div class="container">
+            <div class="d-flex justify-content-end">
+                <h3 class="text-center">Banquet Event Order &nbsp;<i class="bi bi-calendar-week"></i></h3>
+            </div>
+        </div>
     <div class="container my-4">
         <div class="card shadow-sm border-0">
             <div class="card-body d-flex flex-wrap align-items-end gap-2">

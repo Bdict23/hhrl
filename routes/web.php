@@ -481,7 +481,7 @@ Route::get('/acknowledgement-receipt-create', function () {
 Route::get('/petty-cash-voucher-summary', function () {
     return view('transactions.petty-cash-voucher-view');})->middleware(['auth', 'verified'])->name('petty_cash_voucher.summary');
 // /petty-cash-voucher-create route
-Route::get('/petty-cash-voucher-create', function () {
+Route::get('/petty-cash-voucher', function () {
     return view('transactions.petty-cash-voucher-create-view');})->middleware(['auth', 'verified'])->name('petty_cash_voucher.create');
 
 

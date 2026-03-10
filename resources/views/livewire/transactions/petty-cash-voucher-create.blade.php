@@ -1,176 +1,204 @@
 <div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <select name="" id="" class="form-select form-select-sm input-group-text" wire:model="saveAsStatus">
-                                <option value="DRAFT"  @if($currentPCVStatus == 'DRAFT') selected @endif>DRAFT</option>
-                                <option value="OPEN" @if($currentPCVStatus == 'OPEN') selected @endif>FINAL</option>
-                            </select>
-                            @if($isCreate && $currentPCVStatus == 'DRAFT')
-                                <x-primary-button wire:click="savePettyCashVoucher">Save</x-primary-button>
-                            @elseif($currentPCVStatus == 'DRAFT' && !$isCreate)
-                                <x-primary-button wire:click="updatePettyCashVoucher">UPDATE</x-primary-button>
-                            @endif
-                        </div>
-                        @error('saveAsStatus')
-                             <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                    <a href="/petty-cash-voucher-summary"><x-secondary-button >Summary</x-secondary-button></a> 
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <select name="" id="" class="form-select form-select-sm input-group-text" wire:model="saveAsStatus">
+                            <option value="DRAFT"  @if($currentPCVStatus == 'DRAFT') selected @endif>DRAFT</option>
+                            <option value="OPEN" @if($currentPCVStatus == 'OPEN') selected @endif>FINAL</option>
+                        </select>
+                        @if($isCreate)
+                            <x-primary-button wire:click="savePCV" wire:loading.attr="disabled">
+                               <span wire:loading.remove wire:target="savePCV">Save</span>
+                               <span wire:loading wire:target="savePCV">Saving...</span>
+                            </x-primary-button>
+                        @elseif($currentPCVStatus == 'DRAFT' && !$isCreate)
+                            <x-primary-button wire:click="updatePCV" wire:loading.attr="disabled">
+                               <span wire:loading.remove wire:target="updatePCV">UPDATE</span>
+                               <span wire:loading wire:target="updatePCV">Updating...</span>
+                            </x-primary-button>
+                        @endif
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-6 d-flex justify-content-end">
-                <h5 class="alert-heading" style="white-space: nowrap;">Petty Cash Voucher - Create &nbsp;<i class="bi bi-card-text"></i></h5>
-                
+                <div class="col-md-6">
+                <a href="/petty-cash-voucher-summary"><x-secondary-button >Summary</x-secondary-button></a> 
+                </div>
             </div>
         </div>
+
+        <div class="col-md-6 d-flex justify-content-end">
+            <h5 class="alert-heading" style="white-space: nowrap;">Petty Cash Voucher - Create &nbsp;<i class="bi bi-card-text"></i></h5>
+            
+        </div>
+    </div>
     <div class="row">
         {{-- LEFT --}}
-        <div class="card mb-3 col-md-6 container">
-            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <strong>PARTICULARS</strong>
-                </div>
-                <table class="table table-sm table-hover">
-                    <thead>
-                        <tr>
-                            <th>Account Title</th>
-                            <th>Debit</th>
-                            <th>Credit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($particulars ?? [] as $particular)
+        <div class="mb-3 col-md-6">
+            <div class="card">
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong>PARTICULARS</strong>
+                    </div>
+                    <table class="table table-sm table-hover">
+                        <thead class="table-dark">
                             <tr>
-                                <td>{{ $particular['account_title'] }}</td>
-                                @if($particular['type'] == 'DEBIT')
-                                    <td><input type="number" class="form-control form-control-sm" wire:model="particulars.{{ $loop->index }}.amount"></td>
-                                    <td></td>
-                                @else
-                                    <td></td>
-                                    <td><input type="number" class="form-control form-control-sm" wire:model="particulars.{{ $loop->index }}.amount"></td>
-                                @endif
+                                <th>Account Title</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
                             </tr>
-                        @empty
-                            <tr class="text-center">
-                                <td colspan="4">No data available</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse ($particulars ?? [] as $particular)
+                                <tr>
+                                    <td>{{ $particular['account_title'] }}</td>
+                                    @if($particular['type'] == 'DEBIT')
+                                        <td><input type="number" class="form-control form-control-sm" wire:model="particulars.{{ $loop->index }}.amount" id="particular-debit-{{ $loop->index }}"></td>
+                                        <td></td>
+                                    @else
+                                        <td></td>
+                                        <td><input type="number" class="form-control form-control-sm" wire:model="particulars.{{ $loop->index }}.amount" id="particular-credit-{{ $loop->index }}"></td>
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr class="text-center">
+                                    <td colspan="4">No data available</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                   @error('saveAsStatus')
+                        <span class="text-danger">{{ $message }}</span>
+                   @enderror
+                   @error('selectedTemplate')
+                        <span class="text-danger">{{ $message }}</span>
+                   @enderror
+                </div>
             </div>
         </div>
-
         {{-- RIGHT --}}
-            <div class="mb-3 col-md-6 container">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">Reference</label>
-                            <input type="text" class="form-control" placeholder="<AUTO>" disabled wire:model="reference">
-                        </div>
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">Transaction Type</label>
-                            <select name="" id="" wire:model="selectedTransactionTypeID" class="form-select">
-                                <option value="">Select</option>
-                                @foreach ($transactionTypes ?? [] as $type)
-                                    <option value="{{ $type->id }}" @if($selectedTransactionTypeID == $type->id) selected @endif>{{ $type->type_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">Transaction</label>
-                            <input type="text" class="form-control" placeholder="Select Transaction ->" value="{{ $selectedTemplate->template_name ?? ''}}" disabled>
-                            <button class="btn btn-secondary" wire:click="showTransactions">
-                                <span wire:loading wire:target="showTransactions"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i></span>
-                                <span wire:loading.remove wire:target="showTransactions"><i class="bi bi-list-check"></i></span>
-                            </button>
-                        </div>
-
-                        <div class=" mb-2">
-                            <label for="" class="form-label">Transaction Description</label>
-                            <textarea name="" id="" cols="30" rows="2" class="form-control" disabled value >
-                                {{ $selectedTemplate->description ?? '' }}
-                            </textarea>
-                        </div>
-                        
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">A.R Reference Number</label>
-                            <input type="text" class="form-control" placeholder="Select Acknowledgement Receipt    ->" value="{{ $selectedAR->reference ?? ''}}" disabled>
-                            <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#acknowledgementReceiptListModal">
-                                <i class="bi bi-wallet2"></i>
-                            </span>
-                        </div>
-                        <div class="input-group mb-4">
-                            <label for="" class="input-group-text">A.R - Check Balance</label>
-                            <input type="text" class="form-control" disabled value="₱ {{ number_format($totalARBalance,2) ?? '₱ 0.00'}}">
-                        </div>
-
-                        <div class="row">
-                            <strong class="col-md-3 my-auto">PCV Information</strong>
-                            <hr class="col-md-9">
-                        </div>
-                        
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">Voucher Series Number</label>
-                            <input type="text" class="form-control" placeholder="Enter Voucher Series Number" wire:model="voucherSeriesNumber">
-                        </div>
-                        @error('voucherSeriesNumber')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">Payee</label>
-                            <input type="text" class="form-control" placeholder="Select Payee ->" disabled value="{{ $payeeName }}">
-                            <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#payeeListModal"><i class="bi bi-person-check-fill"></i></span>
-                        </div>
-                        @error('employeeId')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                        
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                               <div class="input-group">
-                                    <label for="" class="input-group-text">Debit Total</label>
-                                    <input type="text" class="form-control" disabled value="₱ {{ number_format($debitTotal,2) ?? '₱ 0.00'}}">
-                               </div>
-                            </div>
-                            <div class="col-md-6">
-                                 <div class="input-group"> 
-                                    <label for="" class="input-group-text">Credit Total</label>
-                                    <input type="text" class="form-control" disabled value="₱ {{ number_format($creditTotal,2) ?? '₱ 0.00'}}">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-2">
-                            <label for="" class="input-group-text">Disburse Amount</label>
-                            <input type="text" class="form-control" wire:model="totalAmount" disabled placeholder="₱ 0.00" value="₱ {{ number_format($totalDisburseAmount,2) ?? '₱ 0.00'}}">
-                        </div>
-                        @error('totalAmount')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                        <div class="mb-2">
-                            <textarea name="" id="" cols="30" rows="3" class="form-control" placeholder="Remarks" wire:model="note"></textarea>
-
-                        </div>
-                        @error('note')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-
-
+        <div class="mb-3 col-md-6 container">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">Reference</label>
+                        <input type="text" class="form-control" placeholder="<AUTO>" disabled wire:model="reference">
                     </div>
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">Transaction Type</label>
+                        <select name="" id="" wire:model="selectedTransactionTypeID" class="form-select">
+                            <option value="">Select</option>
+                            @foreach ($transactionTypes ?? [] as $type)
+                                <option value="{{ $type->id }}" @if($selectedTransactionTypeID == $type->id) selected @endif>{{ $type->type_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('selectedTransactionTypeID')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">Transaction</label>
+                        <input type="text" class="form-control" placeholder="Select Transaction ->" value="{{ $selectedTemplate->template_name ?? ''}}" disabled>
+                        <button class="btn btn-secondary" wire:click="showTransactions">
+                            <span wire:loading wire:target="showTransactions"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i></span>
+                            <span wire:loading.remove wire:target="showTransactions"><i class="bi bi-list-check"></i></span>
+                        </button>
+                    </div>
+                    @error('transactions')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                    @error('selectedTemplate')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
+                    <div class=" mb-2">
+                        <label for="" class="form-label">Transaction Description</label>
+                        <textarea name="" id="" cols="30" rows="2" class="form-control" disabled value >
+                            {{ $selectedTemplate->description ?? '' }}
+                        </textarea>
+                    </div>
+                    
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">A.R Reference Number</label>
+                        <input type="text" class="form-control" placeholder="Select Acknowledgement Receipt    ->" value="{{ $selectedAR->reference ?? ''}}" disabled>
+                        <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#acknowledgementReceiptListModal">
+                            <i class="bi bi-wallet2"></i>
+                        </span>
+                    </div>
+
+                    @error('arID')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
+                    <div class="input-group mb-4">
+                        <label for="" class="input-group-text">A.R - Check Balance</label>
+                        <input type="text" class="form-control" disabled value="₱ {{ number_format($totalARBalance,2) ?? '₱ 0.00'}}">
+                    </div>
+
+                    <div class="row">
+                        <strong class="col-md-3 my-auto">PCV Information</strong>
+                        <hr class="col-md-9">
+                    </div>
+                    
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">Voucher Series Number</label>
+                        <input type="text" class="form-control" placeholder="Enter Voucher Series Number" wire:model="voucherSeriesNumber">
+                    </div>
+                    @error('voucherSeriesNumber')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">Payee</label>
+                        <input type="text" class="form-control" placeholder="Select Payee ->" disabled value="{{ $payeeName }}">
+                        <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#payeeListModal"><i class="bi bi-person-check-fill"></i></span>
+                    </div>
+                    @error('employeeId')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror 
+                    @error('customerId')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                    
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <label for="" class="input-group-text">Debit Total</label>
+                                <input type="text" class="form-control" disabled placeholder="₱ 0.00" id="DebitTotalTF" wire:model="debitTotal">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                                <div class="input-group"> 
+                                <label for="" class="input-group-text">Credit Total</label>
+                                <input type="text" class="form-control" disabled placeholder="₱ 0.00" id="CreditTotalTF" wire:model="creditTotal">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-2">
+                        <label for="" class="input-group-text">Disburse Amount</label>
+                        <input type="text" class="form-control" disabled placeholder="₱ 0.00" id="DisburseAmountTF" wire:model="totalDisburseAmount">
+                        <input type="hidden" id="totalDisburseAmountHidden" wire:model.live="totalDisburseAmount">
+                    </div>
+                    @error('totalDisburseAmount')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                    
+                    <div class="mb-2">
+                        <textarea name="" id="" cols="30" rows="3" class="form-control" placeholder="Remarks" wire:model="note"></textarea>
+                    </div>
+                    @error('note')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
                 </div>
             </div>
+        </div>
     </div>
 
 
-     
     <!-- Acknowledgement Receipt List Modal -->
     <div class="modal fade" id="acknowledgementReceiptListModal" tabindex="-1" aria-labelledby="acknowledgementReceiptListModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-lg">
@@ -222,6 +250,7 @@
                                 <th>Check Number</th>
                                 <th>Event</th>
                                 <th>Note</th>
+                                <th>Amount</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -232,6 +261,7 @@
                                     <td>{{ $ar->check_number }}</td>
                                     <td>{{ $ar->event->event_name ?? '' }}</td>
                                     <td>{{ $ar->notes }}</td>
+                                    <td>{{ $ar->check_amount }}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary" wire:click="selectAcknowledgementReceipt({{ $ar->id }})">
                                             <span wire:loading wire:target="selectAcknowledgementReceipt({{ $ar->id }})"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Wait...</span>
@@ -491,11 +521,9 @@
                                     </td>
                                </tr>
                             @empty
-
                             <tr>
                                 <td colspan="2" class="text-center">No Data Found</td>
                             </tr>
-                                
                             @endforelse
                         </tbody>
                     </table>
@@ -527,6 +555,12 @@
                 timer: 3000,
                 showConfirmButton: true,
                 });
+                // redirect to summary page after saving
+                if(data.type === 'success' && data.title === 'Success' && data.message === 'PCV saved successfully.'){
+                    setTimeout(() => {
+                        window.location.href = '/petty-cash-voucher-summary';
+                    }, 3000); // Redirect after 3 seconds (same as the timer duration of the alert)
+                }
         });
         //hides Payee List Modal after selecting a Payee/Employee
         window.addEventListener('hidePayeeListModal', event => {
@@ -562,5 +596,64 @@
                 modal.hide();
             }
         });
+
+        function updateTransactionTotals() {
+            const debitInputs = document.querySelectorAll('input[id^="particular-debit-"]');
+            const creditInputs = document.querySelectorAll('input[id^="particular-credit-"]');
+
+            let debitTotal = 0;
+            let creditTotal = 0;
+
+            debitInputs.forEach((input) => {
+                const value = parseFloat(input.value);
+                debitTotal += Number.isNaN(value) ? 0 : value;
+            });
+
+            creditInputs.forEach((input) => {
+                const value = parseFloat(input.value);
+                creditTotal += Number.isNaN(value) ? 0 : value;
+            });
+
+            const disburseAmount = creditTotal;
+
+            const debitTotalTF = document.getElementById('DebitTotalTF');
+            const creditTotalTF = document.getElementById('CreditTotalTF');
+            const disburseAmountTF = document.getElementById('DisburseAmountTF');
+            const hiddenDisburseAmount = document.getElementById('totalDisburseAmountHidden');
+
+            if (debitTotalTF) {
+                debitTotalTF.value = debitTotal.toFixed(2);
+            }
+
+            if (creditTotalTF) {
+                creditTotalTF.value = creditTotal.toFixed(2);
+            }
+
+            if (disburseAmountTF) {
+                disburseAmountTF.value = disburseAmount.toFixed(2);
+            }
+
+            if (hiddenDisburseAmount) {
+                hiddenDisburseAmount.value = disburseAmount.toFixed(2);
+                hiddenDisburseAmount.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+       
+        document.addEventListener('input', function (event) {
+            const target = event.target;
+            if (!target || !target.id) {
+                return;
+            }
+
+            if (target.id.startsWith('particular-debit-') || target.id.startsWith('particular-credit-')) {
+                updateTransactionTotals();
+            }
+        });
+
+        window.addEventListener('closeTransactionLists', () => {
+            setTimeout(updateTransactionTotals, 0);
+        });
+
+        setTimeout(updateTransactionTotals, 0);
     </script>
 </div>
