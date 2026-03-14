@@ -38,11 +38,11 @@ class Item extends Model
 
     public function costPrice()
     {
-        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->where('branch_id', auth()->user()->branch_id)->latest()->with('supplier');
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'Cost')->where('branch_id', auth()->user()->branch_id)->latest('created_at')->with('supplier');
     }
     public function sellingPrice()
     {
-        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'SRP')->where('branch_id', auth()->user()->branch_id)->latest();
+        return $this->hasOne(PriceLevel::class, 'item_id')->where('price_type', 'SRP')->where('branch_id', auth()->user()->branch_id)->latest('created_at');
     }
 
 
@@ -54,6 +54,10 @@ class Item extends Model
     public function units()
     {
         return $this->belongsTo(UOM::class, 'uom_id');
+    }
+    public function subUnits()
+    {
+        return $this->hasMany(UnitConversion::class, 'from_uom_id', 'uom_id');
     }
 
     public function cardex()

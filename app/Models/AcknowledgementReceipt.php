@@ -45,9 +45,6 @@ class AcknowledgementReceipt extends Model
         return $this->belongsTo(BanquetEvent::class, 'event_id');
     }
 
-    public function pettyCashVouchers()
-    {
-        return $this->hasMany(PettyCashVoucher::class, 'acknowledgement_receipt_id');
-    }
+
 
 }

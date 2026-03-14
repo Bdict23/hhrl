@@ -52,6 +52,7 @@ public function conversionFactor(){
         ->first()->conversion_factor ?? 1;
 }
 
+
 //  public function getConversionFactorValue()
 //         {
 //             $conversion = $this->conversionFactor;

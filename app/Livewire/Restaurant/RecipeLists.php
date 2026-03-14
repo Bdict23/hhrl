@@ -24,10 +24,7 @@ class RecipeLists extends Component
     {
         $this->recipes = Menu::with('categories')
             ->where('company_id', auth()->user()->branch->company_id)
+            ->where('status', '!=', 'REJECTED')
             ->get();
-    }
-    public function edit($id)
-    {
-       return redirect()->to('/recipe-edit?recipe-id=' . $id);
     }
 }

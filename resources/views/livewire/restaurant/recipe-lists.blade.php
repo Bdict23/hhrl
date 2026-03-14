@@ -11,7 +11,7 @@
                     <div class="col-md-6">
                         @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
                             
-                                <a href="{{ route('menus.create') }}" style="text-decoration: none; color: inherit;">
+                                <a href="\create_menu" style="text-decoration: none; color: inherit;">
                                     <x-primary-button style="text-decoration: none;">+ Create New Recipe</x-primary-button>
                                 </a>
                         @endif
@@ -78,13 +78,18 @@
                                     <td>{{ $recipe->menu_type ?? 'N/A' }}</td>
                                     <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
                                     <td>{{ $recipe->menu_code }}</td>
-                                    <td>{{ $recipe->status }}</td>
                                     <td>
-                                         <x-primary-button style="text-decoration: none;">
-                                            <a href="" style="text-decoration: none; color: inherit;"
-                                                wire:click.prevent="edit({{ $recipe->id }})">Edit</a>
-                                        </x-primary-button>
-                                        
+                                        <span 
+                                        @if($recipe->status == 'AVAILABLE') class="badge bg-success" 
+                                        @elseif($recipe->status == 'FOR APPROVAL') class="badge bg-warning" 
+                                        @elseif($recipe->status == 'PENDING') class="badge bg-secondary"
+                                        @else class="badge bg-danger" @endif>
+                                            {{ $recipe->status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                            <a href="/recipe-edit?recipe-id={{ $recipe->id }}" style="text-decoration: none; color: inherit;">
+                                                <x-primary-button style="text-decoration: none;">Edit</x-primary-button></a>
                                             <a href="" style="text-decoration: none; color: inherit;">
                                                 <x-secondary-button style="text-decoration: none;">View</x-secondary-button>
                                             </a>

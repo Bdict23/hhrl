@@ -191,6 +191,11 @@
                                 <x-dropdown-link :href="url('/shifts-summary')" class="no-underline">
                                     {{ __('Shifts') }} &nbsp;<i class="bi bi-clock-history"></i>
                                 </x-dropdown-link>
+                            @if(auth()->user()->employee->getModulePermission('Advances For Liquidation') != 2 )
+                                    <x-dropdown-link :href="url('/advances-for-liquidation-summary')" class="no-underline">
+                                        {{ __('Advances for Liquidation') }}
+                                    </x-dropdown-link>
+                            @endif
                             @if(auth()->user()->employee->getModulePermission('Acknowledgement Receipt') != 2 )
                                     <x-dropdown-link :href="url('/acknowledgement-receipt-summary')" class="no-underline">
                                         {{ __('Acknowledgement') }}
@@ -411,7 +416,7 @@
                             <x-slot name="content">   
                                 @if (auth()->user()->employee->getModulePermission('Gate Entrance') !=2)
                                     <x-dropdown-link :href="route('gate.entrance.page')" class="no-underline">
-                                        Gates
+                                        Front Desk
                                         </x-dropdown-link>
                                     <x-dropdown-link :href="route('customers.page')" class="no-underline">
                                             Customer

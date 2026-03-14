@@ -26,4 +26,14 @@ class UnitConversion extends Model
     {
         return $this->belongsTo(UOM::class,'to_uom_id');
     }
+
+    public function fromUom()
+    {
+        return $this->belongsTo(UOM::class,'from_uom_id');
+    }
+
+    public function toUom()
+    {
+        return $this->belongsTo(UOM::class,'to_uom_id');
+    }
 }

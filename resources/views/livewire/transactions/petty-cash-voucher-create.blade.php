@@ -122,20 +122,20 @@
                     </div>
                     
                     <div class="input-group mb-2">
-                        <label for="" class="input-group-text">A.R Reference Number</label>
-                        <input type="text" class="form-control" placeholder="Select Acknowledgement Receipt    ->" value="{{ $selectedAR->reference ?? ''}}" disabled>
-                        <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#acknowledgementReceiptListModal">
-                            <i class="bi bi-wallet2"></i>
+                        <label for="" class="input-group-text">Event</label>
+                        <input type="text" class="form-control" placeholder="Select Event ->" value="{{ $selectedEvent->reference ?? ''}}" disabled>
+                        <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#eventListModal">
+                            <i class="bi bi-calendar-event"></i>
                         </span>
                     </div>
 
-                    @error('arID')
+                    @error('eventId')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
 
                     <div class="input-group mb-4">
-                        <label for="" class="input-group-text">A.R - Check Balance</label>
-                        <input type="text" class="form-control" disabled value="₱ {{ number_format($totalARBalance,2) ?? '₱ 0.00'}}">
+                        <label for="" class="input-group-text">Event Name</label>
+                        <input type="text" class="form-control" disabled value="{{ $selectedEvent->event_name ?? '' }}">
                     </div>
 
                     <div class="row">
@@ -199,27 +199,27 @@
     </div>
 
 
-    <!-- Acknowledgement Receipt List Modal -->
-    <div class="modal fade" id="acknowledgementReceiptListModal" tabindex="-1" aria-labelledby="acknowledgementReceiptListModalLabel" aria-hidden="true" wire:ignore.self>
+    <!--  Event List Modal -->
+    <div class="modal fade" id="eventListModal" tabindex="-1" aria-labelledby="eventListModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header row">
                         <div class="col-md-6">
-                            <h5 class="modal-title" id="acknowledgementReceiptListModalLabel">Select Acknowledgement Receipt</h5>
+                            <h5 class="modal-title" id="eventListModalLabel">Select Event</h5>
                         </div>
                         <div class="col-md-6">
                             <div class="input-group mb-2">
                                 <span class="input-group-text">Search</span>
-                                <input type="text" class="form-control" id="search-ar"
-                                    onkeyup="filterCustomers()">
+                                <input type="text" class="form-control" id="search-event"
+                                    onkeyup="filterEvents()">
                             </div>
                         </div>
                   
                     <script>
-                        function filterCustomers() {
-                            const searchInput = document.getElementById('search-ar');
+                        function filterEvents() {
+                            const searchInput = document.getElementById('search-event');
                             const filter = searchInput.value.toLowerCase();
-                            const tableBody = document.getElementById('ARListTable').getElementsByTagName('tbody')[0];
+                            const tableBody = document.getElementById('eventListTable').getElementsByTagName('tbody')[0];
                             const rows = tableBody.getElementsByTagName('tr');
 
                             for (let i = 0; i < rows.length; i++) {
@@ -243,29 +243,29 @@
                     </script>
                 </div>
                 <div class="modal-body overflow-auto" style="max-height: 400px;">
-                    <table class="table table-striped" id="ARListTable">
+                    <table class="table table-striped" id="eventListTable">
                         <thead>
                             <tr>
-                                <th>Reference</th>
-                                <th>Check Number</th>
-                                <th>Event</th>
-                                <th>Note</th>
-                                <th>Amount</th>
+                                <th>Event Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Customer</th>
+                                <th>Notes</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($acknowledgementReceipts ?? [] as $ar)
+                            @forelse ($events ?? [] as $event)
                                <tr>
-                                    <td>{{ $ar->reference }}</td>
-                                    <td>{{ $ar->check_number }}</td>
-                                    <td>{{ $ar->event->event_name ?? '' }}</td>
-                                    <td>{{ $ar->notes }}</td>
-                                    <td>{{ $ar->check_amount }}</td>
+                                    <td>{{ $event->event_name }}</td>
+                                    <td>{{ $event->start_date }}</td>
+                                    <td>{{ $event->end_date }}</td>
+                                    <td>{{ $event->customer->customer_fname ?? '' }} {{ $event->customer->customer_mname ?? '' }} {{ $event->customer->customer_lname ?? '' }} {{ $event->customer->suffix ?? '' }}</td>
+                                    <td>{{ $event->notes }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary" wire:click="selectAcknowledgementReceipt({{ $ar->id }})">
-                                            <span wire:loading wire:target="selectAcknowledgementReceipt({{ $ar->id }})"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Wait...</span>
-                                            <span wire:loading.remove wire:target="selectAcknowledgementReceipt({{ $ar->id }})">Select</span>
+                                        <button type="button" class="btn btn-primary" wire:click="selectEvent({{ $event->id }})">
+                                            <span wire:loading wire:target="selectEvent({{ $event->id }})"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Wait...</span>
+                                            <span wire:loading.remove wire:target="selectEvent({{ $event->id }})">Select</span>
                                         </button>
                                     </td>
                                </tr>
@@ -552,7 +552,7 @@
                 icon: data.type,
                 title: data.title,
                 text: data.message,
-                timer: 3000,
+                timer: 5000,
                 showConfirmButton: true,
                 });
                 // redirect to summary page after saving
@@ -583,8 +583,8 @@
             }
         });
 
-        window.addEventListener('closeAcknowledgementReceiptLists', event =>{
-            var modal = bootstrap.Modal.getInstance(document.getElementById('acknowledgementReceiptListModal'));
+        window.addEventListener('closeEventLists', event =>{
+            var modal = bootstrap.Modal.getInstance(document.getElementById('eventListModal'));
             if (modal) {
                 modal.hide();
             }

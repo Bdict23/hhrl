@@ -1,6 +1,6 @@
 <div>
    <div>
-        <form id="poForm" method="POST" wire:submit.prevent="updateRecipe" enctype="multipart/form-data">
+        <form id="poForm" method="POST" wire:submit.prevent="updateAction" enctype="multipart/form-data">
             @csrf
             <div class="row me-3 w-100" wire:ignore.self>
                 <div class=" col-md-8 card">
@@ -17,12 +17,29 @@
                             <div class="col-md-6">
                                 <input type="text" class="form-control" id="search" name="search"
                                     placeholder="Search">
+                                    <script>
+                                        document.getElementById('search').addEventListener('input', function() {
+                                            const searchTerm = this.value.toLowerCase();
+                                            const tableRows = document.querySelectorAll('#itemTableBody tr');
+
+                                            tableRows.forEach(row => {
+                                                const itemCode = row.cells[0].textContent.toLowerCase();
+                                                const itemDescription = row.cells[1].textContent.toLowerCase();
+
+                                                if (itemCode.includes(searchTerm) || itemDescription.includes(searchTerm)) {
+                                                    row.style.display = '';
+                                                } else {
+                                                    row.style.display = 'none';
+                                                }
+                                            });
+                                        });
+                                    </script>
                             </div>
                         </div>
                         <div style="max-height: 400px; overflow-y: auto;" class="mt-4">
                             <table class="table table-striped table-hover me-3">
-                                <thead class="thead-dark me-3">
-                                    <TR style="font-size: smaller;">
+                                <thead class="table-dark me-3 sticky-top">
+                                    <tr style="font-size: smaller;">
                                         <th class="text-xs">CODE</th>
                                         <th class="text-xs">DESCRIPTION</th>
                                         <th class="text-xs">QTY</th>
@@ -32,26 +49,31 @@
                                         <th class="text-xs">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="itemTableBody">
-                                    @forelse ($recipes as $recipe)
+                                <tbody id="itemTableBody" >
+                                    @forelse ($recipesArray as $index => $recipe)
                                         <tr>
-                                            <td style="font-size: 13PX;">{{ $recipe->item->item_code}}</td>
-                                            <td style="font-size: 13PX;">{{$recipe->item->item_description}}</td>         
-                                            <td>
-                                                <input type="number" name="qty[]" class="form-control" value="{{ number_format($recipe->qty ?? 0, 0) }}" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
-                                                <input type="hidden" name="uom_id[]" value="{{$recipe->uom->uom_id}}">
-                                                <input type="hidden" name="item_id[]" value="{{$recipe->item_id}}">
-                                                <input type="hidden" name="price_level_id[]" value="{{$recipe->price_level->id}}">
+                                            <td style="font-size: 13PX;">{{ $recipe['item']->item_code}}</td>
+                                            <td style="font-size: 13PX;">{{$recipe['item']->item_description}}</td>         
+                                            <td wire:ignore.self>
+                                                <input type="number" placeholder="{{ number_format($recipe['qty'],0,0) }}" wire:model="recipesArray.{{$index}}.qty" class="form-control" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
+                                                <input type="hidden" name="uom_id[]" value="{{$recipe['uom']->uom_id}}">
+                                                <input type="hidden" name="item_id[]" value="{{$recipe['item_id']}}">
+                                                <input type="hidden" name="price_level_id[]" value="{{$recipe['price_level']->id}}">
                                             </td>
-                                            <td style="font-size: 13PX; text-align: center">{{$recipe->uom->unit_symbol}}</td>
-                                            <td style="font-size: 13PX; text-align: center">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) ?? 0 , 2) }}</td>
-                                            <td class="total-price">{{number_format(($recipe->latestItemCost?->amount / $recipe->conversionFactor() ) * $recipe->qty ?? 0 , 2) }}</td>
+                                            <td style="font-size: 13PX; text-align: center">{{$recipe['uom']->unit_symbol}}</td>
+                                            <td style="font-size: 13PX; text-align: center">{{number_format(($recipe['latestItemCost'] / $recipe['conversionFactor'] ) ?? 0 , 2) }}</td>
+                                            <td class="total-price">{{number_format(($recipe['latestItemCost'] / $recipe['conversionFactor'] ) * $recipe['qty'] ?? 0 , 2) }}</td>
                                             <td>
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                                                <button type="button" class="btn btn-danger btn-sm" wire:click="removeRecipe({{ $index }})">
+                                                    <span wire:loading.remove wire:target="removeRecipe({{ $index }})">Remove</span>
+                                                    <span wire:loading wire:target="removeRecipe({{ $index }})"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span>
+                                                </button>
                                             </td>
                                         </tr>
                                     @empty
-                                        
+                                        <tr>
+                                            <td colspan="8" class="text-center">No ingredients added yet.</td>
+                                        </tr>
                                     @endforelse
 
                                 </tbody>
@@ -62,7 +84,7 @@
                                 <hr>
                             </div>
                             <div class="col-md-6">
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-end" >
                                     <h4 class="alert-heading mr-12">Overall Cost</h4>
                                     <h4 class="alert-heading" id="totalAmount">₱ 0.00</h4>
                                 </div>
@@ -98,7 +120,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="recipe_description" style="font-size: 13px;">Description:</label>
-                                <textarea class="form-control" id="recipe_description" name="menu_description" rows="3" required wire:model="description"
+                                <textarea class="form-control" id="recipe_description" name="menu_description" rows="4" required wire:model="description"
                                     style="height: 30px; width:100%"></textarea>
                                 @error('description') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
@@ -158,7 +180,10 @@
                                     onchange="previewImage(event)" wire:model.live="menu_image">
                                 @error('menu_image') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
-                            <button type="submit" class="btn btn-primary mt-3">Update Recipe</button>
+                            <button type="submit" class="btn btn-primary mt-3" wire:target="updateAction" wire:loading.attr="disabled">
+                                Update Recipe
+                                <span wire:loading wire:target="updateAction" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -192,54 +217,37 @@
                                 <tbody>
                                     @foreach ($items as $item)
                                         <tr>
-                                            @php
-                                                $itemPrice = $item
-                                                    ->priceLevel()
-                                                    ->latest()
-                                                    ->where('price_type', 'cost')
-                                                    ->first()->amount ?? 0;
-                                                $itemCode = $item->item_code;
-                                                $itemDescription = $item->item_description;
-                                                $itemUnit = $item->units->unit_symbol ?? 'N/A';
-                                                $uom_id = $item->uom_id ;
-                                                $priceID = $item
-                                                    ->priceLevel()
-                                                    ->latest()
-                                                    ->where('price_type', 'cost')
-                                                    ->first()->id ?? $item;
-                                            @endphp
-
-                                            <td>{{ $itemCode }}</td>
-                                            <td>{{ $itemDescription }}</td>
-                                            <td>{{ $itemPrice }}</td>
-                                            <td>{{ $itemUnit }}</td>
+                                            <td>{{ $item->item_code }}</td>
+                                            <td>{{ $item->item_description }}</td>
+                                            <td>{{ $item->costPrice->amount ?? 0 }}</td>
+                                            <td>{{ $item->units->unit_symbol ?? 'N/A' }}</td>
                                             <td>
                                                 <!-- Assign a unique ID to the select element -->
-                                                <select name="sub_unit" id="sub_unit_{{ $item->id }}"
-                                                    class="form-select" onchange="updateData(this, {{ $item->id }})">
-                                                    @foreach ($item->units->fromUnits ?? [] as $unit)
-                                                        @php
-                                                            $unitSymbol = $item->units
-                                                                ->where('id', $unit->to_uom_id)
-                                                                ->pluck('unit_symbol')
-                                                                ->implode(', ');
-                                                            $factor = $unit->conversion_factor;
-                                                            $unitId = $unit->to_uom_id;
-                                                        @endphp
+                                                <select name="sub_unit" id="sub_unit_{{ $item->id }}" class="form-select" 
+                                                    onchange="selectedUom(this, {{ $item->id }})">
+                                                    
+                                                    @foreach ($item->subUnits as $unit)
                                                         <option
-                                                            value="{{ json_encode(['id' => $unitId, 'factor' => $factor, 'symbol' => $unitSymbol, 'item_code' => $itemCode, 'item_price' => $itemPrice, 'item_description' => $itemDescription, 'price_id' => $priceID]) }}"
-                                                            {{ $unit->to_uom_id == $uom_id ? 'selected' : '' }}>
-                                                            {{ $unitSymbol ?? '' }}
+                                                            {{ $unit->toUom->id == $item->uom_id ? 'selected' : '' }} 
+                                                            value="{{ $unit->conversion_factor }}"
+                                                            data-uom-id="{{ $unit->toUom->id }}">
+                                                            {{-- inner setting value --}}
+                                                            
+                                                            {{ $unit->toUom->unit_symbol ?? 'N/A' }}
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </td>
                                             <td>
+                                                {{-- outer setting value --}}
+                                                <span class="hidden" id="sub_unit{{ $item->id }}" value="0"></span>
                                                 <!-- Assign a unique ID to the button -->
-                                                <button id="addToTable_{{ $item->id }}"
-                                                    type="button"
-                                                    class="btn btn-primary btn-sm"
-                                                    onclick="addToTable({{ $item->id }}, {{ json_encode(['id' => $uom_id, 'factor' => 1, 'symbol' => $itemUnit, 'item_code' => $itemCode, 'item_price' => $itemPrice, 'item_description' => $itemDescription, 'price_id' => $priceID]) }})">
+                                                <button 
+                                                    id="btn{{ $item->id }}"
+                                                    type="button" value="1"
+                                                    class="btn btn-primary btn-sm" 
+                                                    x-data
+                                                    @click="$wire.appendToRecipe({{ $item->id }}, document.getElementById('sub_unit{{ $item->id }}').value, {{ $item->costPrice->id ?? 'null' }}, $el.value)">
                                                     Add
                                                 </button>
                                             </td>
@@ -250,7 +258,14 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <div class="d-flex justify-content-between">
+                                <div class="align-content-start container">
+                                      <span wire:loading wire:target="appendToRecipe">Adding...</span>
+                                </div>
+                                <div class="align-content-end container">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -265,19 +280,49 @@
     </div>
     </div>
 
-     <script>
+    <script>
 
-        window.addEventListener('DOMContentLoaded', function(){
-             updateOverallCost();
+        window.addEventListener('DOMContentLoaded', function() {
+            updateOverallCost();
         });
 
-        document.addEventListener('livewire:initialized', function () {
-            if (window.Livewire && Livewire.hook) {
-                Livewire.hook('message.processed', function () {
+        document.addEventListener('livewire:init', () => {
+        Livewire.hook('request', ({ fail, respond, succeed }) => {
+            // This runs before the request starts
+            
+            succeed(({ snapshot, effect }) => {
+                // This runs after the request succeeds
+                queueMicrotask(() => {
+                    
                     updateOverallCost();
                 });
-            }
+            });
+
+            fail(() => {
+                // This runs if the request fails
+            });
         });
+        });
+        function selectedUom(selectElement, itemId) {
+            // Get the selected <option> element
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            
+            // 1. Get the conversion factor (the value of the select)
+            const conversionFactor = selectElement.value;
+            
+            // 2. Get the UOM ID (from our data attribute)
+            const uomId = selectedOption.getAttribute('data-uom-id');
+
+            // Update your other elements
+            if(document.getElementById('btn' + itemId)) {
+                document.getElementById('btn' + itemId).value = conversionFactor;
+            }
+            
+            if(document.getElementById('sub_unit' + itemId)) {
+                document.getElementById('sub_unit' + itemId).value = uomId;
+            }
+
+        }
 
         function filterModalTable() {
             const searchInput = document.getElementById('modalSearch').value.toLowerCase();
@@ -304,6 +349,7 @@
                 output.style.display = 'block';
             }
             reader.readAsDataURL(event.target.files[0]);
+            console.log('test');
         }
 
         function viewBranch(data) {
@@ -313,10 +359,7 @@
 
         function addToTable(item, unit) {
 
-            console.log(item);
-            console.log(unit);
             const symbol = unit.symbol;
-
             const tableBody = document.getElementById('itemTableBody');
             const existingItem = Array.from(tableBody.querySelectorAll('tr')).find(row => row.querySelector('td')
                 .textContent === item.item_code);
@@ -324,33 +367,33 @@
                 alert('The item already exists in the table.');
                 return;
             }
-
-            const price = Math.round((1 / unit.factor) * unit.item_price * 100) / 100;
-            const newRow = document.createElement('tr');
-
-            newRow.innerHTML = `
-                <td style="font-size: 13PX;">${unit.item_code}</td>
-                <td style="font-size: 13PX;">${unit.item_description}</td>         
+            @this.appendToRecipe(item, 1, unit.id, unit.price_id, unit.factor);
+            // const price = Math.round((1 / unit.factor) * unit.item_price * 100) / 100;
+            // const newRow = document.createElement('tr');
+            
+            // newRow.innerHTML = `
+            //     <td style="font-size: 13PX;">${unit.item_code}</td>
+            //     <td style="font-size: 13PX;">${unit.item_description}</td>         
           
-                <td>
-                    <input type="number" name="qty[]" class="form-control" value="1" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
-                    <input type="hidden" name="uom_id[]" value="${unit.id}">
-                    <input type="hidden" name="item_id[]" value="${item}">
-                    <input type="hidden" name="price_level_id[]" value="${unit.price_id}">
-                </td>
-                <td style="font-size: 13PX; text-align: center">${symbol} </td>
-                <td style="font-size: 13PX; text-align: center">${price}</td>
-                <td class="total-price">${price}</td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-                </td>
-            `;
+            //     <td>
+            //         <input type="number" name="qty[]" class="form-control" value="1" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
+            //         <input type="hidden" name="uom_id[]" value="${unit.id}">
+            //         <input type="hidden" name="item_id[]" value="${item}">
+            //         <input type="hidden" name="price_level_id[]" value="${unit.price_id}">
+            //     </td>
+            //     <td style="font-size: 13PX; text-align: center">${symbol} </td>
+            //     <td style="font-size: 13PX; text-align: center">${price}</td>
+            //     <td class="total-price">${price}</td>
+            //     <td>
+            //         <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+            //     </td>
+            // `;
+            // tableBody.appendChild(newRow);
 
-            tableBody.appendChild(newRow);
             updateOverallCost();
         }
 
-        function updateData(selectElement, itemId) {
+        window.updateData = function (selectElement, itemId) {
             // Get the selected option data
             const selectedOption = JSON.parse(selectElement.value);
 
@@ -429,5 +472,52 @@
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             errorModal.show();
         @endif
+
+        // for alert
+        window.addEventListener('showAlert', event => {
+           const data = event.detail[0];
+              Swal.fire({
+                icon: data.type,
+                title: data.title,
+                text: data.message,
+                timer: 5000,
+                showConfirmButton: true,
+                });
+                // redirect to summary page after saving
+                if(data.type === 'success' && data.title === 'Success'){
+                    setTimeout(() => {
+                        window.location.href = '/recipe-lists';
+                    }, 100); // Redirect after 1 second (same as the timer duration of the alert)
+                }
+        });
+
+
+        window.addEventListener('confirmation', event => {
+            const data = event.detail[0];
+            Swal.fire({
+                title: data.title,
+                text: data.message,
+                icon: data.type,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                     // swal loading after confirmation
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Please wait while we process your request.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    @this.updateRecipe(); // Call the Livewire method to proceed with the action
+                   
+                }
+            });
+        });
     </script>
 </div>

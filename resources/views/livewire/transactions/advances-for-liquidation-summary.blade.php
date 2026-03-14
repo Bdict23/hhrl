@@ -2,13 +2,13 @@
     <div class="container mb-3">
             <div class="row">
                 <div class="col-md-6">
-                    @if(auth()->user()->employee->getModulePermission('Petty Cash Voucher') == 1 )
-                        <a href="{{ route('petty_cash_voucher.create') }}" style="text-decoration: none; color: white;"><x-primary-button >+ New PCV</x-primary-button></a>
+                    @if(auth()->user()->employee->getModulePermission('Advances For Liquidation') == 1 )
+                        <a href="{{ route('advances-for-liquidation-create') }}" style="text-decoration: none; color: white;"><x-primary-button >+ New AFL</x-primary-button></a>
                         <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
                     @endif
                 </div>
                 <div class="col-md-6">
-                    <h4 class="text-end">Petty Cash Voucher - Summary <i class="bi bi-file-text"></i></h4>
+                    <h4 class="text-end">Advances For Liquidation - Summary <i class="bi bi-file-text"></i></h4>
                 </div>
             </div>
         </div>
@@ -45,46 +45,41 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>REF.</th>
-                                <th>PCV No.</th>
-                                <th>Event</th>
-                                <th>Paid To</th>
-                                <th>Amount</th>
+                                <th>Date Created</th>
                                 <th>Status</th>
-                                <th>Created Date</th>
+                                <th>Amount Received</th>
+                                <th>Amount Returned</th>
                                 <th>Prepared By</th>
+                                <th>Received By</th>
+                                <th>Approved By</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($pettyCashVouchers as $pcv)
+                            @forelse ($advancesForLiquidation as $afl)
                                 <tr>
-                                    <td>{{ $pcv->reference }}</td>
-                                    <td>{{ $pcv->voucher_number }}</td>
-                                    <td>{{ $pcv->event->reference }}</td>
+                                    <td>{{ $afl->reference_number }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($afl->created_at)->format('M. d, Y') }}</td>
                                     <td>
-                                        @if($pcv->paid_to_employee_id)
-                                            {{ $pcv->employee->name . ' ' . $pcv->employee->middle_name ?? '' . ' ' . $pcv->employee->last_name }}
-                                        @else
-                                            {{ $pcv->customer->customer_fname ?? '' . ' ' . $pcv->customer->customer_mname ?? '' . ' ' . $pcv->customer->customer_lname ?? '' . ' '.$pcv->customer->suffix ?? '' }}
-                                        @endif
+                                        <span @if($afl->status == 'DRAFT') class="badge bg-secondary" 
+                                            @elseif($afl->status == 'OPEN') class="badge bg-warning" 
+                                            @elseif($afl->status == 'CLOSED') class="badge bg-success" 
+                                            @elseif($afl->status == 'CANCELLED') class="badge bg-danger" 
+                                            @endif>{{ $afl->status }}</span>
+                                        
                                     </td>
-                                    <td>{{ number_format($pcv->total_amount, 2) }}</td>
-                                    <td><span 
-                                        @if( $pcv->status =='OPEN' ) class = "badge bg-warning" 
-                                        @elseif($pcv->status =='CANCELLED') class= "badge bg-danger" 
-                                        @elseif($pcv->status =='CLOSED') class="badge bg-success"
-                                        @else class="badge bg-secondary" 
-                                        @endif>{{ $pcv->status }}</span> 
-                                    </td>
-                                    <td>{{ $pcv->created_at->format('M. d, Y') }}</td>
-                                    <td>{{ $pcv->preparedBy->name . ' ' . $pcv->preparedBy->last_name ?? '' }}</td>
+                                    <td>{{ number_format($afl->amount_received, 2) }}</td>
+                                    <td>{{ number_format($afl->amount_returned, 2) }}</td>
+                                    <td>{{ $afl->preparer->name }} {{ $afl->preparer->last_name }}</td>
+                                    <td>{{ $afl->disburser->name }} {{ $afl->disburser->last_name }}</td>
+                                    <td>{{ $afl->approver->name }} {{ $afl->approver->last_name }}</td>
                                     <td>
-                                        <a href="/petty-cash-voucher?PCV-id={{ $pcv->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
+                                        <a href="/advances-for-liquidation?AFL-id={{ $afl->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center">No petty cash voucher found</td>
+                                    <td colspan="10" class="text-center">No advances for liquidation found</td>
                                 </tr>
                             @endforelse
                     

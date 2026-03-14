@@ -493,3 +493,10 @@ Route::get('/accounting/types', function () {
     // Route for accounting transaction titles
 Route::get('/coa-management', function () {
     return view('accounting.transaction-templates-view');})->middleware(['auth', 'verified'])->name('accounting.transaction.titles');
+
+// Route for advances for liquidation summary
+Route::get('/advances-for-liquidation-summary', function () {
+    return view('transactions.advances-for-liquidation-summary-view');})->middleware(['auth', 'verified'])->name('advances_for_liquidation.summary');
+// Route for advances for liquidation create
+Route::get('/advances-for-liquidation', function () {
+    return view('transactions.advances-for-liquidation-create-edit-view');})->middleware(['auth', 'verified'])->name('advances-for-liquidation-create');

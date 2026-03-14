@@ -294,6 +294,7 @@ class AcknowledgementReceiptCreate extends Component
             'saveAsStatus' => ['required', Rule::in(['DRAFT', 'OPEN'])],
             'checkStatus' => ['required', Rule::in(['CURRENT', 'POST-DATED'])],
             'notes' => 'nullable|string|max:1000',
+            'eventId' => 'nullable|exists:events,id',
         ]);
 
         $curYear = now()->year;

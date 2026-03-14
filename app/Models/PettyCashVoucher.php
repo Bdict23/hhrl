@@ -11,7 +11,7 @@ class PettyCashVoucher extends Model
     protected $fillable = [
         'branch_id',
         'company_id',
-        'acknowledgement_receipt_id',
+        'event_id',
         'reference',
         'voucher_number',
         'paid_to_employee_id',
@@ -25,13 +25,13 @@ class PettyCashVoucher extends Model
         'updated_at',
         'account_types_id',
         'account_type',
-        'transaction_title_id',
+        'template_id',
         'transaction_title',
     ];
 
-    public function acknowledgementReceipt()
+    public function event()
     {
-        return $this->belongsTo(AcknowledgementReceipt::class, 'acknowledgement_receipt_id');
+        return $this->belongsTo(BanquetEvent::class, 'event_id');
     }
 
     public function customer()
