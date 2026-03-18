@@ -621,7 +621,7 @@
                                     <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
                                     <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
                                     <td>
-                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-menu-btn">
+                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-service-btn text-nowrap">
                                             <span wire:loading.remove wire:target="selectMenu({{ $menu->menu->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
                                             <span wire:loading wire:target="selectMenu({{ $menu->menu->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
                                         </button>

@@ -214,7 +214,7 @@ class BanquetProcurementCreate extends Component
              $this->selectedEvent->eventMenus->sum(function($menu) {
                     return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
                 $total += isset($this->selectedEvent) && $this->selectedEvent->eventServices ?
-                $this->selectedEvent->eventServices->sum(function($service) {
+                $this->selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
                     return $service->price->amount * ($service->qty ? $service->qty : 1); }) : 0;
             $this->totalGrossOrder = $total;
             $this->updatedTotalPercentage();

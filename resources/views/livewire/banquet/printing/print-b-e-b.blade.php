@@ -69,7 +69,9 @@
                     <tr>
                         <td>
                             @foreach($banquetEventBudget->event->eventServices ?? [] as $eventService)
-                                <p class="m-1 t-sm">{!! ($eventService->service->service_name) ? $eventService->qty . 'x '.$eventService->service->service_name . ' - ₱' . number_format($eventService->price->amount * $eventService->qty, 2) : '' !!}</p>
+                                @if($eventService->service->service_type == 'EXTERNAL')
+                                    <p class="m-1 t-sm">{!! ($eventService->service->service_name) ? $eventService->qty . 'x '.$eventService->service->service_name . ' - ₱' . number_format($eventService->price->amount * $eventService->qty, 2) : '' !!}</p>
+                                @endif
                             @endforeach
                         </td>
                     </tr>
@@ -79,7 +81,7 @@
                         <td>
                             @php
                                 $totalServices =  isset($banquetEventBudget) && $banquetEventBudget->event->eventServices
-                                                                ? $banquetEventBudget->event->eventServices->sum(function($service) {
+                                                                ? $banquetEventBudget->event->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
                                                                     return $service->price->amount * ($service->qty ? $service->qty : 1);
                                                                 })
                                                                 : 0;

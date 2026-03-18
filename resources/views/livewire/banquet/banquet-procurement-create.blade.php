@@ -69,16 +69,17 @@
                             </thead>
                             <tbody>
                                 @forelse ($selectedEvent->eventServices ?? [] as $services)
+                                @if($services->service->service_type == 'EXTERNAL' )
                                     <tr>
                                         <td>{{ $services->service->service_name }}</td>
                                         <td>{{ $services->qty ? $services->qty : '-' }}</td>
-                                        @if ($services->service->service_type == 'INTERNAL')
+                                        @if ($services->service->service_type == 'EXTERNAL')
                                             <td>{{ $services->price->amount }}</td>
                                         @else
                                             <td>{{ $services->cost->amount ?? '0' }}</td>
 
                                         @endif
-                                        @if ($services->service->service_type == 'INTERNAL')
+                                        @if ($services->service->service_type == 'EXTERNAL')
                                             <td>
                                                 {{ $services->price->amount * ($services->qty ? $services->qty : 1) }}
                                             </td>
@@ -90,6 +91,7 @@
                                         @endif
 
                                     </tr>
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="5" class="text-center">No services found.</td>
@@ -102,7 +104,7 @@
                                     <td>
                                         @php
                                             $internalTotal = isset($selectedEvent) && $selectedEvent->eventServices
-                                                ? $selectedEvent->eventServices->where('service.service_type', 'INTERNAL')->sum(function($service) {
+                                                ? $selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
                                                     return $service->price->amount * ($service->qty ? $service->qty : 1);
                                                 })
                                                 : 0;

@@ -48,7 +48,7 @@ class PrintBEB extends Component
              $this->banquetEventBudget->event->eventMenus->sum(function($menu) {
                     return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
                 $total += isset($this->banquetEventBudget) && $this->banquetEventBudget->event->eventServices ?
-                $this->banquetEventBudget->event->eventServices->sum(function($service) {
+                $this->banquetEventBudget->event->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
                     return $service->price->amount * ($service->qty ? $service->qty : 1); }) : 0;
             $this->totalGrossOrder = $total;
         }else {
