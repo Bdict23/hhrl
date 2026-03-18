@@ -13,7 +13,6 @@ class BanquetProcurement extends Model
         'event_id',
         'document_number',
         'reference_number',
-        'approved_amount',
         'suggested_amount',
         'approved_by',
         'created_by',
@@ -24,6 +23,7 @@ class BanquetProcurement extends Model
         'create_at',
         'updated_at',
         'status',
+        'services_included',
     ];
 
     public function event()

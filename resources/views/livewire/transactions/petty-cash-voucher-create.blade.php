@@ -258,8 +258,8 @@
                             @forelse ($events ?? [] as $event)
                                <tr>
                                     <td>{{ $event->event_name }}</td>
-                                    <td>{{ $event->start_date }}</td>
-                                    <td>{{ $event->end_date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
                                     <td>{{ $event->customer->customer_fname ?? '' }} {{ $event->customer->customer_mname ?? '' }} {{ $event->customer->customer_lname ?? '' }} {{ $event->customer->suffix ?? '' }}</td>
                                     <td>{{ $event->notes }}</td>
                                     <td>
@@ -552,14 +552,14 @@
                 icon: data.type,
                 title: data.title,
                 text: data.message,
-                timer: 5000,
+                timer: data.timer,
                 showConfirmButton: true,
                 });
                 // redirect to summary page after saving
                 if(data.type === 'success' && data.title === 'Success' && data.message === 'PCV saved successfully.'){
                     setTimeout(() => {
                         window.location.href = '/petty-cash-voucher-summary';
-                    }, 3000); // Redirect after 3 seconds (same as the timer duration of the alert)
+                    }, 100); // Redirect after 3 seconds (same as the timer duration of the alert)
                 }
         });
         //hides Payee List Modal after selecting a Payee/Employee

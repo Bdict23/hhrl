@@ -5,27 +5,26 @@
             <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
+         <div class="d-flex justify-content-between mb-3">
+            <a href="\banquet-procurement-create"><x-primary-button>Create New</x-primary-button></a>
+            <h5 class="card-title">Banquet Event Budget - Summary <i class="bi bi-calculator-fill"></i></h5>
+         </div>
     <div class="card">
         <div class="card-header">
-            <h5 class="card-title">Proposal Lists</h5>
-        </div>
-        <div class="card-tools">
-           <div class="row mt-2 pl-3 pr-3">
+           <div class="row">
             <div class="col-md-6">
-                <a class="btn btn-primary" href="\banquet-procurement-create">Create New</a>
             </div>
              <div class="col-md-6">
                 <input type="text" class="form-control" placeholder="Search" wire:model="searchTerm">
              </div>
            </div>
         </div>
-        <div class="card-body">
+        <div class="card-body overflow-auto">
 
-            <table class="table table-bordered table-striped">
-                <tr>
+            <table class="table table-sm">
+                <thead class="table-dark">
                     @if ($referenceNumber)
                         <th>REF. No.</th>
-                        
                     @endif
                     @if ($documentNumber)
                         <th>Doc. No.</th>
@@ -72,7 +71,7 @@
                             +
                         </button>
                     </th>
-                </tr>
+                </thead>
                 <tbody>
                     @forelse ($procurementLists as $procurement)
                         <tr>

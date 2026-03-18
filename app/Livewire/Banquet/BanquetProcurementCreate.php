@@ -15,24 +15,19 @@ use Illuminate\Http\Request;
 
 class BanquetProcurementCreate extends Component
 {
+    public $banquetEventBudget;
     public $events = [];
-    public $withdrawals = [];
-    public $withdrawalInfo;
-    public $withdrawnItems = [];
     public $selectedEvent;
+    public $totalPercentage = 0;
+    public $totalGrossOrder = 0;
+    public $excludedEventIds = [];
+    public $bebId = null;
 
 
 
     // selected equipment
-    public $selectedEquipments = [];
-    public $purchaseOrders = [];
-    public $purchaseOrdersDetails = [];
-    public $equipmentQty = [];
     public $inchargedBy = null;
     public $approver = null;
-    public $handlingTeam = [];
-    public $selectedEquipment = [];
-     public $attachments = [];
     public $myNote = null;
     public $requestDocumentNumber = null;
     public $requestReferenceNumber = null;
@@ -47,19 +42,19 @@ class BanquetProcurementCreate extends Component
     public $selectedReviewer = null;
     public $selectedEventId = null; // To store the selected event ID
     public $documentNumber = null;
-    public $requestedBudget = null;
-    public $approvedBudget = null; 
+    public $requestedBudget = 0.00;
     public $notes = null;
     public $isFinal = 'PREPARING';
+    public $hasServices = false;
 
 
     protected $rules = [
         'selectedEventId' => 'required|exists:banquet_events,id',
-        'documentNumber'   => 'required|unique:banquet_procurements,document_number',
+        'documentNumber'   => 'nullable|unique:banquet_procurements,document_number',
         'selectedApprover' => 'required|exists:employees,id',
         'selectedReviewer' => 'required|exists:employees,id',
-        'requestedBudget'     => 'required|numeric',
-        'notes'             => 'nullable|max:200',
+        'requestedBudget'     => 'required|numeric|min:1.00',
+        'notes'             => 'nullable|max:500',
         'isFinal'          => 'required|in:PENDING,PREPARING',
     ];
 
@@ -87,16 +82,19 @@ class BanquetProcurementCreate extends Component
             $this->requestReferenceNumber = $request->input('reference');
             $proposal = BanquetProcurement::where('id', $proposalId)->first();
             if ($proposal) {
+                $this->banquetEventBudget = $proposal;
+                $this->bebId = $proposalId;
                 $this->selectedEventId = $proposal->event_id;
                 $this->documentNumber = $proposal->document_number;
                 $this->selectedApprover = $proposal->approved_by;
                 $this->selectedReviewer = $proposal->noted_by;
                 $this->requestedBudget = $proposal->suggested_amount;
-                $this->approvedBudget = $proposal->approved_amount;
+                $this->hasServices = $proposal->services_included ? true : false;
                 $this->notes = $proposal->notes;
                 $this->isFinal = $proposal->status;
                 $this->requestReferenceNumber = $proposal->reference_number;
                 $this->loadEventDetails($this->selectedEventId);
+                $this->updatedHasServices();
             } else {
                 session()->flash('error', 'Invalid event selected.');
                 return redirect()->to('/banquet-procurement-lists');
@@ -109,7 +107,8 @@ class BanquetProcurementCreate extends Component
 
     public function fetchData()
     {
-        $this->events = BanquetEvent::with('customer','eventVenues.venue','eventServices','eventMenus','purchaseOrders')->where('status', 'CONFIRMED')->where('end_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+        $this->excludedEventIds = BanquetProcurement::where('branch_id', auth()->user()->branch_id)->whereIn('status', ['PENDING', 'PREPARING','APPROVED'])->pluck('event_id')->toArray();
+        $this->events = BanquetEvent::with('customer','eventVenues.venue','eventServices','eventMenus','purchaseOrders')->where('status', 'CONFIRMED')->where('end_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->whereNotIn('id', $this->excludedEventIds)->get();
 
         $moduleId = Module::where('module_name', 'Banquet Procurement')->value('id');
         $this->approvers = Signatory::with('employees')->where('signatory_type', 'APPROVER')
@@ -127,6 +126,7 @@ class BanquetProcurementCreate extends Component
         $this->selectedEvent = BanquetEvent::with('purchaseOrders','customer', 'eventVenues', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel')->find($eventId);
         $this->selectedEventId = $this->selectedEvent->id;
         if ($this->selectedEvent) {
+            $this->updatedHasServices();
             $this->dispatch('closeSelectEventModal');
             return $this->selectedEvent;
         } else {
@@ -136,69 +136,17 @@ class BanquetProcurementCreate extends Component
         }
     }
 
-    public  function viewWithdrawal($eventId)
-    {
-        $this->withdrawnItems = Cardex::with('item')->where('withdrawal_id', $eventId)->get();
-
-    }
-
-    public function viewEquipmentInfo($referenceNumber)
-    {
-
-        $equipmentRequest = EquipmentRequest::with(['attachments', 'department', 'event', 'incharge', 'approver', 'equipmentHandlers','departmentCardex']) 
-            ->where('reference_number', $referenceNumber)
-            ->firstOrFail();
-
-        // Load the data into the component properties
-        $this->requestDocumentNumber = $equipmentRequest->document_number;
-        $this->requestReferenceNumber = $equipmentRequest->reference_number;
-        $this->myNote = $equipmentRequest->notes;
-        $this->inchargedBy = $equipmentRequest->incharge ? $equipmentRequest->incharge->name : null;
-        $this->approver = $equipmentRequest->approver ? $equipmentRequest->approver->name : null;
-        $this->departmentName = $equipmentRequest->department ? $equipmentRequest->department->department_name : null;
-
-        // Load selected equipments
-        foreach ($equipmentRequest->departmentCardex as $cardex) {
-            if ($cardex->item) {
-                $this->selectedEquipments[] = $cardex->item;
-                $this->equipmentQty[] = ['id' => $cardex->item_id, 'qty' => $cardex->qty_out];
-            }
-        }
-
-
-        // Load handling team
-        foreach ($equipmentRequest->equipmentHandlers as $handler) {
-            if ($handler->employee) {
-                $this->handlingTeam[] = [
-                    'id' => $handler->employee_id,
-                    'first_name' => $handler->employee->name,
-                    'last_name' => $handler->employee->last_name,
-                    'position' => optional($handler->employee)->position->position_name ?  : null,
-                ];
-            }
-        }
-
-        // Load attachments
-        $imagePaths = EquipmentRequestAttachment::where('equipment_request_id', $equipmentRequest->id)->get('file_path')->toArray();
-        $this->attachments = [];
-        foreach ($imagePaths as $imagePath) {
-            $filePath = storage_path('app/public/' . $imagePath['file_path']);
-            // dd($filePath);
-            if (file_exists($filePath)) {
-                $this->attachments[] = $imagePath['file_path'];
-            }
-        }
-    }
-
     public function storeRequestBudget()
     {
+        // conver number_format to float
+        $this->requestedBudget = floatval(str_replace(',', '', $this->requestedBudget));
         $this->validate();
         $currentYear = now()->year;
         $branchId = auth()->user()->branch_id;
         $yearlyCount = BanquetProcurement::where('branch_id', $branchId)
             ->whereYear('created_at', $currentYear)
             ->count();
-        $this->referenceNumber = 'BB-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
+        $this->referenceNumber = 'BEB-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
         
         $banquetProcurement = BanquetProcurement::create([
             'event_id' => $this->selectedEventId,
@@ -212,21 +160,21 @@ class BanquetProcurementCreate extends Component
             'suggested_amount' => $this->requestedBudget,
             'created_by'    => auth()->user()->emp_id,
             'created_at'    => now('Asia/Manila'),
+            'services_included' => $this->hasServices ? 1 : 0,
         ]);
 
-        session()->flash('success','Successfully Created.');
-        $this->dispatch('clearFields');
-        $this->reset();
+        $this->dispatch('showAlert', ['type' => 'success', 'title' => 'Success', 'message' => 'Successfully Created.']);
         $this->fetchData();
     }
 
     public function updateRequest()
     {
         $banquetProcurement = BanquetProcurement::where('event_id', $this->selectedEventId)->where('reference_number', $this->requestReferenceNumber)->first();
+        $this->requestedBudget = floatval(str_replace(',', '', $this->requestedBudget));
         if ($banquetProcurement) {
             $this->validate(
             [
-                'documentNumber' => 'required|string|max:255|unique:banquet_procurements,id,' . ($banquetProcurement ? $banquetProcurement->id : 'NULL'),
+                'documentNumber' => 'nullable|string|max:255|unique:banquet_procurements,id,' . ($banquetProcurement ? $banquetProcurement->id : 'NULL'),
                 'selectedEventId' => 'required|exists:banquet_events,id',
                 'selectedApprover' => 'required|exists:employees,id',
                 'selectedReviewer' => 'required|exists:employees,id',
@@ -242,13 +190,13 @@ class BanquetProcurementCreate extends Component
                 'approved_by' => $this->selectedApprover,
                 'noted_by'  => $this->selectedReviewer,
                 'suggested_amount' => $this->requestedBudget,
+                'services_included' => $this->hasServices ? 1 : 0,
+                'updated_at'    => now('Asia/Manila'),
             ]);
-            session()->flash('success', 'Successfully Updated.');
-            $this->dispatch('clearFields');
-            $this->reset();
+            $this->dispatch('showAlert', ['type' => 'success', 'title' => 'Success', 'message' => 'Successfully Updated.']);
             $this->fetchData();
         } else {
-            session()->flash('error', 'Banquet Procurement not found.');
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Banquet Procurement request not found for the selected event.']);
         }
     }
 
@@ -257,5 +205,56 @@ class BanquetProcurementCreate extends Component
         redirect()->to('/budget-proposal-print-preview?reference=' . $this->requestReferenceNumber . '&budget-id=' . BanquetProcurement::where('reference_number', $this->requestReferenceNumber)->value('id') );
     }
 
+    public function updatedHasServices()
+    {
+        if($this->hasServices && $this->selectedEvent){
+            $total = 0;
+             $total +=
+             isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             $this->selectedEvent->eventMenus->sum(function($menu) {
+                    return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
+                $total += isset($this->selectedEvent) && $this->selectedEvent->eventServices ?
+                $this->selectedEvent->eventServices->sum(function($service) {
+                    return $service->price->amount * ($service->qty ? $service->qty : 1); }) : 0;
+            $this->totalGrossOrder = $total;
+            $this->updatedTotalPercentage();
+        }else if(!$this->hasServices && $this->selectedEvent){
+             $this->totalGrossOrder =  isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             $this->selectedEvent->eventMenus->sum(function($menu) {
+                    return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
+                     $this->updatedTotalPercentage();
+        }else{
+             $this->totalGrossOrder = 0;
+        }
+    }
+
+    public function updatedRequestedBudget()
+    {
+        if(!$this->selectedEvent){
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Please select an event first!']);
+            return;
+        }
+        if($this->requestedBudget > 0){
+            $this->totalPercentage = ( $this->requestedBudget / $this->totalGrossOrder) * 100;
+            $this->totalPercentage = number_format($this->totalPercentage, 2);
+        }else{
+            return;
+        }
+    }
+    public function updatedTotalPercentage()
+    {
+        if(!$this->selectedEvent){
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Please select an event first!']);
+            return;
+        }
+        if($this->totalPercentage > 0){
+            $this->requestedBudget = ($this->totalPercentage / 100) * $this->totalGrossOrder;
+            $this->requestedBudget = number_format($this->requestedBudget, 2);
+        }else if(!$this->isNewRequest && $this->requestedBudget > 0){
+            $this->totalPercentage = ( $this->requestedBudget / $this->totalGrossOrder) * 100;
+            $this->totalPercentage = number_format($this->totalPercentage, 2);
+           
+        }
+    }
 
 }

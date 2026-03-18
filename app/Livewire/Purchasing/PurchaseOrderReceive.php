@@ -79,6 +79,7 @@ public $receivingInfo = [];
         'attachments.*.file' => 'The attachment must be a file.',
         'attachments.*.mimes' => 'The attachment must be a file of type: jpg, jpeg, png, pdf.',
         'attachments.*.max' => 'The attachment may not be greater than 2MB.',
+        'qtyAndPrice.*.newCost.required' => 'The new cost field is required. Please check the item cost for the item(s) you are receiving.',
     ];
     public function mount(Request $request = null)
     {

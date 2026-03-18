@@ -14,7 +14,7 @@ class AdvancesForLiquidationView extends Component
 {
     // loaded
     public $isCreate = true;
-    public $currentAFLStatus;
+    public $currentAFLStatus = 'DRAFT'; // default status for new AFL, will be updated if loading existing AFL
     public $saveAsStatus = 'DRAFT';
     public $disbursers = [];
     public $approvers = [];

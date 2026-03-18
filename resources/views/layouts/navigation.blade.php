@@ -108,7 +108,7 @@
                                 
                                 @if (auth()->user()->employee->getModulePermission('Purchase Order') != 2 )
                                     <x-dropdown-link :href="url('/purchase_order')" class="no-underline">
-                                        {{ __('PO Summary') }}
+                                        {{ __('Purchase Order') }}
                                     </x-dropdown-link>
                                 @endif
                           
@@ -206,6 +206,17 @@
                                         {{ __('Petty Cash Voucher') }}
                                     </x-dropdown-link>
                             @endif
+                            @if(auth()->user()->employee->getModulePermission('Cash Return') != 2 )
+                                     <x-dropdown-link :href="url('/cash-return-summary')" class="no-underline">
+                                        {{ __('Cash Return') }}
+                                    </x-dropdown-link>
+                                @endif
+                             @if(auth()->user()->employee->getModulePermission('Cash Flow') != 2 )
+                                     <x-dropdown-link :href="url('/cash-flow-summary')" class="no-underline">
+                                        {{ __('Cash Flow') }}
+                                    </x-dropdown-link>
+                                @endif
+                                
                         </x-slot>
                     </x-dropdown> 
                 </div>
@@ -255,17 +266,17 @@
                                     <hr>                    
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Menu Approval') == 1 )
-                                    <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline">
+                                    <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline" style="font-size: smaller">
                                         {{ __('Recipe - Approval') }}
                                     </x-dropdown-link>
                                     <hr>
                                 @endif
-                                    <x-dropdown-link :href="url('/budget-proposal-approval-lists')" class="no-underline" style="font-size: x-small">
-                                        {{ __('Budget Proposal - Approval') }}
+                                    <x-dropdown-link :href="url('/budget-proposal-approval-lists')" class="no-underline" style="font-size: smaller">
+                                        {{ __('BEB - Approval') }}
                                     </x-dropdown-link>
 
-                                    <x-dropdown-link :href="url('/equipment-request-approval-lists')" class="no-underline" style="font-size: x-small">
-                                        {{ __('Equipment Request - Approval') }}
+                                    <x-dropdown-link :href="url('/equipment-request-approval-lists')" class="no-underline" style="font-size: smaller">
+                                        {{ __('Equipment REQ. - Approval') }}
                                     </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
@@ -297,16 +308,17 @@
                                         {{ __('Events (BEO)') }}
                                     </x-dropdown-link>
                                 @endif
-                                @if (auth()->user()->employee->getModulePermission('Banquet Equipment Request') != 2 )
-                                    <x-dropdown-link :href="url('/equipment-requests-summary')" class="no-underline">
-                                        {{ __('Equipment Request') }}
-                                    </x-dropdown-link>
-                                @endif
                                 @if (auth()->user()->employee->getModulePermission('Banquet Procurement') != 2 )
                                     <x-dropdown-link :href="url('/banquet-procurement-lists')" class="no-underline">
                                         {{ __('Budget Proposal (BEB)') }}
                                     </x-dropdown-link>
                                 @endif  
+                                @if (auth()->user()->employee->getModulePermission('Banquet Equipment Request') != 2 )
+                                    <x-dropdown-link :href="url('/equipment-requests-summary')" class="no-underline">
+                                        {{ __('Equipment Request') }}
+                                    </x-dropdown-link>
+                                @endif
+                                
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -571,7 +583,7 @@
                         <div x-show="open" class="space-y-1 pl-4">
                             @if (auth()->user()->employee->getModulePermission('Purchase Order') != 2 )
                                 <x-responsive-nav-link :href="url('/purchase_order')" class="no-underline">
-                                    {{ __('PO Summary') }}
+                                    {{ __('Purchase Order') }}
                                 </x-responsive-nav-link>
                             @endif
                             @if(auth()->user()->employee->getModulePermission('Purchase Receive') != 2 )

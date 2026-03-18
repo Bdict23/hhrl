@@ -561,7 +561,8 @@
                             <tr>
                                 <th>Reference</th>
                                 <th>Event Name</th>
-                                <th>Event Date</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -571,6 +572,7 @@
                                     <td>{{ $event->reference }}</td>
                                     <td>{{ $event->event_name }}</td>
                                     <td>{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
                                     <td>
                                         <button wire:click="selectEvent({{ $event->id }})" class="btn btn-sm btn-success select-event-btn" data-name="{{ $event->name }}">
                                             <span wire:loading wire:target="selectEvent({{ $event->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>

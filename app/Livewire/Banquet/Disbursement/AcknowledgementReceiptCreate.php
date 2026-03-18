@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\PettyCashVoucher;
 use App\Models\BanquetEvent as Event;
+use App\Models\BanquetProcurement;
+
 
 
 
@@ -23,6 +25,7 @@ class AcknowledgementReceiptCreate extends Component
     public $customers = [];
     public $banks = [];
     public $events = [];
+    public $validEventIds = [];
     public $isCreate = true;
     public $currentARStatus = 'DRAFT';
     public $acknowledgementReceiptID;
@@ -107,7 +110,9 @@ class AcknowledgementReceiptCreate extends Component
     public function fetchData(){
         $this->customers = Customer::where('branch_id', auth()->user()->branch_id)->get();
         $this->banks = Bank::where('branch_id', auth()->user()->branch_id)->get();
-        $this->events = Event::where('branch_id', auth()->user()->branch_id)->where('start_date', '>=', Carbon::now('Asia/Manila')->startOfDay())->where('status', 'CONFIRMED')->get();
+        $this->validEventIds = BanquetProcurement::where('branch_id', auth()->user()->branch_id)->where('status', 'APPROVED')->pluck('event_id')->toArray();
+        $this->events = Event::where('end_date', '>=', Carbon::now('Asia/Manila')->startOfDay())
+                                ->whereIn('id', $this->validEventIds)->get();
     }
 
     // upon update on check amount the amount in words will be updated

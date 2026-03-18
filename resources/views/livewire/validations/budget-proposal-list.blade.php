@@ -7,7 +7,7 @@
         @endif
     <div class="card">
         <div class="card-header">
-            <h5 class="card-title">Proposal Lists</h5>
+            <h5 class="card-title">Bangquet Event Budget - Approval Lists <i class="bi bi-card-checklist"></i></h5>
         </div>
         <div class="card-tools">
            <div class="row mt-2 pl-3 pr-3">
@@ -120,7 +120,11 @@
                                 <td>{{ $procurement->event->customer->customer_fname . ' ' . $procurement->event->customer->customer_lname }}</td>
                             @endif
                             <td>
-                                <a wire:click="view({{ $procurement->id }})" class="btn btn-sm btn-link">View</a>
+                                <a href="/banquet-budget-show?proposal-id={{ $procurement->id }}">
+                                    <x-primary-button class="btn-sm">
+                                        View
+                                    </x-primary-button>
+                                </a>
                             </td>
                         </tr>
                     @empty

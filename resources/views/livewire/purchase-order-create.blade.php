@@ -226,7 +226,8 @@
                                     <tr>
                                         <th style="font-size: 12px;">Event Name</th>
                                         <th style="font-size: 12px;">Customer</th>
-                                        <th style="font-size: 12px;">Event Date</th>
+                                        <th style="font-size: 12px;">Start Date</th>
+                                        <th style="font-size: 12px;">End Date</th>
                                         <th style="font-size: 12px;">Action</th>
                                     </tr>
                                 </thead>
@@ -235,7 +236,8 @@
                                         <tr>
                                             <td style="font-size: 12px;">{{ $event->event_name }}</td>
                                             <td style="font-size: 12px;">{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
-                                            <td style="font-size: 12px;">{{ $event->event_date }}</td>
+                                            <td style="font-size: 12px;">{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
+                                            <td style="font-size: 12px;">{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
                                             <td>
                                                 <button type="button" class="btn btn-primary btn-sm" wire:click="selectEvent({{ $event->id }})">Select</button>
                                             </td>

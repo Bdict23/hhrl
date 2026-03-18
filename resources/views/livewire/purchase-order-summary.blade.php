@@ -22,9 +22,9 @@
                         </div>
         <div class="card mt-3 mb-3">  
             <div class=" card-header d-flex justify-content-between mx-2">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-3 mb-2">
+                
+
+                        <div class="col-md-3 mb-2 container">
                             <div class="input-group">
                                 <label for="PO-status" class="input-group-text">Status</label>
                                 <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
@@ -35,22 +35,51 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-3 mb-2 container">
                             <div class="input-group">
                                 <label for="from_date" class="input-group-text">From:</label>
                                 <input wire:model="fromDate" type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
                                     class="form-control form-control-sm">
                             </div>
                         </div>
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-3 mb-2 container">
                             <div class="input-group">
                                 <label for="to_date" class="input-group-text">To:</label>
                                 <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
                                     class="form-control form-control-sm">
-                                <button wire:click="search" class="btn btn-primary input-group-text">Search &nbsp;<i class="bi bi-search"></i></button>  
+                                <button wire:click="search" class="btn btn-primary input-group-text">Filter &nbsp;<i class="bi bi-funnel"></i></button>  
                             </div>
-                        </div>
-                    </div>
+                        </div> 
+
+                <div class="container">
+                    <input type="text" placeholder="Search" id="searchKey" class="form-control form-control-sm" onkeyup="searchKey()">
+                    <script>
+                        function searchKey() {
+                            
+                            var input, filter, table, tr, td, i, txtValue;
+                            input = document.getElementById("searchKey");
+                            filter = input.value.toUpperCase();
+                            table = document.querySelector("#poSummaryTable").closest("table");
+                            tr = table.getElementsByTagName("tr");
+
+                            for (i = 0; i < tr.length; i++) {
+                                td = tr[i].getElementsByTagName("td");
+                                let rowContainsFilter = false;
+
+                                for (let j = 0; j < td.length; j++) {
+                                    if (td[j]) {
+                                        txtValue = td[j].textContent || td[j].innerText;
+                                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                            rowContainsFilter = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                tr[i].style.display = rowContainsFilter ? "" : "none";
+                            }
+                        }
+                    </script>
                 </div>
             </div>
 
@@ -69,7 +98,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="poSummaryTable">
                             @forelse ($purchaseOrderSummary as $requisition)
                                 <tr>
                                     <td>{{ $requisition->supplier->supp_name ?? 'N/A' }}</td>

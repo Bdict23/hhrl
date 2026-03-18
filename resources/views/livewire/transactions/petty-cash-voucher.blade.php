@@ -60,7 +60,7 @@
                                 <tr>
                                     <td>{{ $pcv->reference }}</td>
                                     <td>{{ $pcv->voucher_number }}</td>
-                                    <td>{{ $pcv->event->reference }}</td>
+                                    <td>{{ $pcv->event->reference ?? '' }}</td>
                                     <td>
                                         @if($pcv->paid_to_employee_id)
                                             {{ $pcv->employee->name . ' ' . $pcv->employee->middle_name ?? '' . ' ' . $pcv->employee->last_name }}

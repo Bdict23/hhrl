@@ -8,7 +8,8 @@ use App\Models\BanquetEvent;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use App\Models\Signatory;
-use App\Models\Employee;    
+use App\Models\Employee;
+use Carbon\Carbon;    
 
 class BudgetProposalShow extends Component
 {
@@ -17,6 +18,8 @@ class BudgetProposalShow extends Component
     public $withdrawalInfo;
     public $withdrawnItems = [];
     public $selectedEvent;
+    public $totalPercentage = 0;
+    public $totalGrossOrder = 0;
 
 
 
@@ -46,14 +49,13 @@ class BudgetProposalShow extends Component
     public $documentNumber = null;
     public $requestedBudget = null;
     public $notes = null;
-    public $approveBudget = null;
-    public $isFinal = 'PREPARING';
+    public $saveAs= 'PREPARING';
     public $proposedBudgetId = null; // To store the proposal ID for updates
+        public $hasServices = false;
 
     protected $rules = [
         'notes' => 'nullable|string|max:1000',
-        'approveBudget' => 'required|numeric|min:0',
-        'isFinal' => 'required|in:PREPARING,APPROVED,REJECTED,PENDING',
+        'saveAs' => 'required|in:PREPARING,APPROVED,REJECTED,PENDING',
     ];
     public function render()
     {
@@ -74,10 +76,13 @@ class BudgetProposalShow extends Component
                 $this->selectedApprover = $proposal->approver->name . ' ' . $proposal->approver->last_name;
                 $this->selectedReviewer = $proposal->notedBy->name . ' '. $proposal->notedBy->last_name;
                 $this->requestedBudget = $proposal->suggested_amount;
+                $this->approvedBudget = $proposal->approved_amount;
                 $this->notes = $proposal->notes;
-                $this->isFinal = $proposal->status;
+                $this->saveAs = $proposal->status;
+                 $this->hasServices = $proposal->services_included ? true : false;
                 $this->requestReferenceNumber = $proposal->reference_number;
                 $this->loadEventDetails($this->selectedEventId);
+                $this->updatedGrossOrder(); // Update the total percentage based on the loaded proposal data
             } else {
                 session()->flash('error', 'Invalid Action.');
                 return redirect()->to('/dashboard');
@@ -91,7 +96,7 @@ class BudgetProposalShow extends Component
 
      public function loadEventDetails($eventId)
     {
-        $this->selectedEvent = BanquetEvent::with('purchaseOrders','customer', 'venue', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel')->find($eventId);
+        $this->selectedEvent = BanquetEvent::with('purchaseOrders','customer', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel')->find($eventId);
         $this->selectedEventId = $this->selectedEvent->id;
         if ($this->selectedEvent) {
             $this->dispatch('closeSelectEventModal');
@@ -106,36 +111,62 @@ class BudgetProposalShow extends Component
 
     public function updateRequest()
     {
-        if ($this->isFinal == 'APPROVED') {
-            $this->validate([
-                'notes' => 'nullable|string|max:1000',
-                'approveBudget' => 'required|numeric|min:0',
-                'isFinal' => 'required|in:APPROVED',
-            ]);
-        } elseif ($this->isFinal == 'PREPARING') {
-            $this->validate([
-                'notes' => 'nullable|string|max:1000',
-                'isFinal' => 'required|in:PREPARING',
-            ]);
-        } elseif ($this->isFinal == 'REJECTED') {
-            $this->validate([
-                'notes' => 'nullable|string|max:1000',
-                'isFinal' => 'required|in:REJECTED',
-            ]);
-        }
+        
+        $this->validate([
+            'notes' => 'nullable|string|max:1000',
+            'saveAs' => 'required|in:APPROVED,REJECTED,PREPARING',
+        ]);
+         
        
         $proposal = BanquetProcurement::find($this->proposedBudgetId);
         if ($proposal) {
             $proposal->update([
                 'notes' => $this->notes,
-                'status' => $this->isFinal,
-                'approved_amount' => $this->approveBudget ? $this->approveBudget : NULL,
+                'status' => $this->saveAs,
+                'updated_at' => \Carbon\Carbon::now('Asia/Manila'),
+                'updated_by' => auth()->user()->emp_id,
             ]);
-            session()->flash('success', 'Budget proposal updated successfully.');
-            $this->reset();
+            $this->dispatch('showAlert', ['type' => 'success', 'title' => 'Success', 'message' => 'Budget proposal updated successfully!']);
              $this->dispatch('viewTop');
         } else {
             session()->flash('error', 'Budget proposal not found.');
+        }
+    }
+
+      public function updatedGrossOrder()
+    {
+        if($this->hasServices && $this->selectedEvent){
+            $total = 0;
+             $total +=
+             isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             $this->selectedEvent->eventMenus->sum(function($menu) {
+                    return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
+                $total += isset($this->selectedEvent) && $this->selectedEvent->eventServices ?
+                $this->selectedEvent->eventServices->sum(function($service) {
+                    return $service->price->amount * ($service->qty ? $service->qty : 1); }) : 0;
+            $this->totalGrossOrder = $total;
+            $this->updatedTotalPercentage();
+        }else if(!$this->hasServices && $this->selectedEvent){
+             $this->totalGrossOrder =  isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             $this->selectedEvent->eventMenus->sum(function($menu) {
+                    return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
+                     $this->updatedTotalPercentage();
+        }else{
+             $this->totalGrossOrder = 0;
+        }
+    }
+
+    public function updatedTotalPercentage()
+    {
+        if(!$this->selectedEvent){
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Please select an event first!']);
+            return;
+        }
+        if($this->selectedEvent){
+            $this->totalPercentage = ( $this->requestedBudget / $this->totalGrossOrder) * 100;
+        }else{
+                $this->requestedBudget = null;
+            return;
         }
     }
 }

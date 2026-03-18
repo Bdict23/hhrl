@@ -14,6 +14,7 @@ use App\Models\Module;
 use App\Models\BanquetEvent;
 use App\Models\OtherSetting;
 use Illuminate\Support\Facades\DB;
+use App\Models\BanquetProcurement;
 use App\Models\ProductionOrder;
 
 
@@ -21,6 +22,7 @@ use App\Models\ProductionOrder;
 class PurchaseOrderCreate extends Component
 {
     public $suppliers = [];
+    public $validEventIds = [];
     public $events = [];
     public $selectedEventId = null;
     public $selectedEventName = null;
@@ -227,7 +229,11 @@ class PurchaseOrderCreate extends Component
     $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Purchase Order') == 1 ? true : false;
     $this->suppliers = Supplier::where([['supplier_status', 'ACTIVE'],['company_id', auth()->user()->branch->company_id]])->get();
     $this->terms =  Term::all();
-    $this->events = BanquetEvent::with('customer')->where('status', 'CONFIRMED')->where('end_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->get();
+    $this->validEventIds = BanquetProcurement::where('branch_id', auth()->user()->branch_id)->where('status', 'APPROVED')->pluck('event_id')->toArray();
+
+    $this->events = BanquetEvent::with('customer')
+                                ->where('end_date', '>=', now())
+                                ->whereIn('id', $this->validEventIds)->get();
     $purchasing = Module::where('module_name', 'Purchase order')->first();
     $this->productionOrders = ProductionOrder::where('branch_id', auth()->user()->branch_id)->where('status', 'PENDING')->get();
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();

@@ -500,3 +500,17 @@ Route::get('/advances-for-liquidation-summary', function () {
 // Route for advances for liquidation create
 Route::get('/advances-for-liquidation', function () {
     return view('transactions.advances-for-liquidation-create-edit-view');})->middleware(['auth', 'verified'])->name('advances-for-liquidation-create');
+
+// Route Printing for BEB
+Route::get('/banquet-event-budget-print', function () {
+    return view('print_preview.PrintBEB');
+})->middleware(['auth', 'verified'])->name('beb.print-preview');
+
+// Route for cash flow summary
+Route::get('/cash-flow-summary', function () {
+    return view('transactions.cash-flow-summary-view');})->middleware(['auth', 'verified'])->name('cash_flow.summary');
+
+    // Cash Return summary route
+    Route::get('/cash-return-summary', function(){
+        return view('transactions.cash-return-summary-view');
+    })->middleware(['auth','verified'])->name('cash_return.summary');
