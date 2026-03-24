@@ -4,47 +4,50 @@
         {{ session('message') ?? 'Something went wrong.' }}
     </div>
 @endif
+
+<div class="justify-content-end d-flex">
+    <h4>Recipe - Summary &nbsp;<i class="bi bi-fork-knife"></i></h4>
+</div>
     <div class="card mt-3 mb-3">
         <div class="card-header p-2 ">
             <div class="row">
-                <div class=" row col-md-6">
-                    <div class="col-md-6">
-                        @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
-                            
-                                <a href="\create_menu" style="text-decoration: none; color: inherit;">
-                                    <x-primary-button style="text-decoration: none;">+ Create New Recipe</x-primary-button>
-                                </a>
-                        @endif
-                    </div>
-                    <div class="col-md-6">
-                        <span wire:loading class="spinner-border text-primary" role="status"></span>
+                <div class="col-md-3 mt-2">
+                    @if(auth()->user()->employee->getModulePermission('Purchase Order') == 1 )
+                        
+                            <a href="\create_menu" style="text-decoration: none; color: inherit;">
+                                <x-primary-button style="text-decoration: none;" class="text-nowrap">+ Create New Recipe</x-primary-button>
+                            </a>
+                    @endif
+                </div>
+                <div class="col-md-9 mt-2">
+                    <div class="container">
+                        <div class="d-flex justify-content-end">
+                            <div class="input-group me-2">
+                                <label for="PO-status" class="input-group-text">Type</label>
+                                <select wire:model="type" id="PO-status"  class="form-select form-select-sm">
+                                    <option value="All">All</option>
+                                    <option value="Ala Carte">Ala Carte</option>
+                                    <option value="Banquet">Banquet</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="PO-status" class="input-group-text">Status</label>
+                                <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
+                                    <option value="All">All</option>
+                                    <option value="Available">Available</option>
+                                    <option value="For Approval">For Approval</option>
+                                </select>
+                                    <button wire:click="filter" class="btn btn-primary input-group-text">
+                                        <span wire:loading wire:target="filter">
+                                            Filtering...
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        </span>
+                                        <span wire:loading.remove wire:target="filter">Filter &nbsp;<i class="bi bi-funnel-fill"></i></span>
+                                    </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                <div class="d-flex">
-                    <div class="input-group">
-                        <label for="PO-status" class="input-group-text">Status</label>
-                        <select wire:model="statusPO" id="PO-status"  class="form-select form-select-sm">
-                            <option value="All">All</option>
-                          
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="from_date" class="input-group-text">From:</label>
-                        <input wire:model="fromDate" type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
-                            class="form-control form-control-sm">
-                    </div>
-                    <div class="input-group">
-                        <label for="to_date" class="input-group-text">To:</label>
-                        <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
-                            class="form-control form-control-sm">
-                            <button wire:click="search" class="btn btn-primary input-group-text">search</button>
-                    </div>
-                    <div>
-                    </div>
-                </div>
-            </div>
             </div>
         </div>
 

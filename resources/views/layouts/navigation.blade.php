@@ -396,12 +396,9 @@
                                         </button>
                                     </x-slot>
                                     <x-slot name="content">   
-                                        @if (auth()->user()->employee->getModulePermission('Accounting - COA Management') !=2)
-                                            <x-dropdown-link :href="route('accounting.coa.management')" class="no-underline">
-                                                COA - Management
-                                                </x-dropdown-link>
-                                        @endif
-                                         
+                                        <x-dropdown-link :href="route('accounting.coa.management')" class="no-underline">
+                                            COA - Management
+                                            </x-dropdown-link>
                                     </x-slot>
                                 </x-dropdown>
                             </div>

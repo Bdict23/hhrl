@@ -487,7 +487,7 @@ Route::get('/petty-cash-voucher', function () {
 
 // ACCOUNTING
     // ROUTE FOR accounting.types
-Route::get('/accounting/types', function () {
+Route::get('/accounting-chart-of-accounts-management', function () {
     return view('accounting.chart-of-accounts-view');})->middleware(['auth', 'verified'])->name('accounting.coa.management');
 
     // Route for accounting transaction titles

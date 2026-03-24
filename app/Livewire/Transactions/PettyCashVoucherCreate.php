@@ -35,7 +35,7 @@ class PettyCashVoucherCreate extends Component
     public $customers = [];
     public $transactionTypes = []; // account types
     public $transactions = []; // transaction templates
-    
+    public $templateNames = []; // template names
 
     // calculations and setter
     public $pcvId; // for edit
@@ -50,13 +50,13 @@ class PettyCashVoucherCreate extends Component
     //selections
     public $selectedAR;
     public $selectedTransactionTypeID = null;
+    public $selectedTransactionNameID = null;
     public $selectedTemplate = null;
     public $selectedEmployee = null;
     public $selectedCustomer = null;
     public $selectedEvent = null;
 
     // inputs
-    public $voucherSeriesNumber;
     public $note;
     public $employeeId;
     public $customerId;
@@ -117,15 +117,18 @@ class PettyCashVoucherCreate extends Component
             return;
         }
         $this->pcvId = $id;
-        $this->voucherSeriesNumber = $pcv->voucher_number;
+        $this->reference = $pcv->reference;
         $this->note = $pcv->purpose;
         $this->totalAmount = $pcv->total_amount;
         $this->saveAsStatus = $pcv->status;
         $this->currentPCVStatus = $pcv->status;
         $this->selectedTransactionTypeID = $pcv->account_types_id;
-        $this->transactions = COATransactionTemplate::where('transaction_type', $this->selectedTransactionTypeID)->where('is_active', true)->where('company_id', auth()->user()->branch->company_id)->get();
-        $this->selectEvent($pcv->event_id);
-        $this->selectedTemplate = COATransactionTemplate::where('template_name', $pcv->transaction_title)->first();
+        $this->transactions = COATransactionTemplate::where('transaction_type', $this->selectedTransactionTypeID)->where('is_active', true)->where('company_id', auth()->user()->branch->company_id)->with('templateName')->get();
+        if($pcv->event_id){
+            $this->selectEvent($pcv->event_id);
+        }
+        $this->selectedTemplate = COATransactionTemplate::where('id', $pcv->template_id)->first();
+        $this->selectedTransactionNameID = $pcv->template_id;
         if($pcv->paid_to_employee_id){
             $this->selectedEmployee = Employee::find($pcv->paid_to_employee_id);
             $this->employeeId = $pcv->paid_to_employee_id;
@@ -168,7 +171,11 @@ class PettyCashVoucherCreate extends Component
         $this->dispatch('closeEventLists');
 
     }
-    public function selectTransaction( $id ){
+    public function updatedSelectedTransactionNameID($id){
+        if(!$id){
+             $this->particulars = [];
+            return;
+        }
         $this->selectedTemplate = COATransactionTemplate::find($id);
         $this->particulars = []; // reset particulars
         foreach($this->selectedTemplate->transactionDetails as $detail){
@@ -181,11 +188,22 @@ class PettyCashVoucherCreate extends Component
                 'amount' => 0,
             ];
         }
-        $this->dispatch('closeTransactionLists');
 
     }
 
-    public function showTransactions(){
+    public function updatedSelectedTransactionTypeID($id){
+        if(!$id){
+            return;
+        }
+        $this->transactions = COATransactionTemplate::where('transaction_type', $id)->with('templateName')
+        ->where('actng_trans_templates.is_active', true)
+        ->where('actng_trans_templates.company_id', auth()->user()->branch->company_id)
+        ->get();
+     }
+
+
+    
+     public function showTransactions(){
         if($this->selectedTransactionTypeID == null){
              $this->dispatch('showAlert', ['timer' => 10000, 'type' => 'warning', 'message' => 'Please select Transaction type first.', 'title' => 'warning']);
         }else{
@@ -242,8 +260,7 @@ class PettyCashVoucherCreate extends Component
         }
         $this->validate([
             'selectedTransactionTypeID' => 'required|exists:actng_account_types,id',
-            'selectedTemplate' => 'required',
-            'voucherSeriesNumber' => 'required',
+            'selectedTransactionNameID' => 'nullable|exists:actng_trans_templates,id',
             'employeeId' => 'required_without_all:selectedCustomer|nullable|exists:employees,id',
             'customerId' => 'required_without_all:selectedEmployee|nullable|exists:customers,id',
             'note' => 'nullable|string|max:500',
@@ -270,7 +287,6 @@ class PettyCashVoucherCreate extends Component
             'branch_id' => auth()->user()->branch_id,
             'company_id' => auth()->user()->branch->company_id,
             'reference' => $reference,
-            'voucher_number' => $this->voucherSeriesNumber,
             'paid_to_employee_id' => $this->employeeId,
             'paid_to_customer_id' => $this->customerId,
             'total_amount' => $this->totalDisburseAmount,
@@ -279,7 +295,7 @@ class PettyCashVoucherCreate extends Component
             'created_by' => auth()->user()->emp_id,
             'created_at' => Carbon::now('Asia/Manila'),
             'account_types_id' => $this->selectedTransactionTypeID,
-            'template_id' => $this->selectedTemplate->id,
+            'template_id' => $this->selectedTransactionNameID,
             'account_type' => $typeName,
             'transaction_title' => $this->selectedTemplate->template_name,
             'event_id' => $this->eventId,
@@ -304,9 +320,8 @@ class PettyCashVoucherCreate extends Component
 
     public function updatePCV(){
         $this->validate([
+            'selectedTransactionNameID' => 'nullable|exists:actng_trans_templates,id',
             'selectedTransactionTypeID' => 'required|exists:actng_account_types,id',
-            'selectedTemplate' => 'required',
-            'voucherSeriesNumber' => 'required',
             'employeeId' => 'required_without_all:selectedCustomer|nullable|exists:employees,id',
             'customerId' => 'required_without_all:selectedEmployee|nullable|exists:customers,id',
             'note' => 'nullable|string|max:500',
@@ -317,7 +332,6 @@ class PettyCashVoucherCreate extends Component
         ]);
 
         $pcv = PettyCashVoucher::find($this->pcvId)->update([
-            'voucher_number' => $this->voucherSeriesNumber,
             'paid_to_employee_id' => $this->employeeId,
             'paid_to_customer_id' => $this->customerId,
             'total_amount' => $this->totalDisburseAmount,
@@ -331,18 +345,21 @@ class PettyCashVoucherCreate extends Component
             'event_id' => $this->eventId,
         ]);
 
+        // Delete pcv details
+        PCVDetail::where('petty_cash_voucher_id',$this->pcvId)->delete();
         //updating details
         foreach($this->particulars as $particular){
-            $pcvDetail = PCVDetail::find($particular['id']);
-            if($pcvDetail){
-                $pcvDetail->transaction_title = $particular['account_title'];
-                $pcvDetail->transaction_title_id = $particular['account_title_id'];
-                $pcvDetail->type = $particular['type'];
-                $pcvDetail->amount = $particular['amount'];
-                $pcvDetail->updated_at = Carbon::now('Asia/Manila');
-                $pcvDetail->save();
-            }
+            $pcvDetail = new PCVDetail();
+            $pcvDetail->petty_cash_voucher_id = $this->pcvId;
+            $pcvDetail->transaction_title = $particular['account_title'];
+            $pcvDetail->transaction_title_id = $particular['account_title_id'];
+            $pcvDetail->type = $particular['type'];
+            $pcvDetail->amount = $particular['amount'];
+            $pcvDetail->created_at = Carbon::now('Asia/Manila');
+            $pcvDetail->updated_at = Carbon::now('Asia/Manila');
+            $pcvDetail->save();
         }
+
         $this->currentPCVStatus = $this->saveAsStatus; // update current status to reflect changes in the UI
         $this->dispatch('showAlert', ['timer' => 5000, 'type' => 'success','title' =>'Success', 'message' => 'PCV updated successfully.']);
     }

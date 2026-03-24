@@ -10,10 +10,11 @@ class ChartOfAccount extends Model
     protected $table = 'actng_chart_of_accounts';
     protected $fillable = [
         'company_id',
-        'parent',
+        'parent_id',
         'account_code',
         'account_title',
         'is_active',
+        'normal_balance',
         'created_by',
         'created_at',
         'updated_at',

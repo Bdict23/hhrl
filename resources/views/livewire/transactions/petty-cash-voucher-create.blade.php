@@ -69,6 +69,7 @@
                     </table>
                 </div>
                 <div class="card-footer">
+                    <span wire:loading wire:target="selectedTransactionNameID"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i> Please Wait...</span>
                    @error('saveAsStatus')
                         <span class="text-danger">{{ $message }}</span>
                    @enderror
@@ -84,72 +85,64 @@
                 <div class="card-body">
                     <div class="input-group mb-2">
                         <label for="" class="input-group-text">Reference</label>
-                        <input type="text" class="form-control" placeholder="<AUTO>" disabled wire:model="reference">
+                        <input type="text" class="form-control text-center" placeholder="<AUTO>" disabled wire:model="reference">
                     </div>
-                    <div class="input-group mb-2">
-                        <label for="" class="input-group-text">Transaction Type</label>
-                        <select name="" id="" wire:model="selectedTransactionTypeID" class="form-select">
-                            <option value="">Select</option>
-                            @foreach ($transactionTypes ?? [] as $type)
-                                <option value="{{ $type->id }}" @if($selectedTransactionTypeID == $type->id) selected @endif>{{ $type->type_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @error('selectedTransactionTypeID')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
 
-                    <div class="input-group mb-2">
-                        <label for="" class="input-group-text">Transaction</label>
-                        <input type="text" class="form-control" placeholder="Select Transaction ->" value="{{ $selectedTemplate->template_name ?? ''}}" disabled>
-                        <button class="btn btn-secondary" wire:click="showTransactions">
-                            <span wire:loading wire:target="showTransactions"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i></span>
-                            <span wire:loading.remove wire:target="showTransactions"><i class="bi bi-list-check"></i></span>
-                        </button>
+                    <div class="mt-3">
+                        <div class=" mb-3 flex items-center gap-x-1">
+                                <x-select
+                                    label="Type"
+                                    placeholder="Select transaction type"
+                                    :options="$transactionTypes"
+                                    option-label="type_name"
+                                    option-value="id"
+                                    wire:model.live="selectedTransactionTypeID"
+                                    :min-items-for-search="0"
+                                    :disabled="$currentPCVStatus == 'OPEN'"
+                                    
+                                />
+                        </div>
                     </div>
-                    @error('transactions')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                    @error('selectedTemplate')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
 
-                    <div class=" mb-2">
-                        <label for="" class="form-label">Transaction Description</label>
-                        <textarea name="" id="" cols="30" rows="2" class="form-control" disabled value >
-                            {{ $selectedTemplate->description ?? '' }}
-                        </textarea>
+                    <div class="mt-3">
+                        <div class=" mb-3 flex items-center gap-x-1">
+                            <x-select
+                                label="Transaction"
+                                placeholder="Select transaction type"
+                                :options="$transactions"
+                                option-label="templateName.template_name"
+                                option-value="id"
+                                wire:model.live="selectedTransactionNameID"
+                                :min-items-for-search="0"
+                                :disabled="$currentPCVStatus == 'OPEN'"
+                                />
+                                <span wire:loading wire:target="selectedTransactionTypeID">
+                                    <i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>
+                                </span>
+                        </div>
                     </div>
                     
-                    <div class="input-group mb-2">
-                        <label for="" class="input-group-text">Event</label>
-                        <input type="text" class="form-control" placeholder="Select Event ->" value="{{ $selectedEvent->reference ?? ''}}" disabled>
-                        <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#eventListModal">
-                            <i class="bi bi-calendar-event"></i>
-                        </span>
+                    <div class="mt-3">
+                        <div class=" mb-3 flex items-center gap-x-1">
+                            <x-select
+                                label="Event"
+                                placeholder="Select transaction type"
+                                :options="$events"
+                                option-label="event_name"
+                                option-description="reference"
+                                option-value="id"
+                                wire:model="eventId"
+                                :min-items-for-search="0"
+                                :disabled="$currentPCVStatus == 'OPEN'"
+                                />
+                        </div>
                     </div>
-
-                    @error('eventId')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-
-                    <div class="input-group mb-4">
-                        <label for="" class="input-group-text">Event Name</label>
-                        <input type="text" class="form-control" disabled value="{{ $selectedEvent->event_name ?? '' }}">
-                    </div>
+                    
 
                     <div class="row">
                         <strong class="col-md-3 my-auto">PCV Information</strong>
                         <hr class="col-md-9">
                     </div>
-                    
-                    <div class="input-group mb-2">
-                        <label for="" class="input-group-text">Voucher Series Number</label>
-                        <input type="text" class="form-control" placeholder="Enter Voucher Series Number" wire:model="voucherSeriesNumber">
-                    </div>
-                    @error('voucherSeriesNumber')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
 
                     <div class="input-group mb-2">
                         <label for="" class="input-group-text">Payee</label>
@@ -198,94 +191,6 @@
         </div>
     </div>
 
-
-    <!--  Event List Modal -->
-    <div class="modal fade" id="eventListModal" tabindex="-1" aria-labelledby="eventListModalLabel" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header row">
-                        <div class="col-md-6">
-                            <h5 class="modal-title" id="eventListModalLabel">Select Event</h5>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="input-group mb-2">
-                                <span class="input-group-text">Search</span>
-                                <input type="text" class="form-control" id="search-event"
-                                    onkeyup="filterEvents()">
-                            </div>
-                        </div>
-                  
-                    <script>
-                        function filterEvents() {
-                            const searchInput = document.getElementById('search-event');
-                            const filter = searchInput.value.toLowerCase();
-                            const tableBody = document.getElementById('eventListTable').getElementsByTagName('tbody')[0];
-                            const rows = tableBody.getElementsByTagName('tr');
-
-                            for (let i = 0; i < rows.length; i++) {
-                                const cells = rows[i].getElementsByTagName('td');
-                                let match = false;
-
-                                for (let j = 0; j < cells.length; j++) {
-                                    const cell = cells[j];
-                                    if (cell) {
-                                        const text = cell.textContent || cell.innerText;
-                                        if (text.toLowerCase().indexOf(filter) > -1) {
-                                            match = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                rows[i].style.display = match ? '' : 'none';
-                            }
-                        }
-                    </script>
-                </div>
-                <div class="modal-body overflow-auto" style="max-height: 400px;">
-                    <table class="table table-striped" id="eventListTable">
-                        <thead>
-                            <tr>
-                                <th>Event Name</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Customer</th>
-                                <th>Notes</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($events ?? [] as $event)
-                               <tr>
-                                    <td>{{ $event->event_name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
-                                    <td>{{ $event->customer->customer_fname ?? '' }} {{ $event->customer->customer_mname ?? '' }} {{ $event->customer->customer_lname ?? '' }} {{ $event->customer->suffix ?? '' }}</td>
-                                    <td>{{ $event->notes }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary" wire:click="selectEvent({{ $event->id }})">
-                                            <span wire:loading wire:target="selectEvent({{ $event->id }})"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Wait...</span>
-                                            <span wire:loading.remove wire:target="selectEvent({{ $event->id }})">Select</span>
-                                        </button>
-                                    </td>
-                               </tr>
-                            @empty
-
-                            <tr>
-                                <td colspan="6" class="text-center">No Data Found</td>
-                            </tr>
-                                
-                            @endforelse
-                        </tbody>
-                    </table>
-                    <!-- Customer List Modal Footer -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     {{-- PAYEE/EMPLOYEE LIST MODAL --}}
     <div class="modal fade" id="payeeListModal" tabindex="-1" aria-labelledby="payeeListModalLabel" aria-hidden="true" wire:ignore.self>
@@ -512,7 +417,7 @@
                         <tbody>
                             @forelse ($transactions ?? [] as $transaction)
                                <tr>
-                                    <td>{{ $transaction->template_name }}</td>
+                                    <td>{{ $transaction->templateName->template_name ?? '' }}</td>
                                     <td>
                                         <button wire:click="selectTransaction({{ $transaction->id }})" class="btn btn-sm btn-success select-transaction-btn" data-name="{{ $transaction->name }}">
                                             <span wire:loading wire:target="selectTransaction({{ $transaction->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>

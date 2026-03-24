@@ -45,7 +45,6 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>REF.</th>
-                                <th>PCV No.</th>
                                 <th>Event</th>
                                 <th>Paid To</th>
                                 <th>Amount</th>
@@ -59,7 +58,6 @@
                             @forelse ($pettyCashVouchers as $pcv)
                                 <tr>
                                     <td>{{ $pcv->reference }}</td>
-                                    <td>{{ $pcv->voucher_number }}</td>
                                     <td>{{ $pcv->event->reference ?? '' }}</td>
                                     <td>
                                         @if($pcv->paid_to_employee_id)
