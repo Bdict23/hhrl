@@ -36,7 +36,7 @@ use App\Livewire\GateEntrance\BookingView;
 use App\Livewire\GateEntrance\Customer\CustomerDetails;
 use App\Livewire\GateEntrance\Customer\CustomersList;
 use App\Livewire\GateEntrance\Customer\CustomerRecords;
-use App\Livewire\Transactions\CashflowCreate;
+use App\Livewire\Transactions\CashFlowCreate;
 
 
 //
@@ -526,7 +526,7 @@ Route::get('/cash-flow-create', function () {
 Route::get('/cashflow-titles-summary', function () {
     return view('accounting.cashflow-titles-summary-view');})->middleware(['auth', 'verified'])->name('accounting.cashflow.titles');
     // \cashflow-view
-Route::get('/cashflow-view/{id}', CashflowCreate::class)->middleware(['auth', 'verified'])->name('cashflow.view');
+Route::get('/cashflow-view/{id}', CashFlowCreate::class)->middleware(['auth', 'verified'])->name('cashflow.view');
 
 //Route for Billing and Payment for BEO
 Route::get('/billing-and-payment', function () {
