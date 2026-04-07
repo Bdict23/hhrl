@@ -24,6 +24,8 @@ use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+// Livewire Components
+use App\Livewire\Banquet\BillingAndPayment;
 //ken gate-entrance module
 use Livewire\Livewire;
 use App\Livewire\GateEntrance\GateEntrance;
@@ -34,6 +36,8 @@ use App\Livewire\GateEntrance\BookingView;
 use App\Livewire\GateEntrance\Customer\CustomerDetails;
 use App\Livewire\GateEntrance\Customer\CustomersList;
 use App\Livewire\GateEntrance\Customer\CustomerRecords;
+use App\Livewire\Transactions\CashflowCreate;
+
 
 //
 Route::get('register', [RegisteredUserController::class, 'create'])->middleware(['auth', 'verified'])
@@ -509,8 +513,22 @@ Route::get('/banquet-event-budget-print', function () {
 // Route for cash flow summary
 Route::get('/cash-flow-summary', function () {
     return view('transactions.cash-flow-summary-view');})->middleware(['auth', 'verified'])->name('cash_flow.summary');
+// create cashflow route
+Route::get('/cash-flow-create', function () {
+    return view('transactions.cashflow-create-view');})->middleware(['auth', 'verified'])->name('cash_flow.create');
 
     // Cash Return summary route
     Route::get('/cash-return-summary', function(){
         return view('transactions.cash-return-summary-view');
     })->middleware(['auth','verified'])->name('cash_return.summary');
+
+    // accounting.cashflow.titles route
+Route::get('/cashflow-titles-summary', function () {
+    return view('accounting.cashflow-titles-summary-view');})->middleware(['auth', 'verified'])->name('accounting.cashflow.titles');
+    // \cashflow-view
+Route::get('/cashflow-view/{id}', CashflowCreate::class)->middleware(['auth', 'verified'])->name('cashflow.view');
+
+//Route for Billing and Payment for BEO
+Route::get('/billing-and-payment', function () {
+    return view('banquet.billing-and-payment-view');
+})->middleware(['auth', 'verified'])->name('billing.and.payment');

@@ -30,9 +30,13 @@ class Cashflow extends Model
         return $this->belongsTo(Employee::class, 'approver_id');
     }
 
-    public function denominations()
+    public function denomination()
     {
         return $this->hasMany(CashflowDenomination::class, 'cashflow_id');
+    }
+    public function title()
+    {
+        return $this->hasMany(CashflowDetail::class, 'cashflow_id');
     }
     public function branch()
     {

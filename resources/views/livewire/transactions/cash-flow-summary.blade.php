@@ -2,10 +2,11 @@
     <div class="container mb-3">
             <div class="row">
                 <div class="col-md-6">
-                    @if(auth()->user()->employee->getModulePermission('Acknowledgement Receipt') == 1 )
-                        <a href="" style="text-decoration: none; color: white;"><x-primary-button >+ Create</x-primary-button></a>
-                        <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
+                    @if(auth()->user()->employee->getModulePermission('Cash Flow') == 1 )
+                        <a href="{{ route('cash_flow.create') }}" style="text-decoration: none; color: white;"><x-primary-button >+ Create</x-primary-button></a>
+                       </a>
                     @endif
+                     <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
                 </div>
                 <div class="col-md-6">
                     <h4 class="text-end">Cash Flow - Summary <i class="bi bi-file-text"></i></h4>
@@ -21,7 +22,7 @@
                                 <label for="CHECK-status" class="input-group-text">Status</label>
                                 <select wire:model="statusCheckValue" id="CHECK-status"  class="form-select form-select-sm">
                                     <option value="ALL">ALL</option>
-                                    <option value="OPEN">DRAFT</option>
+                                    <option value="OPEN">OPEN</option>
                                     <option value="CLOSED">CLOSED</option>
                                     <option value="CANCELLED">CANCELLED</option>
                                 </select>
@@ -68,19 +69,26 @@
                             @forelse ($cashFlows as $cf)
                                 <tr>
                                     <td>{{ $cf->reference }}</td>
-                                    <td> <span 
-                                        @if( $cf->status =='DRAFT' ) class = "badge bg-secondary" 
-                                        @elseif($cf->status =='CANCELLED') class= "badge bg-danger" 
-                                        @elseif($cf->status =='FINAL') class="badge bg-success" 
-                                        @endif>{{ $cf->status }}</span> </td>
+                                    <td> 
+                                        
+                                            @if( $cf->status =='OPEN' ) <x-badge  warning label="OPEN" />
+                                            @elseif($cf->status =='CANCELLED')<x-badge flat negative label="CANCELLED" />
+                                            @elseif($cf->status =='CLOSED') <x-badge  positive label="CLOSED" />
+                                            @endif
+                                        
+                                    </td>
                                     <td>{{ $cf->created_at->format('Y-m-d') }}</td>
                                     <td>{{ $cf->createdBy->name ?? '' }}</td>
                                     <td>{{ number_format($cf->amount, 2) }}</td>
-                                    <td>{{ $cf->remarks }}</td>
                                     <td>
-                                        <a href="\cashflow-view?reference_id={{ $cf->id }}" >
-                                           <a href="\cashflow-view?reference_id={{ $cf->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
-                                        </a>
+                                        @if($cf->remarks == 'BALANCED') <x-badge flat positive label="BALANCED" />
+                                        @elseif($cf->remarks == 'EXCESS') <x-badge flat warning label="EXCESS" />
+                                        @elseif($cf->remarks == 'SHORT')<x-badge flat negative label="SHORT" />
+                                        @endif
+
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('cashflow.view', $cf->id )}}"><x-primary-button class="btn-sm">View</x-primary-button></a>
                                     </td>
                                 </tr>
                             @empty

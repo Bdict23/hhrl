@@ -569,12 +569,29 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
-                    <div class="card-header">
-                           <div class="input-group mb-2">
+                    <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist" wire:ignore.self>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="banquet-tab" data-bs-toggle="tab" data-bs-target="#banquetBuffetTab" type="button"
+                                role="tab" aria-controls="banquet" aria-selected="true">Banquet Buffet</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer" type="button"
+                                role="tab" aria-controls="customer" aria-selected="false">
+                                Ala Carte</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content alert-success overflow-auto" style="max-height: 400px;" wire:ignore.self>
+                        {{-- banquet tab --}}
+                        <div class="tab-pane fade show active " id="banquetBuffetTab" role="tabpanel" aria-labelledby="banquet-tab">
+                            {{-- search banquet buffet header --}}
+                            <div class="input-group mb-2">
                                 <span class="input-group-text">Search</span>
                                 <input type="text" class="form-control" id="search-menus"
                                     onkeyup="filterMenus()">
                             </div>
+                            {{-- end search header --}}
+
+                            {{-- search banquet buffet js --}}
                             <script>
                                 function filterMenus() {
                                     const searchInput = document.getElementById('search-menus');
@@ -601,39 +618,115 @@
                                     }
                                 }
                             </script>
+                            {{-- end of script --}}
+
+                            {{-- table to dispaly list of banquet buffet --}}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-xs">Menu Name</th>
+                                        <th class="text-xs">Category</th>
+                                        <th class="text-xs">Price</th>
+                                        <th class="text-xs">Description</th>
+                                        <th class="text-xs">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menusTableBody">
+                                    @forelse ($banquetMenus ?? [] as $menu)
+                                        <tr>
+                                            <td>{{ $menu->menu->menu_name }}</td>
+                                            <td>{{ $menu->menu->categories ? $menu->menu->categories->category_name : 'N/A' }}</td>
+                                            
+                                            <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
+                                            <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
+                                            <td>
+                                                <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-service-btn text-nowrap">
+                                                    <span wire:loading.remove wire:target="selectMenu({{ $menu->menu->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
+                                                    <span wire:loading wire:target="selectMenu({{ $menu->menu->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No menus available</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            {{-- end of table display --}}
                         </div>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="text-xs">Menu Name</th>
-                                <th class="text-xs">Category</th>
-                                <th class="text-xs">Price</th>
-                                <th class="text-xs">Description</th>
-                                <th class="text-xs">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="menusTableBody">
-                            @forelse ($menus ?? [] as $menu)
-                                <tr>
-                                    <td>{{ $menu->menu->menu_name }}</td>
-                                    <td>{{ $menu->menu->categories ? $menu->menu->categories->category_name : 'N/A' }}</td>
-                                    
-                                    <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
-                                    <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
-                                    <td>
-                                        <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-service-btn text-nowrap">
-                                            <span wire:loading.remove wire:target="selectMenu({{ $menu->menu->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
-                                            <span wire:loading wire:target="selectMenu({{ $menu->menu->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">No menus available</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                        {{-- end banquet tab --}}
+
+                        {{-- ala carte tab --}}
+                        <div class="tab-pane fade" id="customer" role="tabpanel" aria-labelledby="customer-tab">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">Search</span>
+                                <input type="text" class="form-control" id="search-alacarte-menus"
+                                    onkeyup="filterAlacarteMenus()">
+                            </div>
+                
+                            <script>
+                                function filterAlacarteMenus() {
+                                    const searchInput = document.getElementById('search-alacarte-menus');
+                                    const filter = searchInput.value.toLowerCase();
+                                    const tableBody = document.getElementById('alacarteMenusTableBody');
+                                    const rows = tableBody.getElementsByTagName('tr');
+                        
+                                    for (let i = 0; i < rows.length; i++) {
+                                        const cells = rows[i].getElementsByTagName('td');
+                                        let match = false;
+                        
+                                        for (let j = 0; j < cells.length; j++) {
+                                            const cell = cells[j];
+                                            if (cell) {
+                                                const text = cell.textContent || cell.innerText;
+                                                if (text.toLowerCase().indexOf(filter) > -1) {
+                                                    match = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                        
+                                        rows[i].style.display = match ? '' : 'none';
+                                    }
+                                }
+                            </script>
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-xs">Menu Name</th>
+                                        <th class="text-xs">Category</th>
+                                        <th class="text-xs">Price</th>
+                                        <th class="text-xs">Description</th>
+                                        <th class="text-xs">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alacarteMenusTableBody">
+                                    @forelse ($alaCarteMenus ?? [] as $menu)
+                                        <tr>
+                                            <td>{{ $menu->menu->menu_name }}</td>
+                                            <td>{{ $menu->menu->categories ? $menu->menu->categories->category_name : 'N/A' }}</td>
+                                            
+                                            <td>{{ $menu->menu->mySRP && $menu->menu->mySRP->amount ? '₱' . $menu->menu->mySRP->amount : 'FREE' }}</td>
+                                            <td class="text-wrap">{{ $menu->menu->menu_description }}</td>
+                                            <td>
+                                                <button wire:click="selectMenu({{ $menu->menu->id }})" class="btn btn-sm btn-success select-service-btn text-nowrap">
+                                                    <span wire:loading.remove wire:target="selectMenu({{ $menu->menu->id }})"><i class="bi bi-plus-circle"></i>&nbsp;Add</span>
+                                                    <span wire:loading wire:target="selectMenu({{ $menu->menu->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Adding...</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No menus available</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table> 
+                        </div>
+                        {{-- end banquet tab --}}
+                    </div> 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>&nbsp;Close</button>
@@ -641,6 +734,7 @@
             </div>
         </div>
     </div>
+
     <!-- Customer Registration Modal -->
     <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog">
@@ -732,6 +826,7 @@
             </div>
         </div>
     </div>
+
     <!-- Customer List Modal -->
     <div class="modal fade" id="customerListModal" tabindex="-1" aria-labelledby="customerListModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">

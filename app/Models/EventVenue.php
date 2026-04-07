@@ -34,4 +34,7 @@ class EventVenue extends Model
     {
         return $this->belongsTo(PriceLevel::class, 'price_id');
     }
+    public function price(){
+        return $this->belongsTo(PriceLevel::class, 'price_id');
+    }
 }

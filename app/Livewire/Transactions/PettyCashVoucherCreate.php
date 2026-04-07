@@ -297,7 +297,7 @@ class PettyCashVoucherCreate extends Component
             'account_types_id' => $this->selectedTransactionTypeID,
             'template_id' => $this->selectedTransactionNameID,
             'account_type' => $typeName,
-            'transaction_title' => $this->selectedTemplate->template_name,
+            'transaction_title' => $this->selectedTemplate->templateName->template_name,
             'event_id' => $this->eventId,
         ]);
 

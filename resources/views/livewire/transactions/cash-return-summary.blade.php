@@ -3,7 +3,7 @@
             <div class="row">
                 <div class="col-md-6">
                     @if(auth()->user()->employee->getModulePermission('Acknowledgement Receipt') == 1 )
-                        <a href="" style="text-decoration: none; color: white;"><x-primary-button >+ PCV CRS</x-primary-button></a>
+                        <x-primary-button x-on:click="$openModal('cardModal')" >+ PCV CRS</x-primary-button>
                         <a href="" style="text-decoration: none; color: white;"><x-primary-button >+ Event CRS</x-primary-button></a>
                         <x-primary-button>Export<i class="bi bi-box-arrow-up"></i></x-primary-button>
                     @endif
@@ -76,10 +76,10 @@
                                         @elseif($crs->status =='FINAL') class="badge bg-success" 
                                         @endif>{{ $crs->status }}</span> </td>
                                     <td>{{ $crs->pettyCashVoucher->reference ?? '' }}</td>
-                                    <td>{{ $crs->event->reference ?? '' }}</td>
+                                    <td>{{ $crs->event->reference ?? '-' }}</td>
                                     <td>{{ $crs->preparedBy->name ?? '' }}</td>
-                                    <td>{{ number_format($crs->amount_returned, 2) }}</td>
-                                    <td>{{ $crs->created_at->format('Y-m-d') }}</td>
+                                    <td>₱ {{ number_format($crs->amount_returned, 2) }}</td>
+                                    <td>{{ $crs->created_at->format('M. d, Y') }}</td>
                                     <td>
                                         <a href="\cash-return-view?reference_id={{ $crs->id }}" >
                                            <a href="\cash-return-view?reference_id={{ $crs->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
@@ -97,6 +97,177 @@
                 </div>
         </div>
     </div>
+
+    {{-- cash return for PCV --}}
+
+    <x-modal-card title="Cash Return Slip - PCV" name="cardModal" wire:ignore.self>
+        
+
+         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-3">
+            <div class="input-group">
+                <label for="" class="input-group-text">Reference</label>
+                <input type="text" class="form-control form-control-sm" placeholder="<AUTO>" disabled>
+            </div>
+            <div class="input-group">
+                <label for="" class="input-group-text">Return Date</label>
+                <input type="text" class="form-control form-control-sm" value="{{ today('Asia/Manila')->format('M. d, Y') }}" disabled>
+            </div>
+         </div>
+        <x-select
+            label="Petty Cash Voucher" 
+            placeholder="Select PCV ..."
+            :options="$pettyCashVouchers"
+            option-value="id"
+            :min-items-for-search="0"
+            option-label="reference"
+            wire:model.live="selectedPCVId"
+        />
+
+        <input type="number" class="form-control mt-2" placeholder="Enter amount to return" wire:model.live="returnAmountPCV">
+
+        <div class="card mt-3">
+            <table class="table table-sm mt-3 mb-3">
+                <thead class="table-dark">
+                    <th>
+                        <td class="text-start"></td>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4">PCV Details</td>
+                    </tr>
+                    @forelse ($selectedPCV as $pcv)
+                            <tr>
+                                <td><strong>PCV Date :</strong></td>
+                                <td>{{($pcv->created_at->format('M. d, Y'))}}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Transaction :</strong></td>
+                                <td>{{ $pcv->transaction_title}}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Amount :</strong></td>
+                                <td>₱ {{number_format( $pcv->total_amount ,2 ) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Expense :</strong></td>
+                                <td><strong @if($returnAmountPCV > $pcv->total_amount) class="text-danger" @endif>₱ {{ $returnAmountPCV ? number_format($pcv->total_amount - $returnAmountPCV, 2) :  number_format($pcv->total_amount, 2) }}</strong></td>
+                            </tr>
+                    @empty
+                       
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+       <x-textarea label="Notes" placeholder="write your notes" wire:model="pcvNote"/>
+    
+        <x-slot name="footer" class="flex justify-between gap-x-4">
+    
+            <div class="flex gap-x-4">
+                <x-button flat label="Cancel" x-on:click="close" />
+    
+                <div class="input-group">
+                    <select name="" id="" class="form-select form-select-sm" wire:model="saveAsPcvCrs">
+                        <option value="DRAFT">DRAFT</option>
+                        <option value="FINAL">FINAL</option>
+                    </select>
+                    <x-primary-button wire:loading.attr="disabled" wire:click="savePcvCrs" wire:loading.attr="disabled">
+                        <span wire:loading wire:target="savePcvCrs"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Saving...</span>
+                        <span wire:loading.remove wire:target="savePcvCrs">Save As</span>
+                     </x-primary-button>
+                </div>
+            </div>
+        </x-slot>
+    </x-modal-card>
+
+{{-- event CRS Modal --}}
+     <x-modal-card title="Cash Return Slip - PCV" name="eventCRSModal" wire:ignore.self>
+        
+
+         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-3">
+            <div class="input-group">
+                <label for="" class="input-group-text">Reference</label>
+                <input type="text" class="form-control form-control-sm" placeholder="<AUTO>" disabled>
+            </div>
+            <div class="input-group">
+                <label for="" class="input-group-text">Return Date</label>
+                <input type="text" class="form-control form-control-sm" value="{{ today('Asia/Manila')->format('M. d, Y') }}" disabled>
+            </div>
+         </div>
+        <x-select
+            label="Petty Cash Voucher" 
+            placeholder="Select PCV ..."
+            :options="$pettyCashVouchers"
+            option-value="id"
+            :min-items-for-search="0"
+            option-label="reference"
+            wire:model.live="selectedPCVId"
+        />
+
+        <input type="number" class="form-control mt-2" placeholder="Enter amount to return" wire:model.live="returnAmountPCV">
+
+        <div class="card mt-3">
+            <table class="table table-sm mt-3 mb-3">
+                <thead class="table-dark">
+                    <th>
+                        <td class="text-start"></td>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4">PCV Details</td>
+                    </tr>
+                    @forelse ($selectedPCV as $pcv)
+                            <tr>
+                                <td><strong>PCV Date :</strong></td>
+                                <td>{{($pcv->created_at->format('M. d, Y'))}}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Transaction :</strong></td>
+                                <td>{{ $pcv->transaction_title}}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Amount :</strong></td>
+                                <td>₱ {{number_format( $pcv->total_amount ,2 ) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Expense :</strong></td>
+                                <td><strong @if($returnAmountPCV > $pcv->total_amount) class="text-danger" @endif>₱ {{ $returnAmountPCV ? number_format($pcv->total_amount - $returnAmountPCV, 2) :  number_format($pcv->total_amount, 2) }}</strong></td>
+                            </tr>
+                    @empty
+                       
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+       <x-textarea label="Notes" placeholder="write your notes" wire:model="pcvNote"/>
+    
+        <x-slot name="footer" class="flex justify-between gap-x-4">
+    
+            <div class="flex gap-x-4">
+                <x-button flat label="Cancel" x-on:click="close" />
+    
+                <div class="input-group">
+                    <select name="" id="" class="form-select form-select-sm" wire:model="saveAsPcvCrs">
+                        <option value="DRAFT">DRAFT</option>
+                        <option value="FINAL">FINAL</option>
+                    </select>
+                    <x-primary-button wire:loading.attr="disabled" wire:click="savePcvCrs" wire:loading.attr="disabled">
+                        <span wire:loading wire:target="savePcvCrs"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Saving...</span>
+                        <span wire:loading.remove wire:target="savePcvCrs">Save As</span>
+                     </x-primary-button>
+                </div>
+            </div>
+        </x-slot>
+    </x-modal-card>
+
+
+
+      <x-notifications />
+
+
 </div>
 
 

@@ -58,7 +58,7 @@
                         <tbody>
                             @forelse ($advancesForLiquidation as $afl)
                                 <tr>
-                                    <td>{{ $afl->reference_number }}</td>
+                                    <td>{{ $afl->reference }}</td>
                                     <td>{{ \Carbon\Carbon::parse($afl->created_at)->format('M. d, Y') }}</td>
                                     <td>
                                         <span @if($afl->status == 'DRAFT') class="badge bg-secondary" 

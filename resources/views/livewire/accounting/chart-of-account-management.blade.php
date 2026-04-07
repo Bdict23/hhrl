@@ -182,7 +182,7 @@
                     wire:model="accountCode"
                     />
         </div>
-        <div class="col-span-1 sm:col-span-2 mt-2">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <x-select 
                 label="Parent Title" 
                 placeholder="Select parent title ..."
@@ -191,6 +191,15 @@
                 :min-items-for-search="0"
                 option-label="account_title"
                 wire:model="parentTitle"
+                />
+                <x-select 
+                label="Account Type" 
+                placeholder="Select account type ..."
+                :options="$accountTypes"
+                option-value="id"
+                :min-items-for-search="0"
+                option-label="type_name"
+                wire:model="accountType"
                 />
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-2">

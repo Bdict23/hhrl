@@ -26,4 +26,9 @@ class EventMenu extends Model
     {
         return $this->belongsTo(PriceLevel::class, 'price_id');
     }
+
+    public function discounts()
+    {
+        return $this->hasMany(EventDiscount::class, 'event_menu_id');
+    }
 }

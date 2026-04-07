@@ -318,7 +318,11 @@
                                         {{ __('Equipment Request') }}
                                     </x-dropdown-link>
                                 @endif
-                                
+                                @if (auth()->user()->employee->getModulePermission('Banquet Billing and Payment') != 2 )
+                                    <x-dropdown-link :href="url('/billing-and-payment')" class="no-underline">
+                                            {{ __('Billing and Payment') }}
+                                    </x-dropdown-link>
+                                 @endif
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -399,6 +403,11 @@
                                         <x-dropdown-link :href="route('accounting.coa.management')" class="no-underline">
                                             COA - Management
                                             </x-dropdown-link>
+                                             @if (auth()->user()->employee->getModulePermission('Cash Flow Titles') !=2)
+                                                <x-dropdown-link :href="route('accounting.cashflow.titles')" class="no-underline">
+                                                    Cash Flow Titles
+                                                </x-dropdown-link>
+                                            @endif
                                     </x-slot>
                                 </x-dropdown>
                             </div>

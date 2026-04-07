@@ -23,6 +23,8 @@ class BanquetEventCreate extends Component
     public $reference;
     public $services = [];
     public $menus;
+    public $alaCarteMenus;
+    public $banquetMenus;
     public $customers = [];
     public $venues = [];
     public $reviewers = [];
@@ -126,12 +128,13 @@ class BanquetEventCreate extends Component
             ->with('ratePrice')
             ->get();
        $this->menus = BranchMenuRecipe::with([
-        'branchMenu' => function ($q) {
-            $q->where('branch_id', auth()->user()->branch_id)
-              ->where('is_available', 1);
-        },
+        // 'branchMenu' => function ($q) {
+        //     $q->where('branch_id', auth()->user()->branch_id)
+        //       ->where('is_available', 1);
+        // },
         'menu' => function ($q) {
-            $q->where('recipe_type', 'Banquet')
+            $q
+            // ->where('recipe_type', 'Banquet')
               ->where('status', 'available')
               ->with('mySRP');
         }
@@ -141,11 +144,15 @@ class BanquetEventCreate extends Component
             ->where('is_available', 1);
         })
         ->whereHas('menu', function ($q) {
-            $q->where('recipe_type', 'Banquet')
+            $q
+            //->where('recipe_type', 'Banquet')
             ->where('status', 'available');
         })
         ->get();
-        // dd($this->menus);
+        
+        $this->banquetMenus = $this->menus->where('menu.recipe_type', 'Banquet');
+        $this->alaCarteMenus = $this->menus->where('menu.menu_type', 'Ala Carte');
+
         $moduleId = Module::where('module_name', 'Banquet Events')->first()->id;
         $this->customers = Customer::where('branch_id', auth()->user()->branch_id)->get();
         $this->reviewers = Signatory::where('branch_id', auth()->user()->branch_id)->where('module_id', $moduleId)->where('signatory_type', 'REVIEWER')->get();

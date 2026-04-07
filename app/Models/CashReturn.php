@@ -28,7 +28,7 @@ class CashReturn extends Model
     }
     public function event()
     {
-        return $this->belongsTo(Event::class, 'event_id', 'id');
+        return $this->belongsTo(BanquetEvent::class, 'event_id', 'id');
     }
     public function pettyCashVoucher()
     {

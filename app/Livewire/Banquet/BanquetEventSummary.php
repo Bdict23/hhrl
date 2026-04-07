@@ -43,7 +43,7 @@ class BanquetEventSummary extends Component
     public function fetchData()
     {
         $this->eventLists = BanquetEvent::where('branch_id', auth()->user()->branch_id)
-            ->whereDate('start_date', '>=', now()->toDateString())
+            ->whereDate('end_date', '>=', now()->toDateString())
             ->orderBy('created_at', 'asc')
             ->get();
     }

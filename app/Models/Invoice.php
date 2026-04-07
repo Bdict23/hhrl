@@ -23,6 +23,7 @@ class Invoice extends Model
         'amount',
         'payment_mode',
         'order_id',
+        'event_id',
         'customer_name',
         'branch_id',
         'created_at',
@@ -47,5 +48,8 @@ class Invoice extends Model
         return $this->hasMany(Payment::class, 'invoice_id');
     }
 
-
+    public function event()
+    {
+        return $this->belongsTo(BanquetEvent::class, 'event_id');
+    }
 }

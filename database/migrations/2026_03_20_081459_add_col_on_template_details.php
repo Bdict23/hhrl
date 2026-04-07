@@ -19,11 +19,6 @@ return new class extends Migration
             }
             });
 
-        Schema::table('actng_chart_of_accounts', function (Blueprint $table) {
-                $table->dropForeign(['transaction_type']);
-            
-        });
-
         Schema::table('actng_account_types', function (Blueprint $table) {
                 $table->dropColumn('acct_code');
             

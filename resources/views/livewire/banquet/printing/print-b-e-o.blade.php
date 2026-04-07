@@ -34,6 +34,9 @@
             </tr>
         </tbody>
     </table>
+        <div class="justify-content-start" style="max-width: 250px; padding: 10px; border: 1px">
+            <span style="white-space: pre-wrap;"><strong>Note : </strong> {{ $eventDetails->notes ?? '' }}</span>
+        </div>
      <table class="w-full table-bordered mt-2">
             <thead>
                     <th class="thead">FOOD</th>
@@ -91,19 +94,22 @@
             </tbody>
         </table>
 
-        <table>
-            <tbody>
-                <tr>
-                    <td style="border: none; padding: 0;">
-                        <p class="m-1 t-sm"><strong>Food :  </strong>₱ {{ number_format($totalAmountMenu, 2) }}</p>
-                        <p class="m-1 t-sm"><strong>Location :  </strong>₱ {{ number_format($totalAmountLocation, 2) }}</p>
-                        <p class="m-1 t-sm"><strong>Others :  </strong>₱ {{ number_format($totalAmountService, 2) }}</p>
-                        <hr>
-                        <p class="m-1 t-sm"><strong>Total Amount: </strong>₱ {{ number_format($eventDetails->total_amount, 2) }}</p><br><br>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="d-flex justify-content-start">
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="border: none; padding: 0;">
+                            <p class="m-1 t-sm"><strong>Food :  </strong>₱ {{ number_format($totalAmountMenu, 2) }}</p>
+                            <p class="m-1 t-sm"><strong>Location :  </strong>₱ {{ number_format($totalAmountLocation, 2) }}</p>
+                            <p class="m-1 t-sm"><strong>Others :  </strong>₱ {{ number_format($totalAmountService, 2) }}</p>
+                            <hr>
+                            <p class="m-1 t-sm"><strong>Total Amount: </strong>₱ {{ number_format($eventDetails->total_amount, 2) }}</p><br><br>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
         
     </div>
 

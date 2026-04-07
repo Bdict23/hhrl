@@ -21,6 +21,7 @@ class ChartOfAccountManagement extends Component
     // for create account title
     public $accountTitle;
     public $accountCode;
+    public $accountType;
     public $parentTitle;
     public $normalBalance;
 
@@ -76,11 +77,13 @@ class ChartOfAccountManagement extends Component
             'accountCode' => 'required|string|max:50|unique:actng_chart_of_accounts,account_code',
             'parentTitle' => 'nullable|exists:actng_chart_of_accounts,id',
             'normalBalance' => 'required|in:DEBIT,CREDIT',
+            'accountType' => 'required|exists:actng_account_types,id',
         ]);
 
         $account = new ChartOfAccount();
         $account->company_id = auth()->user()->branch->company_id;
         $account->account_title = $this->accountTitle;
+        $account->transaction_type = $this->accountType;
         $account->account_code = $this->accountCode;
         $account->parent_id = $this->parentTitle;
         $account->normal_balance = $this->normalBalance;
@@ -89,7 +92,7 @@ class ChartOfAccountManagement extends Component
         $account->save();
 
         // Reset form fields
-        $this->reset(['accountTitle', 'accountCode', 'parentTitle', 'normalBalance']);
+        $this->reset(['accountTitle', 'accountCode', 'parentTitle', 'normalBalance', 'accountType']);
         $this->modal()->close('cardModal');
         $this->fetchAccountTitles();
         $this->successNotificationTitle();

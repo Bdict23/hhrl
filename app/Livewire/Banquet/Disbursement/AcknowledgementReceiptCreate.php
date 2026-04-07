@@ -42,6 +42,7 @@ class AcknowledgementReceiptCreate extends Component
     public $notes;
     public $checkStatus = 'CURRENT';
     public $saveAsStatus = 'DRAFT';
+    public $eventId;
 
     //selected customer and bank
     public $selectedCustomer;
@@ -80,6 +81,7 @@ class AcknowledgementReceiptCreate extends Component
         'saveAsStatus.required' => 'Save as status is required.',
         'saveAsStatus.in' => 'Save as status must be either DRAFT or FINAL.',
         'notes.max' => 'Notes cannot exceed 1000 characters.',
+        'eventId.exists' => 'Selected event does not exist.',
     ];
 
     public function render()
@@ -283,6 +285,11 @@ class AcknowledgementReceiptCreate extends Component
 
     public function selectEvent($id){
         $this->selectedEvent = Event::find($id);
+        if($this->selectedEvent) {
+            $this->eventId = $this->selectedEvent->id;
+        }else{
+            $this->dispatch('showAlert', ['type' => 'error','title' => 'Error', 'message' => 'Event not found.']);
+        }   
         $this->dispatch('hideEventListModal');
     }
 
@@ -299,7 +306,7 @@ class AcknowledgementReceiptCreate extends Component
             'saveAsStatus' => ['required', Rule::in(['DRAFT', 'OPEN'])],
             'checkStatus' => ['required', Rule::in(['CURRENT', 'POST-DATED'])],
             'notes' => 'nullable|string|max:1000',
-            'eventId' => 'nullable|exists:events,id',
+            'eventId' => 'nullable|exists:banquet_events,id',
         ]);
 
         $curYear = now()->year;
@@ -380,6 +387,7 @@ class AcknowledgementReceiptCreate extends Component
             'saveAsStatus' => ['required', Rule::in(['DRAFT', 'OPEN'])],
             'checkStatus' => ['required', Rule::in(['CURRENT', 'POST-DATED'])],
             'notes' => 'nullable|string|max:500',
+            'eventId' => 'nullable|exists:banquet_events,id',
         ]);
 
         $updateAR = AcknowledgementReceipt::where('id',$this->acknowledgementReceiptID)->first();

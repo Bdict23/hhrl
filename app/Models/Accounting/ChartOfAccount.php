@@ -12,6 +12,7 @@ class ChartOfAccount extends Model
         'company_id',
         'parent_id',
         'account_code',
+        'transaction_type',
         'account_title',
         'is_active',
         'normal_balance',

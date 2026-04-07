@@ -7,8 +7,8 @@ use App\Models\Module;
 use App\Models\Signatory;
 use Livewire\Component;
 use Illuminate\Http\Request;
+use App\Models\Cashflow;
 use Carbon\Carbon;
-
 
 class AdvancesForLiquidationView extends Component
 {
@@ -20,6 +20,7 @@ class AdvancesForLiquidationView extends Component
     public $approvers = [];
     public $selectedDisburser;
     public $hasReturnedAmount = false;
+    public $hasCashflow = false;
     
     // setters
     public $totalAFLAmount;
@@ -55,6 +56,14 @@ class AdvancesForLiquidationView extends Component
         $this->fetchData();
     }
     public function fetchData(){
+        // check if naay cashflow transaction for today, if yes show error 
+        $existingCashflow = Cashflow::where('branch_id', auth()->user()->branch_id)
+            ->whereDate('created_at', Carbon::today())
+            ->first();
+        if($existingCashflow){
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Cashflow Already Created!', 'message' => 'There is an existing cashflow transaction for today.']);
+            $this->hasCashflow = true;
+         }
         $moduleId = Module::where('module_name', 'Advances For Liquidation')->first()->id;
         $this->disbursers = ModulePermission::where('module_id', $moduleId)->where('access', 1)->get();
         $this->approvers = Signatory::where([['signatory_type', 'APPROVER'],['module_id', $moduleId  ],['branch_id', auth()->user()->branch_id]])->get();;
@@ -81,6 +90,10 @@ class AdvancesForLiquidationView extends Component
     }
 
     public function saveAFL(){
+        if($this->hasCashflow){
+            $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Cashflow Already Created!', 'message' => 'There is an existing cashflow transaction for today.']);
+            return;
+        }
         $this->validate([
             'disburserId' => 'required|exists:employees,id',
             'amountReceive' => 'required|numeric|min:1',

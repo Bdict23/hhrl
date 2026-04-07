@@ -316,6 +316,7 @@ class Invoicing extends Component
            $this->dispatch('RequestOrderDiscountCode', discountId: $discountId);
             return;
         }
+        $discount = Discount::find($discountId);
         if ($isChecked) {
              // Divide the discount amount among all items
                     $amountToDistribute = $discount->amount > 0 
@@ -403,7 +404,7 @@ class Invoicing extends Component
                 }
 
                 // Validate discount amount doesn't exceed item total
-                $orderDetail = OrderDetail::where('item_id', $this->selectedItemId)->where('order_id', $this->selectedOrderId)->with('priceLevel')->first();
+                $orderDetail = OrderDetail::where('id', $this->selectedItemId)->where('order_id', $this->selectedOrderId)->with('priceLevel')->first();
                 
                 if ($orderDetail) {
                     $itemTotal = $orderDetail->qty * ($orderDetail->priceLevel->amount ?? 0);

@@ -24,7 +24,7 @@ class AdvancesForLiquidationSummary extends Component
     }
 
     public function fetchData(){
-        $this->advancesForLiquidation = AdvancesForLiquidation::whereBetween('created_at', [$this->fromDate, $this->toDate])->get();
+        $this->advancesForLiquidation = AdvancesForLiquidation::whereBetween('created_at', [$this->fromDate, $this->toDate])->where('branch_id', auth()->user()->branch_id)->get();
     }
 
 
@@ -38,7 +38,7 @@ class AdvancesForLiquidationSummary extends Component
                 $this->toDate = now()->endOfMonth()->format('Y-m-d');
             }
         if ($this->fromDate && $this->toDate) {
-            $this->advancesForLiquidation = AdvancesForLiquidation::whereBetween('created_at', [$this->fromDate, $this->toDate])->get();
+            $this->advancesForLiquidation = AdvancesForLiquidation::whereBetween('created_at', [$this->fromDate, $this->toDate])->where('branch_id', auth()->user()->branch_id)->get();
         }
     }
 }

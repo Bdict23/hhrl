@@ -53,4 +53,5 @@ class PettyCashVoucher extends Model
     {
         return $this->hasMany(PCVDetail::class, 'petty_cash_voucher_id');
     }
+    
 }
