@@ -20,6 +20,8 @@ class CashReturn extends Model
         'notes',
         'created_at',
         'updated_at',
+        'approved_by',
+        'approved_date',
     ];
 
     public function preparedBy()

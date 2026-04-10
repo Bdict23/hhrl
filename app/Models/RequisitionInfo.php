@@ -79,4 +79,14 @@ class RequisitionInfo extends Model
     {
         return $this->belongsTo(ProductionOrder::class, 'production_id');
     }
+    public function receivings(){
+
+        return $this->hasMany(Receiving::class, 'REQUISITION_ID');
+
+    }
+
+    public function getTotalReceivedAmountAttribute()
+    {
+        return $this->receivings->sum('receive_amount');
+    }
 }

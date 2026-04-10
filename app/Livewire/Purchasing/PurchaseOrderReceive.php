@@ -347,7 +347,14 @@ public $receivingInfo = [];
             }
             
         }
-    
+
+        // Calculate total receiving amount efficiently from cardex details
+        $totalAmount = \Illuminate\Support\Facades\DB::table('cardex')
+            ->join('price_levels', 'cardex.price_level_id', '=', 'price_levels.id')
+            ->where('cardex.receiving_id', $newRecieving->id)
+            ->sum(\Illuminate\Support\Facades\DB::raw('cardex.qty_in * price_levels.amount'));
+
+        $newRecieving->update(['receive_amount' => $totalAmount]);
 
         session()->flash('success', 'Purchase Order Successfully ' . ($this->finalStatus ? "Saved as Draft" : "Received") . ($this->backorderCount > 0 ? " with $this->backorderCount active back order(s)." : ""));
         $this->reset();
@@ -529,6 +536,14 @@ public $receivingInfo = [];
             }
             
         }
+
+        // Calculate total receiving amount efficiently from cardex details
+        $totalAmount = \Illuminate\Support\Facades\DB::table('cardex')
+            ->join('price_levels', 'cardex.price_level_id', '=', 'price_levels.id')
+            ->where('cardex.receiving_id', $updateRecieving->id)
+            ->sum(\Illuminate\Support\Facades\DB::raw('cardex.qty_in * price_levels.amount'));
+
+        $updateRecieving->update(['receive_amount' => $totalAmount]);
 
         session()->flash('success', 'Purchase Order Successfully Updated');
         return redirect('/receive_stock');

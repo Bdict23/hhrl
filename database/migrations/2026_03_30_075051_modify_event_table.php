@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //
         Schema::table('banquet_events', function (Blueprint $table) {
-            $table->enum('liquidation_status', ['PENDING', 'LIQUIDATED'])->default('PENDING')->after('status');
+            $table->enum('liquidation_status', ['PENDING', 'LIQUIDATED','CANCELLED'])->default('PENDING')->after('status');
             $table->date('liquidation_date')->nullable()->after('liquidation_status');
         });
 

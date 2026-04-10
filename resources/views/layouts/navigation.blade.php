@@ -323,6 +323,11 @@
                                             {{ __('Billing and Payment') }}
                                     </x-dropdown-link>
                                  @endif
+                                @if (auth()->user()->employee->getModulePermission('BEO Liquidation') != 2 )
+                                    <x-dropdown-link :href="route('beo.liquidation.summary')" class="no-underline">
+                                            {{ __('Liquidation') }}
+                                    </x-dropdown-link>
+                                @endif
                             </x-slot>
                         </x-dropdown>
                     </div>

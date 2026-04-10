@@ -115,6 +115,11 @@ class BillingAndPayment extends Component
         }
         public function updatedSelectedPaymentTypeId($value)
         {
+            if(!$this->selectedEventId){
+                $this->notify('No Event Selected', 'error', 'Please select an event before selecting payment type.');
+                $this->selectedPaymentTypeId = null;
+                return;
+            }
             if($value === 'SPLIT'){
                 $this->modal()->open('splitPaymentModal');
             }else{
@@ -130,6 +135,7 @@ class BillingAndPayment extends Component
                 'payment_type_id' => $this->selectedSplitId,
                 'amount' => null,
             ];
+            $this->selectedSplitId = null;
             return $this->splitPayments;
         } 
 
@@ -570,6 +576,12 @@ class BillingAndPayment extends Component
 
             $this->events = BanquetEvent::where('status', 'CONFIRMED')->get();
 
+        }
+
+        public function removeFromSplitPayments($index){
+            if(isset($this->splitPayments[$index])){
+                array_splice($this->splitPayments, $index, 1);
+            }
         }
 
     //END OF PAYMENT TAB METHODS

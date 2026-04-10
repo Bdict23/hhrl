@@ -70,4 +70,17 @@ class BanquetEvent extends Model
         return $this->belongsTo(Employee::class, 'created_by');
     }
 
+    public function eventLiquidations()
+    {
+        return $this->hasMany(EventLiquidation::class, 'event_id');
+    }
+
+    public function procurements()
+    {
+        return $this->hasMany(BanquetProcurement::class, 'event_id');
+    }
+    public function liquidation()
+    {
+        return $this->hasOne(EventLiquidation::class, 'event_id');
+    }
 }

@@ -25,7 +25,6 @@ class AcknowledgementReceiptCreate extends Component
     public $customers = [];
     public $banks = [];
     public $events = [];
-    public $validEventIds = [];
     public $isCreate = true;
     public $currentARStatus = 'DRAFT';
     public $acknowledgementReceiptID;
@@ -112,9 +111,14 @@ class AcknowledgementReceiptCreate extends Component
     public function fetchData(){
         $this->customers = Customer::where('branch_id', auth()->user()->branch_id)->get();
         $this->banks = Bank::where('branch_id', auth()->user()->branch_id)->get();
-        $this->validEventIds = BanquetProcurement::where('branch_id', auth()->user()->branch_id)->where('status', 'APPROVED')->pluck('event_id')->toArray();
-        $this->events = Event::where('end_date', '>=', Carbon::now('Asia/Manila')->startOfDay())
-                                ->whereIn('id', $this->validEventIds)->get();
+        $this->events = Event::query()
+        ->with('customer') // Eager load customers
+        ->where('liquidation_status', 'PENDING')
+        ->whereHas('procurements', function ($query) {
+            $query->where('branch_id', auth()->user()->branch_id)
+                ->where('status', 'APPROVED');
+        })
+        ->get();
     }
 
     // upon update on check amount the amount in words will be updated

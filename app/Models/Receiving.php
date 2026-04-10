@@ -30,7 +30,8 @@ class Receiving extends Model
         'branch_id',
         'company_id',
         'receiving_status',
-        'stf_id'
+        'stf_id',
+        'receive_amount'
     ];
 
     public function attachments()

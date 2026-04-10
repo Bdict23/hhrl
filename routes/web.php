@@ -37,6 +37,8 @@ use App\Livewire\GateEntrance\Customer\CustomerDetails;
 use App\Livewire\GateEntrance\Customer\CustomersList;
 use App\Livewire\GateEntrance\Customer\CustomerRecords;
 use App\Livewire\Transactions\CashFlowCreate;
+use App\Livewire\Banquet\LiquidationSummary;
+use App\Livewire\Banquet\LiquidationCreate;
 
 
 //
@@ -532,3 +534,16 @@ Route::get('/cashflow-view/{id}', CashFlowCreate::class)->middleware(['auth', 'v
 Route::get('/billing-and-payment', function () {
     return view('banquet.billing-and-payment-view');
 })->middleware(['auth', 'verified'])->name('billing.and.payment');
+
+// beo.liquidation
+Route::get('/beo-liquidation-summary', LiquidationSummary::class)->middleware(['auth', 'verified'])->name('beo.liquidation.summary');
+
+// beo.liquidation.create
+Route::get('/beo-liquidation', function(){
+    return view('banquet.liquidation-create-view');
+})->middleware(['auth', 'verified'])->name('beo.liquidation.create');
+
+//route('beo.liquidation.view'
+Route::get('/beo-liquidation?BEO-LIQ-id={id}', function(){
+    return view('banquet.liquidation-create-view');
+})->middleware(['auth', 'verified'])->name('beo.liquidation.view');

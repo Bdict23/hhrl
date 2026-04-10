@@ -20,7 +20,6 @@ class BanquetProcurementCreate extends Component
     public $selectedEvent;
     public $totalPercentage = 0;
     public $totalGrossOrder = 0;
-    public $excludedEventIds = [];
     public $bebId = null;
 
 
@@ -107,9 +106,15 @@ class BanquetProcurementCreate extends Component
 
     public function fetchData()
     {
-        $this->excludedEventIds = BanquetProcurement::where('branch_id', auth()->user()->branch_id)->whereIn('status', ['PENDING', 'PREPARING','APPROVED'])->pluck('event_id')->toArray();
-        $this->events = BanquetEvent::with('customer','eventVenues.venue','eventServices','eventMenus','purchaseOrders')->where('status', 'CONFIRMED')->where('end_date', '>=', now())->where('branch_id', auth()->user()->branch_id)->whereNotIn('id', $this->excludedEventIds)->get();
-
+        $this->events = BanquetEvent::query()
+            ->with(['customer', 'eventVenues.venue', 'eventServices', 'eventMenus', 'purchaseOrders'])
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereIn('status', ['CONFIRMED', 'CLOSED'])
+            ->whereDoesntHave('procurements', function ($query) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereIn('status', ['PENDING', 'PREPARING', 'APPROVED']);
+            })
+            ->get();
         $moduleId = Module::where('module_name', 'Banquet Procurement')->value('id');
         $this->approvers = Signatory::with('employees')->where('signatory_type', 'APPROVER')
             ->where('module_id', $moduleId)

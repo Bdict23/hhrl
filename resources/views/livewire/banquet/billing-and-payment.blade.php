@@ -165,7 +165,7 @@
                                 wire:model.live="selectedPaymentTypeId" 
                             />
                         @if($selectedPaymentTypeId === 'SPLIT')
-                            <x-button class="mt-2" label="View Split Payment" right-icon="wallet" outline primary hover="primary" focus:solid.gray /> 
+                            <x-button class="mt-2" label="View Split Payment" right-icon="wallet" outline primary hover="primary" focus:solid.gray x-on:click="$openModal('splitPaymentModal')" /> 
                         @endif
                         <x-input
                             icon="currency-dollar"
@@ -583,7 +583,11 @@
      </div>
 
      {{-- openBillingModal --}}
-    <x-modal name="openBillingModal" persistent>
+    <x-modal 
+        name="openBillingModal"
+        width="full"
+        title="Billing Details"
+        persistent>
         <x-card>
            <div>
                 <div class="text-center ">
@@ -599,13 +603,13 @@
             <x-slot name="footer" class="flex justify-end gap-x-4">
                 <x-button flat label="Close" x-on:click="close" />
     
-                <x-button primary label="Print" wire:click="agree" icon="printer" />
+                <x-button primary label="Print"  icon="printer" />
             </x-slot>
         </x-card>
     </x-modal>
 
     {{-- payment type modal  splitPaymentModal --}}
-    <x-modal-card title="Edit Customer" name="splitPaymentModal" persistent>
+    <x-modal-card title="Split Payment" name="splitPaymentModal" persistent>
         <div class="col-span-1 sm:col-span-2">
            <div class="flex items-end gap-1 mb-3">
             <div class="grow">
@@ -620,8 +624,10 @@
                     />
                 </div>
                 <x-primary-button
-                    wire:click="addToSplitPayments"
-                >Add</x-primary-button>
+                    wire:click="addToSplitPayments">
+                    <span wire:loading.remove wire:target="addToSplitPayments">Add</span>
+                    <span wire:loading wire:target="addToSplitPayments">Adding...</span>
+                </x-primary-button>
             </div>
             <div class="card">
                 <div class="card-body">
@@ -639,7 +645,10 @@
                                     <td>{{ $payment['type'] }}</td>
                                     <td><input type="number" wire:model.live="splitPayments.{{ $index }}.amount" class="form-control" placeholder="0.00"/></td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm" wire:click="removeFromTable({{ $index }})">Remove</button>
+                                        <button class="btn btn-danger btn-sm" wire:click="removeFromSplitPayments({{ $index }})">
+                                            <span wire:loading wire:target="removeFromSplitPayments({{ $index }})">Removing...</span>
+                                            <span wire:loading.remove wire:target="removeFromSplitPayments({{ $index }})">Remove</span>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -654,9 +663,7 @@
         <x-slot name="footer" class="flex justify-between gap-x-4">
     
             <div class="flex gap-x-4">
-                <x-button flat label="Cancel" x-on:click="close" />
-    
-                <x-button primary label="Save" wire:click="save" />
+                <x-button primary label="Done" x-on:click="close"/>
             </div>
         </x-slot>
     </x-modal-card>

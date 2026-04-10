@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_discounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade')->index();
+            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade');
             $table->foreignId('discount_id')->constrained('discounts')->onDelete('cascade');
             $table->foreignId('event_id')->constrained('banquet_events')->onDelete('cascade');
             $table->foreignId('event_menu_id')->nullable()->constrained('event_menus')->onDelete('cascade');

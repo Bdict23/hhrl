@@ -59,13 +59,13 @@ class BanquetEventSummary extends Component
         $this->dispatch('modalOpened');
     }
 
-    public function filterEvents()
-    {
-        $this->eventLists = BanquetEvent::where('branch_id', auth()->user()->branch_id)
-            ->whereBetween('event_date', [$this->fromDate, $this->toDate])
-            ->orderBy('created_at', 'asc')
-            ->get();
-    }
+    // public function filterEvents()
+    // {
+    //     $this->eventLists = BanquetEvent::where('branch_id', auth()->user()->branch_id)
+    //         ->whereBetween('event_date', [$this->fromDate, $this->toDate])
+    //         ->orderBy('created_at', 'asc')
+    //         ->get();
+    // }
     public function resetFilters()
     {
         $this->fromDate = null;
@@ -91,6 +91,25 @@ class BanquetEventSummary extends Component
           $this->selectedEventStatus = 'CONFIRMED';
           session()->flash('success', 'Event has been confirmed successfully.');
       }
+    }
+
+    public function filterEvents(){
+    
+         $query = BanquetEvent::where('branch_id', auth()->user()->branch_id);
+
+        if (!$this->fromDate) {
+             $query->whereDate('created_at', '<=', $this->toDate);
+        }
+        if (!$this->toDate) {
+             $query->whereDate('created_at', '>=', $this->fromDate);
+        }
+
+        if ($this->fromDate && $this->toDate) {
+            $query->whereDate('created_at', '>=', $this->fromDate)
+                  ->whereDate('created_at', '<=', $this->toDate);
+        }
+
+        $this->eventLists = $query->get();
     }
 
 
