@@ -180,6 +180,7 @@ class AdvancesForLiquidationView extends Component
         $afl->update([
             'amount_returned' => $this->amountReturn,
             'date_returned' => Carbon::now('Asia/Manila'),
+            'status' => 'CLOSED',
         ]);
         $this->dispatch('showAlert', ['type' => 'success', 'title' => 'Success', 'message' => 'Excess amount returned successfully!']);
         $this->hasReturnedAmount = true;

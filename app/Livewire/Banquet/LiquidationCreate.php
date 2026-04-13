@@ -12,6 +12,7 @@ use App\Models\RequisitionInfo;
 use App\Models\Module;
 use App\Models\Signatory;
 use App\Models\CashReturn;
+use App\Models\PettyCashVoucher;
 use Illuminate\Http\Request;
 
 
@@ -29,7 +30,10 @@ class LiquidationCreate extends Component
     public $crsApprover;
     public $hasCRS = false;
     public $isLiquidationExists = false;
-    public $isOpenStatus = false;
+    public $isEditable = true;
+    public $isApproval=false;
+    public $isValidator=false;
+    public $status;
 
     // selected 
     public $selectedEventId;
@@ -37,7 +41,9 @@ class LiquidationCreate extends Component
     public $checkNumber;
     public $checkAmount;
     public $purchaseOrders;
+    public $pettyCashVouchers;
     public $incurredAmount;
+    public $totalExpense;
     public $remarks;
     public $selectedApproverId;
     public $selectedReviewerId;
@@ -46,6 +52,7 @@ class LiquidationCreate extends Component
     public $liquidationNotes;
     public $saveAs = 'DRAFT';
     public $referenceNumber;
+    public $totalCashReturnFromPCV = 0;
     
     //CRS fillable
     public $selectedCrsApproverId;
@@ -66,6 +73,25 @@ class LiquidationCreate extends Component
             $liquidationId = $request->query('BEO-LIQ-id');
             $liquidationData = EventLiquidation::find($liquidationId);
             if($liquidationData){
+                $this->getExistingLiquidationData($liquidationData);
+            }else{
+                $this->notify('Invalid ID', 'error', 'The provided BEO Liquidation ID is invalid.');
+            }
+          }else if($request && $request->has('BEO-Approval-id')){
+            $liquidationId = $request->query('BEO-Approval-id');
+            $liquidationData = EventLiquidation::find($liquidationId);
+            if($liquidationData){
+                $this->isApproval = true;
+                $this->saveAs = 'APPROVED';
+                $this->getExistingLiquidationData($liquidationData);
+            }else{
+                $this->notify('Invalid ID', 'error', 'The provided BEO Liquidation ID is invalid.');
+            }
+          }else if($request && $request->has('BEO-Validate-id')){
+            $liquidationId = $request->query('BEO-Validate-id');
+            $liquidationData = EventLiquidation::find($liquidationId);
+            if($liquidationData){
+                $this->isValidator = true;
                 $this->getExistingLiquidationData($liquidationData);
             }else{
                 $this->notify('Invalid ID', 'error', 'The provided BEO Liquidation ID is invalid.');
@@ -120,20 +146,23 @@ class LiquidationCreate extends Component
     public function getExistingLiquidationData($liquidationData)
     {
         $this->isLiquidationExists = true;
-        $this->isOpenStatus = $liquidationData->status === 'OPEN';
+        $this->isEditable = $liquidationData->status === 'DRAFT';
+        $this->status = $liquidationData->status;
         $this->events = BanquetEvent::where('id', $liquidationData->event_id)->get();
         $this->referenceNumber = $liquidationData->reference;
         $this->createDate = Carbon::parse($liquidationData->created_at)->format('d-m-Y H:i');
         $this->liquidationNotes = $liquidationData->purpose;
+        $this->incurredAmount = $liquidationData->total_incurred;
         $this->selectedApproverId = $liquidationData->approved_by;
         $this->selectedReviewerId = $liquidationData->reviewed_by;
         $this->saveAs = $liquidationData->status;
         $this->selectedEventId = $liquidationData->event_id;
-        $this->getEventInformation();
+        $this->getEventInformation($this->events);
         
     }
-    public function getEventInformation(){
-        $this->checkDetails = AcknowledgementReceipt::where('event_id', $this->selectedEventId)->first();
+    public function getEventInformation($event){
+        $event = $event->first();
+        $this->checkDetails = $event->acknowledgementReceipts()->whereIn('status', ['OPEN', 'CLOSED'])->first();
         // check
         if(!$this->checkDetails){
             $this->notify('No check number found', 'error', 'please process acknowledgement first.');
@@ -142,24 +171,30 @@ class LiquidationCreate extends Component
         $this->checkNumber = $this->checkDetails->check_number;
         $this->checkAmount = $this->checkDetails->check_amount;
 
+        // petty cash vouchers
+        $this->pettyCashVouchers = $event->pettyCashVouchers()->with('cashReturn')->get();
+        
         // PO
-        $this->purchaseOrders = RequisitionInfo::where('event_id', $this->selectedEventId)
-            ->with('receivings')
-            ->get();
+        $this->purchaseOrders = $event->purchaseOrders()->with('receivings')->get();
 
-        $this->incurredAmount = 0;
-        foreach ($this->purchaseOrders as $po) {
-            $this->incurredAmount += $po->receivings->sum('receive_amount');
+        foreach($this->pettyCashVouchers ?? [] as $pcv){
+            if($pcv->cashReturn){
+                $this->totalCashReturnFromPCV += $pcv->cashReturn->amount_returned;
+            }
+        }
+
+         $this->totalExpense = $this->pettyCashVouchers->sum('total_amount') - $this->totalCashReturnFromPCV; // total expense + total of petty cash vouchers - total of cash return from petty cash vouchers
+        if(!$this->isLiquidationExists){
+           $this->incurredAmount = $this->totalExpense;
         }
         // CRS
-        $checkCRS = CashReturn::where('event_id', $this->selectedEventId)->first();
-        // This reads: "Does the CRS exist? True or False"
+        $checkCRS = $event->cashReturn()->first();
         $this->hasCRS = (bool) $checkCRS;
         $this->crsReference = $checkCRS->reference ?? null;
         $this->amountReturned = $checkCRS->amount_returned ?? null;
         
         
-        $this->remarks = $this->checkAmount - $this->incurredAmount;
+        $this->remarks = $this->checkAmount - $this->totalExpense;
         $this->returnAmount =  $this->remarks;
         
     }
@@ -168,10 +203,10 @@ class LiquidationCreate extends Component
         $this->selectedEventId = $value;
         $this->selectedEventIdforCrs = $value;
         
-        $checkEvent = BanquetEvent::where('id', $value)->get();
-       if($checkEvent && $value){
-            $this->eventName = $checkEvent->first()->event_name ?? null;
-            $this->getEventInformation();
+        $event = BanquetEvent::where('id', $value)->get();
+       if($event && $value){
+            $this->eventName = $event->first()->event_name ?? null;
+            $this->getEventInformation($event);
        }else{
           $this->resetLiquidationForm();
        }
@@ -184,6 +219,7 @@ class LiquidationCreate extends Component
             'liquidationNotes' => 'nullable|string|max:255',
             'selectedApproverId' => 'required|exists:employees,id',
             'selectedReviewerId' => 'required|exists:employees,id',
+            'incurredAmount' => 'required|numeric|min:0',
             'saveAs' => 'required|in:DRAFT,OPEN',
         ]);
         $curYear = now()->year;
@@ -202,11 +238,86 @@ class LiquidationCreate extends Component
         $liquidation->approved_by = $this->selectedApproverId;
         $liquidation->reviewed_by = $this->selectedReviewerId;
         $liquidation->purpose = $this->liquidationNotes;
+        $liquidation->total_incurred = $this->incurredAmount;
         $liquidation->save();
         $this->isLiquidationExists = true;
-        $this->isOpenStatus = $this->saveAs === 'OPEN';
+        $this->isEditable = $this->saveAs === 'DRAFT';
         $this->notify('Successfuly saved!', 'success', 'BEO Liquidation successfully saved!');
         $this->resetLiquidationForm(); 
+    }
+    public function updateLiquidation()
+    {
+        $this->validate([
+            'selectedEventId' => 'required|exists:banquet_events,id',
+            'liquidationNotes' => 'nullable|string|max:255',
+            'selectedApproverId' => 'required|exists:employees,id',
+            'selectedReviewerId' => 'required|exists:employees,id',
+            'incurredAmount' => 'required|numeric|min:0',
+            'saveAs' => 'required|in:DRAFT,OPEN',
+        ]);
+
+        $liquidation = EventLiquidation::where('event_id', $this->selectedEventId)->first();
+        if ($liquidation) {
+            $liquidation->status = $this->saveAs;
+            $liquidation->approved_by = $this->selectedApproverId;
+            $liquidation->reviewed_by = $this->selectedReviewerId;
+            $liquidation->purpose = $this->liquidationNotes;
+            $liquidation->total_incurred = $this->incurredAmount;
+            $liquidation->save();
+            $this->isEditable = $this->saveAs === 'DRAFT';
+            $this->status = $this->saveAs;
+            $this->notify('Successfuly updated!', 'success', 'BEO Liquidation successfully updated!');
+        } else {
+            $this->notify('Not Found', 'error', 'No existing liquidation found for the selected event.');
+        }
+    }
+    public function approvalAction()
+    {
+        $this->validate([
+            'selectedEventId' => 'required|exists:banquet_events,id',
+            'saveAs' => 'required|in:APPROVED,REVISE',
+        ]);
+
+        $liquidation = EventLiquidation::where('event_id', $this->selectedEventId)->first();
+        if ($liquidation) {
+            $liquidation->approved_date = $this->saveAs === 'APPROVED' ? Carbon::now() : null;
+            $liquidation->status = $this->saveAs === 'APPROVED' ? 'OPEN' : 'DRAFT';
+            $liquidation->save();
+            $this->notify('Successfuly updated!', 'success', 'BEO Liquidation status successfully updated!');
+            $this->resetLiquidationForm();
+            // redirect to list page after approval action
+            return redirect()->route('beo.liquidation.approval.lists');
+        } else {
+            $this->notify('Not Found', 'error', 'No existing liquidation found for the selected event.');
+        }
+    }
+    public function validationAction()
+    {
+        $this->validate([
+            'selectedEventId' => 'required|exists:banquet_events,id',
+            'saveAs' => 'required|in:VALIDATED,REVISE',
+        ]);
+
+        $liquidation = EventLiquidation::where('event_id', $this->selectedEventId)->first();
+        if ($liquidation) {
+            $liquidation->reviewed_date = $this->saveAs === 'VALIDATED' ? Carbon::now() : null;
+            $liquidation->status = $this->saveAs === 'VALIDATED' ? 'CLOSED' : 'DRAFT';
+            $liquidation->save();
+            $this->notify('Successfuly updated!', 'success', 'BEO Liquidation status successfully updated!');
+
+            // update event to close if validated
+            if($this->saveAs === 'VALIDATED'){
+                $event = BanquetEvent::find($this->selectedEventId);
+                $event->liquidation_status = 'LIQUIDATED';
+                $event->liquidation_date = Carbon::now();
+                $event->save();
+            }
+            $this->resetLiquidationForm();
+            // redirect to list page after validation action
+            return redirect()->route('beo.liquidation.validate.lists');
+        } else {
+            $this->notify('Not Found', 'error', 'No existing liquidation found for the selected event.');
+        }
     }
     private function resetLiquidationForm()
     {
@@ -221,6 +332,13 @@ class LiquidationCreate extends Component
        $this->selectedReviewerId = null;
        $this->crsReference = null;
        $this->amountReturned = null;
+        $this->liquidationNotes = null;
+        $this->saveAs = 'DRAFT';
+        $this->referenceNumber = null;
+        $this->isLiquidationExists = false;
+        $this->isEditable = true;
+         $this->hasCRS = false;
+         $this->pettyCashVouchers = null;
     }
     private function resetCrsForm(){
         $this->selectedCrsApproverId = null;
@@ -245,7 +363,7 @@ class LiquidationCreate extends Component
         $yearlyCount = CashReturn::where('branch_id', $branchId)
             ->whereYear('created_at', $curYear)
             ->count() + 1;
-        $reference = 'CRB-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
+        $reference = 'BCR-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
 
         $crsCreate = new CashReturn();
         $crsCreate->branch_id = $branchId;

@@ -29,7 +29,6 @@ class PettyCashVoucherCreate extends Component
     // data
     public $particulars; 
     public $acknowledgementReceipts = [];
-    public $validEventIds = [];
     public $events = [];
     public $employees = [];
     public $customers = [];
@@ -96,9 +95,13 @@ class PettyCashVoucherCreate extends Component
         $this->acknowledgementReceipts = AcknowledgementReceipt::where('branch_id', auth()->user()->branch->id)->where('status', 'OPEN')->get();
         $this->employees = Employee::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();
         $this->customers = Customer::where('branch_id', auth()->user()->branch->id)->get();
-        $this->validEventIds = BanquetProcurement::where('branch_id', auth()->user()->branch_id)->where('status', 'APPROVED')->pluck('event_id')->toArray();
-        $this->events = BanquetEvent::whereIn('id', $this->validEventIds)
-                                    ->where('end_date', '>=', Carbon::now('Asia/Manila'))->get();
+        $this->events = BanquetEvent::query()->with('customer') // Eager load customers
+                        ->where('liquidation_status', 'PENDING')
+                        ->whereHas('procurements', function ($query) {
+                            $query->where('branch_id', auth()->user()->branch_id)
+                                ->where('status', 'APPROVED');
+                        })->get();
+                        
         $this->advanceForLiquidationId = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)->where('status', 'OPEN')->where('created_at', '<=', Carbon::now('Asia/Manila'))->pluck('id')->toArray();
         if($this->advanceForLiquidationId){
             $totalReceived = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)->whereIn('id', $this->advanceForLiquidationId)->sum('amount_received') ?? 0;

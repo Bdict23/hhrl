@@ -367,7 +367,7 @@ class AcknowledgementReceiptCreate extends Component
             $this->selectCustomer($data->customer_id);
 
             // load expesses using PCV linked to this AR
-            $this->expenses = PettyCashVoucher::where('acknowledgement_receipt_id', $id)->get();
+            $this->expenses = $data->pettyCashVouchers()->get();
 
             $this->currentARStatus = $data->status;
             $this->isCreate = false;

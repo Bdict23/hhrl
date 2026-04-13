@@ -58,6 +58,16 @@ class PurchaseOrderApprovalShow extends Component
         return redirect()->route('approval_request_list');
     }
 
+    public function requestRevision($id){
+        DB::transaction(function () use ($id) {
+            $requisitionInfo = RequisitionInfo::find($id);
+            $requisitionInfo->requisition_status = 'PREPARING';
+            $requisitionInfo->save();
+        });
+        session()->flash('success', 'Requisition Order Revised Successfully');
+        return redirect()->route('approval_request_list');
+    }
+
     public function approvePO($id){
         DB::transaction(function () use ($id) {
             $requisitionInfo = RequisitionInfo::find($id);

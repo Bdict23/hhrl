@@ -26,8 +26,11 @@
                            <x-primary-button data-bs-toggle="modal" data-bs-target="#reviewModalConfirm">
                                 APPROVE
                             </x-primary-button>
+                            <x-primary-button class="btn-sm" data-bs-toggle="modal" data-bs-target="#reviewReviseModal">
+                                REVISE
+                            </x-primary-button>
                             <x-danger-button data-bs-toggle="modal" data-bs-target="#reviewModal"> REJECT</x-danger-button>
-                            <x-secondary-button ><a href="/review_request_list" class="no-underline">Summary</a> </x-secondary-button>
+                            <x-secondary-button ><a href="{{ route('approval_request_list') }}" class="no-underline">Summary</a> </x-secondary-button>
                         </div>
                     <div class="card-body overflow-x-auto" style="dispplay: height: 400px; overflow-x: auto;">
                         <table class="table table-striped table-hover table-sm table-sm">
@@ -47,7 +50,7 @@
                                         <td style="font-size: small">{{ $reqdetail->items->item_code }}</td>
                                         <td style="font-size: small">{{ $reqdetail->items->item_description }} </td>
                                         <td style="font-size: small"> {{ $reqdetail->qty }}</td>
-                                        <td style="font-size: small">{{ $reqdetail->items->costPrice->amount }}</td>
+                                        <td style="font-size: small">{{ $reqdetail->items->costPrice->amount ?? 'N/A' }}</td>
                                         <td style="font-size: small">{{ ($reqdetail->qty ?? 0) * ($reqdetail->items->costPrice->amount ?? 0) }}</td>
                                         <td style="font-size: small">{{ $reqdetail->items->costPrice->supplier->supplier_code ?? 'N/A' }}</td>
                                     </tr>
@@ -73,7 +76,7 @@
         <div class="col-md-5 mb-8">
             <div class="card">
                 <header class="card-header">
-                    <h1>Purchase Order Information</h1>
+                    <h4>Purchase Order Information</h4>
                 </header>
                 <div class="card-body">
                     <form>
@@ -173,6 +176,26 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button wire:click="rejectPO({{$requestInfo->id}})" type="button" class="btn btn-primary" id="confirmRevise"
+                        >Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- REVISE CONFIRMATION --}}
+    <div class="modal fade" id="reviewReviseModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    This request will be no longer valid and cannot be reverted, Procceed Action?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button wire:click="requestRevision({{$requestInfo->id}})" type="button" class="btn btn-primary" id="confirmRevise"
                         >Yes</button>
                 </div>
             </div>

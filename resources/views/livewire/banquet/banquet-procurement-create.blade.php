@@ -103,19 +103,19 @@
                                     <td colspan="3" class="text-end"><strong>Total</strong></td>
                                     <td>
                                         @php
-                                            $internalTotal = isset($selectedEvent) && $selectedEvent->eventServices
+                                            $totalIncome = isset($selectedEvent) && $selectedEvent->eventServices
                                                 ? $selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
                                                     return $service->price->amount * ($service->qty ? $service->qty : 1);
                                                 })
                                                 : 0;
 
-                                            $externalTotal = isset($selectedEvent) && $selectedEvent->eventServices
-                                                ? $selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
-                                                    return ($service->cost->amount ?? 0) * ($service->qty ? $service->qty : 1);
-                                                })
-                                                : 0;
+                                            // $externalTotal = isset($selectedEvent) && $selectedEvent->eventServices
+                                            //     ? $selectedEvent->eventServices->where('service.service_type', 'EXTERNAL')->sum(function($service) {
+                                            //         return ($service->cost->amount ?? 0) * ($service->qty ? $service->qty : 1);
+                                            //     })
+                                            //     : 0;
 
-                                            $totalIncome = $internalTotal + $externalTotal;
+                                            // $totalIncome = $internalTotal + $externalTotal;
                                         @endphp
                                         {{ $totalIncome }}
                                         

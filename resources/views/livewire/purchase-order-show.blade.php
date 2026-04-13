@@ -117,6 +117,17 @@
                             <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">BEO</label>
                             <input type="text" class="form-control" id="contact1" name="company_tin"
                                 value="{{ $requestInfo->event->reference ?? 'N/A'}}" readonly style="width: 100; font-size: 13px">
+                                {{-- <x-select
+                            label="Event" 
+                            placeholder="Select BEO ..."
+                            :options="$events"
+                            option-value="id"
+                            :min-items-for-search="0"
+                            option-label="reference"
+                            wire:model.live="selectedEventId"
+                            class="mb-3"
+                            :readonly="$isLiquidationExists" 
+                        /> --}}
                         </div>
                         <div class="col-md-6">
                             <label for="contact_no_2" class="form-label" style="width: 100; font-size: 13px">Production</label>

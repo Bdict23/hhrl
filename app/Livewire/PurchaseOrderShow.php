@@ -8,6 +8,7 @@ use App\Models\RequisitionInfo;
 use App\Models\RequisitionDetail;
 use App\Models\Cardex;
 use App\Models\Term;
+use App\Models\BanquetEvent as Event;
 use Illuminate\Support\Facades\DB;
 
 
@@ -21,8 +22,11 @@ class PurchaseOrderShow extends Component
     public $term = [];
     public $terms = [];
     public $selectedWithdrawalType = null;
+    public $events;
+    public $selectedEventId;
     public function mount(Request $request)
-    {
+    { 
+        
         if(auth()->user()->employee->getModulePermission('Purchase Order') != 2 ){
             $this->requestInfo = $request->session()->get('requestInfo');
             if (empty($this->requestInfo)) {
@@ -33,6 +37,17 @@ class PurchaseOrderShow extends Component
             return redirect()->to('dashboard');
         }
 
+    }
+
+    public function fetchData(){
+        $this->events = Event::query()
+        ->with('customer') // Eager load customers
+        ->where('liquidation_status', 'PENDING')
+        ->whereHas('procurements', function ($query) {
+            $query->where('branch_id', auth()->user()->branch_id)
+                ->where('status', 'APPROVED');
+        })
+        ->get();
     }
 
     public function loadRequestInfo($id)
@@ -55,6 +70,7 @@ class PurchaseOrderShow extends Component
             // dd($this->totalReceived);
         $this->terms = Term::all();
         $this->term = Term::where('id', $this->requestInfo->term_id)->first();
+        $this->selectedEventId = $this->requestInfo->event_id;
 
     }
     public function render()

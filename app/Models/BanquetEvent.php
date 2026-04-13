@@ -83,4 +83,16 @@ class BanquetEvent extends Model
     {
         return $this->hasOne(EventLiquidation::class, 'event_id');
     }
+    public function acknowledgementReceipts()
+    {
+        return $this->hasMany(AcknowledgementReceipt::class, 'event_id');
+    }
+    public function cashReturn()
+    {
+        return $this->hasOne(CashReturn::class, 'event_id');
+    }
+    public function pettyCashVouchers()
+    {
+        return $this->hasMany(PettyCashVoucher::class, 'event_id')->whereIn('status', ['OPEN','CLOSED']);
+    }
 }

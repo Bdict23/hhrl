@@ -239,7 +239,7 @@ class BanquetProcurementCreate extends Component
             $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Please select an event first!']);
             return;
         }
-        if($this->requestedBudget > 0){
+        if($this->requestedBudget > 0 && $this->totalGrossOrder > 0){
             $this->totalPercentage = ( $this->requestedBudget / $this->totalGrossOrder) * 100;
             $this->totalPercentage = number_format($this->totalPercentage, 2);
         }else{

@@ -19,6 +19,8 @@ class CashReturnSummary extends Component
 // fetched data
 public $cashReturns = [];
 public $cvReferenceNumber;
+public $pcrDate;
+
 // filters
  public $statusCheckValue = 'ALL';
  public $fromDate;
@@ -29,6 +31,7 @@ public $cvReferenceNumber;
 
  // FOR PCV CASH RETURN
  public $pettyCashVouchers;
+ public $pettyCashVouchersWithoutCashReturn;
  public  $selectedPCV = [];
  public $selectedPCVId;
  public $returnAmountPCV;
@@ -45,8 +48,10 @@ public $cvReferenceNumber;
     }
 
     public function fetchData(){
+        $this->pcrDate = today('Asia/Manila')->format('M. d, Y');
         $this->cashReturns = CashReturn::where('branch_id', auth()->user()->branch_id)->get();
         $this->pettyCashVouchers = PettyCashVoucher::where('branch_id' , auth()->user()->branch_id)->where('status', 'OPEN')->get();
+        $this->pettyCashVouchersWithoutCashReturn = PettyCashVoucher::where('branch_id' , auth()->user()->branch_id)->whereDoesntHave('hasCashReturn')->where('status', 'OPEN')->get();
         // $pcvModuleId = Module::where('module_name', 'Cash Flow')->first()->id;
         // $this->pcvReturnApprovers = Signatory::with('employees')
         //     ->where('branch_id', auth()->user()->branch_id)
@@ -97,6 +102,37 @@ public $cvReferenceNumber;
         $this->modal()->close('cardModal');
         $this->notify('Cash Return Saved', 'success', 'The cash return has been saved successfully.');
         $this->fetchData();
+    }
+
+    public function viewCashReturnPCV($pcvId){
+        $cashReturn =  $this->cashReturns->where('pcv_id', $pcvId)->first();
+        if($cashReturn){
+            $this->cvReferenceNumber = $cashReturn->reference;
+            $this->pcrDate = $cashReturn->created_at->format('M d, Y');
+            $this->returnAmountPCV = $cashReturn->amount_returned;
+            $this->pcvNote = $cashReturn->notes;
+            $this->saveAsPcvCrs = $cashReturn->status;
+
+            $this->selectedPCV =  $this->pettyCashVouchers->where('id', $cashReturn->pcv_id)->get();
+            dd($this->selectedPCV);
+            $this->modal()->open('cardModal');
+        }else{
+            $this->notify('No Cash Return Found', 'error', 'No cash return record found for the selected PCV.');
+        }
+
+    }
+    public function viewCashReturnEvent($eventId){
+        $cashReturn =  $this->cashReturns->where('event_id', $eventId)->first();
+        if($cashReturn){
+            $this->cvReferenceNumber = $cashReturn->reference;
+            $this->pcrDate = $cashReturn->created_at->format('M d, Y');
+            $this->returnAmountPCV = $cashReturn->amount_returned;
+            $this->pcvNote = $cashReturn->notes;
+            $this->saveAsPcvCrs = $cashReturn->status;
+            $this->modal()->open('cardModal');
+        }else{
+            $this->notify('No Cash Return Found', 'error', 'No cash return record found for the selected event.');
+        }
     }
 
 

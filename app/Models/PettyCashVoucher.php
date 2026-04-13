@@ -53,5 +53,13 @@ class PettyCashVoucher extends Model
     {
         return $this->hasMany(PCVDetail::class, 'petty_cash_voucher_id');
     }
+    public function cashReturn()
+    {
+        return $this->hasOne(CashReturn::class, 'pcv_id')->where('status', 'FINAL');
+    }
+    public function hasCashReturn()
+    {
+        return $this->hasOne(CashReturn::class, 'pcv_id');
+    }
     
 }

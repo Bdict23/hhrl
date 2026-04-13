@@ -81,9 +81,13 @@
                                     <td>₱ {{ number_format($crs->amount_returned, 2) }}</td>
                                     <td>{{ $crs->created_at->format('M. d, Y') }}</td>
                                     <td>
-                                        <a href="\cash-return-view?reference_id={{ $crs->id }}" >
-                                           <a href="\cash-return-view?reference_id={{ $crs->id }}"><x-primary-button class="btn-sm">View</x-primary-button></a>
-                                        </a>
+                                        @if($crs->pcv_id)
+                                             <x-primary-button class="btn-sm" wire:click="viewCashReturnPCV({{ $crs->pcv_id }})">View</x-primary-button>
+                                        @elseif($crs->event_id)
+                                             <x-primary-button class="btn-sm" wire:click="viewCashReturnEvent({{ $crs->event_id }})">View</x-primary-button>
+                                        @else
+                                             <span class="text-muted">No Action</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
@@ -106,17 +110,17 @@
          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-3">
             <div class="input-group">
                 <label for="" class="input-group-text">Reference</label>
-                <input type="text" class="form-control form-control-sm" placeholder="<AUTO>" disabled>
+                <input type="text" class="form-control form-control-sm" placeholder="<AUTO>" disabled wire:model="cvReferenceNumber">
             </div>
             <div class="input-group">
                 <label for="" class="input-group-text">Return Date</label>
-                <input type="text" class="form-control form-control-sm" value="{{ today('Asia/Manila')->format('M. d, Y') }}" disabled>
+                <input type="text" class="form-control form-control-sm" value="{{ $pcrDate }}" disabled>
             </div>
          </div>
         <x-select
             label="Petty Cash Voucher" 
             placeholder="Select PCV ..."
-            :options="$pettyCashVouchers"
+            :options="$pettyCashVouchersWithoutCashReturn"
             option-value="id"
             :min-items-for-search="0"
             option-label="reference"
@@ -162,20 +166,22 @@
 
        <x-textarea label="Notes" placeholder="write your notes" wire:model="pcvNote"/>
     
-        <x-slot name="footer" class="flex justify-between gap-x-4">
+        <x-slot name="footer" class="flex justify-content-between gap-x-4">
     
-            <div class="flex gap-x-4">
-                <x-button flat label="Cancel" x-on:click="close" />
-    
-                <div class="input-group">
-                    <select name="" id="" class="form-select form-select-sm" wire:model="saveAsPcvCrs">
-                        <option value="DRAFT">DRAFT</option>
-                        <option value="FINAL">FINAL</option>
-                    </select>
-                    <x-primary-button wire:loading.attr="disabled" wire:click="savePcvCrs" wire:loading.attr="disabled">
-                        <span wire:loading wire:target="savePcvCrs"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Saving...</span>
-                        <span wire:loading.remove wire:target="savePcvCrs">Save As</span>
-                     </x-primary-button>
+            <x-button flat label="Cancel" x-on:click="close" />
+
+            <div class="container">
+                <div class="flex gap-x-4">
+                    <div class="input-group">
+                        <select name="" id="" class="form-select form-select-sm" wire:model="saveAsPcvCrs">
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="FINAL">FINAL</option>
+                        </select>
+                        <x-primary-button wire:loading.attr="disabled" wire:click="savePcvCrs" wire:loading.attr="disabled">
+                            <span wire:loading wire:target="savePcvCrs"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Saving...</span>
+                            <span wire:loading.remove wire:target="savePcvCrs">Save As</span>
+                         </x-primary-button>
+                    </div>
                 </div>
             </div>
         </x-slot>
@@ -244,24 +250,28 @@
 
        <x-textarea label="Notes" placeholder="write your notes" wire:model="pcvNote"/>
     
-        <x-slot name="footer" class="flex justify-between gap-x-4">
+        <x-slot name="footer" class="flex justify-content-between">
     
-            <div class="flex gap-x-4">
-                <x-button flat label="Cancel" x-on:click="close" />
-    
-                <div class="input-group">
-                    <select name="" id="" class="form-select form-select-sm" wire:model="saveAsPcvCrs">
-                        <option value="DRAFT">DRAFT</option>
-                        <option value="FINAL">FINAL</option>
-                    </select>
-                    <x-primary-button wire:loading.attr="disabled" wire:click="savePcvCrs" wire:loading.attr="disabled">
-                        <span wire:loading wire:target="savePcvCrs"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Saving...</span>
-                        <span wire:loading.remove wire:target="savePcvCrs">Save As</span>
-                     </x-primary-button>
+            <x-button flat label="Cancel" x-on:click="close" />
+
+            <div class="container">
+                <div class="flex gap-x-4">
+                    <div class="input-group">
+                        <select name="" id="" class="form-select form-select-sm" wire:model="saveAsPcvCrs">
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="FINAL">FINAL</option>
+                        </select>
+                        <x-primary-button wire:loading.attr="disabled" wire:click="savePcvCrs" wire:loading.attr="disabled">
+                            <span wire:loading wire:target="savePcvCrs"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Saving...</span>
+                            <span wire:loading.remove wire:target="savePcvCrs">Save As</span>
+                         </x-primary-button>
+                    </div>
                 </div>
             </div>
         </x-slot>
     </x-modal-card>
+
+    {{--  --}}
 
 
 

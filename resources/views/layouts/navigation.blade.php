@@ -251,7 +251,7 @@
                                         <x-dropdown-link :href="url('/approval_request_list')" class="no-underline" style="font-size: smaller">
                                         {{ __('P.O - Approval') }}
                                         </x-dropdown-link>
-                                        <hr>
+                                       
                                 @endif
                                 
                                 @if(auth()->user()->employee->getModulePermission('Review Withdrawals') == 1 )
@@ -263,21 +263,36 @@
                                     <x-dropdown-link :href="url('/withdrawal_approval')" class="no-underline" style="font-size: smaller">
                                         {{ __('Withdrawal - Approval') }}
                                     </x-dropdown-link>           
-                                    <hr>                    
+                                                   
                                 @endif
                                 @if (auth()->user()->employee->getModulePermission('Menu Approval') == 1 )
                                     <x-dropdown-link :href="url('/menu_approval_lists')" class="no-underline" style="font-size: smaller">
                                         {{ __('Recipe - Approval') }}
                                     </x-dropdown-link>
-                                    <hr>
+                                   
                                 @endif
+                                @if (auth()->user()->employee->getModulePermission('BEB - Approval') == 1 )
                                     <x-dropdown-link :href="url('/budget-proposal-approval-lists')" class="no-underline" style="font-size: smaller">
                                         {{ __('BEB - Approval') }}
                                     </x-dropdown-link>
-
-                                    <x-dropdown-link :href="url('/equipment-request-approval-lists')" class="no-underline" style="font-size: smaller">
+                                @endif
+                                    
+                                    @if (auth()->user()->employee->getModulePermission('BEO Liquidation Approval') == 1 )
+                                        <x-dropdown-link :href="url('/beo-liquidation-approval-lists')" class="no-underline" style="font-size: smaller">
+                                            {{ __('BEO Liq. - Approval') }}
+                                        </x-dropdown-link>
+                                    @endif
+                                    @if (auth()->user()->employee->getModulePermission('BEO Liquidation Validate') == 1 )
+                                        <x-dropdown-link :href="url('/beo-liquidation-validate-lists')" class="no-underline" style="font-size: smaller">
+                                            {{ __('BEO Liq. - Validate') }}
+                                        </x-dropdown-link>
+                                    @endif
+                                    @if (auth()->user()->employee->getModulePermission('Equipment Request Approval') == 1 )
+                                        <x-dropdown-link :href="url('/equipment-request-approval-lists')" class="no-underline" style="font-size: smaller">
                                         {{ __('Equipment REQ. - Approval') }}
                                     </x-dropdown-link>
+                                    @endif
+                                    
                             </x-slot>
                         </x-dropdown>
                     </div>

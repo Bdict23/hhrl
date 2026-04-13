@@ -547,3 +547,23 @@ Route::get('/beo-liquidation', function(){
 Route::get('/beo-liquidation?BEO-LIQ-id={id}', function(){
     return view('banquet.liquidation-create-view');
 })->middleware(['auth', 'verified'])->name('beo.liquidation.view');
+
+// beo-liquidation-approval-lists
+Route::get('/beo-liquidation-approval-lists', function () {
+    return view('banquet.liquidation-approval-lists-view');
+})->middleware(['auth', 'verified'])->name('beo.liquidation.approval.lists');
+
+//beo-liquidation-validate-lists
+Route::get('/beo-liquidation-validate-lists', function () {
+    return view('banquet.liquidation-validate-lists-view');
+})->middleware(['auth', 'verified'])->name('beo.liquidation.validate.lists');
+
+//beo.liquidation.approval.view
+Route::get('/beo-liquidation?BEO-Approval-id={id}', function () {
+    return view('banquet.liquidation-create-view');
+})->middleware(['auth', 'verified'])->name('beo.liquidation.approval.view');
+
+//route('beo.liquidation.validate.view'
+Route::get('/beo-liquidation?BEO-Validate-id={id}', function () {
+    return view('banquet.liquidation-create-view');
+})->middleware(['auth', 'verified'])->name('beo.liquidation.validate.view');

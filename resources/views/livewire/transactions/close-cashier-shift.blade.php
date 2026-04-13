@@ -112,7 +112,7 @@
                                 </label>
                             </div>
                             <button class="btn btn-primary mt-3" wire:click="closeShift" @if($cashierShift->shift_status == 'CLOSED') disabled @endif>Close Shift</button>
-                            <button class="btn btn-secondary mt-3" wire:click="printShiftReport" @if($cashierShift->shift_status == 'OPEN') hidden @endif>Print Review</button>
+                            <button class="btn btn-secondary mt-3"  @if($cashierShift->shift_status == 'OPEN') hidden @endif>Print Preview</button>
                         </div>
                     </div>
                 </div>

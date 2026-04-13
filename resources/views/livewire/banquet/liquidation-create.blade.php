@@ -1,28 +1,100 @@
 <div>
-  <div class="d-flex justify-content-end">
-     <h5>BEO LIQUIDATION - CREATE</h5><x-icon name="calculator" class="w-8 h-8" outline />
+  <div class="row">
+    <div class="col-md-6">
+        @if($status == 'DRAFT')
+            <x-badge flat secondary :label="$status">
+                <x-slot name="prepend" class="relative flex items-center w-2 h-2">
+                    <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-secondary animate-ping"></span>
+                    <span class="relative inline-flex w-2 h-2 rounded-full bg-secondary"></span>
+                </x-slot>
+            </x-badge>
+        @elseif($status == 'OPEN')
+            <x-badge flat warning :label="$status">
+                <x-slot name="prepend" class="relative flex items-center w-2 h-2">
+                    <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-warning animate-ping"></span>
+                    <span class="relative inline-flex w-2 h-2 rounded-full bg-warning"></span>
+                </x-slot>
+            </x-badge>
+        @elseif($status == 'CLOSED')
+        <x-badge flat primary :label="$status">
+            <x-slot name="prepend" class="relative flex items-center w-2 h-2">
+                <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-cyan-500 "></span>
+                <span class="relative inline-flex w-2 h-2 rounded-full bg-cyan-500"></span>
+            </x-slot>
+        </x-badge>
+        @elseif($status == 'CANCELLED')
+        <x-badge flat negative :label="$status">
+            <x-slot name="prepend" class="relative flex items-center w-2 h-2">
+                <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-red-500 "></span>
+                <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
+            </x-slot>
+        </x-badge>
+         @endif
+    </div>
+    <div class="col-md-6">
+        <div class="d-flex align-items-end justify-content-end">
+            @if($isApproval)
+                <h5>BEO LIQUIDATION - APPROVAL</h5>
+            @elseif($isValidator)
+                <h5>BEO LIQUIDATION - VALIDATE</h5>
+            @elseif($isLiquidationExists && !$isApproval && !$isValidator) 
+                <h5>BEO LIQUIDATION - VIEW</h5>
+            @elseif($isEditable && !$isLiquidationExists)
+                <h5>BEO LIQUIDATION - CREATE</h5>
+            @endif
+             <x-icon name="calculator" class="w-8 h-8" outline />
+        </div>
+    </div>
   </div>
     <div class="row align-content-center g-2 ">
         {{-- Left --}}
         <div class="col-md-6">
            <x-card title="Expenses" rounded="3xl" padding="small">
                <table class="table table-sm">
-                    <thead>
-                        <tr class="table-dark">
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Reference</th>
-                            <th>Rec. REF</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
                     <tbody>
+                        <tr><td colspan="8" class="text-center text-xs"><strong>Petty Cash Vouchers</strong></td></tr>
+                        <tr>
+                            <th class="text-xs">Status</th>
+                            <th class="text-xs">Date</th>
+                            <th class="text-xs">Reference</th>
+                            <th class="text-xs">Payee</th>
+                            <th class="text-xs">PCV amount</th>
+                            <th class="text-xs">Return amount</th>
+                            <th class="text-xs">Total</th>
+                        </tr>
+                        @foreach ($pettyCashVouchers ?? [] as $voucher)
+                            <tr>
+                                <td class="text-xs">{{ $voucher->status }}</td>
+                                <td class="text-xs">{{ $voucher->created_at->format('M. d, Y') }}</td>
+                                <td class="text-xs">{{ $voucher->reference }}</td>
+                                <td class="text-xs">
+                                    @if($voucher->employee)
+                                        {{ $voucher->employee->name }} {{ $voucher->employee->last_name }}
+                                    @elseif($voucher->customer)
+                                        {{ $voucher->customer->customer_fname }} {{ $voucher->customer->customer_lname }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
+                                <td class="text-xs">₱{{ number_format($voucher->total_amount, 2) }}</td>
+                                <td class="text-xs">₱{{ number_format($voucher->cashReturn->amount_returned ?? 0, 2) }}</td>
+                                <td class="text-xs">₱{{ number_format($voucher->total_amount - ($voucher->cashReturn->amount_returned ?? 0), 2) }}</td>
+                            </tr>
+                        @endforeach
+                        <tr><td colspan="8" class="text-center"><strong>Purchase Orders</strong></td></tr>
+                        <tr class="table-light">
+                            <td class="text-xs"><strong>Status</strong></td>
+                            <td class="text-xs" colspan="2"><strong>Date</strong></td>
+                            <td class="text-xs" colspan="2"><strong>Reference</strong></td>
+                            <td class="text-xs"><strong>Rec. REF</strong></td>
+                            <td class="text-xs"><strong>Amount</strong></td>
+                        </tr>
                         @foreach ($purchaseOrders ?? [] as $purchase)
                             <tr>
-                                <td>{{ $purchase->requisition_status }}</td>
-                                <td>{{ $purchase->created_at->format('M. d, Y') }}</td>
-                                <td>{{ $purchase->requisition_number }}</td>
-                                <td>
+                                <td class="text-xs">{{ $purchase->requisition_status }}</td>
+                                <td class="text-xs" colspan="2">{{ $purchase->created_at->format('M. d, Y') }}</td>
+                                <td class="text-xs" colspan="2">{{ $purchase->requisition_number }}</td>
+                                <td class="text-xs">
                                     @if($purchase->receivings->isEmpty())
                                         <span class="text-muted italic small">No records</span>
                                     {{-- @elseif($purchase->receivings->count() === 1)
@@ -63,7 +135,7 @@
                 </table>
 
                 <x-slot name="footer" class="flex items-end" >
-                    <h6><strong> Total</strong> : ₱  {{ number_format($incurredAmount,2) }}</h6>
+                    <h6><strong> Total</strong> : ₱  {{ number_format($totalExpense,2) }}</h6>
                 </x-slot>
            </x-card>
         </div>
@@ -118,7 +190,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <x-textarea rows="1" label="Purpose" placeholder="Additional Info." wire:model="liquidationNotes" :readonly="$isOpenStatus" />
+                        <x-textarea rows="1" label="Purpose" placeholder="Additional Info." wire:model="liquidationNotes" :readonly="!$isEditable" />
                     </div>
                     <div class="col-md-6">
                         <x-input label="REF. / CRS No." placeholder="N/A" wire:model="crsReference" :readonly="$hasCRS">
@@ -152,9 +224,9 @@
                                 label="Total incurred amount"
                                 prefix="₱"
                                 thousands=","
-                                wire:model="incurredAmount"
-                                :readonly="true"
-                                placeholder="<Auto>"
+                                wire:model.live="incurredAmount"
+                                :readonly="!$isEditable"
+                                placeholder="Enter amount"
                             />
                         </div>
                     </div>
@@ -193,7 +265,7 @@
                                 option-label="full_name"
                                 wire:model.live="selectedApproverId"
                                 class="mb-3"
-                                :readonly="$isOpenStatus"
+                                :readonly="!$isEditable"
                             />
                         </div>
                         <div class="col-md-6">
@@ -206,7 +278,7 @@
                                 option-label="full_name"
                                 wire:model.live="selectedReviewerId"
                                 class="mb-3"
-                                :readonly="$isOpenStatus"
+                                :readonly="!$isEditable"
                             />
                         </div>
                     </div>
@@ -214,20 +286,58 @@
                 <div class="d-flex mt-3">
                     <div class="container">
                         <div class="input-group">
-                            <select name="" id="" class="form-select" wire:model="saveAs" {{ $isOpenStatus ? 'disabled' : '' }}>
-                                <option value="DRAFT" {{ $saveAs === 'DRAFT' ? 'selected' : '' }}>DRAFT</option>
-                                <option value="OPEN" {{ $saveAs === 'OPEN' ? 'selected' : '' }}>FINAL</option>
-                            </select>
-                            @if(!$isOpenStatus)
-                                <x-primary-button wire:click="saveLiquidation" wire:loading.attr="disabled" class="ml-2">
-                                    <span wire:loading.remove wire:target="saveLiquidation">Save</span>
-                                    <span wire:loading wire:target="saveLiquidation">Saving...</span>
+                            @if($isApproval)
+                                <select name="" id="" class="form-select" wire:model="saveAs">
+                                     <option value="" >Select Action</option>
+                                    <option value="APPROVED" >APPROVED</option>
+                                    <option value="REVISE" >REVISE</option>
+                                </select>
+                                <x-primary-button wire:click="approvalAction" wire:loading.attr="disabled" class="ml-2">
+                                    <span wire:loading.remove wire:target="approvalAction">Save</span>
+                                    <span wire:loading wire:target="approvalAction">Saving...</span>
                                 </x-primary-button>
+                            @elseif($isValidator)
+                                <select name="" id="" class="form-select" wire:model="saveAs">
+                                    <option value="" >Select Action</option>
+                                    <option value="VALIDATED" >VALIDATED</option>
+                                    <option value="REVISE" >REVISE</option>
+                                </select>
+                                <x-primary-button wire:click="validationAction" wire:loading.attr="disabled" class="ml-2">
+                                    <span wire:loading.remove wire:target="validationAction">Save</span>
+                                    <span wire:loading wire:target="validationAction">Saving...</span>
+                                </x-primary-button>
+                            @else
+                                @if ($status != 'CLOSED') 
+                                    <select name="" id="" class="form-select" wire:model="saveAs" {{ $isEditable ? '' : 'disabled' }}>
+                                        <option value="" >Select Action</option>
+                                        <option value="DRAFT" {{ $saveAs === 'DRAFT' ? 'selected' : '' }}>DRAFT</option>
+                                        <option value="OPEN" {{ $saveAs === 'OPEN' ? 'selected' : '' }}>FINAL</option>
+                                    </select>
+                                @endif
+                                @if($isEditable && !$isLiquidationExists)
+                                    <x-primary-button wire:click="saveLiquidation" wire:loading.attr="disabled" class="ml-2">
+                                        <span wire:loading.remove wire:target="saveLiquidation">Save</span>
+                                        <span wire:loading wire:target="saveLiquidation">Saving...</span>
+                                    </x-primary-button>
+                                @elseif($isEditable && $isLiquidationExists)
+                                    <x-primary-button wire:click="updateLiquidation" wire:loading.attr="disabled" class="ml-2">
+                                        <span wire:loading.remove wire:target="updateLiquidation">Update</span>
+                                        <span wire:loading wire:target="updateLiquidation">Updating...</span>
+                                    </x-primary-button>
+                                @endif
                             @endif
-                            
                         </div>
+                         @error('saveAs')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                     </div>
-                    <a href="{{ route('beo.liquidation.summary') }}"><x-secondary-button>Summary</x-secondary-button></a>
+                    @if($isApproval)
+                        <a href="{{ route('beo.liquidation.approval.lists') }}"><x-secondary-button>Summary</x-secondary-button></a>
+                    @elseif($isValidator)
+                        <a href="{{ route('beo.liquidation.validate.lists') }}"><x-secondary-button>Summary</x-secondary-button></a>
+                    @else
+                        <a href="{{ route('beo.liquidation.summary') }}"><x-secondary-button>Summary</x-secondary-button></a>
+                    @endif
                 </div>
             </div>
         </div>

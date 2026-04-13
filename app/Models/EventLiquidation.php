@@ -16,6 +16,7 @@ class EventLiquidation extends Model
         'status',
         'updated_by',
         'purpose',
+        'total_incurred',
         'created_at',
         'updated_at',
         'reviewed_by',
