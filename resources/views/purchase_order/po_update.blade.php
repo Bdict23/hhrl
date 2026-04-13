@@ -95,11 +95,15 @@
                          <div class="col-md-12">
                             <div class="input-group">
                                 <label for="" class="input-group-text">Event</label>
-                                <input type="text" class="form-control" value="{{ $requisitionInfo->event->reference ?? 'N/A' }}" readonly disabled>
+                                <input type="text" class="form-control" value="{{ $requisitionInfo->event->reference ?? 'N/A' }}" readonly disabled id="selected_event_reference">
+                                <input type="text" name="event_id" id="selected_event_id" value="{{ $requisitionInfo->event_id ?? '' }}" hidden>
+                                <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#eventModal" style="background-color: rgb(147, 248, 198);"><i class="bi bi-calendar-week"></i></span>
                             </div>
                             <div class="input-group mt-2">
                                 <label for="" class="input-group-text">Production</label>
-                                <input type="text" class="form-control" value="{{ $requisitionInfo->production->reference ?? 'N/A' }}" readonly disabled>
+                                <input type="text" class="form-control" value="{{ $requisitionInfo->production->reference ?? 'N/A' }}" readonly disabled id="selected_production_reference">
+                                <input type="text" name="production_id" id="selected_production_id" value="{{ $requisitionInfo->production_id ?? '' }}" hidden>
+                                <span type="button" class="input-group-text" data-bs-toggle="modal" data-bs-target="#productionModal" style="background-color: rgb(147, 203, 248);"><i class="bi bi-box2"></i></span>
                             </div>
                          </div>
                      </div>
@@ -281,9 +285,123 @@
             </div>
         </div>
     </div>
+
+     <!-- Event Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content card">
+                    <div class="modal-header card-header">
+                        <h5 class="modal-title" id="eventModalLabel">Select Event</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="searchEventInput" class="form-control mb-2" placeholder="Search event..." style="font-size: x-small;">
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-hover table-sm">
+                                <thead class="table-dark sticky-top">
+                                    <tr>
+                                        <th style="font-size: 12px;">Event Name</th>
+                                        <th style="font-size: 12px;">Customer</th>
+                                        <th style="font-size: 12px;">Start Date</th>
+                                        <th style="font-size: 12px;">End Date</th>
+                                        <th style="font-size: 12px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eventTableBody">
+                                    @foreach ($events as $event)
+                                        <tr>
+                                            <td style="font-size: 12px;">{{ $event->event_name }}</td>
+                                            <td style="font-size: 12px;">{{ $event->customer->customer_fname . ' ' . $event->customer->customer_lname }}</td>
+                                            <td style="font-size: 12px;">{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
+                                            <td style="font-size: 12px;">{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm" onclick="selectEvent({{ $event->id }}, '{{ $event->reference }}')">Select</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Production Order Modal --}}
+        <div>
+            <div class="modal fade" id="productionModal" tabindex="-1" aria-labelledby="productionModalLabel" aria-hidden="true" wire:ignore.self>
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content card">
+                        <div class="modal-header card-header">
+                            <h5 class="modal-title" id="productionModalLabel">Select Production Order</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="card-body">
+                            <input type="text" id="searchProductionInput" class="form-control mb-2" placeholder="Search production order...">
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-hover table-sm">
+                                    <thead class="table-dark sticky-top">
+                                        <tr>
+                                            <th style="font-size: 12px;">Reference</th>
+                                            <th style="font-size: 12px;">Note</th>
+                                            <th style="font-size: 12px;">Order Date</th>
+                                            <th style="font-size: 12px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productionTableBody">
+                                        @forelse ($productionOrders as $production)
+                                            <tr>
+                                                <td style="font-size: 12px;">{{ $production->reference }}</td>
+                                                <td style="font-size: 12px;">{{ $production->note ?? 'N/A' }}</td>
+                                                <td style="font-size: 12px;">{{ $production->created_at->format('M. d, Y') }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-primary btn-sm" onclick="selectProduction({{ $production->id }} , '{{ $production->reference }}')"><i class="bi bi-cursor"></i>&nbsp;Select
+                                                        </span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" style="font-size: 12px;">No production orders found.</td>
+                                            </tr>
+                                        @endforelse
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 @endsection
 @section('script')
     <script>
+        function selectEvent(eventId, eventReference) {
+            // Set the selected event ID in a hidden input or directly in the form
+            // For example, you can create a hidden input in your form:
+            // <input type="hidden" id="selected_event_id" name="event_id" value="">
+            document.getElementById('selected_event_id').value = eventId;
+            document.getElementById('selected_event_reference').value = eventReference;
+            // Close the modal
+            var eventModal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+            eventModal.hide();
+        }
+        function selectProduction(productionId, productionReference) {
+            // Set the selected production ID in a hidden input or directly in the form
+            document.getElementById('selected_production_id').value = productionId;
+            document.getElementById('selected_production_reference').value = productionReference;
+            // Close the modal
+            var productionModal = bootstrap.Modal.getInstance(document.getElementById('productionModal'));
+            productionModal.hide();
+        }
         function addToTable(item,unit) {
             console.log(unit);
             const tableBody = document.getElementById('itemTableBody');
