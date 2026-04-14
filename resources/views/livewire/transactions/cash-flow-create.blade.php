@@ -42,20 +42,20 @@
                     <div class="container list-group-item list-group-item-action">
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Restaurant Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $restaurantRevenue > 0 ? '₱ ' . number_format($restaurantRevenue, 2) : null }}" readonly>
                         </div>
                     
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Baquet Event Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $beoRevenue > 0 ? '₱ ' . number_format($beoRevenue, 2) : null }}" readonly>
                         </div>
                         <div class="input-group mb-3 ">
                             <label for="" class="input-group-text">Sales Order Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $salesOrderRevenue > 0 ? '₱ ' . number_format($salesOrderRevenue, 2) : null }}" readonly>
                         </div>
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Gate Entrance Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $gateEntrance > 0 ? '₱ ' . number_format($gateEntrance, 2) : null }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -70,23 +70,23 @@
                         </div>
                     
                         <div class="input-group mb-3">
-                            <label for="" class="input-group-text">Online Payments</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <label for="" class="input-group-text">Other Payments</label>
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $otherPayments > 0 ? '₱ ' . number_format($otherPayments, 2) : null }}" readonly>
                         </div>
                    
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Discounts</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $discounts > 0 ? '₱ ' . number_format($discounts, 2) : null }}" readonly>
                         </div>
                     
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Refund</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $refund > 0 ? '₱ ' . number_format($refund, 2) : null }}" readonly>
                         </div>
                    
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Cash Return - BEO</label>
-                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>">
+                            <input type="text" class="form-control form-control-sm text-end" placeholder="<AUTO>" value="{{ $cashReturnBEO > 0 ? '₱ ' . number_format($cashReturnBEO, 2) : null }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -121,42 +121,48 @@
                             <th>Bank</th>
                             <th>Check No.</th>
                             <th>Account Name</th>
+                            <th>Reference</th>
                             <th>Check Status</th>
-                            <th class="text-end">Amount</th>
+                            <th>Check Amount</th>
+                            <th class="text-end">Posted Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if($status == 'NEW')
                             <tr>
-                                <td colspan="5" class="text-center">Checks will be displayed here once the cash flow is saved.</td>
+                                <td colspan="7" class="text-center">Checks will be displayed here once the cash flow is saved.</td>
                             </tr>
                         @else
-                            <td colspan="5" class="fw-bold table-secondary">POST-DATED</td>
+                            <td colspan="7" class="fw-bold table-secondary">POST-DATED</td>
                             @forelse ($pdcChecks ?? [] as $PDC)
                                 <tr>
                                     <td>{{ $PDC->bank->bank_name }}</td>
                                     <td>{{ $PDC->check_number }}</td>
                                     <td>{{ $PDC->account_name }}</td>
+                                    <td>{{ $PDC->reference }}</td>
                                     <td>{{ $PDC->check_status }}</td>
+                                    <td class="text-end">₱ {{ number_format($PDC->check_amount, 2) }}</td>
                                     <td class="text-end">₱ {{ number_format($PDC->check_amount, 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">No records found</td>
+                                    <td colspan="7" class="text-center">No records found</td>
                                 </tr>
                             @endforelse
-                            <td colspan="5" class="fw-bold table-secondary">CURRENT</td>
+                            <td colspan="7" class="fw-bold table-secondary">CURRENT</td>
                             @forelse ($curChecks ?? [] as $cur)
                                 <tr>
                                     <td>{{ $cur->bank->bank_name }}</td>
                                     <td>{{ $cur->check_number }}</td>
                                     <td>{{ $cur->account_name }}</td>
+                                    <td>{{ $cur->reference }}</td>
                                     <td>{{ $cur->check_status }}</td>
+                                    <td class="text-end">₱ {{ number_format($cur->check_amount, 2) }}</td>
                                     <td class="text-end">₱ {{ number_format($cur->check_amount, 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">No records found</td>
+                                    <td colspan="7" class="text-center">No records found</td>
                                 </tr>
                             @endforelse
                         @endif

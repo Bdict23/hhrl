@@ -10,6 +10,7 @@ class OrderDiscount extends Model
 
     protected $fillable = [
         'discount_id',
+        'branch_id',
         'order_id',
         'order_detail_id',
         'created_at',

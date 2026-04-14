@@ -76,7 +76,15 @@
                <div class="card-body row">
                 
                      <div class="col-md-12 mb-3 row">
-                         <div class="col-md-6 mb-3">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                <label for="po_number" class="input-group-text">PO Number</label>
+                                 <input type="text" class="form-control" id="po_number" name="po_number"
+                                     value="{{ $requisitionInfo->requisition_number ?? '' }}" readonly>
+                            </div>
+                            
+                        </div>
+                         <div class="col-md-6 mb-3 mt-2">
                              <label for="options" class="form-label">Select Supplier</label>
                              <select id="options" name="supp_id" class="form-control" required>
                                  @foreach ($suppliers ?? [] as $supp)
@@ -87,10 +95,16 @@
                                  @endforeach
                              </select>
                          </div>
-                         <div class="col-md-6 mb-3">
-                             <label for="po_number" class="form-label">PO Number</label>
-                             <input type="text" class="form-control" id="po_number" name="po_number"
-                                 value="{{ $requisitionInfo->requisition_number ?? '' }}" readonly>
+                         <div class="col-md-6 mb-3 mt-2">
+                             <label for="" class="form-label">Purchase Type</label>
+                            <select id="options" name="type_id" class="form-control" required>
+                                @foreach ($purchaseTypes ?? [] as $type)
+                                    <option value="{{ $type->id }}"
+                                        {{ $type->id  == $requisitionInfo->type_id ? 'selected' : '' }}>
+                                        {{ $type->name ?? '' }}
+                                    </option>
+                                @endforeach
+                            </select>
                          </div>
                          <div class="col-md-12">
                             <div class="input-group">

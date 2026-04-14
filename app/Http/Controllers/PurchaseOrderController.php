@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Signatory;
 use App\Models\BanquetEvent as Event;
 use App\Models\ProductionOrder;
+use App\Models\SystemParameter;
 
 
 class PurchaseOrderController extends Controller
@@ -98,6 +99,7 @@ class PurchaseOrderController extends Controller
         $items = Item::with('priceLevel')->where('item_status', 'ACTIVE' )->get();
 
         $module = Module::where('module_name', 'Purchase Order')->first();
+        $purchaseTypes =SystemParameter::where('module_id',  $module->id)->where('branch_id', auth()->user()->branch_id)->where('status', 'ACTIVE')->where('key', 'purchase_type')->get();
         $reviewer = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'reviewer'],['branch_id',auth()->user()->branch_id]])->get();
         $approver = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'approver'],['branch_id',auth()->user()->branch_id]])->get();
         $events = Event::query()
@@ -111,7 +113,7 @@ class PurchaseOrderController extends Controller
     $productionOrders = ProductionOrder::where('branch_id', auth()->user()->branch_id)->where('status', 'PENDING')->get();
         
 
-        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'terms', 'items', 'approver', 'reviewer', 'hasReviewer','events','productionOrders'));
+        return view('purchase_order.po_update', compact('requisitionInfo', 'suppliers', 'terms', 'items', 'approver', 'reviewer', 'hasReviewer','events','productionOrders', 'purchaseTypes'));
     }
 
     public function po_update(Request $request)
@@ -132,6 +134,7 @@ class PurchaseOrderController extends Controller
                 $requisitionInfo->merchandise_po_number = $request->merchandise_po_number;
                 $requisitionInfo->event_id = $request->event_id;
                 $requisitionInfo->production_id = $request->production_id;
+                $requisitionInfo->type_id = $request->type_id;
                 $requisitionInfo->save();
 
                 // Ensure item_id and request_qty are arrays

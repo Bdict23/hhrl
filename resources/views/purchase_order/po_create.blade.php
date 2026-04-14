@@ -4,8 +4,7 @@
 @endsection
 
 
-@section('script')
-    <script>
+    {{-- <script>
         function viewBranch(data) {
             console.log(data);
             document.getElementById('branch_id').value = data.id;
@@ -95,5 +94,4 @@
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             errorModal.show();
         @endif
-    </script>
-@endsection
+    </script> --}}

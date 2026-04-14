@@ -202,6 +202,7 @@ class Invoicing extends Component
                 // Apply the discount automatically each items
                 foreach ($this->selectedOrderDetails as $detail) {
                     OrderDiscount::create([
+                        'branch_id' => auth()->user()->branch_id,
                         'order_id' => $orderId,
                         'order_detail_id' => $detail->id,
                         'discount_id' => $discount->id,
@@ -287,6 +288,7 @@ class Invoicing extends Component
             
             OrderDiscount::create(
                 [
+                    'branch_id' => auth()->user()->branch_id,
                     'order_id' => $this->selectedOrderId,
                     'order_detail_id' => $this->selectedItemId,
                     'discount_id' => $discountId,
@@ -326,6 +328,7 @@ class Invoicing extends Component
                 // Apply the discount automatically each items
                 foreach ($this->selectedOrderDetails as $detail) {
                     OrderDiscount::create([
+                        'branch_id' => auth()->user()->branch_id,
                         'order_id' => $this->selectedOrderId,
                         'order_detail_id' => $detail->id,
                         'discount_id' => $discount->id,
@@ -369,6 +372,7 @@ class Invoicing extends Component
                 // Apply the discount automatically each items
                 foreach ($this->selectedOrderDetails as $detail) {
                     OrderDiscount::create([
+                        'branch_id' => auth()->user()->branch_id,
                         'order_id' => $this->selectedOrderId,
                         'order_detail_id' => $detail->id,
                         'discount_id' => $discount->id,
@@ -435,6 +439,7 @@ class Invoicing extends Component
 
                 OrderDiscount::updateOrCreate(
                     [
+                        'branch_id' => auth()->user()->branch_id,
                         'order_id' => $this->selectedOrderId,
                         'order_detail_id' => $this->selectedItemId,
                         'discount_id' => $discountId,
@@ -529,7 +534,7 @@ class Invoicing extends Component
                     'invoice_id' => $invoice->id,
                     'amount' => $splitPayment['amount'],
                     'payment_type_id' => $splitPayment['paymentTypeId'],
-                    'type' => 'SALES',
+                    'type' => 'RESTO',
                     'prepared_by' => auth()->user()->employee->id,
                     'created_at' => Carbon::now('Asia/Manila'),
                     'updated_at' => Carbon::now('Asia/Manila'),
@@ -543,7 +548,7 @@ class Invoicing extends Component
                 'branch_id' => auth()->user()->branch->id,
                 'amount' => $this->totalAmountDue,
                 'prepared_by' => auth()->user()->employee->id,
-                'type' => 'SALES',
+                'type' => 'RESTO',
                 'invoice_id' => $invoice->id,
                 'payment_type_id' => $this->selectedPaymentType,
                 'created_at' => Carbon::now('Asia/Manila'),

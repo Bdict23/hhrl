@@ -100,7 +100,17 @@
                                 <input wire:model="requisitionNumber" type="text" class="form-control" readonly placeholder="<AUTO>" disabled>
                             </div>
                             <div class="col-md-12 mt-2">
-                               <div class="input-group">
+                                <x-select
+                                    placeholder="Select type"
+                                    :options="$purchaseTypes"
+                                    option-label="name"
+                                    option-value="id"
+                                    wire:model="selectedPurchaseTypeId"
+                                />
+                            </div>
+                                
+                            <div class="col-md-12 mt-2">
+                               {{-- <div class="input-group">
                                 <label for="" class="input-group-text">Supplier <span class="text-danger"> *</span></label>
                                     <select wire:model="supplierId" class="form-control">
                                         <option value="" selected>Select Supplier</option>
@@ -110,7 +120,16 @@
                                             </option>
                                         @endforeach
                                     </select>
-                               </div>
+                               </div> --}}
+
+                               <x-select
+                                    placeholder="Select Supplier"
+                                    wire:model="supplierId"
+                                    :options="$suppliers"
+                                    option-label="supp_name" 
+                                    option-value="id"
+                                    class="mb-2"
+                                />
                                 @error('supplierId')
                                     <span class="text-danger" >{{ $message }}</span>
                                 @enderror

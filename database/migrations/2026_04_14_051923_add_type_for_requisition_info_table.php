@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         //
-        DB::statement("ALTER TABLE payments MODIFY COLUMN type 
-            ENUM('DOWNPAYMENT','SERVICE','SALES','REFUND','VOID','RESTO', 'BEO', 'ENTRANCE', 'RENTAL', 'CORKAGE', 'OTHER') 
-            NOT NULL DEFAULT 'RESTO'");
+        Schema::table('requisition_infos', function (Blueprint $table) {
+            $table->foreignId('type_id')->nullable()->constrained('system_parameters')->onDelete('set null')->after('id');
+            // Add index for faster queries
+            $table->index('type_id', 'idx_type_id');
+        });
     }
 
     /**

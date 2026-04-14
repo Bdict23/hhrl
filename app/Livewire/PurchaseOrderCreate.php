@@ -16,11 +16,17 @@ use App\Models\OtherSetting;
 use Illuminate\Support\Facades\DB;
 use App\Models\BanquetProcurement;
 use App\Models\ProductionOrder;
+use App\Models\SystemParameter;
+
+use WireUi\Traits\WireUiActions;
+
 
 
 
 class PurchaseOrderCreate extends Component
 {
+    use WireUiActions;
+    
     public $suppliers = [];
     public $events = [];
     public $selectedEventId = null;
@@ -43,6 +49,9 @@ class PurchaseOrderCreate extends Component
     public $module;
     public $hasReviewer = false;
     public $isROP = false;
+    public $selectedPurchaseTypeId;
+    public $purchaseTypes = [];
+
 
     // production order
     public $selectedproductionID = null;
@@ -84,6 +93,8 @@ class PurchaseOrderCreate extends Component
                 'reviewer_id' => 'required|exists:employees,id',
                 'approver_id' => 'required|exists:employees,id',
                 'selectedItems' => 'required|array',
+                'selectedPurchaseTypeId' => 'required|exists:system_parameters,id',
+                'selectedEventId' => 'nullable|exists:banquet_events,id',
             ]);    
         }else {
             $this->validate([
@@ -95,6 +106,7 @@ class PurchaseOrderCreate extends Component
                 'approver_id' => 'required|exists:employees,id',
                 'selectedItems' => 'required|array',
                 'selectedEventId' => 'nullable|exists:banquet_events,id',
+                'selectedPurchaseTypeId' => 'required|exists:system_parameters,id',
             ]);
         }
 
@@ -131,6 +143,7 @@ class PurchaseOrderCreate extends Component
         $requisitionInfo->event_id = $this->selectedEventId ?? null;
         $requisitionInfo->production_id = $this->selectedproductionID ?? null;
         $requisitionInfo->total_amount = $totalCost;
+        $requisitionInfo->type_id = $this->selectedPurchaseTypeId;
         $requisitionInfo->save();
 
         // Process the selected items and their quantities
@@ -239,6 +252,7 @@ class PurchaseOrderCreate extends Component
     ->get();
 
     $purchasing = Module::where('module_name', 'Purchase order')->first();
+    $this->purchaseTypes = SystemParameter::where('module_id', $purchasing->id)->where('branch_id', auth()->user()->branch_id)->where('status', 'ACTIVE')->where('key', 'purchase_type')->get();
     $this->productionOrders = ProductionOrder::where('branch_id', auth()->user()->branch_id)->where('status', 'PENDING')->get();
     $this->items = Item::with('costPrice')->where('item_status', 'ACTIVE' )->where('company_id', auth()->user()->branch->company_id)->get();
     $this->approver = Signatory::where([['signatory_type', 'APPROVER'],['module_id', $purchasing->id  ],['branch_id', auth()->user()->branch_id]])->get();

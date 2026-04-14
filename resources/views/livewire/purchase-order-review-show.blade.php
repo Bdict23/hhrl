@@ -73,11 +73,18 @@
         <div class=" col-md-5 mb-8">
             <div class="card">
                 <header class="card-header">
-                    <h1>Purchase Order Information</h1>
+                    <h5>Purchase Order Information</h5>
                 </header>
                 <div class="card-body">
                     <form>
                         <div class="row">
+                            <div class="col-md-12">
+                                 <div class="input-group">
+                                    <label for="postal_address" class="input-group-text" style="width: 100; font-size: 13px">PO Number</label>
+                                    <input type="text" class="form-control" 
+                                       value="{{ $requestInfo->requisition_number }}" readonly style="width: 100; font-size: 13px">
+                                 </div>
+                            </div>
                             <div class="col-md-6">
                                 <label for="supp_name" class="form-label" style="width: 100; font-size: 13px">Supplier Name</label>
                                 <input type="text" class="form-control" id="name" name="company_name"
@@ -85,9 +92,10 @@
                                     style="width: 100; font-size: 13px">
                             </div>
                             <div class="col-md-6">
-                                <label for="postal_address" class="form-label" style="width: 100; font-size: 13px">PO Number</label>
-                                <input type="text" class="form-control" id="postal_address" name="company_code"
-                                    value="{{ $requestInfo->requisition_number }}" readonly style="width: 100; font-size: 13px">
+                                <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">P.O Type</label>
+                                <input type="text" class="form-control" 
+                                    value="{{ $requestInfo->purchaseType->name ?? 'N/A' }}" readonly
+                                    style="width: 100; font-size: 13px">
                             </div>
                         </div>
                         <div class="row mb-2">

@@ -33,7 +33,8 @@ class RequisitionInfo extends Model
         'remarks',
         'event_id',
         'total_amount',
-        'production_id'
+        'production_id',
+        'type_id',
     ];
 
     public function branches()
@@ -88,5 +89,10 @@ class RequisitionInfo extends Model
     public function getTotalReceivedAmountAttribute()
     {
         return $this->receivings->sum('receive_amount');
+    }
+
+    public function purchaseType()
+    {
+        return $this->belongsTo(SystemParameter::class, 'type_id', 'id');
     }
 }

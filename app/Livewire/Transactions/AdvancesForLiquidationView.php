@@ -52,6 +52,8 @@ class AdvancesForLiquidationView extends Component
             $this->isCreate = false;
             $aflId = $request->query('AFL-id');
             $this->loadExistingAFLData($aflId);
+        }else{
+            $this->isCreate = true;
         }
         $this->fetchData();
     }
@@ -60,7 +62,7 @@ class AdvancesForLiquidationView extends Component
         $existingCashflow = Cashflow::where('branch_id', auth()->user()->branch_id)
             ->whereDate('created_at', Carbon::today())
             ->first();
-        if($existingCashflow){
+        if($existingCashflow && $this->isCreate){
             $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Cashflow Already Created!', 'message' => 'There is an existing cashflow transaction for today.']);
             $this->hasCashflow = true;
          }
