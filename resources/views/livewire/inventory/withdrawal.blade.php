@@ -239,8 +239,17 @@
                                     @error('reference')
                                         <span class="text-danger" style="font-size: 12px">{{ $message }}</span>
                                     @enderror
-                              </div>
-                            <div class="row">
+                                <div class="col-md-12 mb-2">
+                                    <x-select
+                                        placeholder="Select withdrawal type"
+                                        :options="$withdrawalTypes"
+                                        option-label="name"
+                                        option-value="id"
+                                        wire:model="selectedWithdrawalTypeId"
+                                        min-items-for-search="0"
+                                    />
+                                </div>
+                                
                                 <div class="col-md-12 input-group mb-1">
                                     <input wire:model="event" type="text" class="form-control" id="event"
                                         style="font-size: 13px; text-align: center;" disabled value="{{ $eventName }}" placeholder="Event (optional)">
@@ -253,9 +262,8 @@
                                     <button class="input-group-text" type="button"
                                         style="background-color: rgb(190, 228, 243);" data-bs-toggle="modal" data-bs-target="#getProductionOrderModal"><strong class="text-sm"><i class="bi bi-box2"></i></strong></button>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
+                           
+                                <div class="col-md-6 mb-2">
                                     <label for="deptartment" class="form-label"
                                         style="width: 100; font-size: 13px">Department</label><span
                                         style="color: red;">*</span>

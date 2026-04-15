@@ -21,6 +21,8 @@ use App\Models\Employee;
 use App\Models\Payment as Payments;
 use App\Models\EventDiscount;
 use App\Models\OrderDiscount;
+use App\Models\CashReturn;
+
 
 
 class CashFlowCreate extends Component
@@ -51,6 +53,7 @@ class CashFlowCreate extends Component
     public $eventDiscounts; // load event discounts
     public $orderDiscounts; // load order discounts
     public $cashPaymentTypeId; // load cash payment type id for loading other payments (non-cash)
+    public $cashReturnData;
     // entries
     public $referenceNumber;
     public $acknowledgementReceipts;
@@ -90,10 +93,19 @@ class CashFlowCreate extends Component
         return view('livewire.transactions.cash-flow-create');
     }
 
-    public function mount($id = null)
+    public function mount(Request $request)
     {
+         if ($request->has('cashflow-id')) {
+            $id = $request->query('cashflow-id');
+        } elseif ($request->route('id')) {
+            $id = $request->route('id');
+        } else {
+            $id = null;
+        }
+    
         if(auth()->user()->employee->getModulePermission('Cash Flow') == 1) {
             if ($id) {
+                $this->exist = true;
                 $this->cashFlow = Cashflow::find($id);
                 if (!$this->cashFlow) {
                     // NO ACCESS RIGHTS
@@ -118,7 +130,7 @@ class CashFlowCreate extends Component
                 $this->fetchData();
             }
         } else {
-            return redirect()->route('cash_flow.summary');
+            return redirect()->route('dashboard')->with('error', 'You do not have access to Cash Flow module.');
         }
        
 
@@ -134,6 +146,10 @@ class CashFlowCreate extends Component
             $this->payments = Payments::where('branch_id', auth()->user()->branch_id)->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
             $this->eventDiscounts = EventDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
             $this->orderDiscounts = OrderDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
+            $this->cashReturnData = CashReturn::where('branch_id', auth()->user()->branch_id)
+                                    ->whereDate('updated_at', $this->cashFlow->created_at->format('Y-m-d'))
+                                    ->where('event_id', '!=', null)
+                                    ->where('status', 'FINAL')->get();
 
             // Gamit og pluck()->toArray() para makuha tanang IDs, dili lang ang una
             $savedTitleIds = $this->cashFlow->title->pluck('account_title_id')->toArray();
@@ -154,6 +170,10 @@ class CashFlowCreate extends Component
             $this->payments = Payments::where('branch_id', auth()->user()->branch_id)->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
             $this->eventDiscounts = EventDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
             $this->orderDiscounts = OrderDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
+            $this->cashReturnData = CashReturn::where('branch_id', auth()->user()->branch_id)
+                                    ->whereDate('updated_at', Carbon::today()->format('Y-m-d'))
+                                    ->where('event_id', '!=', null)
+                                    ->where('status', 'FINAL')->get();
 
             // Para sa NEW records, i-load tanang ACTIVE titles
             $this->collectionTitles = $savedTitles->where('type', 'COLLECTION')->where('status', 'ACTIVE');
@@ -270,9 +290,9 @@ class CashFlowCreate extends Component
             $loadAFL = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)
                 ->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))
                 ->get();
-            $returned = $loadAFL->sum('amount_returned');
-            $received = $loadAFL->sum('amount_received');
-            
+            $returned = $loadAFL->sum('amount_returned') ?? 0;
+            $received = $loadAFL->sum('amount_received') ?? 0;
+
             return $received - $returned;
         }
 
@@ -288,7 +308,7 @@ class CashFlowCreate extends Component
 
         // SUM OTHER PAYMENTS
         private function calculateOtherPayments(){
-            $total = $this->payments->where('payment_type_id', '!=', $this->cashPaymentTypeId)->sum('amount');
+            $total = $this->payments->where('payment_type_id', '!=', $this->cashPaymentTypeId)->whereNotIn('type', ['REFUND','VOID'])->sum('amount');
                 return $total;
         }
 
@@ -308,10 +328,7 @@ class CashFlowCreate extends Component
 
         // SUM CASH RETURNS BEO
         private function calculateCashReturnsBEO(){
-            $total = Payments::where('branch_id', auth()->user()->branch_id)
-                ->where('type', 'CASH_RETURN_BEO')
-                ->whereDate('created_at', Carbon::today())
-                ->sum('amount');
+            $total = $this->cashReturnData->sum('amount_returned');
                 return $total;
         }
 
@@ -325,7 +342,7 @@ class CashFlowCreate extends Component
         }
             // SUM GATE ENTRANCE
             private function calculateGateEntrance(){
-                $total = $this->payments->where('type', 'GATE_ENTRANCE')
+                $total = $this->payments->where('type', 'ENTRANCE')
                         ->sum('amount');
                     return $total;
             }
@@ -345,7 +362,10 @@ class CashFlowCreate extends Component
 
 //SAVE
     public function saveCashflow(){
-        
+        if($this->hasOpenShift){
+            $this->notify('Error Occured', 'error', 'Cannot save cashflow while there is an open shift.');
+            return;
+        }
         if($this->hasCashflow()){
            $this->notify('Cannot Save', 'warning', 'Only one cashflow per day can be saved.');
             return;
@@ -504,6 +524,13 @@ class CashFlowCreate extends Component
         foreach($this->lessTitles as $title){
             $this->lessAmount[$title->id] = $this->cashFlow->title->where('account_title_id', $title->id)->pluck('amount')->first() ?? 0;
         }
+            $this->calculateCollectionTotal();
+            $this->calculateLessTotal();
+            $this->calculateBreakDownTotal();
+            $this->grandTotalCollection += $resto + $beo + $sales + $gate;
+            $this->grandTotalLess += $afl + $otherPayments + $discounts + $refund + $cashReturnsBEO;
+            $this->netCollection = $this->grandTotalCollection - $this->grandTotalLess;
+            $this->cashOnHand = $this->billSubTotal + $this->coinSubTotal;
     }
 
 

@@ -16,6 +16,7 @@ use App\Models\ProductionOrder;
 use App\Models\ProductionOrderDetail;
 use App\Models\ProductionOrderMenu;
 use App\Models\BanquetEvent;
+use App\Models\SystemParameter;
 
 
 class Withdrawal extends Component
@@ -37,8 +38,11 @@ class Withdrawal extends Component
     public $classification = false;
     public $barcode = false;
 
+    // mounted
+    public $withdrawalTypes = [];
 
     public $reference;
+    public $selectedWithdrawalTypeId = null;
     public $departments = []; // display dept on ui
     public $selectedDepartment = null; // selected dept from user
     public $myCardexItems = []; // display items on ui particularly on modal
@@ -76,6 +80,7 @@ class Withdrawal extends Component
         'reviewer' => 'required',
         'approver' => 'required',
         'finalStatus' => 'required|in:DRAFT,FINAL',
+        'selectedWithdrawalTypeId' => 'required|exists:system_parameters,id',
 
     ];
     protected $messages = [
@@ -89,6 +94,7 @@ class Withdrawal extends Component
         'useDate.required' => 'The effective date is required.',
         'spanDate.after_or_equal' => 'The restock interval date must be after or equal to the effective date.',
         'finalStatus.required' => 'Select a valid saving option.',
+        'selectedWithdrawalTypeId.exists' => 'The selected withdrawal type is invalid.',
     ];
     protected $listeners = [
         'addItem' => 'addItem',
@@ -107,6 +113,7 @@ class Withdrawal extends Component
 
     public function fetchData(){
         $this->productionOrders = ProductionOrder::where('branch_id', auth()->user()->branch_id)->where('status', 'PENDING')->get();
+        
         $this->hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Withdrawal') == 1 ? true : false;
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();
@@ -124,6 +131,7 @@ class Withdrawal extends Component
 
             return $item;
         });
+        $this->withdrawalTypes = SystemParameter::where('branch_id', auth()->user()->branch_id)->where('module_id', $module->id)->where('key', 'withdrawal_type')->get();
         $this->reviewers = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'reviewer'],['branch_id',auth()->user()->branch_id]])->get();
         $this->approvers = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'approver'],['branch_id',auth()->user()->branch_id]])->get();
         $this->categories = Category::where([['company_id', auth()->user()->branch->company_id],['status','ACTIVE'],['category_type','ITEM']])->get();
@@ -203,6 +211,7 @@ class Withdrawal extends Component
                     'reviewer' => 'required',
                     'approver' => 'required',
                     'finalStatus' => 'required|in:DRAFT,FINAL',
+                    'selectedWithdrawalTypeId' => 'required|exists:system_parameters,id',
                 ]
             );
         }else{
@@ -215,6 +224,7 @@ class Withdrawal extends Component
                 'selectedItems.*.requested_qty' => 'required|numeric|min:0.01',
                 'approver' => 'required',
                 'finalStatus' => 'required|in:DRAFT,FINAL',
+                'selectedWithdrawalTypeId' => 'required|exists:system_parameters,id',
             ]);
 
         }
@@ -236,6 +246,7 @@ class Withdrawal extends Component
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
         $withdrawal->production_order_id = $this->selectedProductionOrderId ?? null;
+        $withdrawal->type_id = $this->selectedWithdrawalTypeId;
         $withdrawal->save();
         $withdrawalId = $withdrawal->id; // Ensure the ID is retrieved after saving
 

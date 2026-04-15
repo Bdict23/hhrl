@@ -22,6 +22,7 @@ class Withdrawal extends Model
         'withdrawal_type',
         'production_order_id',
         'event_id',
+        'type_id',
     ];
 
     public function department()
@@ -58,11 +59,6 @@ class Withdrawal extends Model
             return optional($cardex->priceLevel)->amount ?? 0;
         });
     }
-
-    public function withdrawalType()
-    {
-        return $this->belongsTo(OtherSetting::class, 'withdrawal_type', 'id');
-    }
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'source_branch_id');
@@ -71,6 +67,9 @@ class Withdrawal extends Model
     public function productionOrder()
     {
         return $this->belongsTo(ProductionOrder::class, 'production_order_id');
+    }
+    public function withdrawalType(){
+        return $this->belongsTo(SystemParameter::class, 'type_id');
     }
   
 }

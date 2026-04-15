@@ -257,6 +257,18 @@
                                     </div>
                                  <div class="row">
                                     <div class="col-md-12 input-group mb-1">
+                                       <x-select
+                                       label="Withdrawal Type"
+                                        placeholder="Select withdrawal type"
+                                        :options="$withdrawalTypes"
+                                        option-label="name"
+                                        option-value="id"
+                                        wire:model="selectedWithdrawalTypeId"
+                                        min-items-for-search="0"
+                                        readonly="{{ $isAlreadyFinal }}"
+                                    />
+                                    </div>
+                                    <div class="col-md-12 input-group mb-1">
                                         <label for="" class="input-group-text" style="font-size: 12px;">Event</label>
                                         <input type="text" class="form-control" id="event"
                                             style="font-size: 13px" disabled value="{{ $eventName }}" placeholder="N/A">
@@ -357,7 +369,7 @@
                                             
                                         @endif >
                                             <label for="approved_to" class="form-label" style="font-size: 13px;">Approved To</label>
-                                            <select wire:model="approver" id="approved_to" class="form-select"
+                                            <select wire:model="approver"  class="form-select"
                                                 aria-label="Default select example">
                                                 @if ($approvers->isEmpty())
                                                     <option style="font-size: 10px" disabled>No Approver Found</option>

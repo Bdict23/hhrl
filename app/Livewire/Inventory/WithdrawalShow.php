@@ -14,6 +14,7 @@ use App\Models\Module;
 use App\Models\OtherSetting;
 use App\Models\ProductionOrder;
 use App\Models\ProductionOrderDetail;
+use App\Models\SystemParameter;
 
 
 class WithdrawalShow extends Component
@@ -37,8 +38,11 @@ class WithdrawalShow extends Component
     public $classification = false;
     public $barcode = false;
 
+    // Mounted
+    public $withdrawalTypes;
 
     public $reference;
+    public $selectedWithdrawalTypeId;
     public $departments = []; // display dept on ui
     public $selectedDepartment = null; // selected dept from user
     public $myCardexItems = []; // display items on ui particularly on modal
@@ -60,7 +64,6 @@ class WithdrawalShow extends Component
     public $withdrawalID = null; // withdrawal id for update
     public $eventId = null; // event id for banquet procurement
     public $events = []; // display events on ui
-    public $withdrawalTypes = []; // display withdrawal types on ui
     public $productionRef = null;
 
 
@@ -74,6 +77,7 @@ class WithdrawalShow extends Component
         'reviewer' => 'required',
         'approver' => 'required',
         'finalStatus' => 'required|boolean',
+        'selectedWithdrawalTypeId' => 'required|exists:system_parameters,id',
         
     ];
     protected $messages = [
@@ -84,6 +88,9 @@ class WithdrawalShow extends Component
         'approver.required' => 'The approver is required.',
         'finalStatus.boolean' => 'Select A saving options',
         'finalStatus.required' => 'Select A saving options',
+        'spanDate.after_or_equal' => 'The validity date must be a date after or equal to the usage date.',
+        'selectedWithdrawalTypeId.required' => 'The withdrawal type is required.',
+        'selectedWithdrawalTypeId.exists' => 'The selected withdrawal type is invalid.',
        
     ];
     protected $listeners = [
@@ -125,6 +132,7 @@ class WithdrawalShow extends Component
         $this->finalStatus = $this->isAlreadyFinal;
         $this->haveSpan = $withdrawal->useful_date != null ? true : false;
         $this->selectedItems = [];
+        $this->selectedWithdrawalTypeId = $withdrawal->type_id;
         
 
         if ($withdrawal->event_id != null) {
@@ -248,7 +256,6 @@ class WithdrawalShow extends Component
     }
 
     public function fetchData(){
-        $this->withdrawalTypes = OtherSetting::where('setting_key', 'WITHDRAW_TYPE')->where('branch_id', auth()->user()->branch_id)->where('is_active', 1)->get() ?? [];
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
         $this->events = auth()->user()->branch->banquetEvents()->where('status', 'pending')->get();
         $myItems = Item::where([['company_id', auth()->user()->branch->company_id],['item_status','ACTIVE']])->get();
@@ -265,6 +272,7 @@ class WithdrawalShow extends Component
 
             return $item;
         });
+        $this->withdrawalTypes = SystemParameter::where('branch_id', auth()->user()->branch_id)->where('module_id', $module->id)->where('key', 'withdrawal_type')->get();
         $this->reviewers = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'reviewer'],['branch_id',auth()->user()->branch_id]])->get();
         $this->approvers = Signatory::with('employees')->where([['module_id', $module->id ],['signatory_type', 'approver'],['branch_id',auth()->user()->branch_id]])->get();
         $this->categories = Category::where([['company_id', auth()->user()->branch->company_id],['status','ACTIVE'],['category_type','ITEM']])->get();
@@ -344,6 +352,7 @@ class WithdrawalShow extends Component
                     'selectedItems' => 'required|array|min:1',
                     'approver' => 'required',
                     'reviewer' => 'required',
+                    'selectedWithdrawalTypeId' => 'required|exists:system_parameters,id',
                 ]);
         } else {
             $this->validate(
@@ -355,6 +364,7 @@ class WithdrawalShow extends Component
                     'remarks' => 'nullable|string|max:150',
                     'selectedItems' => 'required|array|min:1',
                     'approver' => 'required',
+                    'selectedWithdrawalTypeId' => 'required|exists:system_parameters,id',
                 ]
             );
         }
@@ -372,6 +382,7 @@ class WithdrawalShow extends Component
         $withdrawal->usage_date = $this->useDate;
         $withdrawal->useful_date = $this->haveSpan ? $this->spanDate : null;
         $withdrawal->event_id = $this->eventId ?? null; // Set the event ID if available
+        $withdrawal->type_id = $this->selectedWithdrawalTypeId;
         $withdrawal->save();
         $withdrawalId = $this->withdrawalID; // Ensure the ID is retrieved after saving
 

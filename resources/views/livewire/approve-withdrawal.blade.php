@@ -136,6 +136,12 @@
                                     </div>
                                 </div>
                                 <div class="row">
+                                     <div class="input-group col-md-12 mb-2">
+                                        <label for="production_order_no" class="input-group-text"
+                                            style="width: 100; font-size: 13px">Withdrawal Type</label>
+                                        <input type="text" class="form-control" 
+                                             value="{{ $withdrawalInfo->withdrawalType->name ?? '' }}" readonly>
+                                    </div>
                                     <div class="input-group col-md-12 mb-2">
                                         <label for="production_order_no" class="input-group-text"
                                             style="width: 100; font-size: 13px">Production Order No.</label>

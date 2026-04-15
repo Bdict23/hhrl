@@ -517,7 +517,8 @@ Route::get('/cash-flow-summary', function () {
     return view('transactions.cash-flow-summary-view');})->middleware(['auth', 'verified'])->name('cash_flow.summary');
 // create cashflow route
 Route::get('/cash-flow-create', function () {
-    return view('transactions.cashflow-create-view');})->middleware(['auth', 'verified'])->name('cash_flow.create');
+    return view('transactions.cashflow-create-view');
+    })->middleware(['auth', 'verified'])->name('cash_flow.create');
 
     // Cash Return summary route
     Route::get('/cash-return-summary', function(){
@@ -527,8 +528,11 @@ Route::get('/cash-flow-create', function () {
     // accounting.cashflow.titles route
 Route::get('/cashflow-titles-summary', function () {
     return view('accounting.cashflow-titles-summary-view');})->middleware(['auth', 'verified'])->name('accounting.cashflow.titles');
-    // \cashflow-view
-Route::get('/cashflow-view/{id}', CashFlowCreate::class)->middleware(['auth', 'verified'])->name('cashflow.view');
+// \cashflow-view
+Route::get('/cashflow-view/{id}', function () {
+    return view('transactions.cash-flow-create-view');
+    })->middleware(['auth', 'verified'])->name('cashflow.view');
+
 
 //Route for Billing and Payment for BEO
 Route::get('/billing-and-payment', function () {

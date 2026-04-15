@@ -18,7 +18,11 @@ public $statusCheckValue = 'ALL';
         return view('livewire.transactions.cash-flow-summary');
     }
     public  function mount(){
-        $this->fetchData();
+         if(auth()->user()->employee->getModulePermission('Cash Flow') != 2) {
+            $this->fetchData();
+        } else {
+            return redirect()->route('dashboard')->with('error', 'You do not have access to Cash Flow module.');
+        }
     }
     public function fetchData(){
         $this->cashFlows = Cashflow::where('branch_id', auth()->user()->branch_id)->get();
