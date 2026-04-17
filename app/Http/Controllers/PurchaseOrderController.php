@@ -52,7 +52,7 @@ class PurchaseOrderController extends Controller
 
      public function printPO($id)
      {
-         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term')->where('id',  $id )->first();
+         $requestInfo = RequisitionInfo::with('supplier','preparer','reviewer', 'approver', 'requisitionDetails','term','event','purchaseType')->where('id',  $id )->first();
        // return $requestInfo;
          return view('purchase_order.po_print_details', compact('requestInfo'));
      }

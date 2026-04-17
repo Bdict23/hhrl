@@ -67,6 +67,12 @@ class CashFlowCreate extends Component
 
     // display titles
         //revenue
+        public $beginningBalance = 0.00;
+        public $endingBalance = 0.00;
+         public $flowType = 'COLLECTION';
+         public $fundStatus = 'VALIDATED';
+         public $parentId = null;
+
         public $restaurantRevenue= 0.00;
         public $beoRevenue = 0.00;
         public $salesOrderRevenue = 0.00;
@@ -142,6 +148,7 @@ class CashFlowCreate extends Component
         $savedTitles = CashflowAccountTitle::where('branch_id', auth()->user()->branch_id)->get();
         $this->cashPaymentTypeId = PaymentType::where('payment_type_name', 'CASH')->pluck('id')->first();
         if($this->status != 'NEW'){
+            $this->beginningBalance = $this->cashFlow->beginning_balance;
             // get all payments data from cashflow date
             $this->payments = Payments::where('branch_id', auth()->user()->branch_id)->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
             $this->eventDiscounts = EventDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
@@ -166,6 +173,8 @@ class CashFlowCreate extends Component
                 $this->lessTitles = collect();
             }
         } else {
+            
+            $this->setBeginningBalance();
             //load payments for today
             $this->payments = Payments::where('branch_id', auth()->user()->branch_id)->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
             $this->eventDiscounts = EventDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
@@ -282,6 +291,16 @@ class CashFlowCreate extends Component
         $this->billSubTotal = $billTotal;
     }
 
+    private function setBeginningBalance(){
+        $lastCashFlow = Cashflow::where('branch_id', auth()->user()->branch_id)->latest()->first();
+        if($lastCashFlow){
+            $this->beginningBalance = $lastCashFlow->ending_balance;
+            return $lastCashFlow->ending_balance;
+        }else{
+            $this->beginningBalance = 0.00;
+            return 0.00;
+        }
+    }
 
     // LESS FUNCTIONS
         //SUM AFL
@@ -390,7 +409,11 @@ class CashFlowCreate extends Component
             'approver_id' => $this->approver_id,
             'notes'        => $this->notes,
             'created_at' => Carbon::now('Asia/Manila'),
-            
+            'beginning_balance' => $this->beginningBalance ,
+            'ending_balance' => 0.00, 
+            'flow_type' => $this->flowType,
+            'fund_status' => $this->fundStatus,
+            'parent_id' => $this->parentId,
         ]);
         // record collections
         foreach($this->collectionTitles as $title){
@@ -466,6 +489,10 @@ class CashFlowCreate extends Component
         $this->cashFlow = CashFlow::where('id', $cashflow->id)->first();
         $this->fetchData();
         $this->viewCashFlowDetails();
+        // update cashflow ending balance
+        $this->cashFlow->update([
+            'ending_balance' => $this->netCollection,
+        ]);
         $this->notify('Cashflow Created','success','Cashflow Reference: ' . $this->referenceNumber);
 
 
@@ -527,10 +554,18 @@ class CashFlowCreate extends Component
             $this->calculateCollectionTotal();
             $this->calculateLessTotal();
             $this->calculateBreakDownTotal();
-            $this->grandTotalCollection += $resto + $beo + $sales + $gate;
+            $this->grandTotalCollection += $resto + $beo + $sales + $gate +  $this->beginningBalance;
             $this->grandTotalLess += $afl + $otherPayments + $discounts + $refund + $cashReturnsBEO;
-            $this->netCollection = $this->grandTotalCollection - $this->grandTotalLess;
-            $this->cashOnHand = $this->billSubTotal + $this->coinSubTotal;
+            $this->netCollection = ($this->grandTotalCollection - $this->grandTotalLess);
+            $this->cashOnHand = $this->billSubTotal + $this->coinSubTotal + $this->beginningBalance;
+
+            if($this->netCollection > $this->cashOnHand) {
+                $this->remarks = 'EXCESS : ' . number_format($this->netCollection - $this->cashOnHand, 2);
+            } else if($this->netCollection < $this->cashOnHand) {
+                $this->remarks = 'SHORT : ' . number_format($this->cashOnHand - $this->netCollection, 2);
+            }else {
+                $this->remarks = 'BALANCED';
+            }
     }
 
 

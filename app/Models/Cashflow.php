@@ -19,6 +19,11 @@ class Cashflow extends Model
         'remarks',
         'created_at',
         'updated_at',
+        'beginning_balance',
+        'ending_balance',
+        'flow_type',
+        'fund_status',
+        'parent_id',
     ];
 
     public function createdBy()

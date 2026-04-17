@@ -40,18 +40,22 @@
                         <strong>COLLECTION</strong>
                     </div>
                     <div class="container list-group-item list-group-item-action">
+                         <div class="input-group mb-3">
+                            <label for="" class="input-group-text">Beginning Balance</label>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $beginningBalance > 0 ? '₱ ' . number_format($beginningBalance, 2) : '₱ 0.00' }}" readonly>
+                        </div>
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Restaurant Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $restaurantRevenue > 0 ? '₱ ' . number_format($restaurantRevenue, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $restaurantRevenue > 0 ? '₱ ' . number_format($restaurantRevenue, 2) : '₱ 0.00' }}" readonly>
                         </div>
                     
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Baquet Event Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $beoRevenue > 0 ? '₱ ' . number_format($beoRevenue, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $beoRevenue > 0 ? '₱ ' . number_format($beoRevenue, 2) : '₱ 0.00' }}" readonly>
                         </div>
                         <div class="input-group mb-3 ">
                             <label for="" class="input-group-text">Sales Order Revenue</label>
-                            <input type="text" class="form-control form-control-sm text-end"  {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $salesOrderRevenue > 0 ? '₱ ' . number_format($salesOrderRevenue, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end"  {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $salesOrderRevenue > 0 ? '₱ ' . number_format($salesOrderRevenue, 2) : '₱ 0.00' }}" readonly>
                         </div>
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Gate Entrance Revenue</label>
@@ -66,27 +70,27 @@
                     <div class="container list-group-item list-group-item-action">
                         <div class="input-group mb-3 ">
                             <label for="" class="input-group-text">AFL - Disburser</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $afl > 0 ? '₱ ' . number_format($afl, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $afl > 0 ? '₱ ' . number_format($afl, 2) : '₱ 0.00' }}" readonly>
                         </div>
                     
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Other Payments</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $otherPayments > 0 ? '₱ ' . number_format($otherPayments, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $otherPayments > 0 ? '₱ ' . number_format($otherPayments, 2) : '₱ 0.00' }}" readonly>
                         </div>
                    
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Discounts</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $discounts > 0 ? '₱ ' . number_format($discounts, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $discounts > 0 ? '₱ ' . number_format($discounts, 2) : '₱ 0.00' }}" readonly>
                         </div>
                     
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Refund</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $refund > 0 ? '₱ ' . number_format($refund, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $refund > 0 ? '₱ ' . number_format($refund, 2) : '₱ 0.00' }}" readonly>
                         </div>
                    
                         <div class="input-group mb-3">
                             <label for="" class="input-group-text">Cash Return - BEO</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $cashReturnBEO > 0 ? '₱ ' . number_format($cashReturnBEO, 2) : null }}" readonly>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $cashReturnBEO > 0 ? '₱ ' . number_format($cashReturnBEO, 2) : '₱ 0.00' }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -283,10 +287,10 @@
                     <label for="" class="form-label text-sm">Remarks</label>
                       <input type="text" 
                         @if($remarks == 'BALANCED' ) class="form-control alert alert-success text-center"
-                        @elseif($remarks == 'EXCESS') class="form-control alert alert-warning text-center"
-                        @elseif($remarks == 'SHORT') class="form-control alert alert-danger text-center"
+                        @elseif(str_contains($remarks, 'EXCESS')) class="form-control alert alert-warning text-center"
+                        @elseif(str_contains($remarks, 'SHORT')) class="form-control alert alert-danger text-center"
                         @else class="form-control alert alert-info text-center"
-                        @endif  placeholder="<AUTO>" readonly {{ $remarks ? 'value='.$remarks : null }}>
+                        @endif  placeholder="<AUTO>" readonly wire:model="remarks" />
                   </div>
                     <x-textarea label="Notes" placeholder="write your notes" wire:model="notes"/>
                 </div>

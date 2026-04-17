@@ -47,15 +47,8 @@
             font-weight: bold;
         }
 
-        .header,
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-        }
 
-        .footer {
-            margin-top: 40px;
-        }
+
 
         .title {
             text-align: center;
@@ -124,10 +117,19 @@
         </div>
         <span class="address">{{ $requestInfo->branches->branch_address }}</span>
     </div>
-    <div>SUPPLIER NAME: <span class="label">{{ $requestInfo->supplier->supp_name }}</span></div>
-    <div>MERCHANDISE PO #: <span class="label">{{ $requestInfo->merchandise_po_number }}</span></div>
-    <div>ORDER NO.: <span class="label">{{ $requestInfo->requisition_number }}</span></div>
-    <div>ORDER DATE: <span class="label">{{ $requestInfo->trans_date }}</span></div>
+    <div class="d-flex justify-content-between mt-5">
+        <div class="container">
+            <div>SUPPLIER NAME: <span class="label">{{ $requestInfo->supplier->supp_name }}</span></div>
+            <div>MERCHANDISE PO #: <span class="label">{{ $requestInfo->merchandise_po_number }}</span></div>
+            <div>ORDER NO.: <span class="label">{{ $requestInfo->requisition_number }}</span></div>
+            <div>ORDER DATE: <span class="label">{{ $requestInfo->trans_date }}</span></div>
+        </div>
+        <div class="container">
+            <div>P.O TYPE: <span class="label">{{ $requestInfo->purchaseType->name ?? 'N/A' }}</span></div>
+            <div>EVENT NAME: <span class="label">{{ $requestInfo->event->event_name ?? 'N/A' }}</span></div>
+            <div>BEO REF: <span class="label">{{ $requestInfo->event->requisition_number ?? 'N/A' }}</span></div>
+        </div>
+    </div>
 
     <!-- TABLE SECTION -->
     <table>
@@ -156,15 +158,30 @@
     </table>
 
     <!-- FOOTER SECTION -->
-    <div class="footer">
-        <span style="text-decoration-line: underline">{{ $requestInfo->preparer->name }}
-            {{ $requestInfo->preparer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
+    <div class="footer mt-5">
+        <div class="d-flex justify-content-between gap-4 align-content-center">
+            <div class="container">
+                        <p class="mb-0">Prepared By: </p>
+                <span style="text-decoration-line: underline" style="white-space: nowrap">&nbsp;&nbsp;{{ $requestInfo->preparer->name }} {{ $requestInfo->preparer->middle_name }} {{ $requestInfo->preparer->last_name }}&nbsp;&nbsp;</span>
+                <p class="mb-0">{{ $requestInfo->preparer->position->position_name ?? '' }}</p>
+            </div>
             @if ($requestInfo->reviewer)
-                <span style="text-decoration-line: underline">{{ $requestInfo->reviewer->name }}
-                {{ $requestInfo->reviewer->last_name }}</span>&emsp;&emsp;&emsp;&emsp;
+                    <div class="container">
+                        <p class="mb-0">Reviewed By: </p>
+                        <span style="text-decoration-line: underline" style="white-space: nowrap">&nbsp;&nbsp;{{ $requestInfo->reviewer->name }} {{ $requestInfo->reviewer->middle_name }}
+                        {{ $requestInfo->reviewer->last_name }}&nbsp;&nbsp;</span>
+                        <p class="mb-0">{{ $requestInfo->reviewer->position->position_name ?? '' }}</p>
+
+                    </div>
             @endif
-        <span style="text-decoration-line: underline">{{ $requestInfo->approver->name }} {{ $requestInfo->approver->middle_name }}
-            {{ $requestInfo->approver->last_name }}</span>
+            <div class="container">
+                        <p class="mb-0">Approved By: </p>
+                <span style="text-decoration-line: underline" style="white-space: nowrap">&nbsp;&nbsp;{{ $requestInfo->approver->name }} {{ $requestInfo->approver->middle_name }}
+                    {{ $requestInfo->approver->last_name }}&nbsp;&nbsp;</span>
+                    <p class="mb-0">{{ $requestInfo->approver->position->position_name ?? '' }}</p>
+            </div>
+                
+        </div>
     </div>
 
     <!-- Bootstrap JS (Optional) -->
