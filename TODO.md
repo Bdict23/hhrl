@@ -1,21 +1,11 @@
-# Task: Display Total Receiving Amount column for each Purchase Order in Banquet Liquidation Create
+# Fix Route [assets.review.show] not defined
 
-## Steps to Complete (Approved Plan)
-- [x] **Step 1**: Update `app/Livewire/Banquet/LiquidationCreate.php`
-  - In `getEventInformation()`: Compute `total_received_amount` for each PO by summing `receivings->receive_amount`.
-  - Expose via property or accessor. ✅
+## Steps:
+- [x] 1. Create app/Http/Controllers/AssetRegisterController.php with show($id, $action) method.
+- [x] 2. Edit routes/web.php: Remove duplicate `/asset-view` routes at the end, add controller routes: GET /assets/{id} (assets.view), /assets/{id}/review (assets.review.show), /assets/{id}/approval (assets.approval.show).
+- [x] 3. Edit resources/views/livewire/validations/fixed-asset-approval-lists.blade.php: Fix route name from 'aassets.approval.show' to 'assets.approval.show'.
+- [x] 4. Clear route cache: php artisan route:clear && php artisan route:list | findstr assets
+- [ ] 5. Test links in review/approval lists.
+- [ ] 6. Complete task.
 
-- [x] **Step 2**: Update `resources/views/livewire/banquet/liquidation-create.blade.php`
-  - Fill vacant Amount `<td>` with formatted total (₱{{ number_format(...) }} ).
-  - Optional: Add tooltip/header clarity. ✅
-
-- [ ] **Step 3**: Test changes
-  - Navigate to Liquidation Create, select event with POs.
-  - Verify Amount column shows correct sums (0 if no receiving, sum if multiple).
-  - Check footer total if updated.
-
-- [x] **Step 4**: Complete task
-  - Run `attempt_completion`.
-
-**Status**: Steps 1-2 complete. Ready for testing/completion. ✅
-
+Progress: Steps 1-4 completed. Route 'assets.review.show' now defined: assets/{id}/review → AssetRegisterController@show. Ready for testing.

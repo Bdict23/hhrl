@@ -12,6 +12,8 @@ use App\Models\Item;
 use App\Models\PriceLevel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use App\Models\Signatory;
 use App\Models\UnitConversion;
 use App\Models\Category;
@@ -54,12 +56,29 @@ class MenusController extends Controller
         //  dd($request->all());
         try {
             $hasReviewer = auth()->user()->branch->getBranchSettingConfig('Allow Reviewer on Recipe') == 1 ? true : false;
+            $tempImagePath = $request->input('temp_menu_image');
+
+            if ($request->hasFile('menu_image')) {
+                $tempImagePath = $request->file('menu_image')->store('recipe_images/temp', 'public');
+            }
+
             $validated = $request->validate([
-                'menu_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10048',
+                'menu_image' => ($tempImagePath ? 'nullable' : 'required') . '|image|mimes:jpeg,png,jpg,gif,svg|max:10048',
+                'menu_code' => 'required|unique:menus,menu_code'
             ]);
 
-            // $imageName = time().'.'.$request->menu_image->extension();
-            $path = $request->menu_image->store('recipe_images', 'public');
+            if (!$tempImagePath) {
+                throw ValidationException::withMessages([
+                    'menu_image' => 'The menu image field is required.',
+                ]);
+            }
+
+            $path = $tempImagePath;
+            if (str_starts_with($tempImagePath, 'recipe_images/temp/')) {
+                $finalPath = str_replace('recipe_images/temp/', 'recipe_images/', $tempImagePath);
+                Storage::disk('public')->move($tempImagePath, $finalPath);
+                $path = $finalPath;
+            }
             // $request->menu_image->move(public_path('images'), $imageName);
 
             $menu = new Menu();
@@ -93,9 +112,16 @@ class MenusController extends Controller
             }
 
             return redirect()->to('/create_menu');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput($request->except('menu_image'))
+                ->with('temp_menu_image', $tempImagePath ?? $request->input('temp_menu_image'))
+                ->with('error', 'Unable to save menu. Please fix the validation errors and try again.');
         } catch (\Exception $e) {
-            dd($e->getMessage());
-            return redirect()->back()->withErrors([$e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unable to save menu. ' . $e->getMessage());
         }
     }
 

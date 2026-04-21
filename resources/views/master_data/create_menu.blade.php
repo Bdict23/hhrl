@@ -4,6 +4,23 @@
         <form id="poForm" method="POST" action="{{ route('menu.store') }}" enctype="multipart/form-data">
             @csrf
 
+@if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <strong>Please fix the following errors before saving:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="row me-3 w-100">
                 <div class=" col-md-8 card">
@@ -38,9 +55,60 @@
                                     </tr>
                                 </thead>
                                 <tbody id="itemTableBody">
+                                    @php
+                                        $oldItemIds = old('item_id', []);
+                                        $oldQtys = old('qty', []);
+                                        $oldUomIds = old('uom_id', []);
+                                        $oldPriceLevelIds = old('price_level_id', []);
+                                    @endphp
 
-                                    {{--           POPULATE TABLE     --}}
+                                    @foreach ($oldItemIds as $index => $oldItemId)
+                                        @php
+                                            $selectedItem = $items->firstWhere('id', $oldItemId);
+                                            $selectedUomId = $oldUomIds[$index] ?? null;
+                                            $selectedPriceLevelId = $oldPriceLevelIds[$index] ?? null;
+                                            $selectedQty = $oldQtys[$index] ?? 1;
 
+                                            $selectedUnitSymbol = $selectedItem?->units?->unit_symbol ?? 'N/A';
+                                            $conversionFactor = 1;
+
+                                            if ($selectedItem && $selectedUomId && $selectedItem->units && $selectedItem->units->fromUnits) {
+                                                $matchedUnit = $selectedItem->units->fromUnits->firstWhere('to_uom_id', $selectedUomId);
+                                                if ($matchedUnit) {
+                                                    $conversionFactor = $matchedUnit->conversion_factor ?: 1;
+                                                    $selectedUnitSymbol =
+                                                        $selectedItem->units
+                                                            ->where('id', $selectedUomId)
+                                                            ->pluck('unit_symbol')
+                                                            ->implode(', ') ?: $selectedUnitSymbol;
+                                                }
+                                            }
+
+                                            $basePrice = $selectedItem
+                                                ? $selectedItem->priceLevel()->latest()->where('price_type', 'cost')->first()->amount ?? 0
+                                                : 0;
+                                            $selectedPrice = $conversionFactor ? round((1 / $conversionFactor) * $basePrice, 2) : $basePrice;
+                                            $selectedTotal = $selectedPrice * $selectedQty;
+                                        @endphp
+                                        @if ($selectedItem)
+                                            <tr data-item-id="{{ $oldItemId }}">
+                                                <td style="font-size: 13PX;">{{ $selectedItem->item_code }}</td>
+                                                <td style="font-size: 13PX;">{{ $selectedItem->item_description }}</td>
+                                                <td>
+                                                    <input type="number" name="qty[]" class="form-control" value="{{ $selectedQty }}" min="1" onchange="updateTotalPrice(this)" onkeydown="handleEnterKey(event, this)">
+                                                    <input type="hidden" name="uom_id[]" value="{{ $selectedUomId }}">
+                                                    <input type="hidden" name="item_id[]" value="{{ $oldItemId }}">
+                                                    <input type="hidden" name="price_level_id[]" value="{{ $selectedPriceLevelId }}">
+                                                </td>
+                                                <td style="font-size: 13PX; text-align: center">{{ $selectedUnitSymbol }}</td>
+                                                <td style="font-size: 13PX; text-align: center">{{ number_format($selectedPrice, 2, '.', '') }}</td>
+                                                <td class="total-price">{{ number_format($selectedTotal, 2, '.', '') }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -62,38 +130,47 @@
                         <form>
                             @csrf
                             <div class="form-group">
-                                <img id="imagePreview" src="{{ asset('images/' . auth()->user()->branch->company->company_logo) }}" alt="Image Preview"
+                                @php
+                                    $previewImage = session('temp_menu_image')
+                                        ? asset('storage/' . session('temp_menu_image'))
+                                        : asset('images/' . auth()->user()->branch->company->company_logo);
+                                @endphp
+                                <img id="imagePreview" src="{{ $previewImage }}" alt="Image Preview"
                                     style="width: 90%; height: 120px; object-fit: cover;" name="image">
                             </div>
                             <div class="form-group mt-1">
                                 <label for="recipe_name" style="font-size: 13px;">Recipe Name:</label>
-                                <input type="text" class="form-control" id="recipe_name" name="menu_name" required>
+                                <input type="text" class="form-control" id="recipe_name" name="menu_name" required
+                                    value="{{ old('menu_name') }}">
                             </div>
                             <div class="form-group mt-1">
                                 <label for="recipe_type" style="font-size: 13px;">Type</label>
                                 <select name="menu_type" id="recipe_type" class="form-select" aria-label="Default select example">
-                                    <option value="Ala carte">Ala Carte</option>
-                                    <option value="Banquet">Banquet</option>
+                                    <option value="Ala carte" {{ old('menu_type') == 'Ala carte' ? 'selected' : '' }}>Ala Carte</option>
+                                    <option value="Banquet" {{ old('menu_type') == 'Banquet' ? 'selected' : '' }}>Banquet</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="recipe_description" style="font-size: 13px;">Description:</label>
                                 <textarea class="form-control" id="recipe_description" name="menu_description" rows="3" required
-                                    style="height: 30px; width:100%"></textarea>
+                                    style="height: 30px; width:100%">{{ old('menu_description') }}</textarea>
                             </div>
                             <div class="form-group mt-2">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label for="recipe_price" style="font-size: 13px;">CODE:</label>
-                                        <input type="text" class="form-control" id="recipe_code" name="menu_code" required
-                                            placeholder="ex. CY23">
+                                        <input type="text" class="form-control @error('menu_code') is-invalid @enderror" id="recipe_code" name="menu_code" required
+                                            placeholder="ex. CY23" value="{{ old('menu_code') }}">
+                                        @error('menu_code')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label style="font-size : 13px;" for="category">Category:</label>
                                         <select id="category" name="category_id" class="form-select"
                                             aria-label="Default select example">
                                             @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}">
+                                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                                     {{ $category->category_name }}
                                                 </option>
                                             @endforeach
@@ -108,7 +185,7 @@
                                     <select id="reviewer_select" class="form-select" aria-label="Default select example"
                                         name="reviewer_id">
                                         @foreach ($reviewers as $reviewer)
-                                            <option value="{{ $reviewer->employees->id }}">
+                                            <option value="{{ $reviewer->employees->id }}" {{ old('reviewer_id') == $reviewer->employees->id ? 'selected' : '' }}>
                                                 {{ $reviewer->employees->name }} {{ $reviewer->employees->last_name }}
                                             </option>
                                         @endforeach
@@ -120,7 +197,7 @@
                                     <select id="approver_select" class="form-select" aria-label="Default select example"
                                         name="approver_id">
                                         @foreach ($approvers as $approver)
-                                            <option value="{{ $approver->employees->id }}">
+                                            <option value="{{ $approver->employees->id }}" {{ old('approver_id') == $approver->employees->id ? 'selected' : '' }}>
                                                 {{ $approver->employees->name }} {{ $approver->employees->last_name }}
                                             </option>
                                         @endforeach
@@ -129,8 +206,12 @@
                             </div>
                             <div class="form-group">
                                 <label for="menu_image" style="font-size: 13px">Upload Image:</label>
-                                <input class="form-control text-sm" type="file" id="menu_image" name="menu_image" required
+                                <input type="hidden" name="temp_menu_image" value="{{ session('temp_menu_image') }}">
+                                <input class="form-control text-sm @error('menu_image') is-invalid @enderror" type="file" id="menu_image" name="menu_image" {{ session('temp_menu_image') ? '' : 'required' }}
                                     onchange="previewImage(event)">
+                                @error('menu_image')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <button type="submit" class="btn btn-primary mt-3">Create Menu</button>
@@ -212,8 +293,9 @@
                                             <td>
                                                 <!-- Assign a unique ID to the button -->
                                                 <button id="addToTable_{{ $item->id }}"
+                                                    type="button"
                                                     class="btn btn-primary btn-sm"
-                                                    onclick="addToTable({{ $item->id }}, {{ json_encode(['id' => $uom_id, 'factor' => 1, 'symbol' => $itemUnit, 'item_code' => $itemCode, 'item_price' => $itemPrice, 'item_description' => $itemDescription, 'price_id' => $priceID]) }})">
+                                                    onclick="return addToTable({{ $item->id }}, {{ json_encode(['id' => $uom_id, 'factor' => 1, 'symbol' => $itemUnit, 'item_code' => $itemCode, 'item_price' => $itemPrice, 'item_description' => $itemDescription, 'price_id' => $priceID]) }})">
                                                     Add
                                                 </button>
                                             </td>
@@ -281,15 +363,15 @@
             const symbol = unit.symbol;
 
             const tableBody = document.getElementById('itemTableBody');
-            const existingItem = Array.from(tableBody.querySelectorAll('tr')).find(row => row.querySelector('td')
-                .textContent === item.item_code);
+            const existingItem = tableBody.querySelector(`tr[data-item-id="${item}"]`);
             if (existingItem) {
                 alert('The item already exists in the table.');
-                return;
+                return false;
             }
 
             const price = Math.round((1 / unit.factor) * unit.item_price * 100) / 100;
             const newRow = document.createElement('tr');
+            newRow.setAttribute('data-item-id', item);
 
             newRow.innerHTML = `
                 <td style="font-size: 13PX;">${unit.item_code}</td>

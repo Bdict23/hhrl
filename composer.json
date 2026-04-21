@@ -8,7 +8,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.9",
+        "akira/laravel-qrcode": "^1.1",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "*",
@@ -69,7 +71,12 @@
             "php-http/discovery": true
         },
         "audit": {
-            "ignore": ["PKSA-g5js-3ypd-k2kr", "PKSA-365x-2zjk-pt47", "PKSA-64jn-3d9t-gncx"]
+            "ignore": [
+                "PKSA-5jz8-6tcw-pbk4",
+                "PKSA-g5js-3ypd-k2kr", 
+                "PKSA-365x-2zjk-pt47", 
+                "PKSA-64jn-3d9t-gncx"
+            ]
         }
     },
     

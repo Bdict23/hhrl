@@ -571,3 +571,45 @@ Route::get('/beo-liquidation?BEO-Approval-id={id}', function () {
 Route::get('/beo-liquidation?BEO-Validate-id={id}', function () {
     return view('banquet.liquidation-create-view');
 })->middleware(['auth', 'verified'])->name('beo.liquidation.validate.view');
+
+//asset-summary
+
+Route::get('/batch-summary', function () {
+    return view('inventory.asset-register-summary-view');
+})->middleware(['auth', 'verified'])->name('batch.summary');
+
+// batch.create
+Route::get('/asset-register-new', function () {
+    return view('inventory.asset-register-action-view');
+})->middleware(['auth', 'verified'])->name('batch.create');
+
+// assets.view
+Route::get('/asset-view', function () {
+    return view('inventory.asset-register-action-view');
+})->middleware(['auth', 'verified'])->name('assets.view');
+
+// assets.view
+Route::get('/asset-summary', function () {
+    return view('inventory.fixed-asset-summary-view');
+})->middleware(['auth', 'verified'])->name('assets.summary');
+
+
+// /fixed-asset-approval-lists
+Route::get('/fixed-asset-approval-lists', function () {
+    return view('validations.fixed-asset-approval-lists-view');
+})->middleware(['auth', 'verified'])->name('asset-approval-list');
+
+Route::get('/fixed-asset-review-lists', function () {
+    return view('validations.fixed-asset-review-lists-view');
+})->middleware(['auth', 'verified'])->name('asset-review-list');
+
+// // fixed asset show for review 
+Route::get('/asset-review', function () {
+    return view('inventory.asset-register-action-view');
+})->middleware(['auth', 'verified'])->name('assets.review.show');
+
+
+// // fixed asset show for approval 
+Route::get('/asset-to-approve', function () {
+    return view('inventory.asset-register-action-view');
+})->middleware(['auth', 'verified'])->name('assets.approval.show');

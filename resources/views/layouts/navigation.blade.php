@@ -159,6 +159,11 @@
                                     {{ __('Item Location') }}
                                 </x-dropdown-link>
                             @endif
+                            @if (auth()->user()->employee->getModulePermission('Fixed Asset') != 2 )
+                             <x-dropdown-link :href="url('/batch-summary')" class="no-underline">
+                                    {{ __('Fixed Asset') }}
+                           </x-dropdown-link>
+                        @endif
                         </x-slot>
                     </x-dropdown>
                 </div>
@@ -290,7 +295,17 @@
                                     @if (auth()->user()->employee->getModulePermission('Equipment Request Approval') == 1 )
                                         <x-dropdown-link :href="url('/equipment-request-approval-lists')" class="no-underline" style="font-size: smaller">
                                         {{ __('Equipment REQ. - Approval') }}
-                                    </x-dropdown-link>
+                                        </x-dropdown-link>
+                                    @endif
+                                    @if (auth()->user()->employee->getModulePermission('Equipment Request Approval') == 1 )
+                                        <x-dropdown-link :href="url('/fixed-asset-approval-lists')" class="no-underline" style="font-size: smaller">
+                                        {{ __('Fixed Asset - Approval') }}
+                                        </x-dropdown-link>
+                                    @endif
+                                    @if (auth()->user()->employee->getModulePermission('Equipment Request Approval') == 1 )
+                                        <x-dropdown-link :href="url('/fixed-asset-review-lists')" class="no-underline" style="font-size: smaller">
+                                        {{ __('Fixed Asset - Review') }}
+                                        </x-dropdown-link>
                                     @endif
                                     
                             </x-slot>
@@ -650,6 +665,11 @@
                         @if (auth()->user()->employee->getModulePermission('Item Location') != 2 )
                             <x-responsive-nav-link :href="url('/item-location')" class="no-underline">
                                     {{ __('Item-Location') }}
+                            </x-responsive-nav-link>
+                        @endif
+                         @if (auth()->user()->employee->getModulePermission('Asset Register') != 2 )
+                            <x-responsive-nav-link :href="url('/asset-summary')" class="no-underline">
+                                    {{ __('Asset Register') }}
                             </x-responsive-nav-link>
                         @endif
                     </div>
