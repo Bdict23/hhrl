@@ -97,7 +97,12 @@ class Cardex extends Component
                     'out' => $item->qty_out,
                     'balance' => $runningBalance, // Running balance
                     'created_at' => $item->created_at,
-                    'reference' => $item->invoice->invoice_number ?? $item->receiving->receiving_number ?? $item->stockTransfer->stf_number ?? $item->withdrawal->reference_number ?? $item->receiving->RECEIVING_NUMBER ?? 'Beginning Inventory',
+                    'reference' =>  $item->invoice->invoice_number ?? 
+                                    $item->receiving->receiving_number ?? 
+                                    $item->stockTransfer->stf_number ?? 
+                                    $item->withdrawal->reference_number ?? 
+                                    $item->receiving->RECEIVING_NUMBER ??
+                                    $item->batchProperty->reference ?? 'Beginning Inventory',
                 ];
             });
 

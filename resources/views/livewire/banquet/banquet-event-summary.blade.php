@@ -107,6 +107,14 @@
                              </button>
                      @endif
                      <a class="btn btn-sm btn-secondary" href="/print-preview?event-id={{ $selectedEventId }}">PRINT PREVIEW&nbsp;<i class="bi bi-printer"></i></a>
+                     <button class="btn btn-sm btn-success" wire:click="exportEventToPdf" wire:loading.attr="disabled">
+                         <span wire:loading wire:target="exportEventToPdf">
+                             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Exporting...
+                         </span>
+                         <span wire:loading.remove wire:target="exportEventToPdf">
+                             <i class="bi bi-file-pdf"></i> Export to PDF
+                         </span>
+                     </button>
                    </div>
 
                 <div class="modal-body">

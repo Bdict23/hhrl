@@ -47,13 +47,13 @@
             <tbody>
                 @foreach($eventDetails->eventMenus ?? [] as $eventMenu)
                     <tr>
-                        <td>
+                        <td colspan="1">
                                 <span class="ml-1 t-sm break-all">{!! ($eventMenu->menu->menu_name) ? $eventMenu->qty . 'x '.$eventMenu->menu->menu_name . ' - ₱' . number_format($eventMenu->price->amount * $eventMenu->qty, 2) : '' !!}</span>
                         </td>
-                        <td>
-                            <span class="ml-1 t-sm break-all" style="white-space: pre-wrap;">{!! ($eventMenu->menu->menu_description) ? $eventMenu->menu->menu_description : '' !!}</span>
+                        <td colspan="1">
+                            <span class="ml-1 t-sm break-all" style="white-space: normal;">{!! ($eventMenu->menu->menu_description) ? $eventMenu->menu->menu_description : '' !!}</span>
                         </td>
-                        <td>
+                        <td colspan="1">
                                 <span class="ml-1 t-sm break-all" style="white-space: pre-wrap;">{!! ($eventMenu->note) ? $eventMenu->note : '' !!}</span>
                         </td>
                     </tr>

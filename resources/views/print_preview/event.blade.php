@@ -67,6 +67,9 @@
         <button class="btn btn-primary" onclick="executePrinting()">
             <i class="bi bi-printer"></i> Print
         </button>
+        <button class="btn btn-success" wire:click="exportToPdf()">
+            <i class="bi bi-file-pdf"></i> Export to PDF
+        </button>
     </div>
     @livewire('banquet.printing.print-b-e-o')
     @livewireScripts

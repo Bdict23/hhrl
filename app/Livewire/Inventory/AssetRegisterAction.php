@@ -8,6 +8,7 @@ use App\Models\Item;
 use App\Models\SystemParameter;
 use App\Models\Module;
 use App\Models\Signatory;
+use App\Models\Cardex;
 use Carbon\Carbon;
 use Akira\QrCode\Facades\QrCode;
 use App\Models\BatchProperty;
@@ -34,7 +35,7 @@ class AssetRegisterAction extends Component
     public $isNew = true;
     public $isEditable = true;
     public $existingData;
-
+    public $isSerialized = false;
     public $action = 'create';
 
 
@@ -58,6 +59,7 @@ class AssetRegisterAction extends Component
         public $addedItemCondition;
         public $addedItemLifeSpan;
         public $qrCode;
+        public $qty = 1;
 
     public function render()
     {
@@ -125,6 +127,17 @@ class AssetRegisterAction extends Component
 
     public function addItem(){
         $selectedItem = $this->items->where('id', $this->addedItemId)->first();
+        if($this->isSerialized){
+            $this->validate([
+                'addedItemSerial' => 'required|unique:batch_property_details,serial'],[
+                'addedItemSerial.unique' => 'This serial number has already been taken.',
+            ]);
+        }else{
+            $this->validate([
+                'qty' => 'required|numeric|min:1'],[
+                'qrt.required' => 'Enter a valid quantity.',
+            ]);
+        }
         if($this->isNew){
             $this->validate([
             'addedItemId'=> 'required',
@@ -150,6 +163,7 @@ class AssetRegisterAction extends Component
             'serial'    => $this->addedItemSerial,
             'sidr' => $this->addedItemSiDr,
             'cost' => $this->addedItemCost,
+            'qty' => $this->qty,
             'span' => $this->addedItemLifeSpan,
             'condition' => $this->addedItemCondition,
         ];
@@ -162,6 +176,7 @@ class AssetRegisterAction extends Component
         $this->addedItemCost = null;
         $this->addedItemLifeSpan = null;
         $this->addedItemCondition = null;
+        $this->qty = null;
     }
     public function resetBatchForm(){
         $this->selectedPurchaseOrderId = null;
@@ -293,6 +308,7 @@ class AssetRegisterAction extends Component
                 'approved_date'=> Carbon::now('Asia/Manila'),
                 'status' => 'CLOSED',
                 ]);
+                $this->addToCardex();
             }else{
                     $batch->update([
                     'status'=> 'DRAFT',
@@ -360,6 +376,23 @@ class AssetRegisterAction extends Component
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
         }, 'fixed-asset-batch.pdf');
+    }
+
+    public function addToCardex(){
+        $batch = $this->existingData;
+        foreach($batch->batchItems as $item){
+            Cardex::create([
+                'item_id' => $item->item_id,
+                'source_branch_id' => auth()->user()->branch_id,
+                'reference' => $batch->reference,
+                'qty_out' => 1,
+                'status' => 'FINAL',
+                'transaction_type' => 'ADJUSTMENT',
+                'price_level_id' => null,
+                'batch_id' => $batch->id,
+                'created_at' => Carbon::now('Asia/Manila')
+            ]);
+        }
     }
 
 }

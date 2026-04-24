@@ -22,8 +22,6 @@
     </div>
     <div class="card mt-3 mb-3">  
         <div class=" card-header d-flex justify-content-between mx-2">
-            
-
                     <div class="col-md-3 mb-2 container">
                         <div class="input-group">
                             <label class="input-group-text">Status</label>

@@ -36,6 +36,8 @@ class Cardex extends Model
         'receiving_id',
         'requisition_id',
         'final_date',
+        'batch_id',
+        'reference',
     ];
 
     public function item()
@@ -73,6 +75,10 @@ class Cardex extends Model
     public function invoice()
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+    public function batchProperty()
+    {
+        return $this->belongsTo(BatchProperty::class, 'batch_id');
     }
 
     public function totalIn()

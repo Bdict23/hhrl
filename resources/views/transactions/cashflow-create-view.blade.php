@@ -1,6 +1,4 @@
 @extends('layouts.master')
 @section('content')
-    <div>
-        @livewire('Transactions.cashflow-create')
-    </div>
+        @livewire('transactions.cash-flow-create')
 @endsection

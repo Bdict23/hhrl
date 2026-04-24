@@ -18,12 +18,13 @@
                 </x-slot>
             <table class="table table-sm">
                <thead class="table-dark">
-                    <tr>
+                    <tr class="text-sm">
                          <th> Item Code</th>
                          <th> Item Name</th>
                          <th> Serial</th>
                          <th> S.I.#/D.R.#</th>
                          <th> Cost</th>
+                         <th> Qty</th>
                          <th> Span</th>
                          <th> Condition</th>
                          @if($isEditable)
@@ -37,11 +38,12 @@
                        <tr>
                             <td>{{ $item['itemCode']}}</td>
                             <td>{{ $item['itemName']}}</td>
-                            <td>{{ $item['serial']}}</td>
-                            <td>{{ $item['sidr']}}</td>
+                            <td >{{ $item['serial']}}</td>
+                            <td class="text-center">{{ $item['sidr']}}</td>
                             <td>₱ {{ $item['cost']}}</td>
-                            <td>{{ $item['span']}}</td>
-                            <td>{{ $item['condition']}}</td>
+                            <td class="text-center"> {{ $item['qty'] }}
+                            <td class="text-center">{{ $item['span']}}</td>
+                            <td class="text-center">{{ $item['condition']}}</td>
                             {{-- <td>  {!! QrCode::format('svg')
                                     ->generate('Hello World') !!} </td> --}}
                              @if($isEditable)
@@ -209,6 +211,9 @@
     {{-- ad item modal --}}
         <x-modal-card title="Edit Customer" name="cardModal">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="col-span-1 sm:col-span-2 content-end">
+                    <x-checkbox id="color-primary" wire:model.live="isSerialized" label="Serialized" primary value="primary" md />
+                </div>
                 <x-select
                         label="Item"
                         placeholder="Select Item"
@@ -218,21 +223,26 @@
                        option-description="item_code" 
                        wire:model.live="addedItemId"
                     />
-                <x-input label="Serial" placeholder="Add " wire:model="addedItemSerial"/>
-                <x-input label="S.I.#/D.R.#" placeholder="Add " wire:model="addedItemSiDr"/>
-                <x-currency
+                  <x-currency
                     label="Cost"
                     placeholder="<Auto>"
                     wire:model="addedItemCost"
                 />
+                @if($isSerialized)
+                    <x-input label="Serial" placeholder="Add " wire:model="addedItemSerial"/>
+                    <x-input label="S.I.#/D.R.#" placeholder="Add " wire:model="addedItemSiDr"/>
+                @endif
                
-                <x-number min="1" max="10" step="0.2" label="Useful Life" placeholder="No. Of Years" wire:model="addedItemLifeSpan"/>
+                <x-number min="1" max="10" step="0.1" label="Useful Life" placeholder="No. Of Years" wire:model="addedItemLifeSpan"/>
                 <x-select
                         label="Condition"
                         placeholder="Select"
                         :options="['NEW', 'USED']"
                         wire:model="addedItemCondition"
                     />
+                @if(!$isSerialized)
+                    <x-number min="1" step="1" label="Quantity" placeholder="0" wire:model="qty"/>
+                @endif
             </div>
         
             <x-slot name="footer" class="flex justify-between gap-x-4">

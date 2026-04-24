@@ -7,6 +7,7 @@ use App\Models\BanquetEvent;
 use App\Models\Customer; 
 use App\Models\EventMenu;
 use App\Models\EventVenue;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BanquetEventSummary extends Component
 {
@@ -52,7 +53,7 @@ class BanquetEventSummary extends Component
     {
         $this->selectedEventId = $eventId;
         $this->selectedEventStatus = BanquetEvent::find($eventId)->status;
-        $this->eventDetails = BanquetEvent::with('customer', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel', 'eventServices.service')->find($eventId);
+        $this->eventDetails = BanquetEvent::with('customer', 'eventServices', 'eventMenus', 'equipmentRequests', 'withdrawals', 'withdrawals.cardex.priceLevel', 'eventServices.service', 'eventVenues', 'eventVenues.venue', 'eventVenues.ratePrice', 'eventServices.price', 'eventMenus.menu', 'eventMenus.menu.category', 'eventMenus.price', 'createdBy', 'createdBy.position', 'reviewer', 'reviewer.position', 'approver', 'approver.position')->find($eventId);
         $this->venueDetails = EventVenue::with('venue', 'ratePrice')->where('event_id', $eventId)->get();
         $this->viewCustomer($this->eventDetails->customer_id);
         $this->dispatch('showEventDetailsModal');
@@ -112,5 +113,55 @@ class BanquetEventSummary extends Component
         $this->eventLists = $query->get();
     }
 
+    public function exportEventToPdf()
+    {
+        // Load event with all relationships
+        $eventDetails = BanquetEvent::with(
+            'customer',
+            'eventServices.service',
+            'eventServices.price',
+            'eventMenus.menu',
+            'eventMenus.menu.category',
+            'eventMenus.price',
+            'eventVenues.venue',
+            'eventVenues.ratePrice',
+            'createdBy.position',
+            'reviewer.position',
+            'approver.position'
+        )->find($this->selectedEventId);
+
+        if (!$eventDetails) {
+            session()->flash('error', 'Event not found.');
+            return;
+        }
+
+        // Calculate totals
+        $totalAmountMenu = $eventDetails->eventMenus->sum('total_amount');
+        $totalAmountLocation = $eventDetails->eventVenues->sum('total_amount');
+        $totalAmountService = $eventDetails->eventServices->sum('total_amount');
+
+        // Load the PDF view
+        $pdf = Pdf::loadView('export.pdf.banquet-event-order', [
+            'eventDetails' => $eventDetails,
+            'totalAmountMenu' => $totalAmountMenu,
+            'totalAmountLocation' => $totalAmountLocation,
+            'totalAmountService' => $totalAmountService,
+        ]);
+
+        // Set PDF options for better formatting
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOption('margin-top', 10);
+        $pdf->setOption('margin-right', 10);
+        $pdf->setOption('margin-bottom', 10);
+        $pdf->setOption('margin-left', 10);
+        $pdf->setOption('dpi', 150);
+        $pdf->setOption('defaultFont', 'Arial');
+        $pdf->setOption('isHtml5ParserEnabled', true);
+
+        // Return the PDF as download
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'BEO-' . $eventDetails->reference . '.pdf');
+    }
 
 }
