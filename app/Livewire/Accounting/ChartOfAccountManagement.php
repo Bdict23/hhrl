@@ -95,7 +95,7 @@ class ChartOfAccountManagement extends Component
         $account->save();
 
         // Reset form fields
-        $this->reset(['accountTitle', 'accountCode', 'parentTitle', 'normalBalance', 'accountType']);
+        $this->reset(['accountTitle', 'accountCode', 'parentTitle', 'normalBalance', 'accountType','titleDescription']);
         $this->modal()->close('cardModal');
         $this->fetchAccountTitles();
         $this->successNotificationTitle();
@@ -114,11 +114,11 @@ class ChartOfAccountManagement extends Component
         $type->type_name = $this->typeName;
         $type->created_by = auth()->user()->id;
         $type->created_at = Carbon::now('Asia/Manila');
-        $type->description = $this->titleDescription;
+        $type->description = $this->typeDescription;
         $type->save();
 
         // Reset form fields
-        $this->reset(['typeName']);
+        $this->reset(['typeName','typeDescription']);
         $this->modal()->close('cardModalType');
         $this->fetchAccountTypes();
         $this->successNotificationType();

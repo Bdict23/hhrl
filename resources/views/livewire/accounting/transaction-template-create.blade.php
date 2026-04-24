@@ -192,7 +192,7 @@
         <div class="modal-dialog modal-lg">
             <div  class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="particularsModalLabel">Select Particulars</h5>
+                    <h5 class="modal-title" id="particularsModalLabel">Select Account Titles</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -202,8 +202,8 @@
                                 <span class="input-group-text">
                                     Parent Title
                                 </span>
-                                <select name="" id="" class="form-select form-select-sm" wire:model="selectedTitleParent">
-                                    <option value="">All</option>
+                                <select name="" id="" class="form-select form-select-sm" wire:model.live="selectedTitleParent">
+                                    <option value="all">All</option>
                                     @foreach ($chartOfAccountsHeaders as $header)
                                         <option value="{{$header->id}}">{{$header->account_title}} - {{$header->account_code}}</option>
                                     @endforeach
@@ -243,7 +243,7 @@
                             </script>
                         </div>
                     </div>
-                    <div class="container overflow-auto">
+                    <div class="container overflow-auto" style="max-height: 400px;">
                         <table class="table table-sm">
                             <thead>
                                <tr>
@@ -257,7 +257,7 @@
                                     <tr>
                                         <td>{{$coa->account_title}}</td>
                                         <td>{{$coa->account_code}}</td>
-                                        <td class="text-center">
+                                        <td class="text-center whitespace-nowrap" >
                                             <x-primary-button class="btn-sm" wire:click="addDebit({{$coa->id}},'{{ $coa->account_title }}')">
                                                 <span wire:loading wire:target="addDebit({{$coa->id}}, '{{$coa->account_title}}')"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>
                                                 <span wire:loading.remove wire:target="addDebit({{$coa->id}},'{{$coa->account_title}}')">Debit</span>

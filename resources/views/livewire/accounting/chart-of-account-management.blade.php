@@ -34,7 +34,7 @@
             <div class="card-body ">
                     <div style="height: 500px; overflow-x: auto; display: block;">
                         <table class="table table-striped table-hover table-sm " >
-                            <thead class="table-dark">
+                            <thead class="table-dark sticky-top z-0">
                                 <tr>
                                     <th>Status</th>
                                     <th>Business Unit</th>
@@ -90,7 +90,7 @@
             <div class="card-body">
                 <div style="height: 500px; overflow-x: auto; display: block;">
                     <table class="table table-striped table-hover table-sm">
-                        <thead class="table-dark">
+                        <thead class="table-dark sticky-top z-0">
                             <tr>
                                 <th>Account Code</th>
                                 <th>Account Title</th>
@@ -138,7 +138,7 @@
             <div class="card-body">
                 <div style="height: 500px; overflow-x: auto; display: block;">
                     <table class="table table-striped table-hover table-sm">
-                        <thead class="table-dark">
+                        <thead class="table-dark sticky-top z-0">
                             <tr>
                                 <th>Account Type</th>
                                 <th>Description</th>
@@ -236,7 +236,7 @@
                 placeholder="Type name ..."
                 wire:model="typeName"
                 />
-                <x-textarea label="Description" placeholder="write description" wire:model="titleDescription"/>
+                <x-textarea label="Description" placeholder="write description" wire:model="typeDescription"/>
 
        
 

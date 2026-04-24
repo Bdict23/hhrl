@@ -21,6 +21,7 @@ class TransactionTemplateCreate extends Component
     public $selectedTemplate;
     public $companies = [];
     public $companyOptions = [];
+    public $allAccountTitles ;
 
     // selections for create
     public $selectedCompanyId;
@@ -76,8 +77,18 @@ class TransactionTemplateCreate extends Component
 
         $this->templateNames = COATemplateName::where('company_id', $companyId)->where('is_active', 1)->get();
         $this->accountTypes = AccountType::where('company_id', $companyId)->where('is_active', 1)->get();
-        $this->chartOfAccountsHeaders = ChartOfAccount::where('company_id', $companyId)->where('is_active', 1)->where('parent_id',null)->get();
-        $this->chartOfAccounts = ChartOfAccount::where('company_id', $companyId)->where('is_active', 1)->get();
+        $parentIds = ChartOfAccount::where('is_active', true)
+            ->whereNotNull('parent_id')
+            ->distinct('parent_id')
+            ->pluck('parent_id')
+            ->toArray();
+        $this->chartOfAccountsHeaders = ChartOfAccount::where('is_active', true)
+            ->whereIn('id', $parentIds)
+            ->get();
+        $this->chartOfAccounts = ChartOfAccount::where('company_id', $companyId)
+            ->where('is_active', true)
+            ->get();
+        $this->allAccountTitles = $this->chartOfAccounts;
     }
 
     public function updatedSelectedCompanyId(){
@@ -199,6 +210,14 @@ class TransactionTemplateCreate extends Component
             $detail->save();
         }
         $this->dispatch('showAlert',['timer'=>5000,'type'=>'success','title' => 'Template Created!', 'message' => 'The transaction template has been created successfully.']);
+    }
+
+    public function updatedSelectedTitleParent(){
+        if($this->selectedTitleParent != 'all'){
+            $this->chartOfAccounts = $this->allAccountTitles->where('parent_id', $this->selectedTitleParent);
+        }else{
+            $this->chartOfAccounts = $this->allAccountTitles;
+        }
     }
 
     public function resetForm(){
