@@ -12,6 +12,7 @@ class AccountType extends Model
         'company_id',
         'type_name',
         'acct_code',
+        'description',
         'created_by',
         'is_active',
         'created_at',

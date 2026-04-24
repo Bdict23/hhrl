@@ -16,6 +16,7 @@ class ChartOfAccount extends Model
         'account_title',
         'is_active',
         'normal_balance',
+        'description',
         'created_by',
         'created_at',
         'updated_at',

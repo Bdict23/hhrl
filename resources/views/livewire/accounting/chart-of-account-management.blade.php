@@ -94,6 +94,7 @@
                             <tr>
                                 <th>Account Code</th>
                                 <th>Account Title</th>
+                                <th>Description</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -102,6 +103,7 @@
                                 <tr>
                                     <td>{{ $title->account_code }}</td>
                                     <td>{{ $title->account_title }}</td>
+                                    <td class="truncate max-w-[150px]" title="{{$title->description}}" style="cursor: help">{{  Str::limit($title->description ?? 'N/A' , 30) }}</td>
                                     <td>
                                         <span @if($title->is_active == 1) class="badge bg-success" @else class="badge bg-danger" @endif>
                                             {{ $title->is_active == 1 ? 'ACTIVE':'INACTIVE' }}
@@ -147,7 +149,7 @@
                             @forelse ($accountTypes as $type)
                                 <tr>
                                     <td>{{ $type->type_name }}</td>
-                                    <td>{{ $type->description }}</td>
+                                    <td class="truncate max-w-[150px]" title="{{ $type->description ?? 'N/A' }}" style="cursor: help">{{ Str::limit($type->description ?? 'N/A' , 30) }}</td>
                                     <td>
                                         <span @if($type->is_active == 1) class="badge bg-success" @else class="badge bg-danger" @endif>
                                             {{ $type->is_active == 1 ? 'ACTIVE':'INACTIVE' }}
@@ -209,6 +211,8 @@
                     :options="['CREDIT', 'DEBIT']"
                     wire:model="normalBalance"
                 />
+
+                <x-textarea label="Description" placeholder="write description" wire:model="titleDescription"/>
         </div>
         
     
@@ -232,6 +236,8 @@
                 placeholder="Type name ..."
                 wire:model="typeName"
                 />
+                <x-textarea label="Description" placeholder="write description" wire:model="titleDescription"/>
+
        
 
         <x-slot name="footer" class="flex justify-between gap-x-4">

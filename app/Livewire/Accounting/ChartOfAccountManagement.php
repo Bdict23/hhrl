@@ -24,9 +24,11 @@ class ChartOfAccountManagement extends Component
     public $accountType;
     public $parentTitle;
     public $normalBalance;
+    public $titleDescription;
 
     // for create account type
     public $typeName;
+    public $typeDescription;
 
      protected $messages = [
         'accountTitle.required' => 'Account title is required.',
@@ -88,6 +90,7 @@ class ChartOfAccountManagement extends Component
         $account->parent_id = $this->parentTitle;
         $account->normal_balance = $this->normalBalance;
         $account->created_by = auth()->user()->id;
+        $account->description = $this->titleDescription;
         $account->created_at = Carbon::now('Asia/Manila');
         $account->save();
 
@@ -111,6 +114,7 @@ class ChartOfAccountManagement extends Component
         $type->type_name = $this->typeName;
         $type->created_by = auth()->user()->id;
         $type->created_at = Carbon::now('Asia/Manila');
+        $type->description = $this->titleDescription;
         $type->save();
 
         // Reset form fields
