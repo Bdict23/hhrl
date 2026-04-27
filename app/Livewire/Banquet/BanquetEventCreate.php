@@ -7,14 +7,14 @@ use App\Models\PriceLevel; // Assuming PriceLevel model exists in App\Models nam
 use App\Models\Service; // Assuming Service model exists in App\Models namespace
 use App\Models\Menu; // Assuming Menu model exists in App\Models namespace
 use App\Models\Customer;
-use App\Models\BranchMenu; 
+use App\Models\BranchMenu;
 use App\Models\BanquetEvent; // Assuming BanquetEvent model exists in App\Models namespace
 use App\Models\EventService;
 use App\Models\EventMenu;
 use Illuminate\Http\Request;
 use App\Models\BranchMenuRecipe; // Assuming BranchMenuRecipe model exists in App\Models namespace
-use App\Models\Venue; 
-use App\Models\EventVenue; 
+use App\Models\Venue;
+use App\Models\EventVenue;
 use App\Models\Signatory;
 use App\Models\Module;
 
@@ -88,7 +88,7 @@ class BanquetEventCreate extends Component
         'selectedCustID' => 'required|exists:customers,id',
         'selectedReviewerID' => 'required|exists:employees,id',
         'selectedApproverID' => 'required|exists:employees,id',
-        
+
     ];
 
     protected $messages = [
@@ -116,8 +116,8 @@ class BanquetEventCreate extends Component
         }else{
             return redirect()->to('dashboard');
         }
-      
-        
+
+
     }
 
     public function fetchData()
@@ -149,7 +149,7 @@ class BanquetEventCreate extends Component
             ->where('status', 'available');
         })
         ->get();
-        
+
         $this->banquetMenus = $this->menus->where('menu.recipe_type', 'Banquet');
         $this->alaCarteMenus = $this->menus->where('menu.menu_type', 'Ala Carte');
 
@@ -252,10 +252,10 @@ class BanquetEventCreate extends Component
         $this->fetchData();
         $this->dispatch('refresh');
         $this->dispatch('showAlert', ['type' => 'success', 'message' => 'Event successfully added!', 'title' => 'Success']);
-    
+
     }
 
-    public function editMenuNote($index) 
+    public function editMenuNote($index)
     {
         $menu = $this->selectedMenus[$index] ?? null;
         if (!$menu) {
@@ -434,16 +434,16 @@ class BanquetEventCreate extends Component
                     'total_amount' => $menu['rate_amount'] * $menu['qty'],
                 ]);
                 $total += ($menu['rate_amount'] * $menu['qty']);
-            }  
+            }
         }
       $event->update([
                 'total_amount' => $total,
-            ]);    
+            ]);
         $this->dispatch('showAlert', ['type' => 'success', 'message' => 'Event successfully updated!', 'title' => 'Success']);
         $this->reset();
         $this->dispatch('refresh');
     }
-  
+
     public function registerCustomer()
     {
         $this->validate([
@@ -522,8 +522,8 @@ class BanquetEventCreate extends Component
         $this->selectedServices[] = $service;
         // Initialize the requested quantity for the item
         $this->servicesAdded[] = [
-            'id' => $service->id, 
-            'qty' => 1, 
+            'id' => $service->id,
+            'qty' => 1,
             'rate' => $service->ratePrice->id ?? null,
             'rate_amount' => $service->ratePrice->amount ?? 0
         ];
@@ -559,8 +559,8 @@ class BanquetEventCreate extends Component
         $this->selectedMenus[] = $menu;
         // Initialize the requested quantity for the item
         $this->menusAdded[] = [
-            'id' => $menu->id, 
-            'qty' => 1, 
+            'id' => $menu->id,
+            'qty' => 1,
             'rate' => $menu->mySRP->id ?? null,
             'rate_amount' => $menu->mySRP->amount ?? 0
             ];
@@ -590,9 +590,9 @@ class BanquetEventCreate extends Component
         // Add the item to the selected items
         $this->selectedVenues[] = $venue;
         // Initialize the requested quantity for the item
-        $this->venuesAdded[] = 
+        $this->venuesAdded[] =
             [
-            'id' => $venue->id, 
+            'id' => $venue->id,
             'qty' => 1,
             'price_level_id' => $venue->ratePrice->id,
             'rate_amount' => $venue->ratePrice->amount ?? 0,
@@ -607,6 +607,38 @@ class BanquetEventCreate extends Component
         $this->venuesAdded = array_values($this->venuesAdded);
     }
 
+    // Computed properties for totals
+    public function getTotalVenueAmount()
+    {
+        $total = 0;
+        foreach ($this->venuesAdded as $venue) {
+            $total += (floatval($venue['qty']) * floatval($venue['rate_amount']));
+        }
+        return $total;
+    }
 
-    
+    public function getTotalServiceAmount()
+    {
+        $total = 0;
+        foreach ($this->servicesAdded as $service) {
+            $total += (floatval($service['qty']) * floatval($service['rate_amount']));
+        }
+        return $total;
+    }
+
+    public function getTotalMenuAmount()
+    {
+        $total = 0;
+        foreach ($this->menusAdded as $menu) {
+            $total += (floatval($menu['qty']) * floatval($menu['rate_amount']));
+        }
+        return $total;
+    }
+
+    public function getGrandTotal()
+    {
+        return $this->getTotalVenueAmount() + $this->getTotalServiceAmount() + $this->getTotalMenuAmount();
+    }
+
+
 }

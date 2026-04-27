@@ -67,7 +67,7 @@
                             : '' !!}</span>
                     </td>
                     <td colspan="1">
-                        <span class="ml-1 break-all t-sm" style="white-space: normal;">{!! $eventMenu->menu->menu_description ? $eventMenu->menu->menu_description : '' !!}</span>
+                        <span class="ml-1 break-all t-sm" style="white-space: pre-wrap;">{!! $eventMenu->menu->menu_description ? $eventMenu->menu->menu_description : '' !!}</span>
                     </td>
                     <td colspan="1">
                         <span class="ml-1 break-all t-sm" style="white-space: pre-wrap;">{!! $eventMenu->note ? $eventMenu->note : '' !!}</span>

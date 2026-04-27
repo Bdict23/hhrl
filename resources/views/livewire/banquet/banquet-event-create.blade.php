@@ -29,8 +29,7 @@
                                         <td>
                                             <input wire:model.live="venuesAdded.{{ $index }}.qty" type="number"
                                                 class="form-control" style="width: 60px;" min="1"
-                                                value="{{ $venuesAdded[$index]['qty'] ?? 1 }}"
-                                                onchange="updateTotalVenuePrice(this)">
+                                                value="{{ $venuesAdded[$index]['qty'] ?? 1 }}">
                                         </td>
                                         <td>{{ $venuesAdded[$index]['rate_amount'] ?? 'FREE' }}</td>
                                         <td class="total-venue-price">
@@ -91,10 +90,9 @@
                                         <td>{{ $service->service_name }}</td>
                                         @if (isset($service->has_multiplier) && $service->has_multiplier == 1)
                                             <td>
-                                                <input wire:model="servicesAdded.{{ $index }}.qty"
+                                                <input wire:model.live="servicesAdded.{{ $index }}.qty"
                                                     type="number" class="form-control" style="width: 60px;"
-                                                    min="1" value="{{ $servicesAdded[$index]['qty'] ?? 1 }}"
-                                                    onchange="updateTotalServicePrice(this)">
+                                                    min="1" value="{{ $servicesAdded[$index]['qty'] ?? 1 }}">
                                             </td>
                                         @else
                                             <td> - </td>
@@ -156,9 +154,8 @@
                                         <td>{{ $menu->categories->category_name }}</td>
                                         <td>{{ $menu->mySRP->amount ?? 'FREE' }}</td>
                                         <td>
-                                            <input wire:model="menusAdded.{{ $index }}.qty" type="number"
-                                                class="form-control form-control-sm" min="1" value="1"
-                                                onchange="updateTotalMenuPrice(this)">
+                                            <input wire:model.live="menusAdded.{{ $index }}.qty" type="number"
+                                                class="form-control form-control-sm" min="1" value="1">
                                         </td>
                                         <td wire:click="editMenuNote({{ $index }})" data-bs-toggle="modal"
                                             data-bs-target="#menuNoteModal" style="cursor: pointer;">
@@ -427,7 +424,7 @@
                         </div>
 
                         <div class="mb-1">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="remarksTotal">
                                 <thead>
                                     <tr>
                                         <th class="text-xs text-start">Particular</th>
@@ -435,24 +432,49 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Example static rows, replace with dynamic data -->
                                     <tr>
                                         <td class="text-start">Venue</td>
-                                        <td class="text-end">-</td>
+                                        <td class="text-end">
+                                            <span wire:loading.remove>
+                                                ₱ {{ number_format($this->getTotalVenueAmount(), 2) }}
+                                            </span>
+                                            <span wire:loading class="spinner-border spinner-border-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="text-start">Services</td>
-                                        <td class="text-end"><i>1000</i></td>
+                                        <td class="text-end">
+                                            <span wire:loading.remove>
+                                                ₱ {{ number_format($this->getTotalServiceAmount(), 2) }}
+                                            </span>
+                                            <span wire:loading class="spinner-border spinner-border-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td class="text-start">Menus</td>
-                                        <td class="text-end"><i>500</i></td>
+                                        <td class="text-start">Food</td>
+                                        <td class="text-end">
+                                            <span wire:loading.remove>
+                                                ₱ {{ number_format($this->getTotalMenuAmount(), 2) }}
+                                            </span>
+                                            <span wire:loading class="spinner-border spinner-border-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        </td>
                                     </tr>
-                                    <!-- End static rows -->
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="2" class="text-end">Total Amount : <strong>1500</strong></td>
+                                        <td colspan="2" class="text-end">
+                                            Total Amount :
+                                            <strong>
+                                                <span wire:loading.remove>
+                                                    ₱ {{ number_format($this->getGrandTotal(), 2) }}
+                                                </span>
+                                                <span wire:loading class="spinner-border spinner-border-sm"
+                                                    role="status" aria-hidden="true"></span>
+                                            </strong>
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </table>
