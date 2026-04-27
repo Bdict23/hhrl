@@ -144,7 +144,7 @@ class Service extends Component
         $this->oldPrice = $service->ratePrice ? $service->ratePrice->amount : null;
         $this->service_cost_input = $service->costPrice ? $service->costPrice->amount : 0;
         $this->oldCost = $service->costPrice ? $service->costPrice->amount : 0;
-        $this->service_multiplier_input = $service->has_multiplier;
+        $this->service_multiplier_input = $service->has_multiplier == 1;
         $this->isFree = $service->isFree == 1 ;
 
     }
@@ -152,11 +152,13 @@ class Service extends Component
     public function updateService()
     {
         if(!$this->isFree){
-            $this->validate(
-                [
-                    'service_cost_input' => 'nullable|numeric|min:1',
-                ]
-            );
+            if($this->service_type_input === 'EXTERNAL'){
+                $this->validate(['service_cost_input' => 'required|numeric|min:1',] );
+                $this->validate(['service_rate_input' => 'required|numeric|min:1',] );
+            }else{
+                 $this->validate(['service_rate_input' => 'required|numeric|min:1',] );
+            }
+
         }
         $this->validate(
             [
@@ -165,7 +167,6 @@ class Service extends Component
                 'service_description_input' => 'required|string|max:1000',
                 'service_rate_input' => 'nullable|numeric|min:0',
                 'selectedCategoryId' => 'required|exists:categories,id',
-                'service_multiplier_input' => 'nullable|boolean',
                 'service_type_input' => 'required|in:INTERNAL,EXTERNAL',
             ]
         );
