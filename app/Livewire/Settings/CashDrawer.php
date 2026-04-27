@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Livewire\Settings;
-use App\Models\CashDrawer as CashDrawerModel; 
+use App\Models\CashDrawer as CashDrawerModel;
 use App\Models\Department;
 use Livewire\Component;
 
@@ -23,18 +23,18 @@ class CashDrawer extends Component
     public function mount()
     {
         // Initialization logic can go here
-        $this->fetchCashDrawerData();
+        // $this->fetchCashDrawerData();
     }
     public function fetchCashDrawerData()
     {
         $this->cashDrawers = CashDrawerModel::where('branch_id', auth()->user()->branch_id)->where('drawer_status', 'ACTIVE')->get();
         $this->departments = Department::where('branch_id', auth()->user()->branch_id)->get();
-    }  
-    
+    }
+
     public function storeCashDrawer()
     {
         try{
-         
+
         $validatedData = $this->validate([
             'drawer_name_input' => 'required|string|max:255',
             'drawer_code_input' => 'required|string|max:255|unique:cash_drawers,drawer_code',
@@ -111,7 +111,7 @@ class CashDrawer extends Component
                 $this->fetchCashDrawerData();
                 $this->dispatch('hideUpdateDrawerModal');
                 $this->dispatch('alert', ['type' => 'success', 'message' => 'Cash Drawer updated successfully!']);
-                
+
             } else {
                 $this->dispatch('alert', ['type' => 'error', 'message' => 'Cash Drawer not found.']);
             }

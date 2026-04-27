@@ -1,61 +1,62 @@
 <div>
 
-     {{-- return flash message --}}
-     @if (session()->has('item-main-success'))
-     <div class="alert alert-success" id="success-message">
-         {{ session('item-main-success') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-     @endif
+    {{-- return flash message --}}
+    @if (session()->has('item-main-success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('item-main-success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            
-                setTimeout(function () {
-                       var successMessage = document.getElementById('success-message');
-                       if (successMessage) {
-                           successMessage.style.display = 'none';
-                       }
-                   }, 1500);
-               // Listen for the clearForm event
-               window.addEventListener('saved', function (event) {
-                   setTimeout(function () {
-                       var successMessage = document.getElementById('success-message');
-                       if (successMessage) {
-                           successMessage.style.display = 'none';
-                       }
-                   }, 1500);
-               });
-               window.addEventListener('propertyAdded', function (event) {
-                   setTimeout(function () {
-                       var successMessage = document.getElementById('success-message');
-                       if (successMessage) {
-                           successMessage.style.display = 'none';
-                       }
-                   }, 1500);
-               });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-               // Search functionality
-               document.getElementById('searchItems').addEventListener('input', function () {
-                   const searchValue = this.value.toLowerCase();
-                   const rows = document.querySelectorAll('#items-table tbody tr');
+            setTimeout(function() {
+                var successMessage = document.getElementById('success-message');
+                if (successMessage) {
+                    successMessage.style.display = 'none';
+                }
+            }, 1500);
+            // Listen for the clearForm event
+            window.addEventListener('saved', function(event) {
+                setTimeout(function() {
+                    var successMessage = document.getElementById('success-message');
+                    if (successMessage) {
+                        successMessage.style.display = 'none';
+                    }
+                }, 1500);
+            });
+            window.addEventListener('propertyAdded', function(event) {
+                setTimeout(function() {
+                    var successMessage = document.getElementById('success-message');
+                    if (successMessage) {
+                        successMessage.style.display = 'none';
+                    }
+                }, 1500);
+            });
 
-                   rows.forEach(row => {
-                       const itemCode = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
-                       const itemName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                       const category = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                       const classification = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                       const subClass = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+            // Search functionality
+            document.getElementById('searchItems').addEventListener('input', function() {
+                const searchValue = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#items-table tbody tr');
 
-                       if (itemCode.includes(searchValue) || itemName.includes(searchValue) || 
-                           category.includes(searchValue) || classification.includes(searchValue) || 
-                           subClass.includes(searchValue)) {
-                           row.style.display = '';
-                       } else {
-                           row.style.display = 'none';
-                       }
-                   });
-               });
+                rows.forEach(row => {
+                    const itemCode = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                    const itemName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const category = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    const classification = row.querySelector('td:nth-child(4)').textContent
+                        .toLowerCase();
+                    const subClass = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+
+                    if (itemCode.includes(searchValue) || itemName.includes(searchValue) ||
+                        category.includes(searchValue) || classification.includes(searchValue) ||
+                        subClass.includes(searchValue)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
         });
     </script>
 
@@ -65,24 +66,28 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6 mb-2">
+                <div class="mb-2 col-md-6">
                     @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
-                            <x-primary-button type="button"
-                            onclick="showTab('item-form', document.querySelector('.nav-link.active'))">+ Add
+                        <x-primary-button type="button"
+                            onclick="showTab('item-form', document.querySelector('.nav-link.active'))"
+                            wire:click="fetchData">+ Add
                             Item</x-primary-button>
                     @endif
-                    <x-secondary-button type="button" class="mb-2 btn-sm"
-                        wire:click="fetchData()">Refresh</x-secondary-button>
+                    <x-secondary-button type="button" class="mb-2 btn-sm" wire:click="fetchData()">
+                        <span wire:loading.remove wire:target="fetchData()">Refresh</span>
+                        <span wire:loading wire:target="fetchData()"><span class="spinner-grow spinner-grow-sm"></span>
+                            Wait..</span>
+                    </x-secondary-button>
                 </div>
-                <div class="col-md-6 mb-2">
+                <div class="mb-2 col-md-6">
                     <div class="input-group">
                         <input type="text" class="form-control" id="searchItems">
                         <span class="input-group-text">Search</span>
                     </div>
                 </div>
             </div>
-           
-            <div class="table-responsive  mb-3 d-flex justify-content-center"
+
+            <div class="mb-3 table-responsive d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm table-hover small">
                     <thead class="table-dark">
@@ -93,12 +98,12 @@
                             <th class="text-end">CATEGORY</th>
                             <th class="text-end">CLASSIFICATION</th>
                             <th class="text-end">SUB CLASS</th>
-                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Manage Item') != 1) style="display: none;" @endif
-                                >ACTIONS</th>
+                            <th class="text-end" @if (auth()->user()->employee->getModulePermission('Manage Item') != 1) style="display: none;" @endif>ACTIONS
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($items as $item)
+                        @forelse ($items ?? [] as $item)
                             <tr>
                                 <td>{{ $item->item_code }}</td>
                                 <td>{{ $item->item_description }}</td>
@@ -109,14 +114,13 @@
                                 </td>
                                 <td class="text-end">
                                     {{ $item->sub_classification->classification_name ?? 'N/A' }}</td>
-                                    @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
-                                    <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-link btn-sm"
+                                @if (auth()->user()->employee->getModulePermission('Manage Item') == 1)
+                                    <td class="text-end whitespace-nowrap">
+                                        <a href="#" class="btn btn-sm btn-link"
                                             wire:click="edit({{ $item->id }})"
-                                            onclick="showTab('item-update-form', document.querySelector('.nav-link.active')) , updateItem({{ json_encode($item) }})"
-                                            >Edit</a>
-                                        <a href="#" class="btn btn-sm btn-danger btn-sm"
-                                            wire:click="deactivate({{ $item->id }})" >Delete</a>
+                                            onclick="showTab('item-update-form', document.querySelector('.nav-link.active')) , updateItem({{ json_encode($item) }})">Edit</a>
+                                        <a href="#" class="btn btn-sm btn-danger"
+                                            wire:click="deactivate({{ $item->id }})">Delete</a>
                                     </td>
                                 @endif
                             </tr>
@@ -134,8 +138,12 @@
     <!-- item form -->
     <div id="item-form" class="tab-content card" style="display: none" wire:ignore.self>
         <div class="card-body">
-            <x-secondary-button type="button" class="btn-sm"
-                onclick="showTab('items-table', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
+            <div class="flex align-center">
+                <x-secondary-button type="button" class="mr-4 btn-sm"
+                    onclick="showTab('items-table', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
+                <span wire:loading wire:target="fetchData"> <span class="spinner-border spinner-border-sm"></span>
+                    Refreshing...</span>
+            </div>
 
             <form wire:submit.prevent="store" class="submit-form">
                 @csrf
@@ -156,75 +164,82 @@
                                 <select class="form-control" id="uom_id" wire:model.live="uom_id"
                                     style="font-size: x-small;" data-live-search="true">
                                     <option value="">Select</option>
-                                    @forelse ($uoms as $uom)
+                                    @forelse ($uoms ?? [] as $uom)
                                         <option value="{{ $uom->id }}" style="font-size: x-small;">
                                             {{ $uom->unit_name }}
-                                            ( {{ $uom->unit_symbol }} )
+                                            ({{ $uom->unit_symbol }})
                                         </option>
                                     @empty
                                         <option value="" disabled>No Symbol</option>
                                     @endforelse
                                 </select>
-                                
+
                                 {{-- temporary disable para dili maka create ug duplicate Unit of Measure --}}
                                 {{-- <button class="input-group-text" type="button"
                                     style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addUomModal">+</button> --}}
 
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="addUomModal" tabindex="-1" aria-labelledby="addUomModalLabel" aria-hidden="true" wire:ignore.self>
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="addUomModalLabel">Add Unit of Measure</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <!-- Modal -->
+                                <div class="modal fade" id="addUomModal" tabindex="-1"
+                                    aria-labelledby="addUomModalLabel" aria-hidden="true" wire:ignore.self>
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addUomModalLabel">Add Unit of Measure</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <div class="row">
+                                                    <div class="mb-3 col-md-6">
+                                                        <label for="unit_symbol" class="form-label">Unit
+                                                            Symbol</label>
+                                                        <input type="text" class="form-control" id="unit_symbol"
+                                                            wire:model="unit_symbol">
+                                                        @error('unit_symbol')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <label for="unit_name" class="form-label">Unit Name</label>
+                                                        <input type="text" class="form-control" id="unit_name"
+                                                            wire:model="unit_name">
+                                                        @error('unit_name')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
                                                 </div>
-                                                <div class="modal-body">
-
-                                                        <div class="row">
-                                                            <div class="col-md-6 mb-3">
-                                                                <label for="unit_symbol" class="form-label">Unit Symbol</label>
-                                                                <input type="text" class="form-control" id="unit_symbol" wire:model="unit_symbol">
-                                                                @error('unit_symbol')
-                                                                    <span class="text-danger">{{ $message }}</span>
-                                                                @enderror
-                                                            </div>
-                                                            <div class="col-md-6 mb-3">
-                                                                <label for="unit_name" class="form-label">Unit Name</label>
-                                                                <input type="text" class="form-control" id="unit_name" wire:model="unit_name">
-                                                                @error('unit_name')
-                                                                    <span class="text-danger">{{ $message }}</span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <label for="unit_description" class="form-label">Unit Description</label>
-                                                            <textarea class="form-control" id="unit_description" wire:model="unit_description" rows="3"></textarea>
-                                                            @error('unit_description')
-                                                                <span class="text-danger">{{ $message }}</span>
-                                                            @enderror
-                                                        </div>
-
-                                                        <x-primary-button type="button" wire:click="addUom">Save</x-primary-button>
-
+                                                <div>
+                                                    <label for="unit_description" class="form-label">Unit
+                                                        Description</label>
+                                                    <textarea class="form-control" id="unit_description" wire:model="unit_description" rows="3"></textarea>
+                                                    @error('unit_description')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
+
+                                                <x-primary-button type="button"
+                                                    wire:click="addUom">Save</x-primary-button>
+
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <script>
-                                        // document.querySelector('.input-group-text').addEventListener('click', function () {
-                                        //     var modal = new bootstrap.Modal(document.getElementById('addUomModal'));
-                                        //     modal.show();
-                                        // });
+                                <script>
+                                    // document.querySelector('.input-group-text').addEventListener('click', function () {
+                                    //     var modal = new bootstrap.Modal(document.getElementById('addUomModal'));
+                                    //     modal.show();
+                                    // });
 
-                                        window.addEventListener('uomAdded', event => {
-                                            var modal = bootstrap.Modal.getInstance(document.getElementById('addUomModal'));
-                                            modal.hide();
-                                            document.getElementById('unit_symbol').value = '';
-                                            document.getElementById('unit_name').value = '';
-                                            document.getElementById('unit_description').value = '';
-                                        });
-                                    </script>
+                                    window.addEventListener('uomAdded', event => {
+                                        var modal = bootstrap.Modal.getInstance(document.getElementById('addUomModal'));
+                                        modal.hide();
+                                        document.getElementById('unit_symbol').value = '';
+                                        document.getElementById('unit_name').value = '';
+                                        document.getElementById('unit_description').value = '';
+                                    });
+                                </script>
                             </div>
 
                             @error('uom_id')
@@ -234,8 +249,8 @@
                         <div class=" col-md-6">
                             <label for="cost" class="form-label">Cost Price <span
                                     style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
-                            <input type="number" class="form-control" id="cost" wire:model="cost" step="0.01"
-                                placeholder="0.00">
+                            <input type="number" class="form-control" id="cost" wire:model="cost"
+                                step="0.01" placeholder="0.00">
                             @error('cost')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -245,8 +260,7 @@
                     </div>
                 </div>
                 <div>
-                    <label for="item_description" class="form-label">Name <span
-                            style="color: red;">*</span></label>
+                    <label for="item_description" class="form-label">Name <span style="color: red;">*</span></label>
                     <textarea class="form-control" id="item_description" wire:model="item_description" rows="3"></textarea>
                     @error('item_description')
                         <span class="text-danger">{{ $message }}</span>
@@ -263,10 +277,10 @@
                         @enderror
                     </div>
                     <div class="col-md-6">
-                        <label for="reorder-point" class="form-label">Re-order Point<span
-                                style="color: red;"> *</span></label>   
-                        <input type="number" class="form-control" id="reorder-point" wire:model="orderPoint" step="0.01"
-                            placeholder="0.00">
+                        <label for="reorder-point" class="form-label">Re-order Point<span style="color: red;">
+                                *</span></label>
+                        <input type="number" class="form-control" id="reorder-point" wire:model="orderPoint"
+                            step="0.01" placeholder="0.00">
                         @error('orderPoint')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -274,11 +288,13 @@
                 </div>
                 <div class="row">
                     <div class=" col-md-6">
-                        <label for="category_id" class="form-label">Category <span style="color: red;">*</span></label>
+                        <label for="category_id" class="form-label">Category <span
+                                style="color: red;">*</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="category_id" wire:model="category_id" data-live-search="true">
+                            <select class="form-control" id="category_id" wire:model="category_id"
+                                data-live-search="true">
                                 <option value="">Select</option>
-                                @forelse ($categories as $category)
+                                @forelse ($categories ?? [] as $category)
                                     <option value="{{ $category->id }}"> {{ $category->category_name }}
                                     </option>
                                 @empty
@@ -286,50 +302,55 @@
                                 @endforelse
                             </select>
                             <button class="input-group-text" type="button"
-                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addCategory">+</button>
+                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal"
+                                data-bs-target="#addCategory">+</button>
 
-                           <!-- Modal -->
-                           <div class="modal fade" id="addCategory" tabindex="-1" aria-labelledby="addCategoryModal" aria-hidden="true" wire:ignore.self>
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" >Add Category</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
+                            <!-- Modal -->
+                            <div class="modal fade" id="addCategory" tabindex="-1"
+                                aria-labelledby="addCategoryModal" aria-hidden="true" wire:ignore.self>
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Add Category</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-md-12 mb-3">
-                                                    <label for="category_name" class="form-label">Category Name</label>
-                                                    <input type="text" class="form-control" id="category_name" wire:model="category_name">
+                                                <div class="mb-3 col-md-12">
+                                                    <label for="category_name" class="form-label">Category
+                                                        Name</label>
+                                                    <input type="text" class="form-control" id="category_name"
+                                                        wire:model="category_name">
                                                     @error('category_name')
-
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                             </div>
-                                                <div class=" mb-3">
-                                                    <label for="category_description" class="form-label">Description</label>
-                                                    <textarea class="form-control" id="category_description" wire:model="category_description" rows="3"></textarea>
-                                                    @error('category_description')
-                                                        <span class="text-danger">{{ $message }}</span>
-                                                    @enderror
-                                                </div>
+                                            <div class="mb-3 ">
+                                                <label for="category_description"
+                                                    class="form-label">Description</label>
+                                                <textarea class="form-control" id="category_description" wire:model="category_description" rows="3"></textarea>
+                                                @error('category_description')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
 
-                                            <x-primary-button type="button" wire:click="addCategory">Save</x-primary-button>
+                                            <x-primary-button type="button"
+                                                wire:click="addCategory">Save</x-primary-button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <script>
-
-                            window.addEventListener('categoryAdded', event => {
-                                var modal = bootstrap.Modal.getInstance(document.getElementById('addCategory'));
-                                modal.hide();
-                                document.getElementById('category_id').value = '';
-                                document.getElementById('category_description').value = '';
-                            });
-                        </script>
+                            <script>
+                                window.addEventListener('categoryAdded', event => {
+                                    var modal = bootstrap.Modal.getInstance(document.getElementById('addCategory'));
+                                    modal.hide();
+                                    document.getElementById('category_id').value = '';
+                                    document.getElementById('category_description').value = '';
+                                });
+                            </script>
                         </div>
                         @error('category_id')
                             <span class="text-danger">{{ $message }}</span>
@@ -339,44 +360,50 @@
                         <label for="brand_id" class="form-label">Brand <span
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="brand_id" wire:model="brand_id" data-live-search="true">
-                                @forelse ($brands as $brand)
+                            <select class="form-control" id="brand_id" wire:model="brand_id"
+                                data-live-search="true">
+                                @forelse ($brands ?? [] as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
                                     </option>
                                 @empty
-                                    <option value=""  disabled>No Brand</option>
+                                    <option value="" disabled>No Brand</option>
                                 @endforelse
                             </select>
                             <button class="input-group-text" type="button"
-                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addBrand">+</button>
+                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal"
+                                data-bs-target="#addBrand">+</button>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="addBrand" tabindex="-1" aria-labelledby="addBrandModal" aria-hidden="true" wire:ignore.self>
+                            <div class="modal fade" id="addBrand" tabindex="-1" aria-labelledby="addBrandModal"
+                                aria-hidden="true" wire:ignore.self>
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" >Add Brand</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h5 class="modal-title">Add Brand</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-12 mb-3">
-                                                        <label for="brand_name" class="form-label">Brand Name</label>
-                                                        <input type="text" class="form-control" id="brand_name" wire:model="brand_name">
-                                                        @error('brand_name')
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
+                                            <div class="row">
+                                                <div class="mb-3 col-md-12">
+                                                    <label for="brand_name" class="form-label">Brand Name</label>
+                                                    <input type="text" class="form-control" id="brand_name"
+                                                        wire:model="brand_name">
+                                                    @error('brand_name')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
-                                                    <div class=" mb-3">
-                                                        <label for="brand_description" class="form-label">Description</label>
-                                                        <textarea class="form-control" id="brand_description" wire:model="brand_description" rows="3"></textarea>
-                                                        @error('brand_description')
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
+                                            </div>
+                                            <div class="mb-3 ">
+                                                <label for="brand_description" class="form-label">Description</label>
+                                                <textarea class="form-control" id="brand_description" wire:model="brand_description" rows="3"></textarea>
+                                                @error('brand_description')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
 
-                                                <x-primary-button type="button" wire:click="addBrand">Save</x-primary-button>
+                                            <x-primary-button type="button"
+                                                wire:click="addBrand">Save</x-primary-button>
                                         </div>
                                     </div>
                                 </div>
@@ -401,9 +428,10 @@
                         <label for="classification_id" class="form-label">Classification<span
                                 style="color: red;">*</span></label>
                         <div class="input-group">
-                            <select class="form-control" id="classification_id" wire:model="classification_id" data-live-search="true">
+                            <select class="form-control" id="classification_id" wire:model="classification_id"
+                                data-live-search="true">
                                 <option value="">Select</option>
-                                @forelse ($classifications as $classification)
+                                @forelse ($classifications ?? [] as $classification)
                                     <option value="{{ $classification->id }}">
                                         {{ $classification->classification_name }}
                                     </option>
@@ -412,35 +440,44 @@
                                 @endforelse
                             </select>
                             <button class="input-group-text" type="button"
-                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addClassification">+</button>
+                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal"
+                                data-bs-target="#addClassification">+</button>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="addClassification" tabindex="-1" aria-labelledby="addClassificationModal" aria-hidden="true" wire:ignore.self>
+                            <div class="modal fade" id="addClassification" tabindex="-1"
+                                aria-labelledby="addClassificationModal" aria-hidden="true" wire:ignore.self>
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="addClassificationModal">Add Classification</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h5 class="modal-title" id="addClassificationModal">Add Classification
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-md-12 mb-3">
-                                                    <label for="classification_name" class="form-label">Classification Name</label>
-                                                    <input type="text" class="form-control" id="classification_name" wire:model="classification_name">
+                                                <div class="mb-3 col-md-12">
+                                                    <label for="classification_name" class="form-label">Classification
+                                                        Name</label>
+                                                    <input type="text" class="form-control"
+                                                        id="classification_name" wire:model="classification_name">
                                                     @error('classification_name')
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class=" mb-3">
-                                                <label for="classification_description" class="form-label">Description</label>
-                                                <textarea class="form-control" id="classification_description" wire:model="classification_description" rows="3"></textarea>
+                                            <div class="mb-3 ">
+                                                <label for="classification_description"
+                                                    class="form-label">Description</label>
+                                                <textarea class="form-control" id="classification_description" wire:model="classification_description"
+                                                    rows="3"></textarea>
                                                 @error('classification_description')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
 
-                                            <x-primary-button type="button" wire:click="addClassification">Save</x-primary-button>
+                                            <x-primary-button type="button"
+                                                wire:click="addClassification">Save</x-primary-button>
                                         </div>
                                     </div>
                                 </div>
@@ -460,38 +497,44 @@
                     </div>
                     <div class="col-md-6">
                         <label for="sub_classification_id" class="form-label">Sub-Class</label>
-                            <div class="input-group">
-                                <select class="form-control" id="sub_classification_id"
-                                    wire:model="sub_classification_id" data-live-search="true">
-                                    <option value="">Select</option>
-                                    @forelse ($sub_classifications as $subClassification)
-                                        <option value="{{ $subClassification->id }}">
-                                            {{ $subClassification->classification_name }}
-                                        </option>
-                                    @empty
-                                        <option value="" disabled>No Sub-Class</option>
-                                    @endforelse
-                                </select>
-                                <button class="input-group-text" type="button"
-                                    style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal" data-bs-target="#addSubClassification"  >+</button>
-                            </div>
+                        <div class="input-group">
+                            <select class="form-control" id="sub_classification_id"
+                                wire:model="sub_classification_id" data-live-search="true">
+                                <option value="">Select</option>
+                                @forelse ($sub_classifications ?? [] as $subClassification)
+                                    <option value="{{ $subClassification->id }}">
+                                        {{ $subClassification->classification_name }}
+                                    </option>
+                                @empty
+                                    <option value="" disabled>No Sub-Class</option>
+                                @endforelse
+                            </select>
+                            <button class="input-group-text" type="button"
+                                style="background-color: rgb(190, 243, 217);" data-bs-toggle="modal"
+                                data-bs-target="#addSubClassification">+</button>
+                        </div>
                         @error('sub_classification_id')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
-                         <!-- Modal -->
-                         <div class="modal fade" id="addSubClassification" tabindex="-1" aria-labelledby="addSubClassificationModal" aria-hidden="true" wire:ignore.self>
+                        <!-- Modal -->
+                        <div class="modal fade" id="addSubClassification" tabindex="-1"
+                            aria-labelledby="addSubClassificationModal" aria-hidden="true" wire:ignore.self>
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="addSubClassificationModal">Add Sub-Classification</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <h5 class="modal-title" id="addSubClassificationModal">Add Sub-Classification
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <label for="parent_classification_id" class="form-label">Classification<span style="color: red;">*</span></label>
+                                        <label for="parent_classification_id" class="form-label">Classification<span
+                                                style="color: red;">*</span></label>
                                         <div class="input-group">
-                                            <select class="form-control" id="parent_classification_id" wire:model="parent_classification_id">
-                                                <option value="" >Select</option>
-                                                @forelse ($classifications as $classification)
+                                            <select class="form-control" id="parent_classification_id"
+                                                wire:model="parent_classification_id">
+                                                <option value="">Select</option>
+                                                @forelse ($classifications ?? [] as $classification)
                                                     <option value="{{ $classification->id }}">
                                                         {{ $classification->classification_name }}
                                                     </option>
@@ -505,23 +548,28 @@
                                         @enderror
 
                                         <div class="row">
-                                            <div class="col-md-12 mb-3">
-                                                <label for="sub_classification_name" class="form-label">Sub-Classification Name</label>
-                                                <input type="text" class="form-control" id="sub_classification_name" wire:model="sub_classification_name">
+                                            <div class="mb-3 col-md-12">
+                                                <label for="sub_classification_name"
+                                                    class="form-label">Sub-Classification Name</label>
+                                                <input type="text" class="form-control"
+                                                    id="sub_classification_name" wire:model="sub_classification_name">
                                                 @error('sub_classification_name')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="sub_classification_description" class="form-label">Description</label>
-                                            <textarea class="form-control" id="sub_classification_description" wire:model="sub_classification_description" rows="3"></textarea>
+                                            <label for="sub_classification_description"
+                                                class="form-label">Description</label>
+                                            <textarea class="form-control" id="sub_classification_description" wire:model="sub_classification_description"
+                                                rows="3"></textarea>
                                             @error('sub_classification_description')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </div>
 
-                                        <x-primary-button type="button" wire:click="addSubClassification">Save</x-primary-button>
+                                        <x-primary-button type="button"
+                                            wire:click="addSubClassification">Save</x-primary-button>
                                     </div>
                                 </div>
                             </div>
@@ -542,7 +590,7 @@
             </form>
         </div>
     </div>
-   
+
 
     {{-- update form --}}
     <div id="item-update-form" class="tab-content card" style="display: none" wire:ignore.self>
@@ -558,7 +606,7 @@
             <form wire:submit.prevent="update" class="submit-form">
                 @csrf
                 <div class="row">
-                    <div class=" col-md-6 mt-1">
+                    <div class="mt-1 col-md-6">
                         <label for="item_code-update" class="form-label">SKU / Item Code<span
                                 style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="item_code-update" wire:model="item_code">
@@ -574,7 +622,7 @@
                                 <select class="form-control" id="uom_id-update" wire:model="uom_id"
                                     style="font-size: x-small;">
                                     <option value="">Select</option>
-                                    @forelse ($uoms as $uom)
+                                    @forelse ($uoms ?? [] as $uom)
                                         <option value="{{ $uom->id }}" style="font-size: x-small;">(
                                             {{ $uom->unit_symbol }} )
                                             {{ $uom->unit_name }}
@@ -609,17 +657,17 @@
                     <div class="col-md-6">
                         <label for="item_barcode-update" class="form-label">Barcode Value <span
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
-                        <input type="text" class="form-control" id="item_barcode-update" wire:model="item_barcode"
-                            rows="3" />
+                        <input type="text" class="form-control" id="item_barcode-update"
+                            wire:model="item_barcode" rows="3" />
                         @error('item_barcode')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="col-md-6">
-                        <label for="order-point-update" class="form-label">Re-order Point<span
-                                style="color: red;"> *</span></label>
-                        <input type="number" class="form-control" id="order-point-update" wire:model="orderPoint" step="0.01"
-                            placeholder="0.00">
+                        <label for="order-point-update" class="form-label">Re-order Point<span style="color: red;">
+                                *</span></label>
+                        <input type="number" class="form-control" id="order-point-update" wire:model="orderPoint"
+                            step="0.01" placeholder="0.00">
                         @error('cost')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -632,7 +680,7 @@
                         <div class="input-group">
                             <select class="form-control" id="category_id-update" wire:model="category_id">
                                 <option value="">Select</option>
-                                @forelse ($categories as $category)
+                                @forelse ($categories ?? [] as $category)
                                     <option value="{{ $category->id }}">
                                         {{ $category->category_name }}
                                     </option>
@@ -652,8 +700,8 @@
                                 style="color: rgb(129, 127, 127); font-size: x-small;">(optional)</span></label>
                         <div class="input-group">
                             <select class="form-control" id="brand_id-update" wire:model="brand_id">
-                                <option value="" >Select</option>
-                                @forelse ($brands as $brand)
+                                <option value="">Select</option>
+                                @forelse ($brands ?? [] as $brand)
                                     <option value="{{ $brand->id }}"> {{ $brand->brand_name }}
                                     </option>
                                 @empty
@@ -677,7 +725,7 @@
                             <select class="form-control" id="classification_id-update"
                                 wire:model="classification_id">
                                 <option value="">Select</option>
-                                @forelse ($classifications as $classification)
+                                @forelse ($classifications ?? [] as $classification)
                                     <option value="{{ $classification->id }}">
                                         {{ $classification->classification_name }}
                                     </option>
@@ -699,7 +747,7 @@
                             <select class="form-control" id="sub_classification_id-update"
                                 wire:model="sub_classification_id">
                                 <option value="">Select</option>
-                                @forelse ($sub_classifications as $subClassification)
+                                @forelse ($sub_classifications ?? [] as $subClassification)
                                     <option value="{{ $subClassification->id }}">
                                         {{ $subClassification->classification_name }}
                                     </option>
@@ -735,7 +783,7 @@
             document.getElementById('order-point').value = '';
         });
 
-            window.addEventListener('updated', event => {
+        window.addEventListener('updated', event => {
             document.getElementById('item_code-update').value = '';
             document.getElementById('uom_id-update').value = '';
             document.getElementById('item_description-update').value = '';
@@ -760,5 +808,5 @@
             document.getElementById('order-point-update').value = item.orderpoint;
         }
     </script>
-   
+
 </div>

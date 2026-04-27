@@ -29,14 +29,14 @@ class TransferEmployee extends Component
 
     public function mount()
     {
-       $this->fetchData();
+    //    $this->fetchData();
     }
     public function fetchData()
     {
         $this->employees = Employee::with('branch','position')->get();
         // dd($this->employees->toArray());
         $this->companies = Company::where('company_status', 'ACTIVE')->get();
-        
+
     }
     public function selectEmployee($employeeId)
     {

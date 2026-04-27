@@ -20,6 +20,7 @@ class Service extends Model
         'category_id',
         'has_multiplier',
         'updated_by',
+        'isFree',
     ];
 
 

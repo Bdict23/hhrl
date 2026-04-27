@@ -24,7 +24,7 @@ class Venue extends Component
 
     public function mount()
     {
-     $this->fetchVenues();
+    //  $this->fetchVenues();
     }
 
 
@@ -118,7 +118,7 @@ class Venue extends Component
                 'description' => $this->venue_description_input,
             ]);
             if ($this->venue_rate_input != $this->oldPrice) {
-                
+
                 // create rate price
                 PriceLevel::Create(
                     [

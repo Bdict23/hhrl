@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Module;
 use App\Models\Signatory;
 use App\Models\Employee;
-use Carbon\Carbon;    
+use Carbon\Carbon;
 
 class BudgetProposalShow extends Component
 {
@@ -91,7 +91,7 @@ class BudgetProposalShow extends Component
            session()->flash('error', 'Invalid Action.');
             return redirect()->to('/dashboard');
         }
-      
+
     }
 
      public function loadEventDetails($eventId)
@@ -111,13 +111,13 @@ class BudgetProposalShow extends Component
 
     public function updateRequest()
     {
-        
+
         $this->validate([
             'notes' => 'nullable|string|max:1000',
             'saveAs' => 'required|in:APPROVED,REJECTED,PREPARING',
         ]);
-         
-       
+
+
         $proposal = BanquetProcurement::find($this->proposedBudgetId);
         if ($proposal) {
             $proposal->update([
@@ -138,7 +138,7 @@ class BudgetProposalShow extends Component
         if($this->hasServices && $this->selectedEvent){
             $total = 0;
              $total +=
-             isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             isset($this->selectedEvent) && $this->selectedEvent->eventMenus ?
              $this->selectedEvent->eventMenus->sum(function($menu) {
                     return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
                 $total += isset($this->selectedEvent) && $this->selectedEvent->eventServices ?
@@ -147,7 +147,7 @@ class BudgetProposalShow extends Component
             $this->totalGrossOrder = $total;
             $this->updatedTotalPercentage();
         }else if(!$this->hasServices && $this->selectedEvent){
-             $this->totalGrossOrder =  isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             $this->totalGrossOrder =  isset($this->selectedEvent) && $this->selectedEvent->eventMenus ?
              $this->selectedEvent->eventMenus->sum(function($menu) {
                     return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
                      $this->updatedTotalPercentage();
@@ -163,7 +163,13 @@ class BudgetProposalShow extends Component
             return;
         }
         if($this->selectedEvent){
+            if($this->totalGrossOrder > ($this->requestedBudget)){
             $this->totalPercentage = ( $this->requestedBudget / $this->totalGrossOrder) * 100;
+
+            }else{
+                $this->totalPercentage = ( $this->requestedBudget / $this->requestedBudget) * 100;
+            }
+
         }else{
                 $this->requestedBudget = null;
             return;

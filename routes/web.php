@@ -43,7 +43,7 @@ use App\Livewire\Banquet\LiquidationCreate;
 
 //
 Route::get('register', [RegisteredUserController::class, 'create'])->middleware(['auth', 'verified'])
-->name('register');
+    ->name('register');
 Route::post('register', [RegisteredUserController::class, 'store']);
 
 Route::get('/', function () {
@@ -63,13 +63,13 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-    Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
 
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 
@@ -148,29 +148,29 @@ Route::get('/receive_stock', [ReceivingController::class, 'getPODetails'])->midd
 
 Route::get('/get-cardex-data/{itemCode}', [CardexController::class, 'getCardexData'])->middleware(['auth', 'verified']);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 
 
 // Route for sales order
-Route::get('/sales_order', function(){
+Route::get('/sales_order', function () {
     return view('sales.sales_order');
 });
 
-Route::get('/tnx', function(){
+Route::get('/tnx', function () {
     return view('sales.thank_you_message');
 });
 
 
 
-Route::get('/reservations_lists', function(){
+Route::get('/reservations_lists', function () {
     return view('sales.reservations_lists');
 });
 
 
 // Route for CREATE MENU
-Route::get('/create_menu', [MenusController::class, 'createMenu'])->middleware(['auth', 'verified'])->name('menus.create'); 
+Route::get('/create_menu', [MenusController::class, 'createMenu'])->middleware(['auth', 'verified'])->name('menus.create');
 
 // Route for storing receiving data
 Route::post('/save_menu', [MenusController::class, 'store_menu'])->middleware(['auth', 'verified'])->name('menu.store');
@@ -203,7 +203,7 @@ Route::post('/menu_reviewed/{id}', [MenusController::class, 'menuReviewed'])->na
 Route::get('/orders_lists', [MenusController::class, 'orders_lists'])->middleware(['auth', 'verified'])->name('orders.list');
 
 // Route for allocating orders
-Route::get('/allocate_order',[MenusController:: class, 'allocate_order_lists'])->middleware(['auth', 'verified'])->name('allocate_orders');
+Route::get('/allocate_order', [MenusController::class, 'allocate_order_lists'])->middleware(['auth', 'verified'])->name('allocate_orders');
 
 // Route for allocating orders
 Route::post('/allocate_order', [MenusController::class, 'allocate_order'])->middleware(['auth', 'verified'])->name('allocate-order');
@@ -255,7 +255,9 @@ Route::get('/withdrawal_approval', [InventoryAdjustmentController::class, 'withd
 Route::get('/withdrawal/{id}/edit', [InventoryAdjustmentController::class, 'editWithdrawal'])->name('withdrawal.edit');
 
 // view and update withdrawal
-Route::get('/withdrawal/{id}/view', function(){ return view('inventory.withdrawal_summary');})->name('withdrawal.view');
+Route::get('/withdrawal/{id}/view', function () {
+    return view('inventory.withdrawal_summary');
+})->name('withdrawal.view');
 
 // Route for updating withdrawal
 Route::get('/withdrawal/{id}/print', [InventoryAdjustmentController::class, 'printWidthrawal'])->name('withdrawal.print');
@@ -308,18 +310,24 @@ Route::get('/receiving-summary', function () {
 })->middleware(['auth', 'verified'])->name('receiving-summary');
 
 // Route for company summary
-Route::get('/company_list', function(){ return view('company.company_list');})->middleware(['auth', 'verified'])->name('companies');
+Route::get('/company_list', function () {
+    return view('company.company_list');
+})->middleware(['auth', 'verified'])->name('companies');
 
 
 //Route for purchase order create
-Route::get('/po_create', function(){ return view('purchase_order.po_create');})->middleware(['auth', 'verified'])->name('po.create'); // Route to create a new purchase order
+Route::get('/po_create', function () {
+    return view('purchase_order.po_create');
+})->middleware(['auth', 'verified'])->name('po.create'); // Route to create a new purchase order
 
 
 // Rout for item Withdrawal
-Route::get('/item_withdrawal', function(){ return view('inventory.item_withdrawal');})->middleware(['auth', 'verified'])->name('withdrawal.index'); // Route to show the raw materials requisition form
+Route::get('/item_withdrawal', function () {
+    return view('inventory.item_withdrawal');
+})->middleware(['auth', 'verified'])->name('withdrawal.index'); // Route to show the raw materials requisition form
 
 // Route for withdrawal show
-Route::get('/withdrawal-show', function() {
+Route::get('/withdrawal-show', function () {
     return view('inventory.withdrawal_show'); // Ensure the view is returned
 })->middleware(['auth', 'verified'])->name('withdrawal.show'); // Route to show the withdrawal details
 
@@ -374,7 +382,7 @@ Route::get('/recipe-lists', function () {
 Route::get('/order_menu', function () {
     return view('restaurant.table-selection');
 })->middleware(['auth', 'verified'])->name('Restaurant.TableSelection');
-//old 
+//old
 // Route::get('/order_menu', [MenusController::class, 'menu_list'])->middleware(['auth', 'verified'])->name('menus.list'); // Route to show the menu list
 
 //route to menu selection
@@ -421,7 +429,6 @@ Route::get('/withdrawal-print-preview', function () {
 
 // Test route for broadcasting
 Route::get('/test-broadcast', function () {
-    \Log::info('Test broadcast route hit');
     $payload = ['test' => 'data', 'timestamp' => now()->toString()];
     event(new \App\Events\RemoteActionTriggered($payload, auth()->id()));
     return response()->json(['message' => 'Event dispatched', 'payload' => $payload]);
@@ -467,45 +474,54 @@ Route::get('/production-orders', function () {
 })->middleware(['auth', 'verified'])->name('production.orders');
 
 // route for production create
-Route::get('/create-production', function(){
+Route::get('/create-production', function () {
     return view('restaurant.production-create-view');
-})->middleware(['auth','verified'])->name('production.create');
+})->middleware(['auth', 'verified'])->name('production.create');
 
 // route for printing event in event summary
 Route::get('/print-preview', function () {
-    return view('print_preview.event');})->middleware(['auth', 'verified'])->name('event.print-preview');
+    return view('print_preview.event');
+})->middleware(['auth', 'verified'])->name('event.print-preview');
 
-    // acknowledgement-receipt summary route
+// acknowledgement-receipt summary route
 Route::get('/acknowledgement-receipt-summary', function () {
-    return view('banquet.disbursement.acknowledgement-receipt-summary-view');})->middleware(['auth', 'verified'])->name('acknowledgement_receipt.summary');
+    return view('banquet.disbursement.acknowledgement-receipt-summary-view');
+})->middleware(['auth', 'verified'])->name('acknowledgement_receipt.summary');
 
-    // route('acknowledgement-receipt.create')
+// route('acknowledgement-receipt.create')
 Route::get('/acknowledgement-receipt-create', function () {
-    return view('banquet.disbursement.acknowledgement-receipt-create-view');})->middleware(['auth', 'verified'])->name('acknowledgement_receipt.create');
+    return view('banquet.disbursement.acknowledgement-receipt-create-view');
+})->middleware(['auth', 'verified'])->name('acknowledgement_receipt.create');
 
-    // /petty-cash-voucher-summary route
+// /petty-cash-voucher-summary route
 Route::get('/petty-cash-voucher-summary', function () {
-    return view('transactions.petty-cash-voucher-view');})->middleware(['auth', 'verified'])->name('petty_cash_voucher.summary');
+    return view('transactions.petty-cash-voucher-view');
+})->middleware(['auth', 'verified'])->name('petty_cash_voucher.summary');
 // /petty-cash-voucher-create route
 Route::get('/petty-cash-voucher', function () {
-    return view('transactions.petty-cash-voucher-create-view');})->middleware(['auth', 'verified'])->name('petty_cash_voucher.create');
+    return view('transactions.petty-cash-voucher-create-view');
+})->middleware(['auth', 'verified'])->name('petty_cash_voucher.create');
 
 
 // ACCOUNTING
-    // ROUTE FOR accounting.types
+// ROUTE FOR accounting.types
 Route::get('/accounting-chart-of-accounts-management', function () {
-    return view('accounting.chart-of-accounts-view');})->middleware(['auth', 'verified'])->name('accounting.coa.management');
+    return view('accounting.chart-of-accounts-view');
+})->middleware(['auth', 'verified'])->name('accounting.coa.management');
 
-    // Route for accounting transaction titles
+// Route for accounting transaction titles
 Route::get('/coa-management', function () {
-    return view('accounting.transaction-templates-view');})->middleware(['auth', 'verified'])->name('accounting.transaction.titles');
+    return view('accounting.transaction-templates-view');
+})->middleware(['auth', 'verified'])->name('accounting.transaction.titles');
 
 // Route for advances for liquidation summary
 Route::get('/advances-for-liquidation-summary', function () {
-    return view('transactions.advances-for-liquidation-summary-view');})->middleware(['auth', 'verified'])->name('advances_for_liquidation.summary');
+    return view('transactions.advances-for-liquidation-summary-view');
+})->middleware(['auth', 'verified'])->name('advances_for_liquidation.summary');
 // Route for advances for liquidation create
 Route::get('/advances-for-liquidation', function () {
-    return view('transactions.advances-for-liquidation-create-edit-view');})->middleware(['auth', 'verified'])->name('advances-for-liquidation-create');
+    return view('transactions.advances-for-liquidation-create-edit-view');
+})->middleware(['auth', 'verified'])->name('advances-for-liquidation-create');
 
 // Route Printing for BEB
 Route::get('/banquet-event-budget-print', function () {
@@ -514,24 +530,26 @@ Route::get('/banquet-event-budget-print', function () {
 
 // Route for cash flow summary
 Route::get('/cash-flow-summary', function () {
-    return view('transactions.cash-flow-summary-view');})->middleware(['auth', 'verified'])->name('cash_flow.summary');
+    return view('transactions.cash-flow-summary-view');
+})->middleware(['auth', 'verified'])->name('cash_flow.summary');
 // create cashflow route
 Route::get('/cash-flow-create', function () {
     return view('transactions.cashflow-create-view');
-    })->middleware(['auth', 'verified'])->name('cash_flow.create');
+})->middleware(['auth', 'verified'])->name('cash_flow.create');
 
-    // Cash Return summary route
-    Route::get('/cash-return-summary', function(){
-        return view('transactions.cash-return-summary-view');
-    })->middleware(['auth','verified'])->name('cash_return.summary');
+// Cash Return summary route
+Route::get('/cash-return-summary', function () {
+    return view('transactions.cash-return-summary-view');
+})->middleware(['auth', 'verified'])->name('cash_return.summary');
 
-    // accounting.cashflow.titles route
+// accounting.cashflow.titles route
 Route::get('/cashflow-titles-summary', function () {
-    return view('accounting.cashflow-titles-summary-view');})->middleware(['auth', 'verified'])->name('accounting.cashflow.titles');
+    return view('accounting.cashflow-titles-summary-view');
+})->middleware(['auth', 'verified'])->name('accounting.cashflow.titles');
 // \cashflow-view
 Route::get('/cashflow-view/{id}', function () {
     return view('transactions.cash-flow-create-view');
-    })->middleware(['auth', 'verified'])->name('cashflow.view');
+})->middleware(['auth', 'verified'])->name('cashflow.view');
 
 
 //Route for Billing and Payment for BEO
@@ -543,12 +561,12 @@ Route::get('/billing-and-payment', function () {
 Route::get('/beo-liquidation-summary', LiquidationSummary::class)->middleware(['auth', 'verified'])->name('beo.liquidation.summary');
 
 // beo.liquidation.create
-Route::get('/beo-liquidation', function(){
+Route::get('/beo-liquidation', function () {
     return view('banquet.liquidation-create-view');
 })->middleware(['auth', 'verified'])->name('beo.liquidation.create');
 
 //route('beo.liquidation.view'
-Route::get('/beo-liquidation?BEO-LIQ-id={id}', function(){
+Route::get('/beo-liquidation?BEO-LIQ-id={id}', function () {
     return view('banquet.liquidation-create-view');
 })->middleware(['auth', 'verified'])->name('beo.liquidation.view');
 
@@ -603,13 +621,28 @@ Route::get('/fixed-asset-review-lists', function () {
     return view('validations.fixed-asset-review-lists-view');
 })->middleware(['auth', 'verified'])->name('asset-review-list');
 
-// // fixed asset show for review 
+// // fixed asset show for review
 Route::get('/asset-review', function () {
     return view('inventory.asset-register-action-view');
 })->middleware(['auth', 'verified'])->name('assets.review.show');
 
 
-// // fixed asset show for approval 
+// // fixed asset show for approval
 Route::get('/asset-to-approve', function () {
     return view('inventory.asset-register-action-view');
 })->middleware(['auth', 'verified'])->name('assets.approval.show');
+
+//route for template approval summary
+Route::get('/template-approval-summary', function () {
+    return view('validations.approval-template-summary-view');
+})->middleware(['auth', 'verified'])->name('template.approval.summary');
+
+// route to view approval template
+Route::get('/template-approval-view', function () {
+    return view('accounting.transaction-templates-view');
+})->middleware(['auth', 'verified'])->name('template.approval.view');
+
+// rote to view template on coa management
+Route::get('/template-view', function () {
+    return view('accounting.transaction-templates-view');
+})->middleware(['auth', 'verified'])->name('template.view');

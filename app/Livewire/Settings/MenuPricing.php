@@ -64,14 +64,14 @@ class MenuPricing extends Component
     }
 
     public function mount()
-    {   
+    {
          $this->availableYears = PriceLevel::query()
             ->selectRaw('YEAR(created_at) as year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
             ->toArray();
-        $this->fetchData();
+        // $this->fetchData();
         // Initialization logic can go here if needed
     }
     public function fetchData()
@@ -90,7 +90,7 @@ class MenuPricing extends Component
                 // dd($recipe->conversionFactor(). '' . $recipe->item->item_description . '' .  $recipe->item->id );
                 return $itemCost * $recipe->qty;
             });
-        
+
             return [
                 'menu_id'    => $menu->id,
                 'menu_name'  => $menu->menu_name,

@@ -1,11 +1,11 @@
 <div>
-   {{-- return flash message --}}
-   @if (session()->has('success'))
-   <div class="alert alert-success" id="success-message">
-       {{ session('success') }}
-       <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-   </div>
-   @endif
+    {{-- return flash message --}}
+    @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <div id="brand-table" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
@@ -16,17 +16,20 @@
                 <div class="col-md-6">
                     @if (auth()->user()->employee->getModulePermission('Item Brands'))
                         <x-primary-button type="button" class="mb-3 btn-sm"
-                        onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
-                        BRAND</x-primary-button>
+                            onclick="showTab('brand-form', document.querySelector('.nav-link.active'))">+ ADD
+                            BRAND</x-primary-button>
                     @endif
-                    <x-secondary-button type="button" class="mb-3 btn-sm"
-                        wire:click="fetchData()">Refresh</x-secondary-button>
+                    <x-secondary-button type="button" class="mb-3 btn-sm" wire:click="fetchData()">
+
+                        <span wire:loading.remove wire:target="fetchData()">Refresh</span>
+                        <span wire:loading wire:target="fetchData()"><span class="spinner-grow spinner-grow-sm"></span>
+                            Wait..</span>
+                    </x-secondary-button>
                 </div>
                 <div class="col-md-6">
-                    <div class="input-group mb-3">
+                    <div class="mb-3 input-group">
                         <span class="input-group-text">Search</span>
-                        <input type="text" class="form-control" id="search-item-brand"
-                            onkeyup="filterItemBrands()">
+                        <input type="text" class="form-control" id="search-item-brand" onkeyup="filterItemBrands()">
                     </div>
                 </div>
             </div>
@@ -50,7 +53,7 @@
                     });
                 }
             </script>
-            <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
+            <div class="mt-3 mb-3 table-responsive d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
 
                 <table class="table table-striped table-sm small">
@@ -66,7 +69,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($itemBrands as $brand)
+                        @forelse ($itemBrands ?? [] as $brand)
                             <tr>
                                 <td>{{ $brand->brand_name ?? 'Not Registered' }}</td>
                                 <td> {{ $brand->brand_description }}</td>
@@ -74,8 +77,12 @@
                                 <td class="text-end">{{ $brand->company->company_name ?? 'Not Registered' }}</td>
                                 @if (auth()->user()->employee->getModulePermission('Item Brands'))
                                     <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-primary btn-sm" onclick="editBrand({{ json_encode($brand) }})" data-bs-toggle="modal" data-bs-target="#updateBrandModal" wire:click="editBrand({{ $brand->id }})">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $brand->id }})">Delete</a>
+                                        <a href="#" class="btn btn-sm btn-primary"
+                                            onclick="editBrand({{ json_encode($brand) }})" data-bs-toggle="modal"
+                                            data-bs-target="#updateBrandModal"
+                                            wire:click="editBrand({{ $brand->id }})">Edit</a>
+                                        <a href="#" class="btn btn-sm btn-danger"
+                                            wire:click="deactivate({{ $brand->id }})">Delete</a>
                                     </td>
                                 @endif
                             </tr>
@@ -101,7 +108,8 @@
                 onclick="showTab('brand-table', document.querySelector('.nav-link.active'))">Back</x-secondary-button>
             <form wire:submit.prevent="store">
                 <div class="mb-3">
-                    <label for="brand_name-input_add" class="form-label">Brand Name <span style="color: red;">*</span></label>
+                    <label for="brand_name-input_add" class="form-label">Brand Name <span
+                            style="color: red;">*</span></label>
                     <input type="text" class="form-control" id="brand_name-input_add" wire:model="brand_name">
                     @error('brand_name')
                         <span class="text-danger">{{ $message }}</span>
@@ -122,8 +130,8 @@
 
 
     {{-- Update Brand Modal --}}
-    <div class="modal fade" id="updateBrandModal" tabindex="-1" aria-labelledby="updateBrandModalLabel" wire:ignore.self
-        aria-hidden="true">
+    <div class="modal fade" id="updateBrandModal" tabindex="-1" aria-labelledby="updateBrandModalLabel"
+        wire:ignore.self aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -132,25 +140,24 @@
                 </div>
                 <div class="modal-body">
 
-                        <div class="mb-3">
-                            <label for="brand_name-input_update" class="form-label">Brand Name <span
-                                    style="color: red;">*</span></label>
-                            <input type="text" class="form-control" id="brand_name-input_update"
-                                wire:model="brand_name">
-                            @error('brand_name')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="brand_description-input_update" class="form-label">Description <span
-                                    style="color: red;">*</span></label>
-                            <textarea class="form-control" id="brand_description-input_update"
-                                wire:model="brand_description" rows="3"></textarea>
-                            @error('brand_description')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <x-primary-button type="button" wire:click="updateBrand">Update</x-primary-button>
+                    <div class="mb-3">
+                        <label for="brand_name-input_update" class="form-label">Brand Name <span
+                                style="color: red;">*</span></label>
+                        <input type="text" class="form-control" id="brand_name-input_update"
+                            wire:model="brand_name">
+                        @error('brand_name')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="brand_description-input_update" class="form-label">Description <span
+                                style="color: red;">*</span></label>
+                        <textarea class="form-control" id="brand_description-input_update" wire:model="brand_description" rows="3"></textarea>
+                        @error('brand_description')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <x-primary-button type="button" wire:click="updateBrand">Update</x-primary-button>
 
                 </div>
             </div>
@@ -166,10 +173,10 @@
 
                 // Hide the success message after 1 second
                 setTimeout(function() {
-                document.getElementById('success-message').style.display = 'none';
-                            }, 1500);
-                            document.getElementById('brand-table').style.display = 'block';
-                            document.getElementById('brand-form').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'none';
+                }, 1500);
+                document.getElementById('brand-table').style.display = 'block';
+                document.getElementById('brand-form').style.display = 'none';
             });
 
             window.addEventListener('clearBrandUpdateModal', event => {
@@ -178,8 +185,8 @@
 
                 // Hide the success message after 1 second
                 setTimeout(function() {
-                document.getElementById('success-message').style.display = 'none';
-                            }, 1500);
+                    document.getElementById('success-message').style.display = 'none';
+                }, 1500);
                 // Hide the modal
                 let myModal = bootstrap.Modal.getInstance(document.getElementById('updateBrandModal'));
                 myModal.hide();
@@ -188,7 +195,7 @@
 
         });
 
-        function editBrand($data){
+        function editBrand($data) {
             // Set the form fields with the data
             document.getElementById('brand_name-input_update').value = $data.brand_name;
             document.getElementById('brand_description-input_update').value = $data.brand_description;

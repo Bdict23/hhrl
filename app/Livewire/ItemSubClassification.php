@@ -33,7 +33,7 @@ class ItemSubClassification extends Component
 
     public function showAddSubClassification()
     {
-        $this->fetchData();
+        // $this->fetchData();
     }
 
 

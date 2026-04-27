@@ -209,10 +209,12 @@
     </div>
 
     {{-- ad item modal --}}
-        <x-modal-card title="Edit Customer" name="cardModal">
+        <x-modal-card title="Add Item" name="cardModal">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div class="col-span-1 sm:col-span-2 content-end">
-                    <x-checkbox id="color-primary" wire:model.live="isSerialized" label="Serialized" primary value="primary" md />
+                <div class="col-span-1 sm:col-span-2 flex mr-2">
+                    <x-checkbox id="color-primary" wire:model.live="isSerialized" primary value="primary" md/>
+                    <span wire:loading wire:target="isSerialized"><span class="spinner-border spinner-border-sm"></span></span>
+                    <span wire:loading.remove wire:target="isSerialized">Serialized</span>
                 </div>
                 <x-select
                         label="Item"

@@ -27,7 +27,7 @@ class EmployeePositions extends Component
     }
 
     public function mount(){
-        $this->fetchPositions();
+        // $this->fetchPositions();
     }
     public function editPosition($positionId)
     {

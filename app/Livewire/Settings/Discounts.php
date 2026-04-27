@@ -22,13 +22,13 @@ class Discounts extends Component
 
     public function mount()
     {
-        $this->fetchDiscounts();
+        // $this->fetchDiscounts();
     }
     public function render()
     {
         return view('livewire.settings.discounts');
     }
-    
+
     public function fetchDiscounts()
     {
         $this->discounts = Discount::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get();

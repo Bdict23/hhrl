@@ -101,7 +101,7 @@ class BanquetProcurementCreate extends Component
         } else {
             $this->fetchData();
         }
-      
+
     }
 
     public function fetchData()
@@ -152,7 +152,7 @@ class BanquetProcurementCreate extends Component
             ->whereYear('created_at', $currentYear)
             ->count();
         $this->referenceNumber = 'BEB-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
-        
+
         $banquetProcurement = BanquetProcurement::create([
             'event_id' => $this->selectedEventId,
             'document_number' => $this->documentNumber,
@@ -215,7 +215,7 @@ class BanquetProcurementCreate extends Component
         if($this->hasServices && $this->selectedEvent){
             $total = 0;
              $total +=
-             isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             isset($this->selectedEvent) && $this->selectedEvent->eventMenus ?
              $this->selectedEvent->eventMenus->sum(function($menu) {
                     return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
                 $total += isset($this->selectedEvent) && $this->selectedEvent->eventServices ?
@@ -224,7 +224,7 @@ class BanquetProcurementCreate extends Component
             $this->totalGrossOrder = $total;
             $this->updatedTotalPercentage();
         }else if(!$this->hasServices && $this->selectedEvent){
-             $this->totalGrossOrder =  isset($this->selectedEvent) && $this->selectedEvent->eventMenus ? 
+             $this->totalGrossOrder =  isset($this->selectedEvent) && $this->selectedEvent->eventMenus ?
              $this->selectedEvent->eventMenus->sum(function($menu) {
                     return $menu->price->amount * ($menu->qty ? $menu->qty : 1); }): 0;
                      $this->updatedTotalPercentage();
@@ -256,9 +256,14 @@ class BanquetProcurementCreate extends Component
             $this->requestedBudget = ($this->totalPercentage / 100) * $this->totalGrossOrder;
             $this->requestedBudget = number_format($this->requestedBudget, 2);
         }else if(!$this->isNewRequest && $this->requestedBudget > 0){
+            if($this->totalGrossOrder > ($this->requestedBudget)){
             $this->totalPercentage = ( $this->requestedBudget / $this->totalGrossOrder) * 100;
+
+            }else{
+                $this->totalPercentage = ( $this->requestedBudget / $this->requestedBudget) * 100;
+            }
             $this->totalPercentage = number_format($this->totalPercentage, 2);
-           
+
         }
     }
 

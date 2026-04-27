@@ -1,57 +1,60 @@
 <div>
-     {{-- return flash message --}}
-     @if (session()->has('success'))
-     <div class="alert alert-success" id="success-message">
-         {{ session('success') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-     @endif
+    {{-- return flash message --}}
+    @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div id="category-table" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Item Category List</h5>
         </div>
         <div class="card-body">
             <div class='row'>
-               <div class="col-md-6">
-                 @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
-                     <x-primary-button type="button" class="mb-3 btn-sm"
-                     onclick="showTab('category-form', document.querySelector('.nav-link.active'))">+ ADD
-                     CATEGORY</x-primary-button>
-                 @endif
-                     <x-secondary-button type="button" class="mb-3 btn-sm"
-                     wire:click="fetchData()">Refresh</x-secondary-button>
-               </div>
-           
-               <div class="col-md-6">
-                 <div class="input-group mb-3">
-                     <span class="input-group-text">Search</span>
-                     <input type="text" class="form-control" id="search-item-category"
-                         onkeyup="filterItemCategories()">
-                 </div>
-               </div >
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Item Categories') == 1)
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                            onclick="showTab('category-form', document.querySelector('.nav-link.active'))">+ ADD
+                            CATEGORY</x-primary-button>
+                    @endif
+                    <x-secondary-button type="button" class="mb-3 btn-sm" wire:click="fetchData()">
+                        <span wire:loading.remove wire:target="fetchData()">Refresh</span>
+                        <span wire:loading wire:target="fetchData()"><span class="spinner-grow spinner-grow-sm"></span>
+                            Wait..</span>
+                    </x-secondary-button>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3 input-group">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-item-category"
+                            onkeyup="filterItemCategories()">
+                    </div>
+                </div>
             </div>
 
-                <script>
-                    function filterItemCategories() {
-                        const input = document.getElementById('search-item-category');
-                        const filter = input.value.toLowerCase();
-                        const table = document.querySelector('#category-table table');
-                        const trs = table.querySelectorAll('tbody tr');
+            <script>
+                function filterItemCategories() {
+                    const input = document.getElementById('search-item-category');
+                    const filter = input.value.toLowerCase();
+                    const table = document.querySelector('#category-table table');
+                    const trs = table.querySelectorAll('tbody tr');
 
-                        trs.forEach(row => {
-                            // Skip "No category found" row
-                            if (row.children.length < 2) return;
-                            const name = row.children[0].textContent.toLowerCase();
-                            const desc = row.children[1].textContent.toLowerCase();
-                            if (name.includes(filter) || desc.includes(filter)) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    }
-                </script>
-            <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
+                    trs.forEach(row => {
+                        // Skip "No category found" row
+                        if (row.children.length < 2) return;
+                        const name = row.children[0].textContent.toLowerCase();
+                        const desc = row.children[1].textContent.toLowerCase();
+                        if (name.includes(filter) || desc.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
+            <div class="mt-3 mb-3 table-responsive d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
                     <thead class="table-dark sticky-top">
@@ -60,22 +63,29 @@
                             <th>DESCRIPTION</th>
                             <th class="text-end">STATUS</th>
                             <th class="text-end">COMPANY</th>
-                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Item Categories') != 1 ) style="display: none;"  @endif>ACTIONS</th>
+                            <th class="text-end" @if (auth()->user()->employee->getModulePermission('Item Categories') != 1) style="display: none;" @endif>ACTIONS
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($ItemCategories as $category)
+                        @forelse ($ItemCategories ?? [] as $category)
                             <tr>
                                 <td>{{ $category->category_name }}</td>
-                                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $category->category_description ?? 'N/A' }}</td>
+                                <td
+                                    style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ $category->category_description ?? 'N/A' }}</td>
                                 <td class="text-end">{{ $category->status }}</td>
                                 <td class="text-end">
                                     {{ optional($category->company)->company_name ?? 'No Company' }}
                                 </td>
-                                @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                                @if (auth()->user()->employee->getModulePermission('Item Categories') == 1)
                                     <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-primary btn-sm"  data-bs-toggle="modal" data-bs-target="#UpdateCategory" onclick="updateCategory({{ json_encode($category) }})" wire:click="editCategory({{ $category->id }})">Edit</button>
-                                        <a href="#" class="btn btn-sm btn-danger btn-sm" wire:click="deactivate({{ $category->id }})">Delete</a>
+                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#UpdateCategory"
+                                            onclick="updateCategory({{ json_encode($category) }})"
+                                            wire:click="editCategory({{ $category->id }})">Edit</button>
+                                        <a href="#" class="btn btn-sm btn-danger"
+                                            wire:click="deactivate({{ $category->id }})">Delete</a>
                                     </td>
                                 @endif
                             </tr>
@@ -93,37 +103,39 @@
 
 
     {{-- Update Category Modal --}}
-<div class="modal fade" id="UpdateCategory" tabindex="-1" aria-labelledby="updateCategoryModal" aria-hidden="true" wire:ignore.self>
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" >Update Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
+    <div class="modal fade" id="UpdateCategory" tabindex="-1" aria-labelledby="updateCategoryModal" aria-hidden="true"
+        wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="mb-3 col-md-12">
                             <label for="category_name-update" class="form-label">Category Name</label>
-                            <input type="text" class="form-control" id="category_name-update-input" wire:model="category_name_input">
+                            <input type="text" class="form-control" id="category_name-update-input"
+                                wire:model="category_name_input">
                             @error('category_name_input')
-
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
-                        <div class=" mb-3">
-                            <label for="category_description-update" class="form-label">Description</label>
-                            <textarea class="form-control" id="category_description-update-input" wire:model="category_description_input" rows="3"></textarea>
-                            @error('category_description_input')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
+                    <div class="mb-3 ">
+                        <label for="category_description-update" class="form-label">Description</label>
+                        <textarea class="form-control" id="category_description-update-input" wire:model="category_description_input"
+                            rows="3"></textarea>
+                        @error('category_description_input')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
 
                     <x-primary-button type="button" wire:click="updateCategory">Update</x-primary-button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     {{-- Category Form --}}
     <div id="category-form" class="tab-content card" style="display: none;" wire:ignore.self>
@@ -136,15 +148,19 @@
             <form wire:submit.prevent="storeCategory">
                 @csrf
                 <div class="mb-3">
-                    <label for="category_name-input" class="form-label">Category Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="category_name-input" wire:model="category_name_input" >
+                    <label for="category_name-input" class="form-label">Category Name <span
+                            style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="category_name-input"
+                        wire:model="category_name_input">
                     @error('category_name_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label for="category_description-input" class="form-label">Description <span style="color: red;">*</span></label>
-                    <textarea class="form-control" id="category_description-input" wire:model="category_description_input" rows="3" ></textarea>
+                    <label for="category_description-input" class="form-label">Description <span
+                            style="color: red;">*</span></label>
+                    <textarea class="form-control" id="category_description-input" wire:model="category_description_input"
+                        rows="3"></textarea>
                     @error('category_description_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -161,21 +177,21 @@
             // Listen wire:success event
             window.addEventListener('clearForm', event => {
                 // Clear the form fields
-        document.getElementById('category_name-input').value = '';
-        document.getElementById('category_description-input').value = '';
+                document.getElementById('category_name-input').value = '';
+                document.getElementById('category_description-input').value = '';
 
-        // Hide the success message after 1 second
+                // Hide the success message after 1 second
                 setTimeout(function() {
-        document.getElementById('success-message').style.display = 'none';
-                            }, 1500);
-        });
+                    document.getElementById('success-message').style.display = 'none';
+                }, 1500);
+            });
         });
 
         // HIDE UPDATEcATEGORY MODAL
         window.addEventListener('hideUpdateCategoryModal', event => {
             // Clear the form fields
-        document.getElementById('category_name-update-input').value = '';
-        document.getElementById('category_description-update-input').value = '';
+            document.getElementById('category_name-update-input').value = '';
+            document.getElementById('category_description-update-input').value = '';
             // Hide the modal
             var modal = bootstrap.Modal.getInstance(document.getElementById('UpdateCategory'));
             modal.hide();
@@ -193,6 +209,5 @@
             document.getElementById('category_description-update-input').value = $data.category_description;
 
         }
-
     </script>
 </div>

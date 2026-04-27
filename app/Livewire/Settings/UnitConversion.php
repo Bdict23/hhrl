@@ -26,7 +26,7 @@ class UnitConversion extends Component
     public function mount()
     {
         // Initialization logic can go here if needed
-        $this->fetchData();
+        // $this->fetchData();
     }
     public function fetchData()
     {

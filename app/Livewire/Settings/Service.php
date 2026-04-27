@@ -24,12 +24,13 @@ class Service extends Component
     public $oldCost;
     public $selectedCategoryId;
     public $service_cost_input = 0;
+    public $isFree = false;
 
     protected $rules = [
         'service_name_input' => 'required|string|max:255',
         'service_code_input' => 'required|string|max:255|unique:services,service_code',
         'service_description_input' => 'required|string|max:1000',
-        'service_rate_input' => 'required|numeric|min:0',
+        'service_rate_input' => 'nullable|numeric|min:0',
         'service_multiplier_input' => 'nullable|boolean',
         'selectedCategoryId' => 'required|exists:categories,id',
         'service_type_input' => 'required|in:INTERNAL,EXTERNAL', // Validation for service type
@@ -41,13 +42,12 @@ class Service extends Component
         'service_name_input.required' => 'Service name is required.',
         'service_code_input.required' => 'Service code is required.',
         'service_code_input.unique' => 'Service code must be unique.',
-        'service_rate_input.required' => 'Service rate is required.',
         'selectedCategoryId.required' => 'Please select a category for the service.',
         'service_type_input.required' => 'Service type is required.',
         'service_type_input.in' => 'Service type must be either INTERNAL or EXTERNAL.',
     ];
 
-    
+
     public function render()
     {
         return view('livewire.settings.service');
@@ -55,7 +55,7 @@ class Service extends Component
     public function mount()
     {
         // Initialization logic can go here
-        $this->fetchData();
+        // $this->fetchData();
     }
     public function fetchData()
     {
@@ -68,7 +68,22 @@ class Service extends Component
     }
     public function storeService()
     {
-        $this->validate();
+        if(!$this->isFree){
+            $this->validate([
+                'service_rate_input' => 'required|numeric|min:1',
+
+            ]);
+        }
+        $this->validate([
+            'service_name_input' => 'required|string|max:255',
+            'service_code_input' => 'required|string|max:255|unique:services,service_code',
+            'service_type_input' => 'required|in:INTERNAL,EXTERNAL', // Validation for service type
+            'service_description_input' => 'required|string|max:1000',
+            'selectedCategoryId' => 'required|exists:categories,id',
+
+
+
+        ]);
         $service = ServiceModel::create([
             'service_name' => $this->service_name_input,
             'service_code' => $this->service_code_input,
@@ -78,28 +93,32 @@ class Service extends Component
             'branch_id' => auth()->user()->branch_id,
             'has_multiplier' => $this->service_multiplier_input,
             'status' => 'ACTIVE',
-            'created_by' => auth()->user()->id,
+            'isFree' => $this->isFree,
+            'created_by' => auth()->user()->emp_id,
         ]);
 
-        PriceLevel::create([
-            'price_type' => 'RATE',
-            'amount' => $this->service_rate_input,
-            'created_by' => auth()->user()->id,
-            'branch_id' => auth()->user()->branch_id,
-            'company_id' => auth()->user()->branch->company_id,
-            'service_id' => $service->id,
-        ]);
+        if(!$this->isFree){
+                PriceLevel::create([
+                'price_type' => 'RATE',
+                'amount' => $this->service_rate_input,
+                'created_by' => auth()->user()->emp_id,
+                'branch_id' => auth()->user()->branch_id,
+                'company_id' => auth()->user()->branch->company_id,
+                'service_id' => $service->id,
+            ]);
 
-        if ($this->service_type_input === 'EXTERNAL') {
-            PriceLevel::create([
-            'price_type' => 'COST',
-            'amount' => $this->service_cost_input,
-            'created_by' => auth()->user()->id,
-            'branch_id' => auth()->user()->branch_id,
-            'company_id' => auth()->user()->branch->company_id,
-            'service_id' => $service->id,
-        ]);
+            if ($this->service_type_input === 'EXTERNAL') {
+                PriceLevel::create([
+                'price_type' => 'COST',
+                'amount' => $this->service_cost_input,
+                'created_by' => auth()->user()->emp_id,
+                'branch_id' => auth()->user()->branch_id,
+                'company_id' => auth()->user()->branch->company_id,
+                'service_id' => $service->id,
+            ]);
+            }
         }
+
 
         session()->flash('success', 'Service created successfully.');
         $this->dispatch('clearForm');
@@ -126,11 +145,19 @@ class Service extends Component
         $this->service_cost_input = $service->costPrice ? $service->costPrice->amount : 0;
         $this->oldCost = $service->costPrice ? $service->costPrice->amount : 0;
         $this->service_multiplier_input = $service->has_multiplier;
+        $this->isFree = $service->isFree == 1 ;
 
     }
 
     public function updateService()
     {
+        if(!$this->isFree){
+            $this->validate(
+                [
+                    'service_cost_input' => 'nullable|numeric|min:1',
+                ]
+            );
+        }
         $this->validate(
             [
                 'service_name_input' => 'required|string|max:255',
@@ -140,8 +167,6 @@ class Service extends Component
                 'selectedCategoryId' => 'required|exists:categories,id',
                 'service_multiplier_input' => 'nullable|boolean',
                 'service_type_input' => 'required|in:INTERNAL,EXTERNAL',
-                'service_cost_input' => 'nullable|numeric|min:0',
-                'service_cost_input' => 'lt:service_rate_input',
             ]
         );
         $service = ServiceModel::findOrFail($this->service_id);
@@ -157,30 +182,57 @@ class Service extends Component
             'service_description' => $this->service_description_input,
             'category_id' => $this->selectedCategoryId,
             'has_multiplier' => $this->service_multiplier_input,
+            'isFree' => $this->isFree,
+
         ]);
 
-        if ($this->oldPrice !== $this->service_rate_input) {
+        if($this->isFree && $this->oldPrice > 0){
+            if($this->service_type_input === 'EXTERNAL'){
+                 PriceLevel::create([
+                    'price_type' => 'COST',
+                    'amount' => 0,
+                    'created_by' => auth()->user()->emp_id,
+                    'branch_id' => auth()->user()->branch_id,
+                    'company_id' => auth()->user()->branch->company_id,
+                    'service_id' => $service->id,
+                    'created_at' => now('Asia/Manila'),
+                ]);
+            }else{
+                 PriceLevel::create([
+                    'price_type' => 'RATE',
+                    'amount' => 0,
+                    'created_by' => auth()->user()->emp_id,
+                    'branch_id' => auth()->user()->branch_id,
+                    'company_id' => auth()->user()->branch->company_id,
+                    'service_id' => $service->id,
+                    'created_at' => now('Asia/Manila'),
+                ]);
+            }
+        }else{
+
+            if ($this->oldPrice !== $this->service_rate_input) {
                 PriceLevel::create([
                     'price_type' => 'RATE',
                     'amount' => $this->service_rate_input,
-                    'created_by' => auth()->user()->id,
+                    'created_by' => auth()->user()->emp_id,
                     'branch_id' => auth()->user()->branch_id,
                     'company_id' => auth()->user()->branch->company_id,
                     'service_id' => $service->id,
                     'created_at' => now('Asia/Manila'),
                 ]);
             }
-        if ($this->service_type_input === 'EXTERNAL' && $this->oldCost !== $this->service_cost_input) {
-                PriceLevel::create([
-                    'price_type' => 'COST',
-                    'amount' => $this->service_cost_input,
-                    'created_by' => auth()->user()->id,
-                    'branch_id' => auth()->user()->branch_id,
-                    'company_id' => auth()->user()->branch->company_id,
-                    'service_id' => $service->id,
-                    'created_at' => now('Asia/Manila'),
-                ]);
-            }
+            if ($this->service_type_input === 'EXTERNAL' && $this->oldCost !== $this->service_cost_input) {
+                    PriceLevel::create([
+                        'price_type' => 'COST',
+                        'amount' => $this->service_cost_input,
+                        'created_by' => auth()->user()->emp_id,
+                        'branch_id' => auth()->user()->branch_id,
+                        'company_id' => auth()->user()->branch->company_id,
+                        'service_id' => $service->id,
+                        'created_at' => now('Asia/Manila'),
+                    ]);
+                }
+        }
 
         session()->flash('success', 'Service updated successfully.');
         $this->dispatch('hideUpdateServiceModal');
@@ -188,7 +240,7 @@ class Service extends Component
 
         $this->fetchData();
     }
-    
+
 
     public function deactivateService($serviceId)
     {
@@ -216,13 +268,19 @@ class Service extends Component
             'category_description' => $this->service_category_description_input,
             'category_type' => 'SERVICE',
             'company_id' => auth()->user()->branch->company_id,
-            'created_by' => auth()->user()->id,
+            'created_by' => auth()->user()->emp_id,
         ]);
 
         session()->flash('success', 'Service category created successfully.');
         $this->dispatch('clearCategoryForm');
         $this->reset(['service_category_add_input', 'service_category_description_input']);
         $this->fetchData();
+    }
+
+    public function updatedIsFree(){
+        if($this->isFree){
+            $this->service_rate_input = 0.00;
+        }
     }
 
 

@@ -1,36 +1,40 @@
 <div>
-     {{-- return flash message --}}
-     @if (session()->has('success'))
-     <div class="alert alert-success" id="success-message">
-         {{ session('success') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-     @endif
-     @if (session()->has('error'))
-     <div class="alert alert-danger" id="success-message">
-         {{ session('error') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-     @endif
+    {{-- return flash message --}}
+    @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if (session()->has('error'))
+        <div class="alert alert-danger" id="success-message">
+            {{ session('error') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div id="menu-controller-list" class="tab-content card" style="display: none;" wire:ignore.self>
-        
+
         <div class="card-body">
             <div class="row">
-               <div class="col-md-6">
-                 @if (auth()->user()->employee->getModulePermission('Menu Controller') == 1 )
-                     <x-primary-button type="button" class="mb-3 btn-sm"
-                     onclick="showTab('menu-controller-create-form', document.querySelector('.nav-link.active'))">+ New Menu Control</x-primary-button>
-                 @endif
-                     <x-secondary-button type="button" class="mb-3 btn-sm"
-                     wire:click="fetchData()">Refresh</x-secondary-button>
-               </div>
-               <div class="col-md-6">
-                   <div class="input-group mb-3">
-                       <span class="input-group-text">Search</span>
-                       <input type="text" class="form-control" id="search-menu-control"
-                           onkeyup="filterMenuControls()">
-                   </div>
-               </div>
+                <div class="col-md-6">
+                    @if (auth()->user()->employee->getModulePermission('Menu Controller') == 1)
+                        <x-primary-button type="button" class="mb-3 btn-sm"
+                            onclick="showTab('menu-controller-create-form', document.querySelector('.nav-link.active'))">+
+                            New Menu Control</x-primary-button>
+                    @endif
+                    <x-secondary-button type="button" class="mb-3 btn-sm" wire:click="fetchData()">
+                        <span wire:loading.remove wire:target="fetchData()">Refresh</span>
+                        <span wire:loading wire:target="fetchData()"><span class="spinner-grow spinner-grow-sm"></span>
+                            Wait..</span>
+                    </x-secondary-button>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 input-group">
+                        <span class="input-group-text">Search</span>
+                        <input type="text" class="form-control" id="search-menu-control"
+                            onkeyup="filterMenuControls()">
+                    </div>
+                </div>
             </div>
             <script>
                 function filterMenuControls() {
@@ -52,7 +56,7 @@
                     });
                 }
             </script>
-            <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
+            <div class="mt-3 mb-3 table-responsive d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-striped table-sm small">
                     <thead class="table-dark sticky-top">
@@ -66,33 +70,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($menuControls as $control)
+                        @forelse ($menuControls ?? [] as $control)
                             <tr>
                                 <td>{{ $control->control_name }}</td>
-                                <td>{{ $control->is_available  == 0 ? 'Inactive' : 'Active' }}</td>
+                                <td>{{ $control->is_available == 0 ? 'Inactive' : 'Active' }}</td>
                                 <td>{{ $control->start_date }}</td>
                                 <td>{{ $control->end_date }}</td>
                                 <td>
-                                    <select name="schedule[{{ $control->id }}]" id="" class="form-select form-select-sm">
-                                        @if($control->mon)
+                                    <select name="schedule[{{ $control->id }}]" id=""
+                                        class="form-select form-select-sm">
+                                        @if ($control->mon)
                                             <option value="monday">Monday</option>
                                         @endif
-                                        @if($control->tue)
+                                        @if ($control->tue)
                                             <option value="tuesday">Tuesday</option>
                                         @endif
-                                        @if($control->wed)
+                                        @if ($control->wed)
                                             <option value="wednesday">Wednesday</option>
                                         @endif
-                                        @if($control->thu)
+                                        @if ($control->thu)
                                             <option value="thursday">Thursday</option>
                                         @endif
-                                        @if($control->fri)
+                                        @if ($control->fri)
                                             <option value="friday">Friday</option>
                                         @endif
-                                        @if($control->sat)
+                                        @if ($control->sat)
                                             <option value="saturday">Saturday</option>
                                         @endif
-                                        @if($control->sun)
+                                        @if ($control->sun)
                                             <option value="sunday">Sunday</option>
                                         @endif
                                     </select>
@@ -128,16 +133,16 @@
                 <div class="modal-body">
                     <form action="" wire:submit.prevent="updateTable" id="UpdateTableForm">
                         <div class="row">
-                            <div class="col-md-12 mb-3">
+                            <div class="mb-3 col-md-12">
                                 <label for="table_name-update" class="form-label">Table Name</label>
                                 <input type="text" class="form-control" id="table_name-update-input" wire:model="table_name_input">
                                 @error('table_name_input')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            
+
                         </div>
-                            <div class=" mb-3">
+                            <div class="mb-3 ">
                                 <label for="table_capacity-update" class="form-label">Table Capacity</label>
                                 <input type="number" class="form-control" id="table_capacity-update-input" wire:model="table_capacity_input">
                                 @error('table_capacity_input')
@@ -162,91 +167,91 @@
                 onclick="showTab('menu-controller-list', document.querySelector('.nav-link.active'))">Summary</x-secondary-button>
             <form wire:submit.prevent="saveMenuControl" id="menuControlForm">
                 @csrf
-               <div class="row">
-                 <div class="col-md-6">
-                     <label for="menu_control_name-input" class="form-label"> Menu Control Name <span style="color: red;">*</span></label>
-                     <input type="text" class="form-control" id="menu_control_name-input" wire:model="controlNameInput" >
-                     @error('controlNameInput')
-                         <span class="text-danger">{{ $message }}</span>
-                     @enderror
-                 </div>
-                 <div class="col-md-6">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="effective_date-input" class="form-label">Effective Date <span style="color: red;">*</span></label>
-                            <input type="date" class="form-control" id="effective_date-input" wire:model="effectiveDateInput">
-                            @error('effectiveDateInput')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-
-                        </div>
-                        <div class="col-md-4">
-                            <label for="end_date-input" class="form-label">End Date <span style="color: red;">*</span></label>
-                            <input type="date" class="form-control" id="end_date-input" wire:model="endDateInput">
-                            @error('endDateInput')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                    </div>
-                    <div class="col-md-4">
-                        <label for="is_available-input" class="form-label">Status <span style="color: red;">*</span></label>
-                        <select class="form-select" id="is_available-input" wire:model="isAvailableInput">
-                            <option value="">Select Status</option>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
-                        @error('isAvailableInput')
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="menu_control_name-input" class="form-label"> Menu Control Name <span
+                                style="color: red;">*</span></label>
+                        <input type="text" class="form-control" id="menu_control_name-input"
+                            wire:model="controlNameInput">
+                        @error('controlNameInput')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                 </div>
-               </div>
-                <div class="mb-3">
-                    <label class="form-label d-block">Days of the Week <span style="color: red;">*</span></label>
-                    <div class="d-flex flex-row gap-3">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="effective_date-input" class="form-label">Effective Date <span
+                                        style="color: red;">*</span></label>
+                                <input type="date" class="form-control" id="effective_date-input"
+                                    wire:model="effectiveDateInput">
+                                @error('effectiveDateInput')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+
+                            </div>
+                            <div class="col-md-4">
+                                <label for="end_date-input" class="form-label">End Date <span
+                                        style="color: red;">*</span></label>
+                                <input type="date" class="form-control" id="end_date-input"
+                                    wire:model="endDateInput">
+                                @error('endDateInput')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label for="is_available-input" class="form-label">Status <span
+                                        style="color: red;">*</span></label>
+                                <select class="form-select" id="is_available-input" wire:model="isAvailableInput">
+                                    <option value="">Select Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                                @error('isAvailableInput')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Days of the Week <span style="color: red;">*</span></label>
+                        <div class="flex-row gap-3 d-flex">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='mondaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='mondaySelected'>
                                 <label class="form-check-label" for="day-monday">Monday</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='tuesdaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='tuesdaySelected'>
                                 <label class="form-check-label" for="day-tuesday">Tuesday</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='wednesdaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='wednesdaySelected'>
                                 <label class="form-check-label" for="day-wednesday">Wednesday</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='thursdaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='thursdaySelected'>
                                 <label class="form-check-label" for="day-thursday">Thursday</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='fridaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='fridaySelected'>
                                 <label class="form-check-label" for="day-friday">Friday</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='saturdaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='saturdaySelected'>
                                 <label class="form-check-label" for="day-saturday">Saturday</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input"
-                                       type="checkbox" wire:model='sundaySelected'>
+                                <input class="form-check-input" type="checkbox" wire:model='sundaySelected'>
                                 <label class="form-check-label" for="day-sunday">Sunday</label>
                             </div>
+                        </div>
+                        @error('selected_days')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
-                    @error('selected_days')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
                     <div>
-                        <x-secondary-button type="button" class="mb-3 btn-sm"
-                            {{-- wire:click="addMenuItem" --}}
-                             data-bs-toggle="modal" data-bs-target="#menuItemsModal">+ Add Menu Item</x-secondary-button>
+                        <x-secondary-button type="button" class="mb-3 btn-sm" {{-- wire:click="addMenuItem" --}}
+                            data-bs-toggle="modal" data-bs-target="#menuItemsModal">+ Add Menu
+                            Item</x-secondary-button>
                         <table class="table table-striped table-sm small">
                             <thead class="table-dark sticky-top">
                                 <tr>
@@ -257,21 +262,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                               @forelse ($selectedRecipe as $index => $recipe)
-                                   <tr>
-                                       <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
-                                       <td>{{ $recipe->menu_name ?? 'N/A' }}</td>
-                                       <td>{{ $recipe->price ?? 'N/A' }}</td>
+                                @forelse ($selectedRecipe as $index => $recipe)
+                                    <tr>
+                                        <td>{{ $recipe->category->category_name ?? 'N/A' }}</td>
+                                        <td>{{ $recipe->menu_name ?? 'N/A' }}</td>
+                                        <td>{{ $recipe->price ?? 'N/A' }}</td>
                                         <td>
-                                           <button type="button" class="btn btn-danger btn-sm" wire:click="removeMenuItem({{ $recipe->id }})">Remove</button>
-                                       </td>
-                                   </tr>
-                        
-                               @empty
-                                   <tr>
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                wire:click="removeMenuItem({{ $recipe->id }})">Remove</button>
+                                        </td>
+                                    </tr>
+
+                                @empty
+                                    <tr>
                                         <td colspan="4" class="text-center">No menu items selected.</td>
-                                   </tr>
-                               @endforelse
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                         <x-primary-button type="submit">Save</x-primary-button>
@@ -282,7 +288,8 @@
 
 
     {{-- menu items modal --}}
-    <div class="modal fade" id="menuItemsModal" tabindex="-1" aria-labelledby="menuItemsModalLabel" aria-hidden="true" wire:ignore.self>
+    <div class="modal fade" id="menuItemsModal" tabindex="-1" aria-labelledby="menuItemsModalLabel"
+        aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -291,11 +298,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3 col-md-6">
                             <label for="menu_category_id" class="form-label">Menu Category</label>
                             <select class="form-select" id="menu_category_id" wire:model="selected_menu_category">
                                 <option value="">Select Category</option>
-                                {{-- @foreach($menu_categories as $category)
+                                {{-- @foreach ($menu_categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach --}}
                             </select>
@@ -307,12 +314,12 @@
                             <label for="search_menu_item" class="form-label">Search</label>
                             <input type="text" class="form-control" id="search_menu_item" onkeydown="">
                             <script>
-                                document.addEventListener('DOMContentLoaded', function () {
+                                document.addEventListener('DOMContentLoaded', function() {
                                     const searchInput = document.getElementById('search_menu_item');
                                     const table = searchInput.closest('.modal-body').querySelector('table');
                                     const tbody = table.querySelector('tbody');
 
-                                    searchInput.addEventListener('input', function () {
+                                    searchInput.addEventListener('input', function() {
                                         const filter = searchInput.value.toLowerCase();
                                         Array.from(tbody.rows).forEach(row => {
                                             const text = row.textContent.toLowerCase();
@@ -323,7 +330,7 @@
                             </script>
                         </div>
                     </div>
-                    
+
                     <div class="table-responsive">
                         <table class="table table-striped table-sm small">
                             <thead class="table-dark sticky-top">
@@ -336,22 +343,23 @@
                                 </tr>
                             </thead>
                             <tbody id="menu-items-table-body">
-                               {{-- Assuming $menuItems is passed to the component --}}
-                               @forelse ($menuItems as $item)
-                                   <tr>
-                                       <td>{{ $item->menu_name ?? 'N/A' }}</td>
-                                       <td>{{ $item->category->category_name ?? 'N/A' }}</td>
-                                       <td>{{ $item->recipe_type ?? 'N/A' }}</td>
-                                       <td>{{ $item->menu_code ?? 'N/A' }}</td>
-                                       <td>
-                                           <button type="button" class="btn btn-primary btn-sm" wire:click="selectMenuItem({{ $item->id }})">Add</button>
-                                       </td>
-                                   </tr>
-                               @empty
-                                   <tr>
-                                       <td colspan="4" class="text-center">No menu items found.</td>
-                                   </tr>
-                               @endforelse
+                                {{-- Assuming $menuItems is passed to the component --}}
+                                @forelse ($menuItems ?? [] as $item)
+                                    <tr>
+                                        <td>{{ $item->menu_name ?? 'N/A' }}</td>
+                                        <td>{{ $item->category->category_name ?? 'N/A' }}</td>
+                                        <td>{{ $item->recipe_type ?? 'N/A' }}</td>
+                                        <td>{{ $item->menu_code ?? 'N/A' }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                wire:click="selectMenuItem({{ $item->id }})">Add</button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">No menu items found.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

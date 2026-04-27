@@ -27,7 +27,7 @@ class ItemClassification extends Component
 
     public function mount()
     {
-        $this->fetchData();
+        // $this->fetchData();
     }
 
     public function store()

@@ -1,17 +1,17 @@
 <div>
-     {{-- return flash message --}}
-     @if (session()->has('success'))
-     <div class="alert alert-success" id="success-message">
-         {{ session('success') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-     @endif
-     @if (session()->has('error'))
-     <div class="alert alert-danger" id="success-message">
-         {{ session('error') }}
-         <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
-     </div>
-     @endif
+    {{-- return flash message --}}
+    @if (session()->has('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if (session()->has('error'))
+        <div class="alert alert-danger" id="success-message">
+            {{ session('error') }}
+            <button type="button" class="btn-close btn-sm float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div id="menu-category-lists" class="tab-content card" style="display: none;" wire:ignore.self>
         <div class="card-header">
             <h5>Menu Category Lists</h5>
@@ -19,40 +19,43 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    @if (auth()->user()->employee->getModulePermission('Item Categories') == 1 )
+                    @if (auth()->user()->employee->getModulePermission('Item Categories') == 1)
                         <x-primary-button type="button" class="mb-3 btn-sm"
-                        onclick="showTab('menu-category-form', document.querySelector('.nav-link.active'))">+ ADD
-                        Category</x-primary-button>
+                            onclick="showTab('menu-category-form', document.querySelector('.nav-link.active'))">+ ADD
+                            Category</x-primary-button>
                     @endif
-                    <x-secondary-button type="button" class="mb-3 btn-sm"
-                    wire:click="fetchData()">Refresh</x-secondary-button>
+                    <x-secondary-button type="button" class="mb-3 btn-sm" wire:click="fetchData()">
+                        <span wire:loading.remove wire:target="fetchData()">Refresh</span>
+                        <span wire:loading wire:target="fetchData()"><span class="spinner-grow spinner-grow-sm"></span>
+                            Wait..</span>
+                    </x-secondary-button>
                 </div>
                 <div class="col-md-6">
-                    <div class="input-group mb-3">
+                    <div class="mb-3 input-group">
                         <span class="input-group-text">Search</span>
                         <input type="text" class="form-control" id="search-menu-category"
                             onkeyup="filterMenuCategories()">
                     </div>
                 </div>
             </div>
-              <script>
-                    function filterMenuCategories() {
-                        const input = document.getElementById('search-menu-category');
-                        const filter = input.value.toLowerCase();
-                        const table = document.querySelector('#menu-category-lists table');
-                        const trs = table.querySelectorAll('tbody tr');
-                
-                        trs.forEach(tr => {
-                            const td = tr.querySelector('td');
-                            if (!td) return; // skip if no td (e.g. empty row)
-                            const text = td.textContent.toLowerCase();
-                            tr.style.display = text.includes(filter) ? '' : 'none';
-                        });
-                    }
-                </script>
-            <div class="table-responsive mt-3 mb-3 d-flex justify-content-center"
+            <script>
+                function filterMenuCategories() {
+                    const input = document.getElementById('search-menu-category');
+                    const filter = input.value.toLowerCase();
+                    const table = document.querySelector('#menu-category-lists table');
+                    const trs = table.querySelectorAll('tbody tr');
+
+                    trs.forEach(tr => {
+                        const td = tr.querySelector('td');
+                        if (!td) return; // skip if no td (e.g. empty row)
+                        const text = td.textContent.toLowerCase();
+                        tr.style.display = text.includes(filter) ? '' : 'none';
+                    });
+                }
+            </script>
+            <div class="mt-3 mb-3 table-responsive d-flex justify-content-center"
                 style="max-height: 400px; overflow-y: auto;">
-               
+
                 <table class="table table-striped table-sm small">
                     <thead class="table-dark sticky-top">
                         <tr>
@@ -60,19 +63,24 @@
                             <th>DESCRIPTION</th>
                             <th>STATUS</th>
                             <th>CREATED</th>
-                            <th class="text-end"  @if (auth()->user()->employee->getModulePermission('Business Venues') != 1 ) style="display: none;"  @endif>ACTIONS</th>
+                            <th class="text-end" @if (auth()->user()->employee->getModulePermission('Business Venues') != 1) style="display: none;" @endif>ACTIONS
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($menuCategories as $category)
+                        @forelse ($menuCategories ?? [] as $category)
                             <tr>
                                 <td>{{ $category->category_name }}</td>
                                 <td>{{ $category->category_description ?? 'N/A' }}</td>
                                 <td>{{ $category->status }}</td>
                                 <td>{{ $category->created_at->format('M-d-Y') }}</td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateMenuCategoryModal" onclick="updateMenuCategory({{ json_encode($category) }})" wire:click="editMenuCategory({{ $category->id }})">Edit</button>
-                                    <a href="#" class="btn btn-sm btn-danger" wire:click="deactivateMenuCategory({{ $category->id }})">Remove</a>
+                                <td class="text-end whitespace-nowrap">
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#updateMenuCategoryModal"
+                                        onclick="updateMenuCategory({{ json_encode($category) }})"
+                                        wire:click="editMenuCategory({{ $category->id }})">Edit</button>
+                                    <a href="#" class="btn btn-sm btn-danger"
+                                        wire:click="deactivateMenuCategory({{ $category->id }})">Remove</a>
                                 </td>
                             </tr>
                         @empty
@@ -89,35 +97,39 @@
 
 
     {{-- Update Modal --}}
-    <div class="modal fade" id="updateMenuCategoryModal" tabindex="-1" aria-labelledby="updateMenuCategory" aria-hidden="true" wire:ignore.self>
+    <div class="modal fade" id="updateMenuCategoryModal" tabindex="-1" aria-labelledby="updateMenuCategory"
+        aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" >Update Menu Category</h5>
+                    <h5 class="modal-title">Update Menu Category</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form action="" wire:submit.prevent="updateMenuCategory" id="UpdateMenuCategoryForm">
                         <div class="row">
-                            <div class="col-md-12 mb-3">
+                            <div class="mb-3 col-md-12">
                                 <label for="menu_category_name-update" class="form-label">Category Name</label>
-                                <input type="text" class="form-control" id="menu_category_name-update-input" wire:model="menu_category_name_input">
+                                <input type="text" class="form-control" id="menu_category_name-update-input"
+                                    wire:model="menu_category_name_input">
                                 @error('menu_category_name_input')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            
-                        </div>
-                            <div class=" mb-3">
-                                <label for="menu_category_description-update" class="form-label">Category Description</label>
-                                <textarea class="form-control" id="menu_category_description-update-input" wire:model="menu_category_description_input" rows="3"></textarea>
-                                @error('menu_category_description_input')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
 
-                            <x-primary-button type="submit">Update</x-primary-button>
-                        </form>
+                        </div>
+                        <div class="mb-3 ">
+                            <label for="menu_category_description-update" class="form-label">Category
+                                Description</label>
+                            <textarea class="form-control" id="menu_category_description-update-input" wire:model="menu_category_description_input"
+                                rows="3"></textarea>
+                            @error('menu_category_description_input')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <x-primary-button type="submit">Update</x-primary-button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -134,16 +146,20 @@
             <form wire:submit.prevent="storeMenuCategory" id="menuCategoryForm">
                 @csrf
                 <div class="mb-3">
-                    <label for="menu_category_name-input" class="form-label"> Category Name <span style="color: red;">*</span></label>
-                    <input type="text" class="form-control" id="menu_category_name-input" wire:model="menu_category_name_input" >
+                    <label for="menu_category_name-input" class="form-label"> Category Name <span
+                            style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="menu_category_name-input"
+                        wire:model="menu_category_name_input">
                     @error('menu_category_name_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label for="menu_category_description-input" class="form-label">Category Description <span class="text-muted text-small">(optional)</span></label>
-                    <textarea class="form-control" id="menu_category_description-input" wire:model="menu_category_description_input" rows="3"></textarea>
+                    <label for="menu_category_description-input" class="form-label">Category Description <span
+                            class="text-muted text-small">(optional)</span></label>
+                    <textarea class="form-control" id="menu_category_description-input" wire:model="menu_category_description_input"
+                        rows="3"></textarea>
                     @error('menu_category_description_input')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -161,25 +177,25 @@
                 document.getElementById('menuCategoryForm').reset();
             });
 
-            
+
             // Listen for the success event
             window.addEventListener('success', event => {
                 // Show the success message
                 document.getElementById('success-message').style.display = 'block';
                 document.getElementById('success-message').innerHTML = event.detail.message;
 
-        // Hide the success message after 1 second
+                // Hide the success message after 1 second
                 setTimeout(function() {
-        document.getElementById('success-message').style.display = 'none';
-                            }, 1500);
-        });
+                    document.getElementById('success-message').style.display = 'none';
+                }, 1500);
+            });
         });
 
         // HIDE UPDATE CATEGORY MODAL
         window.addEventListener('closeEditMenuCategoryModal', event => {
             // Clear the form fields
-        document.getElementById('menu_category_name-update-input').value = '';
-        document.getElementById('menu_category_description-update-input').value = '';
+            document.getElementById('menu_category_name-update-input').value = '';
+            document.getElementById('menu_category_description-update-input').value = '';
             // Hide the modal
             var modal = bootstrap.Modal.getInstance(document.getElementById('updateMenuCategoryModal'));
             modal.hide();
@@ -197,6 +213,5 @@
             document.getElementById('menu_category_description-update-input').value = $data.category_description;
 
         }
-
     </script>
 </div>

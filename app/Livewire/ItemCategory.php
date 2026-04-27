@@ -25,7 +25,7 @@ class ItemCategory extends Component
     ];
     public function mount()
     {
-        $this->fetchData();
+        // $this->fetchData();
     }
 
     public function fetchData()

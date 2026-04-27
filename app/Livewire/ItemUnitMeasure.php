@@ -29,7 +29,7 @@ class ItemUnitMeasure extends Component
 
     public function mount()
     {
-        $this->fetchData();
+        // $this->fetchData();
     }
 
     public function showAddUnitOfMeasure()
