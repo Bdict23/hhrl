@@ -83,11 +83,7 @@
                                                 @endif
                                                 @if ($services->service->service_type == 'EXTERNAL')
                                                     <td>
-                                                        {{ $services->price->amount ?? 0 * ($services->qty ? $services->qty : 1) }}
-                                                    </td>
-                                                @else
-                                                    <td>
-                                                        {{ ($services->cost->amount ?? 0) * ($services->qty ? $services->qty : 1) }}
+                                                        {{ ($services->price->amount ?? 0 )  * ($services->qty ? $services->qty : 1) }}
                                                     </td>
                                                 @endif
 
@@ -109,8 +105,7 @@
                                                         ? $selectedEvent->eventServices
                                                             ->where('service.service_type', 'EXTERNAL')
                                                             ->sum(function ($service) {
-                                                                return $service->price->amount ??
-                                                                    0 * ($service->qty ? $service->qty : 1);
+                                                                return ($service->price->amount ?? 0 ) * ($service->qty ? $service->qty : 1);
                                                             })
                                                         : 0;
 
