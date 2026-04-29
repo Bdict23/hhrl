@@ -92,7 +92,7 @@
                                                     <td class="text-xs">{{ $eventService->service->service_name }}</td>
                                                     <td class="text-xs">{{ $eventService->qty }}</td>
                                                     <td class="text-xs">₱
-                                                        {{ number_format($eventService->price->amount ?? 0, 2) }}</td>
+                                                        {{ number_format(($eventService->price->amount ?? 0), 2) }}</td>
                                                     <td class="text-xs"
                                                         style="cursor: pointer; text-decoration: underline;"
                                                         wire:click="setDiscountedService({{ $eventService->id }})">₱

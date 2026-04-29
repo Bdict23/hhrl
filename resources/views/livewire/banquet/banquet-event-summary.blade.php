@@ -152,7 +152,7 @@
                                                         <td>{{ $venues->venue->venue_name }}</td>
                                                         <td>{{ number_format($venues->ratePrice->amount, 2) }}</td>
                                                         <td>{{ $venues->qty ?? '-' }}</td>
-                                                        <td>{{ number_format($venues->ratePrice->amount * ($venues->qty ?? 0), 2) }}
+                                                        <td>{{ number_format($venues->ratePrice->amount ?? 0 * ($venues->qty ?? 0), 2) }}
                                                         </td>
                                                     </tr>
                                                 @empty
@@ -186,7 +186,7 @@
                                                         <td>{{ $services->service->service_name }}</td>
                                                         <td>{{ number_format($services->price->amount ?? 0, 2) }}</td>
                                                         <td>{{ $services->qty ?? '-' }}</td>
-                                                        <td>{{ number_format($services->price->amount ?? 0 * ($services->qty ?? 0), 2) }}
+                                                        <td>{{ number_format(($services->price->amount ?? 0 ) * ($services->qty ?? 1), 2) }}
                                                         </td>
                                                     </tr>
                                                 @empty

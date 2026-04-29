@@ -116,7 +116,7 @@
                                     'x ' .
                                     $eventService->service->service_name .
                                     ' - ₱' .
-                                    number_format($eventService->price->amount ?? 0 * $eventService->qty, 2)
+                                    number_format(($eventService->price->amount ?? 0) * $eventService->qty, 2)
                                 : '' !!}</p>
                         @endforeach
                     </td>

@@ -32,7 +32,7 @@ class BillingAndPayment extends Component
 
 
         // for per item discount
-            public $selectedMenuItemId; 
+            public $selectedMenuItemId;
             public $selectedServiceDiscountId;
             public $selectedVenueDiscountId;
             public $selectedFoodDiscountId;
@@ -40,7 +40,7 @@ class BillingAndPayment extends Component
             public $selectedVenueId;
             public $perItemDiscounts = []; // all available per item discounts for the dropdown
             public $selectedItemDiscounts = [];
-            
+
 
         // for split payment
             public $splitPayments = [];
@@ -59,7 +59,7 @@ class BillingAndPayment extends Component
             public $selectedEvent;
             public $selectedPaymentTypeId;
             public $selectedPerOrderDiscountIds = [];
-           
+
 
     // payment summary tab
         public $invoices;
@@ -73,7 +73,7 @@ class BillingAndPayment extends Component
         public $from_date;
         public $to_date;
         public $discountDetails;
-    
+
 
      public function mount()
     {
@@ -90,7 +90,7 @@ class BillingAndPayment extends Component
     }
 
     // PAYMENT TAB METHODS
-        // Mounted properties 
+        // Mounted properties
         public function mountPaymentTab(){
             $this->events = BanquetEvent::where('status', 'CONFIRMED')->get();
             $this->paymentTypes = PaymentType::where('branch_id', auth()->user()->branch->id)->where('status', 'ACTIVE')->get()->toArray();
@@ -125,7 +125,7 @@ class BillingAndPayment extends Component
             }else{
                 $this->selectedPaymentTypeId = $value;
             }
-        
+
         }
 
         public function addToSplitPayments(){
@@ -137,7 +137,7 @@ class BillingAndPayment extends Component
             ];
             $this->selectedSplitId = null;
             return $this->splitPayments;
-        } 
+        }
 
         public function calculateAmountDue(){
             // reset totals
@@ -187,7 +187,7 @@ class BillingAndPayment extends Component
             }
 
             $this->updateChangeAmount();
-           
+
         }
 
         public function updatedAmountReceived($value)
@@ -209,7 +209,7 @@ class BillingAndPayment extends Component
                 return;
             }
                 $this->calculateAmountDue();
-            
+
 
         }
 
@@ -233,15 +233,15 @@ class BillingAndPayment extends Component
                     'type' => 'FOOD',
                 ];
                 // sum all the discounts for the selected menu item and calculate the new amount due
-                
-       
+
+
 
                 $this->calculateAmountDue();
                 $this->selectedFoodDiscountId = null;
 
         }
 
-        // discount for service 
+        // discount for service
         public function addToServiceDiscounts(){
             if (!$this->selectedServiceDiscountId || !$this->selectedServiceId) {
                 return;
@@ -443,7 +443,7 @@ class BillingAndPayment extends Component
                 ->count() + 1;
             $reference = 'INV-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
 
-                // invoice 
+                // invoice
                 $invoice = new Invoice();
                 $invoice->reference = $reference;
                 $invoice->invoice_number = $this->invoiceNumber;
@@ -544,7 +544,7 @@ class BillingAndPayment extends Component
                 $event = BanquetEvent::find($this->selectedEventId);
                 $event->status = 'CLOSED';
                 $event->save();
-                
+
                 // reset payment tab
                 $this->resetPaymentTab();
 
@@ -631,20 +631,20 @@ class BillingAndPayment extends Component
                 ->sum(function($detail) {
                     return $detail->qty * ($detail->price->amount ?? 0);
                 });
-            
+
             $this->grossAmount += EventVenue::where('event_id', $eventId)
                 ->with('price')
                 ->get()
                 ->sum(function($detail) {
                     return $detail->qty * ($detail->price->amount ?? 0);
-                }); 
+                });
             // Calculate total order-level discounts
             $orderDiscountSum = EventDiscount::where('event_id', $eventId)
                 ->where('type', 'WHOLE')
                 ->with('discount')
                 ->get()
                 ->sum(function($od) {
-                    return $od->discount->amount > 0 
+                    return $od->discount->amount > 0
                         ? $od->discount->amount
                         : ($od->discount->percentage / 100) * $this->grossAmount;
                 });
@@ -657,7 +657,7 @@ class BillingAndPayment extends Component
             } else {
                 $this->paymentMethod = 'SPLIT';
             }
-            $this->customer_name = $invoice->customer_name ?? 'N/A'; 
+            $this->customer_name = $invoice->customer_name ?? 'N/A';
 
 
             $this->totalDiscountAmount = $this->grossAmount - $invoice->amount;

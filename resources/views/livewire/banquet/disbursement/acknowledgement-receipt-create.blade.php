@@ -1,5 +1,5 @@
 <div>
-    <div class="row mb-3">
+    <div class="mb-3 row">
         <div class="col-md-6">
             <div class="row">
                 <div class="col-md-6">
@@ -21,24 +21,24 @@
                     @enderror
                 </div>
                 <div class="col-md-6">
-                <a href="/acknowledgement-receipt-summary"><x-secondary-button >Summary</x-secondary-button></a> 
+                <a href="/acknowledgement-receipt-summary"><x-secondary-button >Summary</x-secondary-button></a>
                 </div>
             </div>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
             <h5 class="alert-heading" style="white-space: nowrap;">Acknowledgement Receipt - Create &nbsp;<i class="bi bi-card-text"></i></h5>
-            
+
         </div>
     </div>
     <div class="row">
         @if(!$isCreate && $currentARStatus == 'OPEN')
         {{-- LEFT --}}
-        <div class="card mb-3 mr-3 col-md-6 container">
+        <div class="container mb-3 mr-3 card col-md-6">
             <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                 <div class="card-header">
                     <h6>Expenses</h6>
                 </div>
-                <table class="table table-sm table-hover table-bordered  table-striped">
+                <table class="table table-sm table-hover table-bordered table-striped">
                     <thead class="table-dark">
                         <tr>
                             <th>Reference</th>
@@ -57,7 +57,7 @@
                                 <td title="{{$expense->purpose}}" style="cursor:help;">{{ Str::limit($expense->purpose, 10) }}</td>
                                 <td>{{ $expense->total_amount }}</td>
                             </tr>
-                            
+
                         @empty
                             <tr class="text-center">
                                 <td colspan="5">No data available</td>
@@ -69,33 +69,33 @@
         </div>
         @endif
         {{-- RIGHT --}}
-            <div @if($isCreate || $currentARStatus == 'DRAFT') class="col-md-12 container" @else class="col-md-6 container" @endif>
-                <div class="card mb-3">
+            <div @if($isCreate || $currentARStatus == 'DRAFT') class="container col-md-12" @else class="container col-md-6" @endif>
+                <div class="mb-3 card">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                 <div class="input-group mb-2">
+                                 <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Reference</label>
                                     <input type="text" class="form-control" placeholder="<AUTO>" disabled wire:model="reference">
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Event</label>
                                     <input type="text" class="form-control" placeholder="Select Event ->" value="{{ $selectedEvent->event_name ?? '' }}" disabled>
                                     <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#banquetEventModal"><i class="bi bi-calendar-event"></i></span>
                                 </div>
                             </div>
                         </div>
-                       
-                        <div class="input-group mb-2">
+
+                        <div class="mb-2 input-group">
                             <label for="" class="input-group-text">Source</label>
                             <input type="text" class="form-control" placeholder="Select Customer" value="{{ $selectedCustomer->customer_fname ?? ''}} {{ $selectedCustomer->customer_mname ?? ''}} {{ $selectedCustomer->customer_lname ?? ''}}" disabled>
                             <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#customerModal">
                                 <i class="bi bi-person"></i>
                             </span>
                         </div>
-                        <div class="input-group mb-4">
+                        <div class="mb-4 input-group">
                             <label for="" class="input-group-text">Address</label>
                             <input type="text" class="form-control" disabled value="{{ $selectedCustomer->customer_address ?? ''}}">
                         </div>
@@ -105,12 +105,12 @@
                         @enderror
 
                         <div class="row">
-                            <strong class="col-md-3 my-auto">Check Details</strong>
+                            <strong class="my-auto col-md-3">Check Details</strong>
                             <hr class="col-md-9">
                         </div>
                         <div class="col-md-12 row">
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Account Name</label>
                                     <input type="text" class="form-control" placeholder="Enter Account Name" wire:model="accountName">
                                 </div>
@@ -119,7 +119,7 @@
                                  @enderror
                             </div>
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Bank</label>
                                     <input type="text" class="form-control" placeholder="Select Bank ->" value="{{ $selectedBank->bank_name ?? '' }}" disabled>
                                     <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#bankListModal"><i class="bi bi-bank"></i></span>
@@ -131,7 +131,7 @@
                         </div>
                         <div class="col-md-12 row">
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Check Number</label>
                                     <input type="text" class="form-control" placeholder="Enter Check Number" wire:model="checkNumber">
                                 </div>
@@ -140,7 +140,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Check Date</label>
                                     <input type="date" class="form-control" wire:model="checkDate">
                                 </div>
@@ -151,7 +151,7 @@
                         </div>
                         <div class="col-md-12 row">
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Check Status</label>
                                     <select name="" id="" class="form-select" wire:model="checkStatus">
                                         <option value="">Select Check Status</option>
@@ -162,8 +162,8 @@
                                 @error('checkStatus')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
-                                    
-                                <div class="input-group mb-2">
+
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Check Amount</label>
                                     <input type="number" class="form-control" placeholder="Enter Check Amount" wire:model.live="checkAmount">
                                 </div>
@@ -172,7 +172,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <div class="input-group mb-2">
+                                <div class="mb-2 input-group">
                                     <label for="" class="input-group-text">Notes</label>
                                     <textarea class="form-control" id="notes" name="notes" rows="3" wire:model="notes"></textarea>
                                 </div>
@@ -235,8 +235,8 @@
                             @enderror
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6"> 
+                        <div class="mb-3 row">
+                            <div class="col-md-6">
                                 <label for="customer_gender" class="form-label">Gender</label>
                                 <select wire:model="customerGender" class="form-select" id="customer_gender" name="customer_gender">
                                     <option value="">Select Gender</option>
@@ -256,7 +256,7 @@
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-                       
+
                         <div class="mb-3">
                             <label for="customer_email" class="form-label">Email</label>
                             <input wire:model="customerEmail" type="email" class="form-control" id="customer_email" name="customer_email">
@@ -294,13 +294,13 @@
                             <h5 class="modal-title" id="customerListModalLabel">Select Customer</h5>
                         </div>
                         <div class="col-md-6">
-                            <div class="input-group mb-2">
+                            <div class="mb-2 input-group">
                                 <span class="input-group-text">Search</span>
                                 <input type="text" class="form-control" id="search-customers"
                                     onkeyup="filterCustomers()">
                             </div>
                         </div>
-                  
+
                     <script>
                         function filterCustomers() {
                             const searchInput = document.getElementById('search-customers');
@@ -328,7 +328,7 @@
                         }
                     </script>
                 </div>
-                <div class="modal-body overflow-auto" style="max-height: 400px;">
+                <div class="overflow-auto modal-body" style="max-height: 400px;">
                     <table class="table table-striped" id="customerListTable">
                         <thead>
                             <tr>
@@ -351,7 +351,7 @@
                                             <span wire:loading wire:target="selectCustomer({{ $customer->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>
                                             <span wire:loading.remove wire:target="selectCustomer({{ $customer->id }})"><i class="bi bi-check-circle"></i>&nbsp;Select</span>
                                         </button>
-                                    
+
                                     </td>
 
                                </tr>
@@ -360,7 +360,7 @@
                             <tr>
                                 <td colspan="6" class="text-center">No Data Found</td>
                             </tr>
-                                
+
                             @endforelse
                         </tbody>
                     </table>
@@ -381,13 +381,13 @@
                             <h5 class="modal-title" id="bankModalLabel">Select Bank</h5>
                         </div>
                         <div class="col-md-6">
-                            <div class="input-group mb-2">
+                            <div class="mb-2 input-group">
                                 <span class="input-group-text">Search</span>
                                 <input type="text" class="form-control" id="search-banks"
                                     onkeyup="filterBanks()">
                             </div>
                         </div>
-                  
+
                     <script>
                         function filterBanks() {
                             const searchInput = document.getElementById('search-banks');
@@ -415,7 +415,7 @@
                         }
                     </script>
                 </div>
-                <div class="modal-body overflow-auto" style="max-height: 400px;">
+                <div class="overflow-auto modal-body" style="max-height: 400px;">
                     <table class="table table-striped" id="bankListTable">
                         <thead>
                             <tr>
@@ -436,7 +436,7 @@
                                             <span wire:loading wire:target="selectBank({{ $bank->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>
                                             <span wire:loading.remove wire:target="selectBank({{ $bank->id }})"><i class="bi bi-check-circle"></i>&nbsp;Select</span>
                                         </button>
-                                    
+
                                     </td>
 
                                </tr>
@@ -445,7 +445,7 @@
                             <tr>
                                 <td colspan="4" class="text-center">No Data Found</td>
                             </tr>
-                                
+
                             @endforelse
                         </tbody>
                     </table>
@@ -521,13 +521,13 @@
                             <h5 class="modal-title" id="banquetEventModalLabel">Select Event</h5>
                         </div>
                         <div class="col-md-6">
-                            <div class="input-group mb-2">
+                            <div class="mb-2 input-group">
                                 <span class="input-group-text">Search</span>
                                 <input type="text" class="form-control" id="search-events"
                                     onkeyup="filterEvents()">
                             </div>
                         </div>
-                  
+
                     <script>
                         function filterEvents() {
                             const searchInput = document.getElementById('search-events');
@@ -555,13 +555,13 @@
                         }
                     </script>
                 </div>
-                <div class="modal-body overflow-auto" style="max-height: 400px;">
+                <div class="overflow-auto modal-body" style="max-height: 400px;">
                     <table class="table table-striped" id="eventListTable">
                         <thead>
                             <tr>
                                 <th>Reference</th>
                                 <th>Event Name</th>
-                                <th>Start Date</th>
+                                <th class="whitespace-nowrap">Start Date</th>
                                 <th>End Date</th>
                                 <th>Action</th>
                             </tr>
@@ -569,16 +569,16 @@
                         <tbody>
                             @forelse ($events as $event)
                                <tr>
-                                    <td>{{ $event->reference }}</td>
+                                    <td class="whitespace-nowrap">{{ $event->reference }}</td>
                                     <td>{{ $event->event_name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
+                                    <td class="whitespace-nowrap">{{ \Carbon\Carbon::parse($event->start_date)->format('M. d, Y') }}</td>
+                                    <td class="whitespace-nowrap">{{ \Carbon\Carbon::parse($event->end_date)->format('M. d, Y') }}</td>
                                     <td>
-                                        <button wire:click="selectEvent({{ $event->id }})" class="btn btn-sm btn-success select-event-btn" data-name="{{ $event->name }}">
+                                        <button wire:click="selectEvent({{ $event->id }})" class="btn btn-sm btn-success select-event-btn whitespace-nowrap" data-name="{{ $event->name }}">
                                             <span wire:loading wire:target="selectEvent({{ $event->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>
                                             <span wire:loading.remove wire:target="selectEvent({{ $event->id }})"><i class="bi bi-check-circle"></i>&nbsp;Select</span>
                                         </button>
-                                    
+
                                     </td>
 
                                </tr>
@@ -587,7 +587,7 @@
                             <tr>
                                 <td colspan="4" class="text-center">No Data Found</td>
                             </tr>
-                                
+
                             @endforelse
                         </tbody>
                     </table>
@@ -599,7 +599,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         window.addEventListener('hideEventListModal', event => {
             var modal = bootstrap.Modal.getInstance(document.getElementById('banquetEventModal'));
