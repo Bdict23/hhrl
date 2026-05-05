@@ -42,6 +42,11 @@
                                         {{ __('Supplier') }}
                                     </x-dropdown-link>
                                 @endif
+                                @if (auth()->user()->employee->getModulePermission('Customer') != 2)
+                                    <x-dropdown-link :href="url('/customer-view')" class="no-underline">
+                                        {{ __('Customer') }}
+                                    </x-dropdown-link>
+                                @endif
                                 @if (auth()->user()->employee->getModulePermission('Companies') != 2)
                                     <x-dropdown-link :href="url('/company_list')" class="no-underline">
                                         {{ __('Company') }}

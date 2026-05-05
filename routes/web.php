@@ -643,6 +643,6 @@ Route::get('/template-approval-view', function () {
 })->middleware(['auth', 'verified'])->name('template.approval.view');
 
 // rote to view template on coa management
-Route::get('/template-view', function () {
-    return view('accounting.transaction-templates-view');
+Route::get('/customer-view', function () {
+    return view('master_data.customer-view');
 })->middleware(['auth', 'verified'])->name('template.view');
