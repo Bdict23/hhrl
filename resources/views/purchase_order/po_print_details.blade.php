@@ -151,13 +151,13 @@
                     <td>{{ $reqdetail->items->item_code }}</td>
                     <td>{{ $reqdetail->items->item_description }}</td>
                     <td>{{ $reqdetail->qty }}</td>
-                    <td>{{ $reqdetail->cost->amount ?? 0}}</td>
-                    <td style="text-align-last: right">{{  ($reqdetail->cost->amount ?? 0 ) * $reqdetail->qty }}</td>
+                    <td>{{  number_format(($reqdetail->cost->amount ?? 0), 2)}}</td>
+                    <td style="text-align-last: right">{{ number_format((($reqdetail->cost->amount ?? 0 ) * $reqdetail->qty), 2) }}</td>
                 </tr>
             @endforeach
             <tr class="total-row">
                 <td colspan="4" style="text-align-last: right">TOTAL ORDER QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</td>
-                <td colspan="2" style="text-align-last: right">TOTAL AMOUNT: {{ $requestInfo->total_amount }}</td>
+                <td colspan="2" style="text-align-last: right">TOTAL AMOUNT: {{ number_format($requestInfo->total_amount,2) }}</td>
             </tr>
         </tbody>
     </table>
