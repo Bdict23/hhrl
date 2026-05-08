@@ -26,7 +26,7 @@ use WireUi\Traits\WireUiActions;
 class PurchaseOrderCreate extends Component
 {
     use WireUiActions;
-    
+
     public $suppliers = [];
     public $events = [];
     public $selectedEventId = null;
@@ -83,7 +83,7 @@ class PurchaseOrderCreate extends Component
 
     public function store()
     {
-        
+
         if($this->hasReviewer) {
             $this->validate([
                 'supplierId' => 'required|exists:suppliers,id',
@@ -95,7 +95,7 @@ class PurchaseOrderCreate extends Component
                 'selectedItems' => 'required|array',
                 'selectedPurchaseTypeId' => 'required|exists:system_parameters,id',
                 'selectedEventId' => 'nullable|exists:banquet_events,id',
-            ]);    
+            ]);
         }else {
             $this->validate([
                 'supplierId' => 'required|exists:suppliers,id',
@@ -115,7 +115,7 @@ class PurchaseOrderCreate extends Component
         foreach ($this->selectedItems as $index => $item) {
             $totalCost += $item->costPrice->amount * (float)($this->purchaseRequest[$index]['qty'] ?? 1);
         }
-       
+
         // Save to requisitionInfos table
         $requisitionInfo = new RequisitionInfo();
 
@@ -295,9 +295,9 @@ class PurchaseOrderCreate extends Component
             $this->selectedProductionReference = $production->reference;
              $this->selectedItems = []; // Clear previously selected items
             foreach ($production->productionOrderDetails as $detail) {
-                
+
                     $this->addItem($detail->item_id);
-                    
+
             }
         } else {
             $this->dispatch('showAlert', ['type' => 'error', 'title' => 'Error', 'message' => 'Production order not found.']);
@@ -310,6 +310,6 @@ class PurchaseOrderCreate extends Component
         return view('livewire.purchase-order-create');
     }
 }
-    
 
-    
+
+

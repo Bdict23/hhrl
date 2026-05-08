@@ -1,5 +1,5 @@
 <div class="container-fluid" style="width: 100%; height: 100%;">
-    <div class="justify-content-end d-flex mb-3">
+    <div class="mb-3 justify-content-end d-flex">
         <h5>Show Purchas Order &nbsp;<i class="bi bi-cart4"></i></h5>
     </div>
     <div class="row justify-content-center" style="display: flex;">
@@ -16,12 +16,12 @@
                                 @if($requestInfo->requisition_status == 'PREPARING') badge bg-secondary
                                 @elseif($requestInfo->requisition_status == 'FOR REVIEW') badge bg-dark
                                 @elseif($requestInfo->requisition_status == 'FOR APPROVAL') badge bg-dark
-                                @elseif($requestInfo->requisition_status == 'TO RECIEVE') badge bg-primary 
+                                @elseif($requestInfo->requisition_status == 'TO RECIEVE') badge bg-primary
                                 @elseif($requestInfo->requisition_status == 'PARTIALLY FULFILLED') badge bg-warning  text-dark
-                                @elseif($requestInfo->requisition_status == 'COMPLETED') badge bg-success 
+                                @elseif($requestInfo->requisition_status == 'COMPLETED') badge bg-success
                                 @elseif($requestInfo->requisition_status == 'REJECTED') badge bg-danger
-                                @elseif($requestInfo->requisition_status == 'CANCELLED') badge bg-danger 
-                                @else badge bg-secondary 
+                                @elseif($requestInfo->requisition_status == 'CANCELLED') badge bg-danger
+                                @else badge bg-secondary
                                 @endif">{{ $requestInfo->requisition_status == 'PARTIALLY FULFILLED' ? 'PARTIAL' : $requestInfo->requisition_status }}</span>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                                         </x-primary-button>
                                     </a>
                                 @endif
-                                
+
                                  <a href="{{ route('po.print', ['id' => $requestInfo->id]) }}"  >
                                     <x-primary-button >
                                        Print Preview
@@ -49,7 +49,7 @@
                             @endif
                             <x-secondary-button onclick="history.back()"> Back </x-secondary-button>
                         </div>
-    
+
                     <div class="card-body">
                         <table class="table table-striped table-hover table-sm table-responsive">
                             <thead class="table-dark">
@@ -79,17 +79,17 @@
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">No data available</td>
-    
+
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                     <div class="card-footer">
-                        
+
                         <strong style="float: right">Total QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</strong>
                     </div>
-                    
+
                 </div>
         </div>
         <!-- Right Dashboard -->
@@ -113,17 +113,17 @@
                         </div>
                         <div class="col-md-6">
                             <label for="postal_address" class="form-label" style="width: 100; font-size: 13px">PO Type</label>
-                            <input type="text" class="form-control"  
+                            <input type="text" class="form-control"
                                 value="{{ $requestInfo->purchaseType->name ?? 'N/A' }}" readonly style="width: 100; font-size: 13px">
                         </div>
                     </div>
-                    <div class="row mb-2">
+                    <div class="mb-2 row">
                         <div class="col-md-6">
                             <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">BEO</label>
                             <input type="text" class="form-control" id="contact1" name="company_tin"
                                 value="{{ $requestInfo->event->reference ?? 'N/A'}}" readonly style="width: 100; font-size: 13px">
                                 {{-- <x-select
-                            label="Event" 
+                            label="Event"
                             placeholder="Select BEO ..."
                             :options="$events"
                             option-value="id"
@@ -131,7 +131,7 @@
                             option-label="reference"
                             wire:model.live="selectedEventId"
                             class="mb-3"
-                            :readonly="$isLiquidationExists" 
+                            :readonly="$isLiquidationExists"
                         /> --}}
                         </div>
                         <div class="col-md-6">
@@ -141,7 +141,7 @@
                         </div>
 
                     </div>
-                    <div class="row mb-2">
+                    <div class="mb-2 row">
                         <div class="col-md-6">
                             <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">M. PO
                                 NUMBER</label>
@@ -150,7 +150,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="supp_address" class="form-label" style="width: 100; font-size: 13px">Term</label>
-                            <input type="text" class="form-control" value="{{ $requestInfo->term->term_name }}"
+                            <input type="text" class="form-control" value="{{ $requestInfo->term->term_name ?? 'N/A' }}"
                                 readonly style="width: 100; font-size: 13px">
                         </div>
                     </div>
@@ -180,7 +180,7 @@
                             style="width: 100; font-size: 12px">
                         </div>
                     @endif
-                    
+
                     <div class="col-md-10">
                         <label for="contact_no_1" class="form-label" style="width: 100; font-size: 13px">Approved
                             By</label>
@@ -190,14 +190,14 @@
                     </div>
 
 
-                    <div class="row mb-2">
+                    <div class="mb-2 row">
                         <div class="col-md-12">
                             <label for="contact_no_2" class="form-label" style="font-size: 13px">Remarks</label>
                             <textarea name="" id="" cols="30" rows="10" readonly class="form-control md-12 "
                                 style="height: 100px; font-size: 12px"> {{ $requestInfo->remarks }} </textarea>
                         </div>
                     </div>
-                    <div class="row mb-2">
+                    <div class="mb-2 row">
                         <div class="col-md-6">
                             <label for="" class="form-label" style="width: 100; font-size: 13px">Total Request Amount</label>
                             <input type="text" class="form-control fw-bold" style="width: 100; font-size: 13px"

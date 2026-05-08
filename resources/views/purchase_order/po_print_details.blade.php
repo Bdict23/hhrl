@@ -108,7 +108,7 @@
     </div>
 
     <!-- HEADER SECTION -->
-    <div class="title mt-4">
+    <div class="mt-4 title">
         <div class="header">
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
                 <img src="{{ asset('images/' . auth()->user()->branch->company->company_logo) }}" alt="Branch Logo" style="max-height: 50px;">
@@ -117,7 +117,7 @@
         </div>
         <span class="address">{{ $requestInfo->branches->branch_address }}</span>
     </div>
-    <div class="d-flex justify-content-between mt-5">
+    <div class="mt-5 d-flex justify-content-between">
         <div class="container">
             <div>SUPPLIER NAME: <span class="label">{{ $requestInfo->supplier->supp_name }}</span></div>
             <div>MERCHANDISE PO #: <span class="label">{{ $requestInfo->merchandise_po_number }}</span></div>
@@ -138,7 +138,10 @@
                 <th>NO.</th>
                 <th>PARTNUMBER</th>
                 <th>DESCRIPTION</th>
-                <th>TTL ORDER</th>
+                <th>QTY</th>
+                <th>COST</th>
+                <th>TOTAL AMOUNT</th>
+
             </tr>
         </thead>
         <tbody>
@@ -148,18 +151,20 @@
                     <td>{{ $reqdetail->items->item_code }}</td>
                     <td>{{ $reqdetail->items->item_description }}</td>
                     <td>{{ $reqdetail->qty }}</td>
+                    <td>{{ $reqdetail->cost->amount ?? 0}}</td>
+                    <td style="text-align-last: right">{{  ($reqdetail->cost->amount ?? 0 ) * $reqdetail->qty }}</td>
                 </tr>
             @endforeach
             <tr class="total-row">
-                <td colspan="3" style="text-align: right;">TOTAL</td>
-                <td>{{ $requestInfo->requisitionDetails->sum('qty') }}</td>
+                <td colspan="4" style="text-align-last: right">TOTAL ORDER QTY: {{ $requestInfo->requisitionDetails->sum('qty') }}</td>
+                <td colspan="2" style="text-align-last: right">TOTAL AMOUNT: {{ $requestInfo->total_amount }}</td>
             </tr>
         </tbody>
     </table>
 
     <!-- FOOTER SECTION -->
-    <div class="footer mt-5">
-        <div class="d-flex justify-content-between gap-4 align-content-center">
+    <div class="mt-5 footer">
+        <div class="gap-4 d-flex justify-content-between align-content-center">
             <div class="container">
                         <p class="mb-0">Prepared By: </p>
                 <span style="text-decoration-line: underline" style="white-space: nowrap">&nbsp;&nbsp;{{ $requestInfo->preparer->name }} {{ $requestInfo->preparer->middle_name }} {{ $requestInfo->preparer->last_name }}&nbsp;&nbsp;</span>
@@ -180,7 +185,7 @@
                     {{ $requestInfo->approver->last_name }}&nbsp;&nbsp;</span>
                     <p class="mb-0">{{ $requestInfo->approver->position->position_name ?? '' }}</p>
             </div>
-                
+
         </div>
     </div>
 
