@@ -87,7 +87,7 @@ class AssetRegisterAction extends Component
         $this->fetchData();
     }
     public function fetchData(){
-        
+
         $module = Module::where('module_name', 'Fixed Asset')->first();
         $this->moduleId = $module->id;
         $this->types = SystemParameter::where('module_id', $module->id)->where('branch_id', auth()->user()->branch_id)->where('status', 'ACTIVE')->where('key', 'batch_type')->get();
@@ -155,7 +155,7 @@ class AssetRegisterAction extends Component
                 'addedItemCondition'=> 'required|in:USED,NEW',
                 ]);
         }
-        
+
         $this->selectedItems [] = [
             'id'=> $selectedItem->id,
             'itemCode' => $selectedItem->item_code,
@@ -176,6 +176,7 @@ class AssetRegisterAction extends Component
         $this->addedItemCost = null;
         $this->addedItemLifeSpan = null;
         $this->addedItemCondition = null;
+        $this->addedItemSerial = null;
         $this->qty = null;
     }
     public function resetBatchForm(){
@@ -190,7 +191,7 @@ class AssetRegisterAction extends Component
         $this->saveAs = 'DRAFT';
     }
     public function removeItem($index){
-        
+
         unset($this->selectedItems[$index]);
         $this->selectedItems = array_values($this->selectedItems);
     }
@@ -233,6 +234,7 @@ class AssetRegisterAction extends Component
             'branch_id'     => auth()->user()->branch_id,
             'serial'     => $item['serial'] ,
             'cost'     => $item['cost'] ,
+            'qty'       => $item['qty'],
             'lifespan'     => $item['span'] ,
             'span_ended'     => $spanEndedDate ,
             'condition'     => $item['condition'] ,
@@ -243,7 +245,7 @@ class AssetRegisterAction extends Component
         }
         $this->resetBatchForm();
         $this->notify('Saved!', 'success', 'The fixed asset batch has been successfully processed.');
-        
+
     }
     public function updateBatch(){
         $batch = $this->existingData;
@@ -348,7 +350,7 @@ class AssetRegisterAction extends Component
         $this->approverId = $data->approved_by;
         $this->reviewerId = $data->reviewed_by;
         $this->isEditable = $data->status == 'DRAFT' ;
-        
+
 
         foreach($data->batchItems as $item){
            $this->selectedItems [] = [
@@ -360,6 +362,7 @@ class AssetRegisterAction extends Component
             'cost' => $item->cost,
             'span' => $item->lifespan,
             'condition' => $item->condition,
+            'qty'=> $item->qty,
            ];
         }
     }

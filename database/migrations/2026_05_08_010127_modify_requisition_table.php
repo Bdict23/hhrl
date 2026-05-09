@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('requisition_infos', function ($table) {
-            $table->foreignId("term")->nullable()->constrained('system_parameters')->cascadeOnDelete();
+            $table->foreignId("term_type_id")->nullable()->constrained('system_parameters')->cascadeOnDelete();
         });
     }
 
