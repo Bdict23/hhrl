@@ -203,46 +203,52 @@ class BanquetEventCreate extends Component
         //insert venue
         if(count($this->venuesAdded)>0){
             foreach($this->venuesAdded as $venue){
+                $amount = 0;
+                $amount += (float) ($venue['rate_amount']) * (float)($venue['qty']) ;
                 EventVenue::create([
                     'event_id' =>$event->id,
                     'venue_id' => $venue['id'],
                     'price_id' => $venue['price_level_id'],
-                    'qty' => $venue['qty'],
+                    'qty' => $venue['qty'] == '' ? 1 : $venue['qty'],
                     'start_date' => $this->event_start_date,
                     'end_date' => $this->event_end_date,
                     'start_time' => $this->arrival_time,
                     'end_time' =>  $this->departure_time,
-                    'total_amount' => (float) ($venue['rate_amount'] * $venue['qty']),
+                    'total_amount' => $amount,
                 ]);
 
-                $total += (float) ($venue['rate_amount'] * $venue['qty']);
+                $total += $amount;
             }
         }
         // insert services on event_services table
         if (count($this->servicesAdded) > 0) {
             foreach($this->servicesAdded as $service) {
+                $amount = 0;
+                $amount += (float) ($service['rate_amount']) * (float)($service['qty']) ;
                 EventService::create([
                     'event_id' => $event->id,
                     'service_id' => $service['id'],
-                    'qty' => $service['qty'],
+                    'qty' => $service['qty'] == '' ? 1 : $service['qty'],
                     'price_id' => $service['rate'],
-                    'total_amount' => (float) ($service['rate_amount'] * $service['qty']),
+                    'total_amount' => $amount,
                 ]);
-                $total += ($service['rate_amount'] * $service['qty']);
+                $total += $amount;
             }
         }
         // insert event menu
         if (count($this->menusAdded) > 0) {
             foreach($this->menusAdded as $menu) {
+                $amount = 0;
+                $amount += (float) ($menu['rate_amount']) * (float)($menu['qty']) ;
                 EventMenu::create([
                     'event_id' => $event->id,
                     'menu_id' => $menu['id'],
                     'note' => $menu['note'] ?? '',
-                    'qty' => $menu['qty'],
+                    'qty' => $menu['qty'] == '' ? 1 : $menu['qty'],
                     'price_id' => $menu['rate'],
-                    'total_amount' => $menu['rate_amount'] * $menu['qty'],
+                    'total_amount' => $amount,
                 ]);
-                $total += ($menu['rate_amount'] * $menu['qty']);
+                $total += $amount;
             }
         }
          $event->update([
@@ -394,46 +400,52 @@ class BanquetEventCreate extends Component
         // Re-insert venues
         if(count($this->venuesAdded)>0){
             foreach($this->venuesAdded as $venue){
+                $amount = 0;
+                $amount +=  (float) ($venue['rate_amount']) * (float)($venue['qty']);
                 EventVenue::create([
                     'event_id' =>$event->id,
                     'venue_id' => $venue['id'],
                     'price_id' => $venue['price_level_id'],
-                    'qty' => $venue['qty'],
+                    'qty' => $venue['qty'] == '' ? 1 : $venue['qty'],
                     'start_date' => $this->event_start_date,
                     'end_date' => $this->event_end_date,
                     'start_time' => $this->arrival_time,
                     'end_time' =>  $this->departure_time,
-                    'total_amount' => $venue['rate_amount'] * $venue['qty'],
+                    'total_amount' => $amount,
                 ]);
-                $total += ($venue['rate_amount'] * $venue['qty']);
+                $total += $amount;
             }
         }
 
          // insert services on event_services table
         if (count($this->servicesAdded) > 0) {
             foreach($this->servicesAdded as $service) {
+                $amount = 0;
+                $amount += (float) ($service['rate_amount']) * (float)($service['qty']);
                 EventService::create([
                     'event_id' => $event->id,
                     'service_id' => $service['id'],
-                    'qty' => $service['qty'],
+                    'qty' => $service['qty'] == '' ? 1 : $service['qty'],
                     'price_id' => $service['rate'],
-                    'total_amount' => $service['rate_amount'] * $service['qty'],
+                    'total_amount' => $amount,
                 ]);
-                $total += ($service['rate_amount'] * $service['qty']);
+                $total += $amount;
             }
         }
         // insert event menu
         if (count($this->menusAdded) > 0) {
             foreach($this->menusAdded as $menu) {
+                $amount = 0;
+                $amount += (float)($menu['rate_amount']) * (float)($menu['qty']);
                 EventMenu::create([
                     'event_id' => $event->id,
                     'menu_id' => $menu['id'],
                     'note' => $menu['note'] ?? '',
-                    'qty' => $menu['qty'],
+                    'qty' => $menu['qty'] == '' ? 1 : $menu['qty'],
                     'price_id' => $menu['rate'],
-                    'total_amount' => $menu['rate_amount'] * $menu['qty'],
+                    'total_amount' => $amount,
                 ]);
-                $total += ($menu['rate_amount'] * $menu['qty']);
+                $total += $amount;
             }
         }
       $event->update([
