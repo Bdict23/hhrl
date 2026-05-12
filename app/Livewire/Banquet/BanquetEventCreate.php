@@ -212,10 +212,10 @@ class BanquetEventCreate extends Component
                     'end_date' => $this->event_end_date,
                     'start_time' => $this->arrival_time,
                     'end_time' =>  $this->departure_time,
-                    'total_amount' => $venue['rate_amount'] * $venue['qty'],
+                    'total_amount' => (float) ($venue['rate_amount'] * $venue['qty']),
                 ]);
 
-                $total += ($venue['rate_amount'] * $venue['qty']);
+                $total += (float) ($venue['rate_amount'] * $venue['qty']);
             }
         }
         // insert services on event_services table
@@ -226,7 +226,7 @@ class BanquetEventCreate extends Component
                     'service_id' => $service['id'],
                     'qty' => $service['qty'],
                     'price_id' => $service['rate'],
-                    'total_amount' => $service['rate_amount'] * $service['qty'],
+                    'total_amount' => (float) ($service['rate_amount'] * $service['qty']),
                 ]);
                 $total += ($service['rate_amount'] * $service['qty']);
             }
