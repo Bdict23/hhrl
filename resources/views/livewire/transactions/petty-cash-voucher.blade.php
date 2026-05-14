@@ -12,18 +12,18 @@
                 </div>
             </div>
         </div>
-        <div class="card mt-3 mb-3">  
-            <div class=" card-header d-flex justify-content-between mx-2">
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-3 mb-2">
+        <div class="mt-3 mb-3 card">
+            <div class="mx-2 card-header d-flex justify-content-between">
+                <div class="col-md-9">
+                    <div class="flex gap-3">
+                        <div class="mb-2">
                             <div class="input-group">
                                 <label for="from_date" class="input-group-text">From:</label>
                                 <input wire:model="fromDate" type="date" id="from_date" name="from_date" value="{{ date('Y-m-d') }}"
                                     class="form-control form-control-sm">
                             </div>
                         </div>
-                        <div class="col-md-3 mb-2">
+                        <div class="mb-2">
                             <div class="input-group">
                                 <label for="to_date" class="input-group-text">To:</label>
                                 <input wire:model="toDate" type="date" id="to_date" name="to_date" value="{{ date('Y-m-d') }}"
@@ -31,9 +31,35 @@
                                 <button wire:click="search" class="btn btn-primary input-group-text">
                                     <span wire:loading.remove>Search <i class="bi bi-search"></i></span>
                                     <span wire:loading>Searching&nbsp;<span class="spinner-border spinner-border-sm" role="status"></span></span>
-                                </button>  
+                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="mb-2 col-md-3">
+                    <div class="input-group">
+                        <input id="search" type="text" class="form-control" placeholder="Search..." onkeyup="searchPCV()">
+                        <script>
+                            function searchPCV() {
+                                var input, filter, table, tr, td, i, txtValue;
+                                input = document.getElementById("search");
+                                filter = input.value.toUpperCase();
+                                table = document.getElementById("pcvTable");
+                                tr = table.getElementsByTagName("tr");
+                                for (i = 0; i < tr.length; i++) {
+                                    td = tr[i].getElementsByTagName("td")[0];
+                                    if (td) {
+                                        txtValue = td.textContent || td.innerText;
+                                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                            tr[i].style.display = "";
+                                        } else {
+                                            tr[i].style.display = "none";
+                                        }
+                                    }
+                                }
+                            }
+                        </script>
+
                     </div>
                 </div>
             </div>
@@ -54,7 +80,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="pcvTable">
                             @forelse ($pettyCashVouchers as $pcv)
                                 <tr>
                                     <td>{{ $pcv->reference }}</td>
@@ -67,12 +93,12 @@
                                         @endif
                                     </td>
                                     <td>{{ number_format($pcv->total_amount, 2) }}</td>
-                                    <td><span 
-                                        @if( $pcv->status =='OPEN' ) class = "badge bg-warning" 
-                                        @elseif($pcv->status =='CANCELLED') class= "badge bg-danger" 
+                                    <td><span
+                                        @if( $pcv->status =='OPEN' ) class = "badge bg-warning"
+                                        @elseif($pcv->status =='CANCELLED') class= "badge bg-danger"
                                         @elseif($pcv->status =='CLOSED') class="badge bg-success"
-                                        @else class="badge bg-secondary" 
-                                        @endif>{{ $pcv->status }}</span> 
+                                        @else class="badge bg-secondary"
+                                        @endif>{{ $pcv->status }}</span>
                                     </td>
                                     <td>{{ $pcv->created_at->format('M. d, Y') }}</td>
                                     <td>{{ $pcv->preparedBy->name . ' ' . $pcv->preparedBy->last_name ?? '' }}</td>
@@ -85,7 +111,7 @@
                                     <td colspan="10" class="text-center">No petty cash voucher found</td>
                                 </tr>
                             @endforelse
-                    
+
                         </tbody>
                     </table>
                 </div>

@@ -37,6 +37,7 @@ public $pcrDate;
  public $returnAmountPCV;
  public $pcvNote;
  public $saveAsPcvCrs = 'DRAFT';
+ PUBLIC $isFinal = false;
 
     public function render()
     {
@@ -49,21 +50,9 @@ public $pcrDate;
 
     public function fetchData(){
         $this->pcrDate = today('Asia/Manila')->format('M. d, Y');
-        $this->cashReturns = CashReturn::where('branch_id', auth()->user()->branch_id)->get();
+        $this->cashReturns = CashReturn::with('pettyCashVoucher')->where('branch_id', auth()->user()->branch_id)->get();
         $this->pettyCashVouchers = PettyCashVoucher::where('branch_id' , auth()->user()->branch_id)->where('status', 'OPEN')->get();
         $this->pettyCashVouchersWithoutCashReturn = PettyCashVoucher::where('branch_id' , auth()->user()->branch_id)->whereDoesntHave('hasCashReturn')->where('status', 'OPEN')->get();
-        // $pcvModuleId = Module::where('module_name', 'Cash Flow')->first()->id;
-        // $this->pcvReturnApprovers = Signatory::with('employees')
-        //     ->where('branch_id', auth()->user()->branch_id)
-        //     ->where('module_id', $pcvModuleId)
-        //     ->where('signatory_type', 'APPROVER')
-        //     ->get()
-        //     ->map(function ($user) {
-        //         return [
-        //             'id' => $user->employees->id,
-        //             'full_name' => $user->employees->name . ' ' . $user->employees->middle_name. ' ' . $user->employees->last_name,
-        //         ];
-        //     });
     }
 
     public function search()
@@ -94,14 +83,49 @@ public $pcrDate;
             'reference' => $this->cvReferenceNumber,
             'branch_id' => auth()->user()->branch_id,
             'pcv_id' => $this->selectedPCVId,
-            'prepared_by' => auth()->user()->id,
+            'prepared_by' => auth()->user()->emp_id,
             'amount_returned' => $this->returnAmountPCV,
             'notes' => $this->pcvNote,
             'status' => $this->saveAsPcvCrs, // Use the selected status from the dropdown
         ]);
+            if($this->saveAsPcvCrs == 'FINAL'){
+                    $pettyCashVoucher = PettyCashVoucher::where('id', $this->selectedPCVId)->first();
+                    if($pettyCashVoucher){
+                        $pettyCashVoucher->update([
+                            'status' => 'CLOSED',
+                        ]);
+                    }
+                }
         $this->modal()->close('cardModal');
         $this->notify('Cash Return Saved', 'success', 'The cash return has been saved successfully.');
         $this->fetchData();
+    }
+    public function updatePcvCrs(){
+        $this->validate([
+            'returnAmountPCV' => 'required|numeric|min:0',
+        ]);
+        $cashReturn = CashReturn::where('pcv_id', $this->selectedPCVId)->first();
+        if($cashReturn){
+            $cashReturn->update([
+                'amount_returned' => $this->returnAmountPCV,
+                'notes' => $this->pcvNote,
+                'status' => $this->saveAsPcvCrs, // Use the selected status from the dropdown
+            ]);
+
+            if($this->saveAsPcvCrs == 'FINAL'){
+                $pettyCashVoucher = PettyCashVoucher::where('id', $this->selectedPCVId)->first();
+                if($pettyCashVoucher){
+                    $pettyCashVoucher->update([
+                        'status' => 'CLOSED',
+                    ]);
+                }
+            }
+            $this->modal()->close('cardModalUpdate');
+            $this->notify('Cash Return Updated', 'success', 'The cash return has been updated successfully.');
+            $this->fetchData();
+        }else{
+            $this->notify('No Cash Return Found', 'error', 'No cash return record found for the selected PCV.');
+        }
     }
 
     public function viewCashReturnPCV($pcvId){
@@ -112,10 +136,12 @@ public $pcrDate;
             $this->returnAmountPCV = $cashReturn->amount_returned;
             $this->pcvNote = $cashReturn->notes;
             $this->saveAsPcvCrs = $cashReturn->status;
+            $this->selectedPCVId = $pcvId;
+            $this->isFinal = $this->saveAsPcvCrs == 'FINAL' ? true : false;
+            $this->selectedPCV =  PettyCashVoucher::where('id', $cashReturn->pcv_id)->get();
 
-            $this->selectedPCV =  $this->pettyCashVouchers->where('id', $cashReturn->pcv_id)->get();
-            dd($this->selectedPCV);
-            $this->modal()->open('cardModal');
+            //  $this->pettyCashVouchers->where('id', $cashReturn->pcv_id)->get();
+            $this->modal()->open('cardModalUpdate');
         }else{
             $this->notify('No Cash Return Found', 'error', 'No cash return record found for the selected PCV.');
         }
