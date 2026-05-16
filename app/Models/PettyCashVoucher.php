@@ -23,6 +23,7 @@ class PettyCashVoucher extends Model
         'updated_by',
         'created_at',
         'updated_at',
+        'requisition_id',
         'account_types_id',
         'account_type',
         'template_id',
@@ -61,5 +62,5 @@ class PettyCashVoucher extends Model
     {
         return $this->hasOne(CashReturn::class, 'pcv_id');
     }
-    
+
 }

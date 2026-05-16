@@ -1,5 +1,5 @@
 <div>
-    <div class="row mb-3">
+    <div class="mb-3 row">
         <div class="col-md-6">
             <div class="row">
                 <div class="col-md-6">
@@ -22,14 +22,14 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                <a href="/petty-cash-voucher-summary"><x-secondary-button >Summary</x-secondary-button></a> 
+                <a href="/petty-cash-voucher-summary"><x-secondary-button >Summary</x-secondary-button></a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 d-flex justify-content-end">
             <h5 class="alert-heading" style="white-space: nowrap;">Petty Cash Voucher - Create &nbsp;<i class="bi bi-card-text"></i></h5>
-            
+
         </div>
     </div>
     <div class="row">
@@ -37,7 +37,7 @@
         <div class="mb-3 col-md-6">
             <div class="card">
                 <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="mb-1 d-flex justify-content-between align-items-center">
                         <strong>PARTICULARS</strong>
                     </div>
                     <table class="table table-sm table-hover">
@@ -80,16 +80,16 @@
             </div>
         </div>
         {{-- RIGHT --}}
-        <div class="mb-3 col-md-6 container">
-            <div class="card mb-3">
+        <div class="container mb-3 col-md-6">
+            <div class="mb-3 card">
                 <div class="card-body">
-                    <div class="input-group mb-2">
+                    <div class="mb-2 input-group">
                         <label for="" class="input-group-text">Reference</label>
-                        <input type="text" class="form-control text-center" placeholder="<AUTO>" disabled wire:model="reference">
+                        <input type="text" class="text-center form-control" placeholder="<AUTO>" disabled wire:model="reference">
                     </div>
 
                     <div class="mt-3">
-                        <div class=" mb-3 flex items-center gap-x-1">
+                        <div class="flex items-center mb-3  gap-x-1">
                                 <x-select
                                     label="Type"
                                     placeholder="Select transaction type"
@@ -99,13 +99,13 @@
                                     wire:model.live="selectedTransactionTypeID"
                                     :min-items-for-search="0"
                                     :disabled="$currentPCVStatus == 'OPEN'"
-                                    
+
                                 />
                         </div>
                     </div>
 
                     <div class="mt-3">
-                        <div class=" mb-3 flex items-center gap-x-1">
+                        <div class="flex items-center mb-3  gap-x-1">
                             <x-select
                                 label="Transaction"
                                 placeholder="Select transaction type"
@@ -121,42 +121,42 @@
                                 </span>
                         </div>
                     </div>
-                    
+
                     <div class="mt-3">
-                        <div class=" mb-3 flex items-center gap-x-1">
+                        <div class="flex items-center mb-3  gap-x-1">
                             <x-select
-                                label="Event"
+                                label="Purchase Order"
                                 placeholder="Select transaction type"
-                                :options="$events"
-                                option-label="event_name"
-                                option-description="reference"
+                                :options="$purchaseOrders"
+                                option-label="requisition_number"
+                                option-description="remarks"
                                 option-value="id"
-                                wire:model="eventId"
+                                wire:model="poId"
                                 :min-items-for-search="0"
                                 :disabled="$currentPCVStatus == 'OPEN'"
                                 />
                         </div>
                     </div>
-                    
+
 
                     <div class="row">
-                        <strong class="col-md-3 my-auto">PCV Information</strong>
+                        <strong class="my-auto col-md-3">PCV Information</strong>
                         <hr class="col-md-9">
                     </div>
 
-                    <div class="input-group mb-2">
+                    <div class="mb-2 input-group">
                         <label for="" class="input-group-text">Payee</label>
                         <input type="text" class="form-control" placeholder="Select Payee ->" disabled value="{{ $payeeName }}">
                         <span class="input-group-text" style="cursor: pointer; background-color:aquamarine" data-bs-toggle="modal" data-bs-target="#payeeListModal"><i class="bi bi-person-check-fill"></i></span>
                     </div>
                     @error('employeeId')
                         <span class="text-danger">{{ $message }}</span>
-                    @enderror 
+                    @enderror
                     @error('customerId')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                    
-                    <div class="row mb-2">
+
+                    <div class="mb-2 row">
                         <div class="col-md-6">
                             <div class="input-group">
                                 <label for="" class="input-group-text">Debit Total</label>
@@ -164,13 +164,13 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                                <div class="input-group"> 
+                                <div class="input-group">
                                 <label for="" class="input-group-text">Credit Total</label>
                                 <input type="text" class="form-control" disabled placeholder="₱ 0.00" id="CreditTotalTF" wire:model="creditTotal">
                             </div>
                         </div>
                     </div>
-                    <div class="input-group mb-2">
+                    <div class="mb-2 input-group">
                         <label for="" class="input-group-text">Disburse Amount</label>
                         <input type="text" class="form-control" disabled placeholder="₱ 0.00" id="DisburseAmountTF" wire:model="totalDisburseAmount">
                         <input type="hidden" id="totalDisburseAmountHidden" wire:model.live="totalDisburseAmount">
@@ -178,7 +178,7 @@
                     @error('totalDisburseAmount')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                    
+
                     <div class="mb-2">
                         <textarea name="" id="" cols="30" rows="3" class="form-control" placeholder="Remarks" wire:model="note"></textarea>
                     </div>
@@ -201,7 +201,7 @@
                             <h5 class="modal-title" id="payeeListModalLabel">Select Payee</h5>
                         </div>
                 </div>
-                <div class="modal-body overflow-auto" style="max-height: 400px;">
+                <div class="overflow-auto modal-body" style="max-height: 400px;">
                      <div class="container">
                             <ul class="nav nav-tabs" id="jobOrderTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
@@ -218,13 +218,13 @@
                             <div class="tab-content alert-success">
                                 <div class="tab-pane fade show active" id="employee" role="tabpanel" aria-labelledby="employee-tab">
                                     <div class="mt-2">
-                                        <div class="input-group mb-2">
+                                        <div class="mb-2 input-group">
                                             <span class="input-group-text">Search</span>
                                             <input type="text" class="form-control" id="search-employee"
                                                 onkeyup="filterBanks()" placeholder="Search Employee...">
                                         </div>
                                     </div>
-                        
+
                                     <script>
                                         function filterBanks() {
                                             const searchInput = document.getElementById('search-employee');
@@ -273,7 +273,7 @@
                                                             <span wire:loading wire:target="selectEmployee({{ $employee->id }})"><i class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></i>&nbsp;Wait...</span>
                                                             <span wire:loading.remove wire:target="selectEmployee({{ $employee->id }})">Select</span>
                                                         </button>
-                                                    
+
                                                     </td>
 
                                             </tr>
@@ -282,20 +282,20 @@
                                             <tr>
                                                 <td colspan="5" class="text-center">No Data Found</td>
                                             </tr>
-                                                
+
                                             @endforelse
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="tab-pane fade" id="customer" role="tabpanel" aria-labelledby="customer-tab">
                                     <div class="mt-2">
-                                        <div class="input-group mb-2">
+                                        <div class="mb-2 input-group">
                                             <span class="input-group-text">Search</span>
                                             <input type="text" class="form-control" id="search-customer"
                                                 onkeyup="filterCustomers()" placeholder="Search Customer...">
                                         </div>
                                     </div>
-                        
+
                                     <script>
                                         function filterCustomers() {
                                             const searchInput = document.getElementById('search-customer');
@@ -323,7 +323,7 @@
                                         }
                                     </script>
 
-                                       <table class="table table-sm table-striped mt-2" id="customerListTable">
+                                       <table class="table mt-2 table-sm table-striped" id="customerListTable">
                                         <thead class="table-light sticky-top">
                                             <tr>
                                                 <th>Name</th>
@@ -353,7 +353,7 @@
                                             </tr>
                                             @endforelse
                                         </tbody>
-                                    </table> 
+                                    </table>
                                 </div>
                             </div>
                     </div>
@@ -372,13 +372,13 @@
             <div class="modal-content">
                 <div class="modal-header row">
                         <div class="col-md-12">
-                            <div class="input-group mb-2">
+                            <div class="mb-2 input-group">
                                 <span class="input-group-text">Search</span>
                                 <input type="text" class="form-control" id="search-transaction"
                                     onkeyup="filterTransactions()">
                             </div>
                         </div>
-                  
+
                     <script>
                         function filterTransactions() {
                             const searchInput = document.getElementById('search-transaction');
@@ -406,7 +406,7 @@
                         }
                     </script>
                 </div>
-                <div class="modal-body overflow-auto" style="max-height: 400px;">
+                <div class="overflow-auto modal-body" style="max-height: 400px;">
                     <table class="table table-striped" id="transactionListTable">
                         <thead>
                             <tr>
@@ -442,7 +442,7 @@
     </div>
 
     <script>
-       
+
         //hides Transaction List Modal after selecting a Transaction
         window.addEventListener('hideTransactionListModal', event => {
             var modal = bootstrap.Modal.getInstance(document.getElementById('transactionListModal'));
@@ -543,7 +543,7 @@
                 hiddenDisburseAmount.dispatchEvent(new Event('input', { bubbles: true }));
             }
         }
-       
+
         document.addEventListener('input', function (event) {
             const target = event.target;
             if (!target || !target.id) {

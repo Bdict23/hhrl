@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use App\Models\BanquetEvent;
 use App\Models\AdvancesForLiquidation;
 use App\Models\BanquetProcurement;
+use App\Models\RequisitionInfo;
 
 
 
@@ -27,9 +28,10 @@ class PettyCashVoucherCreate extends Component
     public $aflBalance = 0; // balance of the selected advance for liquidation, used to compare with total disburse amount to prevent over-disbursement
 
     // data
-    public $particulars; 
+    public $particulars;
     public $acknowledgementReceipts = [];
     public $events = [];
+    PUBLIC $purchaseOrders = [];
     public $employees = [];
     public $customers = [];
     public $transactionTypes = []; // account types
@@ -60,6 +62,7 @@ class PettyCashVoucherCreate extends Component
     public $employeeId;
     public $customerId;
     public $eventId;
+    public $poId;
     public $advanceForLiquidationId;
 
 
@@ -101,7 +104,8 @@ class PettyCashVoucherCreate extends Component
                             $query->where('branch_id', auth()->user()->branch_id)
                                 ->where('status', 'APPROVED');
                         })->get();
-                        
+        $this->purchaseOrders = RequisitionInfo::where('from_branch_id', auth()->user()->branch_id)->whereIn('requisition_status', ['TO RECEIVE','PARTIALLY FULFILLED'])->get();
+
         $this->advanceForLiquidationId = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)->where('status', 'OPEN')->where('created_at', '<=', Carbon::now('Asia/Manila'))->pluck('id')->toArray();
         if($this->advanceForLiquidationId){
             $totalReceived = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)->whereIn('id', $this->advanceForLiquidationId)->sum('amount_received') ?? 0;
@@ -129,6 +133,9 @@ class PettyCashVoucherCreate extends Component
         $this->transactions = COATransactionTemplate::where('transaction_type', $this->selectedTransactionTypeID)->where('is_active', true)->where('company_id', auth()->user()->branch->company_id)->with('templateName')->get();
         if($pcv->event_id){
             $this->selectEvent($pcv->event_id);
+        }
+        if($pcv->requisition_id){
+            $this->poId = $pcv->requisition_id;
         }
         $this->selectedTemplate = COATransactionTemplate::where('id', $pcv->template_id)->first();
         $this->selectedTransactionNameID = $pcv->template_id;
@@ -163,7 +170,7 @@ class PettyCashVoucherCreate extends Component
         $this->totalDisburseAmount = $sumCredit; // for PCV, disburse amount is based on credit total since it's the amount being given out
     }
 
-    
+
     public function selectEvent( $id ){
         $this->selectedEvent = BanquetEvent::find($id);
         if(!$this->selectedEvent){
@@ -205,7 +212,7 @@ class PettyCashVoucherCreate extends Component
      }
 
 
-    
+
      public function showTransactions(){
         if($this->selectedTransactionTypeID == null){
              $this->dispatch('showAlert', ['timer' => 10000, 'type' => 'warning', 'message' => 'Please select Transaction type first.', 'title' => 'warning']);
@@ -236,7 +243,7 @@ class PettyCashVoucherCreate extends Component
         $this->customerId = $id;
         $this->payeeName = $this->selectedCustomer->customer_fname . ($this->selectedCustomer->customer_mname ? ' ' . $this->selectedCustomer->customer_mname : '') . ($this->selectedCustomer->customer_lname ? ' ' . $this->selectedCustomer->customer_lname: '');
         $this->dispatch('closePayeeLists');
-       
+
         }
 
     public function selectEmployee( $id ){
@@ -271,13 +278,14 @@ class PettyCashVoucherCreate extends Component
             'transactions' => 'required',
             'totalDisburseAmount' => 'required|min:1',
             'eventId' => 'nullable|exists:banquet_events,id',
+            'poId' => 'nullable|exists:requisition_infos,id',
         ]);
 
         if($this->totalDisburseAmount > $this->aflBalance){
             $this->dispatch('showAlert', ['timer' => 10000, 'type' => 'error', 'title' => 'PCV Amount Exceeds AFL Amount', 'message' => 'The total PCV amount (' . $this->totalDisburseAmount . ') exceeds the available AFL amount (' . $this->aflBalance . '.) Please adjust the amount.']);
             return;
         }
-        
+
         $curYear = now()->year;
         $branchId = auth()->user()->branch_id;
         $yearlyCount = PettyCashVoucher::where('branch_id', $branchId)
@@ -285,7 +293,7 @@ class PettyCashVoucherCreate extends Component
             ->count() + 1;
         $reference = 'PCV-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
         $typeName = AccountType::where('id',$this->selectedTransactionTypeID)->first()->type_name;
-        
+
         $pcv = PettyCashVoucher::create([
             'branch_id' => auth()->user()->branch_id,
             'company_id' => auth()->user()->branch->company_id,
@@ -302,6 +310,7 @@ class PettyCashVoucherCreate extends Component
             'account_type' => $typeName,
             'transaction_title' => $this->selectedTemplate->templateName->template_name,
             'event_id' => $this->eventId,
+            'requisition_id' => $this->poId,
         ]);
 
         //saving details
@@ -346,6 +355,7 @@ class PettyCashVoucherCreate extends Component
             'account_type' => AccountType::where('id',$this->selectedTransactionTypeID)->first()->type_name,
             'transaction_title' => $this->selectedTemplate->template_name,
             'event_id' => $this->eventId,
+            'requisition_id' => $this->poId,
         ]);
 
         // Delete pcv details

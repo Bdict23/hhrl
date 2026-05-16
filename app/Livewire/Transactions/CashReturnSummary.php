@@ -77,7 +77,7 @@ public $pcrDate;
         $branchId = auth()->user()->branch_id;
         $yearlyCount = CashReturn::where('branch_id', $branchId)
             ->whereYear('created_at', $currentYear)
-            ->count();
+            ->count() + 1;
         $this->cvReferenceNumber = 'PCR-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
         $cashReturn = CashReturn::create([
             'reference' => $this->cvReferenceNumber,
