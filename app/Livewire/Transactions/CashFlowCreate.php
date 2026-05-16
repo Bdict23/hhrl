@@ -22,6 +22,7 @@ use App\Models\Payment as Payments;
 use App\Models\EventDiscount;
 use App\Models\OrderDiscount;
 use App\Models\CashReturn;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -89,6 +90,7 @@ class CashFlowCreate extends Component
     public $grandTotalLess = 0.00;
     public $netCollection = 0.00;
     public $cashOnHand = 0.00;
+    public $totalOpenAFL = 0.00;
 
     // sub totals (table)
     public $totalLess = 0.00;
@@ -108,10 +110,9 @@ class CashFlowCreate extends Component
         } else {
             $id = null;
         }
-    
-        if(auth()->user()->employee->getModulePermission('Cash Flow') == 1) {
+
+        if(Auth::user()->employee->getModulePermission('Cash Flow') == 1) {
             if ($id) {
-                $this->exist = true;
                 $this->cashFlow = Cashflow::find($id);
                 if (!$this->cashFlow) {
                     // NO ACCESS RIGHTS
@@ -120,7 +121,7 @@ class CashFlowCreate extends Component
                 // VIEW CASHFLOW DETAILS
                 $this->cashflowDate = $this->cashFlow->created_at->format('M. d, Y');
                 $this->status = $this->cashFlow->status;
-                $this->notes =  $this->cashFlow->notes; 
+                $this->notes =  $this->cashFlow->notes;
                 $this->approver_id = $this->cashFlow->approver_id;
                 $this->remarks = $this->cashFlow->remarks;
                  $this->fetchData();
@@ -130,7 +131,7 @@ class CashFlowCreate extends Component
                    $this->notify('Error Occured', 'error', 'There is currently an open cashflow for today.');
                     return;
                 }
-                // GENERATE NEW CASHFLOW 
+                // GENERATE NEW CASHFLOW
                 $this->cashflowDate = date('M. d, Y');
                 $this->status = 'NEW';
                 $this->fetchData();
@@ -138,22 +139,22 @@ class CashFlowCreate extends Component
         } else {
             return redirect()->route('dashboard')->with('error', 'You do not have access to Cash Flow module.');
         }
-       
+
 
     }
-    
+
     //INIT
     private function fetchData()
     {
-        $savedTitles = CashflowAccountTitle::where('branch_id', auth()->user()->branch_id)->get();
+        $savedTitles = CashflowAccountTitle::where('branch_id', Auth::user()->branch_id)->get();
         $this->cashPaymentTypeId = PaymentType::where('payment_type_name', 'CASH')->pluck('id')->first();
         if($this->status != 'NEW'){
             $this->beginningBalance = $this->cashFlow->beginning_balance;
             // get all payments data from cashflow date
-            $this->payments = Payments::where('branch_id', auth()->user()->branch_id)->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
-            $this->eventDiscounts = EventDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
-            $this->orderDiscounts = OrderDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
-            $this->cashReturnData = CashReturn::where('branch_id', auth()->user()->branch_id)
+            $this->payments = Payments::where('branch_id', Auth::user()->branch_id)->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
+            $this->eventDiscounts = EventDiscount::where('branch_id', Auth::user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
+            $this->orderDiscounts = OrderDiscount::where('branch_id', Auth::user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))->get();
+            $this->cashReturnData = CashReturn::where('branch_id', Auth::user()->branch_id)
                                     ->whereDate('updated_at', $this->cashFlow->created_at->format('Y-m-d'))
                                     ->where('event_id', '!=', null)
                                     ->where('status', 'FINAL')->get();
@@ -173,13 +174,15 @@ class CashFlowCreate extends Component
                 $this->lessTitles = collect();
             }
         } else {
-            
+
             $this->setBeginningBalance();
+            $this->afl = $this->calculateAFL();
+
             //load payments for today
-            $this->payments = Payments::where('branch_id', auth()->user()->branch_id)->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
-            $this->eventDiscounts = EventDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
-            $this->orderDiscounts = OrderDiscount::where('branch_id', auth()->user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
-            $this->cashReturnData = CashReturn::where('branch_id', auth()->user()->branch_id)
+            $this->payments = Payments::where('branch_id', Auth::user()->branch_id)->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
+            $this->eventDiscounts = EventDiscount::where('branch_id', Auth::user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
+            $this->orderDiscounts = OrderDiscount::where('branch_id', Auth::user()->branch_id)->where('status', 'APPLIED')->whereDate('created_at', Carbon::today()->format('Y-m-d'))->get();
+            $this->cashReturnData = CashReturn::where('branch_id', Auth::user()->branch_id)
                                     ->whereDate('updated_at', Carbon::today()->format('Y-m-d'))
                                     ->where('event_id', '!=', null)
                                     ->where('status', 'FINAL')->get();
@@ -197,13 +200,13 @@ class CashFlowCreate extends Component
         }
 
         if($this->status == 'NEW'){
-            $loadAcknowledgementCurrentDate = AcknowledgementReceipt::where('branch_id', auth()->user()->branch_id)->whereDate('check_date', Carbon::today())->get();
+            $loadAcknowledgementCurrentDate = AcknowledgementReceipt::where('branch_id', Auth::user()->branch_id)->whereDate('check_date', Carbon::today())->get();
             $this->curChecks = $loadAcknowledgementCurrentDate->where('status', 'OPEN')
                 ->where('check_status', 'CURRENT');
             $this->pdcChecks = $loadAcknowledgementCurrentDate->where('status', 'OPEN')
                 ->where('check_status', 'POST-DATED');
         }else{
-            $loadAcknowledgementCashflowDate = AcknowledgementReceipt::where('branch_id', auth()->user()->branch_id)->whereDate('check_date', $this->cashFlow->created_at->format('Y-m-d'))->get();
+            $loadAcknowledgementCashflowDate = AcknowledgementReceipt::where('branch_id', Auth::user()->branch_id)->whereDate('check_date', $this->cashFlow->created_at->format('Y-m-d'))->get();
             $this->curChecks = $loadAcknowledgementCashflowDate->where('status', 'CLOSED')
                 ->where('check_status', 'CURRENT');
             $this->pdcChecks = $loadAcknowledgementCashflowDate->where('status', 'CLOSED')
@@ -213,7 +216,7 @@ class CashFlowCreate extends Component
 
             $moduleid = Module::where('module_name', 'Cash Flow')->first()->id;
             $this->approvers = Signatory::with('employees')
-            ->where('branch_id', auth()->user()->branch_id)
+            ->where('branch_id', Auth::user()->branch_id)
             ->where('module_id', $moduleid)
             ->where('signatory_type', 'APPROVER')
             ->get()
@@ -228,7 +231,7 @@ class CashFlowCreate extends Component
     // UPDATED FUNCTION
     public function updated($field)
     {
-        
+
         if (str_starts_with($field, 'denominationCounts.')) {
             $this->calculateBreakDownTotal();
         }
@@ -241,7 +244,7 @@ class CashFlowCreate extends Component
 
     }
 
-    // CALCULATE TOTAL NET COLLECTION 
+    // CALCULATE TOTAL NET COLLECTION
     private function calculateCollectionTotal()
     {
      $totalCollection = 0;
@@ -280,7 +283,7 @@ class CashFlowCreate extends Component
             $billTotal += $count * floatval($denomination->value);
         }
         $this->billSubTotal = $billTotal;
-        
+
 
         // Calculate coins total
         foreach ($this->coinDenominations as $denomination) {
@@ -292,7 +295,7 @@ class CashFlowCreate extends Component
     }
 
     private function setBeginningBalance(){
-        $lastCashFlow = Cashflow::where('branch_id', auth()->user()->branch_id)->latest()->first();
+        $lastCashFlow = Cashflow::where('branch_id', Auth::user()->branch_id)->latest()->first();
         if($lastCashFlow){
             $this->beginningBalance = $lastCashFlow->ending_balance;
             return $lastCashFlow->ending_balance;
@@ -306,19 +309,42 @@ class CashFlowCreate extends Component
         //SUM AFL
         private function calculateAFL()
         {
-            $loadAFL = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)
-                ->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))
+            if($this->status == 'NEW'){
+                $loadAFL = AdvancesForLiquidation::where('branch_id', Auth::user()->branch_id)
+                ->where('status','CLOSED')
+                ->whereDate('created_at', Carbon::today()->format('Y-m-d'))
                 ->get();
+            }else{
+                $loadAFL = AdvancesForLiquidation::where('branch_id', Auth::user()->branch_id)
+                    ->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))
+                    ->where('status', 'CLOSED')
+                    ->get();
+            }
             $returned = $loadAFL->sum('amount_returned') ?? 0;
             $received = $loadAFL->sum('amount_received') ?? 0;
 
             return $received - $returned;
         }
+        private function calculateOpenAFL(){
+            if($this->status == 'NEW'){
+                $openAFL = AdvancesForLiquidation::where('branch_id', Auth::user()->branch_id)
+                ->where('status', 'OPEN')
+                ->whereDate('created_at', Carbon::today()->format('Y-m-d'))
+                ->sum('amount_received');
+                return $openAFL;
+            }else{
+                $openAFL = AdvancesForLiquidation::where('branch_id', Auth::user()->branch_id)
+                    ->where('status', 'OPEN')
+                    ->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))
+                    ->sum('amount_received');
+                    return $openAFL;
+            }
+        }
 
         //SUM RESTO REVENUE
         private function calculateRestoRevenue()
         {
-            $total = Payments::where('branch_id', auth()->user()->branch_id)
+            $total = Payments::where('branch_id', Auth::user()->branch_id)
                 ->where('type', 'RESTO')
                 ->whereDate('created_at', $this->cashFlow->created_at->format('Y-m-d'))
                 ->sum('amount');
@@ -353,7 +379,7 @@ class CashFlowCreate extends Component
 
 
     // COLLECTION FUNCTIONS
-        // SUM SALES        
+        // SUM SALES
         private function calculateSales(){
             $total = $this->payments->where('type', 'SALES')
                 ->sum('amount');
@@ -395,22 +421,22 @@ class CashFlowCreate extends Component
 
         ]);
         $currentYear = now()->year;
-        $branchId = auth()->user()->branch_id;
+        $branchId = Auth::user()->branch_id;
         $yearlyCount = Cashflow::where('branch_id', $branchId)
             ->whereYear('created_at', $currentYear)
             ->count();
-        $this->referenceNumber = 'CF-' . auth()->user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
+        $this->referenceNumber = 'CF-' . Auth::user()->branch->branch_code . '-' . now()->format('my') . '-' . str_pad($yearlyCount, 2, '0', STR_PAD_LEFT);
         $cashflow = Cashflow::create([
-            'branch_id' => auth()->user()->branch_id,
+            'branch_id' => Auth::user()->branch_id,
             'reference' =>   $this->referenceNumber,
             'status' => 'OPEN',
-            'created_by' => auth()->user()->emp_id,
+            'created_by' => Auth::user()->emp_id,
             'amount' => 0,
             'approver_id' => $this->approver_id,
             'notes'        => $this->notes,
             'created_at' => Carbon::now('Asia/Manila'),
             'beginning_balance' => $this->beginningBalance ,
-            'ending_balance' => 0.00, 
+            'ending_balance' => 0.00,
             'flow_type' => $this->flowType,
             'fund_status' => $this->fundStatus,
             'parent_id' => $this->parentId,
@@ -419,7 +445,7 @@ class CashFlowCreate extends Component
         foreach($this->collectionTitles as $title){
             if(floatval($this->collectionAmount[$title->id] ?? 0) > 0){
             $cfDetail = CashflowDetail::create([
-                'branch_id' => auth()->user()->branch_id,
+                'branch_id' => Auth::user()->branch_id,
                 'cashflow_id' => $cashflow->id,
                 'account_title_id' => $title->id,
                 'amount' => floatval($this->collectionAmount[$title->id] ?? 0),
@@ -430,7 +456,7 @@ class CashFlowCreate extends Component
         foreach($this->lessTitles as $title){
             if(floatval($this->lessAmount[$title->id] ?? 0) > 0){
             $cfDetail = CashflowDetail::create([
-                'branch_id' => auth()->user()->branch_id,
+                'branch_id' => Auth::user()->branch_id,
                 'cashflow_id' => $cashflow->id,
                 'account_title_id' => $title->id,
                 'amount' => floatval($this->lessAmount[$title->id] ?? 0),
@@ -451,7 +477,7 @@ class CashFlowCreate extends Component
                     'created_at' => Carbon::now('Asia/Manila'),
                 ]);
             }
-           
+
         }
         foreach($this->coinDenominations as $denomination){
             $count = $this->denominationCounts[$denomination->id] ?? 0;
@@ -464,19 +490,19 @@ class CashFlowCreate extends Component
                     'created_at' => Carbon::now('Asia/Manila'),
                 ]);
             }
-            
+
         }
         //update Acknowledgement
-        $updateAR = AcknowledgementReceipt::where('branch_id', auth()->user()->branch_id)
-            ->where('status', 'OPEN')
-            ->whereDate('check_date', Carbon::today())->first();
-            if($updateAR){
-        $updateAR->update([
-            'status' => 'CLOSED'
-        ]);
-            }
+        // $updateAR = AcknowledgementReceipt::where('branch_id', auth()->user()->branch_id)
+        //     ->where('status', 'OPEN')
+        //     ->whereDate('check_date', Carbon::today())->first();
+        //     if($updateAR){
+        // $updateAR->update([
+        //     'status' => 'CLOSED'
+        // ]);
+        //     }
         //UPDATE AFL
-        $updateAFL = AdvancesForLiquidation::where('branch_id', auth()->user()->branch_id)
+        $updateAFL = AdvancesForLiquidation::where('branch_id', Auth::user()->branch_id)
             ->where('status', 'OPEN')
             ->whereDate('created_at', Carbon::today())->first();
             if($updateAFL){
@@ -509,7 +535,7 @@ class CashFlowCreate extends Component
         $discounts = $this->calculateDiscounts();
         $refund = $this->calculateRefunds();
         $cashReturnsBEO = $this->calculateCashReturnsBEO();
-        
+
 
         if($afl > 0){
             $this->afl = $afl;
@@ -554,10 +580,11 @@ class CashFlowCreate extends Component
             $this->calculateCollectionTotal();
             $this->calculateLessTotal();
             $this->calculateBreakDownTotal();
-            $this->grandTotalCollection += $resto + $beo + $sales + $gate +  $this->beginningBalance;
+            $this->grandTotalCollection += $resto + $beo + $sales + $gate;
             $this->grandTotalLess += $afl + $otherPayments + $discounts + $refund + $cashReturnsBEO;
             $this->netCollection = ($this->grandTotalCollection - $this->grandTotalLess);
             $this->cashOnHand = $this->billSubTotal + $this->coinSubTotal + $this->beginningBalance;
+            $this->totalOpenAFL = $this->calculateOpenAFL();
 
             if($this->netCollection > $this->cashOnHand) {
                 $this->remarks = 'EXCESS : ' . number_format($this->netCollection - $this->cashOnHand, 2);
@@ -579,7 +606,7 @@ class CashFlowCreate extends Component
 
 
     public function hasCashflow(){
-        $checkCashFlow = CashFlow::whereDate('created_at', Carbon::today() )->where('branch_id', auth()->user()->branch_id)->first();
+        $checkCashFlow = CashFlow::whereDate('created_at', Carbon::today() )->where('branch_id', Auth::user()->branch_id)->first();
         if($checkCashFlow){
             return true;
          }else{
@@ -587,5 +614,5 @@ class CashFlowCreate extends Component
          }
     }
 
-    
+
 }

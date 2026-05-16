@@ -1,5 +1,5 @@
 <div>
-    <div class="d-flex justify-content-between mb-2">
+    <div class="mb-2 d-flex justify-content-between">
         <div class="container">
             @if(auth()->user()->employee->getModulePermission('Cash Flow') == 1 && $status == 'NEW')
                <x-primary-button wire:click="saveCashflow" wire:loading.attr="disabled">
@@ -12,7 +12,7 @@
                 <x-secondary-button>Summary &nbsp;<i class="bi bi-list-columns"></i></x-secondary-button>
             </a>
         </div>
-       <span style="white-space: nowrap"> Cashflow Date : <strong> {{ $cashflowDate }}</strong> 
+       <span style="white-space: nowrap"> Cashflow Date : <strong> {{ $cashflowDate }}</strong>
                 @if($status == 'NEW')<x-badge outline warning :label="$status" />
                 @elseif($status == 'OPEN')<x-badge rounded="xl" warning :label="$status" />
                 @elseif( $status == 'CLOSED' )<x-badge rounded="xl" positive :label="$status" />
@@ -24,7 +24,7 @@
         </div>
     </div>
      @if ($hasOpenShift && $status == 'NEW')
-       
+
         <x-alert title="Open Shift Detected!" negative padding="small">
             <x-slot name="slot">
                Active shifts exist in the system. Please ensure all shifts are closed prior to recording cashflow.
@@ -32,63 +32,62 @@
         </x-alert>
     @endif
     <x-card squared class="mb-3">
-       
-        <x-slot name="slot">
-            <div class="d-flex gap-2 justify-content-center px-2">
+        <x-slot name="slot" class="p-3">
+            <div class="gap-2 px-2 d-flex justify-content-center">
                 <div class="col-md-6 list-group">
-                    <div class="list-group-item list-group-item-action bg-success text-white">
+                    <div class="text-white list-group-item list-group-item-action bg-success">
                         <strong>COLLECTION</strong>
                     </div>
                     <div class="container list-group-item list-group-item-action">
-                         <div class="input-group mb-3">
-                            <label for="" class="input-group-text">Beginning Balance</label>
-                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $beginningBalance > 0 ? '₱ ' . number_format($beginningBalance, 2) : '₱ 0.00' }}" readonly>
-                        </div>
-                        <div class="input-group mb-3">
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Restaurant Revenue</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $restaurantRevenue > 0 ? '₱ ' . number_format($restaurantRevenue, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                    
-                        <div class="input-group mb-3">
+
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Baquet Event Revenue</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $beoRevenue > 0 ? '₱ ' . number_format($beoRevenue, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                        <div class="input-group mb-3 ">
+                        <div class="mb-3 input-group ">
                             <label for="" class="input-group-text">Sales Order Revenue</label>
                             <input type="text" class="form-control form-control-sm text-end"  {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $salesOrderRevenue > 0 ? '₱ ' . number_format($salesOrderRevenue, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                        <div class="input-group mb-3">
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Gate Entrance Revenue</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}}  value="{{ $gateEntrance > 0 ? '₱ ' . number_format($gateEntrance, 2) : '₱ 0.00' }}" readonly>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 list-group">
-                    <div class="list-group-item list-group-item-action bg-danger text-white">
+                    <div class="text-white list-group-item list-group-item-action bg-danger">
                         <strong>LESS</strong>
                     </div>
                     <div class="container list-group-item list-group-item-action">
-                        <div class="input-group mb-3 ">
-                            <label for="" class="input-group-text">AFL - Disburser</label>
+                        <div class="mb-3 input-group ">
+                            <label for="" class="input-group-text">AFL - Unliquidated</label>
+                            <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $afl > 0 ? '₱ ' . number_format($totalOpenAFL, 2) : '₱ 0.00' }}" readonly>
+                        </div>
+                         <div class="mb-3 input-group ">
+                            <label for="" class="input-group-text">AFL  - Liquidated</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $afl > 0 ? '₱ ' . number_format($afl, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                    
-                        <div class="input-group mb-3">
+
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Other Payments</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $otherPayments > 0 ? '₱ ' . number_format($otherPayments, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                   
-                        <div class="input-group mb-3">
+
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Discounts</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $discounts > 0 ? '₱ ' . number_format($discounts, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                    
-                        <div class="input-group mb-3">
+
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Refund</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $refund > 0 ? '₱ ' . number_format($refund, 2) : '₱ 0.00' }}" readonly>
                         </div>
-                   
-                        <div class="input-group mb-3">
+
+                        <div class="mb-3 input-group">
                             <label for="" class="input-group-text">Cash Return - BEO</label>
                             <input type="text" class="form-control form-control-sm text-end" {{ $status == 'NEW' ? 'placeholder= <AUTO> ' : ''}} value="{{ $cashReturnBEO > 0 ? '₱ ' . number_format($cashReturnBEO, 2) : '₱ 0.00' }}" readonly>
                         </div>
@@ -97,25 +96,30 @@
             </div>
         </x-slot>
 
-       
-        <x-slot name="footer" class="d-flex gap-2 justify-content-center">
-            
-                <div class="alert alert-warning col-md-3 " role="alert">
-                 {{$status == 'NEW' ? 'LESS (PARTIAL)' : 'LESS'}}<h3><strong> ₱ {{ $grandTotalLess > 0 ? number_format($grandTotalLess, 2) : '--.--' }}</strong></h3>
+
+        <x-slot name="footer" >
+                <div class="mb-2">
+                    <h4>ADDITIONAL</h4>
+                    <h6 class="mb-0">Undeposited collection prior days : ₱   {{ number_format($beginningBalance, 2) }}</h6>
                 </div>
-                <div class="alert alert-success col-md-3" role="alert">
-                 {{$status == 'NEW' ? 'COLLECTION (PARTIAL)' : 'COLLECTION'}}<h3><strong> ₱ {{ $grandTotalCollection > 0 ? number_format($grandTotalCollection, 2) : '--.--' }}</strong></h3>
-                </div>
-            
-                <div class="alert alert-info col-md-3" role="alert">
-                 {{$status == 'NEW' ? 'NET COLLECTION (PARTIAL)' : 'NET COLLECTION'}} <h3><strong> ₱ {{ $netCollection > 0 ? number_format($netCollection, 2) : ($status == 'NEW' ? '--.--' :  number_format($netCollection, 2)) }}</strong></h3>
-                </div>
-                <div class="alert alert-primary col-md-3" role="alert">
-                   {{$status == 'NEW' ? 'CASH ON HAND (PARTIAL)' : 'CASH ON HAND'}}: <h3><strong> ₱ {{ $cashOnHand > 0 ? number_format($cashOnHand, 2) : ($status == 'NEW' ? '--.--' :  number_format($cashOnHand, 2)) }}</strong></h3>
+                <div class="gap-2 d-flex justify-content-center">
+                    <div class="alert alert-warning col-md-3 " role="alert">
+                     {{$status == 'NEW' ? 'LESS (PARTIAL)' : 'LESS'}}<h3><strong> ₱ {{ $grandTotalLess > 0 ? number_format($grandTotalLess + $totalOpenAFL, 2) : '--.--' }}</strong></h3>
+                    </div>
+                    <div class="alert alert-success col-md-3" role="alert">
+                     {{$status == 'NEW' ? 'COLLECTION (PARTIAL)' : 'COLLECTION'}}<h3><strong> ₱ {{ $grandTotalCollection > 0 ? number_format($grandTotalCollection, 2) : '--.--' }}</strong></h3>
+                    </div>
+
+                    <div class="alert alert-info col-md-3" role="alert">
+                     {{$status == 'NEW' ? 'NET COLLECTION (PARTIAL)' : 'NET COLLECTION'}} <h3><strong> ₱ {{ $grandTotalCollection > 0 ? number_format($grandTotalCollection + $beginningBalance, 2) : ($status == 'NEW' ? '--.--' :  number_format($grandTotalCollection + $beginningBalance, 2)) }}</strong></h3>
+                    </div>
+                    <div class="alert alert-primary col-md-3" role="alert">
+                       {{$status == 'NEW' ? 'CASH ON HAND (PARTIAL)' : 'CASH ON HAND'}}: <h3><strong> ₱ {{ $netCollection > 0 ? number_format((($grandTotalCollection + $beginningBalance) - ($grandTotalLess + $totalOpenAFL))  , 2) : ($status == 'NEW' ? '--.--' :  number_format((($grandTotalCollection + $beginningBalance) - ($grandTotalLess + $totalOpenAFL))  , 2)) }}</strong></h3>
+                    </div>
                 </div>
         </x-slot>
     </x-card>
-    <div class="dashboard mb-3">
+    <div class="mb-3 dashboard">
         <div class="card-body">
             <h4 class="text-center">CHECKS</h4>
             <div style="height: 200px; overflow-x: auto; display: block;">
@@ -175,8 +179,8 @@
             </div>
         </div>
     </div>
-    <div class="dashboard mb-3">
-        
+    <div class="mb-3 dashboard">
+
     <div class="card-body">
         {{-- OTHERS --}}
          <h4 class="text-center"><strong>OTHERS</strong></h4>
@@ -202,7 +206,7 @@
                     @foreach ($lessTitles as $lessTitle)
                         <tr>
                             <td class="text-start fw-bold">{{ $lessTitle->title }}</td>
-                            <td class="text-center">    
+                            <td class="text-center">
                                 <input type="number" min="0" wire:model.live="lessAmount.{{ $lessTitle->id }}" class="form-control text-end" placeholder="0" {{ $status != 'NEW' ? 'readonly' : null }}>
                             </td>
                         </tr>
@@ -235,7 +239,7 @@
                                                 <tr>
                                                     <td class="text-start fw-bold">₱ {{ number_format($denomination->value, 2) }}</td>
                                                     <td class="text-center">
-                                                        <input type="number" min="0" wire:model.live="denominationCounts.{{ $denomination->id }}" class="form-control text-center" placeholder="0">
+                                                        <input type="number" min="0" wire:model.live="denominationCounts.{{ $denomination->id }}" class="text-center form-control" placeholder="0">
                                                     </td>
                                                     <td class="text-end text-primary fw-bold">₱ {{ number_format((float)($denominationCounts[$denomination->id] ?? 0) * (float)$denomination->value, 2) }}</td>
                                                 </tr>
@@ -262,8 +266,8 @@
                                         @foreach ($coinDenominations as $denomination)
                                             <tr>
                                                 <td class="text-start fw-bold">₱ {{ number_format($denomination->value, 2) }}</td>
-                                                <td class="text-center">    
-                                                    <input type="number" min="0" wire:model.live="denominationCounts.{{ $denomination->id }}" class="form-control text-center" placeholder="0" >
+                                                <td class="text-center">
+                                                    <input type="number" min="0" wire:model.live="denominationCounts.{{ $denomination->id }}" class="text-center form-control" placeholder="0" >
                                                 </td>
                                                 <td class="text-end text-primary fw-bold">₱ {{ number_format((float)($denominationCounts[$denomination->id] ?? 0) * (float)$denomination->value, 2) }}</td>
                                             </tr>
@@ -279,17 +283,17 @@
         </div>
     </div>
 
-    <div class="card mt-2 mb-4">
+    <div class="mt-2 mb-4 card">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                   <div class="mb-2">
-                    <label for="" class="form-label text-sm">Remarks</label>
-                      <input type="text" 
-                        @if($remarks == 'BALANCED' ) class="form-control alert alert-success text-center"
-                        @elseif(str_contains($remarks, 'EXCESS')) class="form-control alert alert-warning text-center"
-                        @elseif(str_contains($remarks, 'SHORT')) class="form-control alert alert-danger text-center"
-                        @else class="form-control alert alert-info text-center"
+                    <label for="" class="text-sm form-label">Remarks</label>
+                      <input type="text"
+                        @if($remarks == 'BALANCED' ) class="text-center form-control alert alert-success"
+                        @elseif(str_contains($remarks, 'EXCESS')) class="text-center form-control alert alert-warning"
+                        @elseif(str_contains($remarks, 'SHORT')) class="text-center form-control alert alert-danger"
+                        @else class="text-center form-control alert alert-info"
                         @endif  placeholder="<AUTO>" readonly wire:model="remarks" />
                   </div>
                     <x-textarea label="Notes" placeholder="write your notes" wire:model="notes"/>
@@ -300,17 +304,17 @@
                             placeholder="Select some user"
                             wire:model="approver_id"
                             :options="$approvers"
-                            option-label="full_name" 
+                            option-label="full_name"
                             option-value="id"
                             class="mb-2"
                        />
                        <div>
                             <label for="" class="form-label form-label-sm">Prepared By</label>
-                            <input type="text" class="form-control form-control-sm text-muted" 
+                            <input type="text" class="form-control form-control-sm text-muted"
                                 value="{{ auth()->user()->employee->name}} {{ auth()->user()->employee->middle_name}} {{ auth()->user()->employee->last_name}}"
                                 readonly>
                        </div>
-                        
+
                 </div>
             </div>
         </div>
