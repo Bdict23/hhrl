@@ -587,9 +587,11 @@ class CashFlowCreate extends Component
             $this->totalOpenAFL = $this->calculateOpenAFL();
 
             if($this->netCollection > $this->cashOnHand) {
-                $this->remarks = 'EXCESS : ' . number_format($this->netCollection - $this->cashOnHand, 2);
+                $this->remarks = 'EXCESS : ' ;
+                // . number_format($this->netCollection - $this->cashOnHand, 2);
             } else if($this->netCollection < $this->cashOnHand) {
-                $this->remarks = 'SHORT : ' . number_format($this->cashOnHand - $this->netCollection, 2);
+                $this->remarks = 'SHORT : ' ;
+                // . number_format($this->cashOnHand - $this->netCollection, 2);
             }else {
                 $this->remarks = 'BALANCED';
             }
